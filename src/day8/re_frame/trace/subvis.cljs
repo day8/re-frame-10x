@@ -11,6 +11,7 @@
 (def width 400)
 (def height 400)
 
+(def prev-graph (atom nil))
 (def mygraph (r/atom {:nodes [{:id 1 :group 1}
                               {:id 2 :group 1}
                               {:id 3 :group 2}]
@@ -23,6 +24,8 @@
                   :fx    15
                   :fy    (/ height 2)})
 
+(defn render-node? [d]
+  (= "render" (gob/getValueByKeys d "data" "type")))
 
 (defn min-max
   "Returns x if it is within min-val and max-val
@@ -34,33 +37,10 @@
   (assert (<= min-val max-val))
   (cljs.core/max min-val (cljs.core/min x max-val)))
 
-
-(defn ticked [selector]
-  (fn []
-    ;(println "ticked")
-    (let [link-sel   (.. selector
-                         (selectAll "g.links > line"))
-          circle-sel (.. selector
-                         (selectAll "g.node > circle"))
-          label-sel  (.. selector
-                         (selectAll "g.node > text"))]
-      (.. link-sel
-          (attr "x1" (fn [d] (.. d -source -x)))
-          (attr "y1" (fn [d] (.. d -source -y)))
-          (attr "x2" (fn [d] (.. d -target -x)))
-          (attr "y2" (fn [d] (.. d -target -y))))
-      (.. circle-sel
-          (attr "cx" (fn [d] (set! (.-x d) (min-max (.. d -r) (.. d -x) (- width (.. d -r))))))
-          (attr "cy" (fn [d] (set! (.-y d) (min-max (.. d -r) (.. d -y) (- height (.. d -r)))))))
-      (.. label-sel
-          (attr "x" (fn [d] (+ 2 (.-x d) (.-r d))))
-          (attr "y" #(+ (.-y %)))))))
-
 (defn render-subvis [traces-ratom]
   (let [color-a      (atom nil)
         svg-a        (atom nil)
-        simulation-a (atom nil)
-        run?         (atom false)]
+        simulation-a (atom nil)]
     (fn []
       (println "Render subvis")
       [:div
@@ -70,109 +50,146 @@
         {:render-component (fn [ratom]
                              [:svg#d3cmp {:width width :height height}])
          :d3-once          (fn [ratom]
-                             (let [color      (reset! color-a (.scaleOrdinal js/d3 (.-schemeCategory20 js/d3)))
-                                   svg        (reset! svg-a (. js/d3 select "#d3cmp"))
-                                   simulation (reset! simulation-a
-                                                      (.. js/d3
-                                                          (forceSimulation)
-                                                          (force "link" (.. js/d3 (forceLink)
-                                                                            (id #(.-id %))
-                                                                            (distance (constantly 100))))
-                                                          (force "charge" (.. js/d3 (forceManyBody)
-                                                                              (strength (constantly -100))))
-                                                          (force "center" (. js/d3 forceCenter (/ width 2) (/ height 2)))))
-
-                                   link       (.. (. svg append "g")
-                                                  (attr "class" "links"))
-
-                                   node       (.. (. svg append "g")
-                                                  (attr "class" "nodes"))]))
+                             (let [svg (reset! svg-a (. js/d3 select "#d3cmp"))]
+                               (reset! color-a (.scaleOrdinal js/d3 (.-schemeCategory20 js/d3)))
+                               (reset! simulation-a
+                                       (.. js/d3
+                                           (forceSimulation)
+                                           (force "link" (.. js/d3 (forceLink)
+                                                             (id #(.-id %))
+                                                             (distance (constantly 100))))
+                                           (force "charge" (.. js/d3 (forceManyBody)
+                                                               (strength (constantly -100))))
+                                           (force "center" (. js/d3 forceCenter (/ width 2) (/ height 2)))))
+                               (.. (. svg append "g")
+                                   (attr "class" "links"))
+                               (.. (. svg append "g")
+                                   (attr "class" "nodes"))))
          :d3-update        (fn [ratom]
-                             (when-not false #_@run?
-                               #_(reset! run? true)
-                               (let [graph       (graph/trace->sub-graph @ratom [app-db-node])
-                                     nodes       (clj->js (:nodes graph))
-                                     links       (clj->js (:links graph))
-                                     svg         @svg-a
-                                     color       @color-a
-                                     simulation  @simulation-a
-                                     dragstarted (fn [d]
-                                                   (when (zero? (.. js/d3 -event -active))
-                                                     (.. simulation
-                                                         (alphaTarget 0.3)
-                                                         (restart)))
+                             (let [old-g @prev-graph        ;; TODO: is this working?
+                                   graph (reset! prev-graph (graph/trace->sub-graph @ratom [app-db-node]))]
+                               (js/console.log (clojure.data/diff old-g graph))
+                               (when (not= old-g graph)
+                                 (println "Running")
+                                 (let [simulation   @simulation-a
+                                       color        @color-a
+                                       svg          @svg-a
+                                       graph        (graph/trace->sub-graph @ratom [app-db-node])
+                                       nodes        (clj->js (:nodes graph))
+                                       links        (clj->js (:links graph))
+                                       drag-started (fn [d]
+                                                      (when (zero? (.. js/d3 -event -active))
+                                                        (.. simulation
+                                                            (alphaTarget 0.3)
+                                                            (restart))))
+                                       dragged      (fn [d]
+                                                      (set! (.-fx d) (.. js/d3 -event -x))
+                                                      (set! (.-fy d) (.. js/d3 -event -y)))
+                                       drag-ended   (fn [d]
+                                                      (when (zero? (.. js/d3 -event -active))
+                                                        (.. simulation
+                                                            (alphaTarget 0.0)))
+                                                      (set! (.-fx d) nil)
+                                                      (set! (.-fy d) nil))
 
-                                                   #_(set! (.-fx d) (.. js/d3 -event -x)) ; (.-x d)
-                                                   #_(set! (.-fy d) (.. js/d3 -event -y)))
+                                       ;; Links
+                                       link         (.. svg
+                                                        (select "g.links")
+                                                        (selectAll "line")
+                                                        (data links #(.-id %)))
+                                       enter-link   (.. link
+                                                        (enter)
+                                                        (append "line")
+                                                        (attr "stroke-width" (fn [d] (Math/sqrt (.-value d)))))
+                                       merged-link  (.. enter-link (merge link))
+                                       _            (.. link
+                                                        (exit)
+                                                        (remove "line"))
 
-                                     dragged     (fn [d]
-                                                   (set! (.-fx d) (.. js/d3 -event -x))
-                                                   (set! (.-fy d) (.. js/d3 -event -y)))
+                                       ;; Nodes
+                                       node         (.. svg
+                                                        (select "g.nodes")
+                                                        (selectAll ".node")
+                                                        (data nodes #(.-id %)))
+                                       enter-node   (.. node
+                                                        (enter)
+                                                        (append "g")
+                                                        (attr "class" "node")
+                                                        (call (.. js/d3 (drag)
+                                                                  (on "start" drag-started)
+                                                                  (on "drag" dragged)
+                                                                  (on "end" drag-ended))))
+                                       circle       (.. enter-node
+                                                        (append "circle")
+                                                        (attr "r" (fn [d] (.-r d)))
+                                                        (attr "fill" (fn [d] (color (.-group d)))))
+                                       text         (.. enter-node
+                                                        (append "text")
+                                                        (attr "dx" (fn [d] (if (render-node? d)
+                                                                             -12
+                                                                             12)))
+                                                        (attr "dy" "0.35em")
+                                                        (attr "text-anchor" (fn [d]
+                                                                              (if (render-node? d)
+                                                                                "end"
+                                                                                "start")))
+                                                        (attr "opacity" 1)
+                                                        (text (fn [d] (.-title d))))
 
-                                     dragended   (fn [d]
-                                                   (when (zero? (.. js/d3 -event -active))
-                                                     (.. simulation
-                                                         (alphaTarget 0.0)))
-                                                   (set! (.-fx d) nil)
-                                                   (set! (.-fy d) nil))
+                                       merged-node  (.. enter-node (merge node))
 
-                                     link        (.. svg
-                                                     (select ".links")
-                                                     (selectAll "line")
-                                                     (data links (fn [d] (.-id d))))
+                                       ticked       (fn []
+                                                      (.. merged-node
+                                                          (attr "transform"
+                                                                (fn [d]
+                                                                  (let [r (.-r d)
+                                                                        x (min-max r (.-x d) (- width r))
+                                                                        y (min-max r (.-y d) (- height r))]
+                                                                    (set! (.-x d) x)
+                                                                    (set! (.-y d) y)
+                                                                    (str "translate(" x "," y ")")))))
 
-                                     new-link    (.. link
-                                                     (enter)
-                                                     (append "line")
-                                                     (attr "stroke-width" (fn [d] (Math/sqrt (.-value d)))))
+                                                      (.. merged-link
+                                                          (attr "x1" (fn [d] (.. d -source -x)))
+                                                          (attr "y1" (fn [d] (.. d -source -y)))
+                                                          (attr "x2" (fn [d] (.. d -target -x)))
+                                                          (attr "y2" (fn [d] (.. d -target -y)))))
 
-                                     node        (.. svg
-                                                     (select ".nodes")
-                                                     (selectAll "circle")
-                                                     (data nodes))
+                                       node-exit-t  (.. node
+                                                        (exit)
+                                                        (transition)
+                                                        (delay (fn [d i] (* i 30)))
+                                                        (duration 500))
 
-                                     new-node    (.. node
-                                                     (enter)
-                                                     (append "g")
-                                                     (attr "class" "node"))
 
-                                     circle      (.. new-node
-                                                     (append "circle")
-                                                     (attr "r" #(or (gob/get % "r" 10)))
-                                                     (attr "fill" (fn [d] (color (.-group d))))
-                                                     (call (.. (. js/d3 drag)
-                                                               (on "start" dragstarted)
-                                                               (on "drag" dragged)
-                                                               (on "end" dragended))))
+                                       _            (.. node-exit-t
+                                                        (select "circle")
+                                                        (attr "transform" "scale(0,0)")
+                                                        (attr "fill" "#000000"))
+                                       _            (.. node-exit-t
+                                                        (select "text")
+                                                        (attr "opacity" 0))
+                                       _            (.. node-exit-t
+                                                        (on "end" (fn [] (this-as this
+                                                                                       (.. js/d3
+                                                                                           (select this)
+                                                                                           (remove))))))
+                                       _            (.. node-exit-t
+                                                        (transition)
+                                                        (call (fn []
+                                                                (.. simulation
+                                                                    (nodes nodes)
+                                                                    (on "tick" ticked))
 
-                                     label       (.. new-node
-                                                     (append "text")
-                                                     (attr "dy" ".35em")
-                                                     (text #(gob/get % "title" "")))
+                                                                (.. simulation
+                                                                    (force "link")
+                                                                    (links links))
 
-                                     exit-node   (.. node
-                                                     (exit)
-                                                     (remove "g"))
-
-                                     exit-link   (.. link
-                                                     (exit)
-                                                     (remove "line"))
-
-                                     ]
-                                 (println "Nodes count" (count nodes))
-                                 (println "Links count" (count links))
-
-                                 (.. simulation
-                                     (nodes nodes)
-                                     (on "tick" (ticked svg)))
-                                 (.. simulation
-                                     (force "link")
-                                     (links links))
-                                 (.. simulation
-                                     (alphaTarget 0.3)
-                                     (restart))
-
-                                 )))}
+                                                                (.. simulation
+                                                                    (restart)
+                                                                    (alpha 0.3)))))
+                                       ]
+                                   ))))}
         traces-ratom]
        [:hr]])))
 

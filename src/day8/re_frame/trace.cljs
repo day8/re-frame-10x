@@ -96,7 +96,7 @@
 (defn log-trace? [trace]
   (let [render-type? (= (:type trace) :render)]
     (not (and render-type?
-              (str/includes? (or (get-in trace [:tags :component-path]) "") "day8.re_frame.trace.devtools")))))
+              (str/includes? (or (get-in trace [:tags :component-path]) "") "day8.re_frame.trace")))))
 
 (defn init-tracing! []
   (re-frame.tracing/register-trace-cb ::cb (fn [new-traces]
@@ -156,7 +156,7 @@
            (doall
              (for [{:keys [type id operation tags duration] :as trace} showing-traces]
                (let [row-style (merge padding {:border-top (case type :event "1px solid lightgrey" nil)})
-                     _         (js/console.log (devtools/header-api-call tags))
+                     #_ #_ _         (js/console.log (devtools/header-api-call tags))
                      ]
                  (list [:tr {:key   id
                              :style {:color (case type

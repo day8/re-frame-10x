@@ -31,8 +31,7 @@
                        :when (every? some? [input-signal reaction])]
                    {:source input-signal :target reaction :value link-val
                     :id     (str input-signal "|" reaction)})))
-       (into {} (map (fn [trace] [(:id trace) trace])))
-       (vals)))
+       (distinct-k :id)))
 
 (defn select-sub-nodes [traces type disposed-ids r]
   (->> traces
@@ -45,24 +44,23 @@
                :group 2
                :r     r
                :data  trace}))
-       (into {} (map (fn [trace] [(:id trace) trace])))
-       (vals)))
+       (distinct-k :id)))
 
 (defn select-view-nodes [traces type unmounted-components r]
   (->> traces
        (select-type type)
-       (remove #(contains? unmounted-components (:id %)))
+       (remove #(contains? unmounted-components (get-reaction %)))
        (map (fn [trace]
               {:id    (get-reaction trace)
-               :title (str (get-reaction trace) " " (:operation trace))
+               :title (str (:operation trace))
                :group 3
                :r     r
                :data  trace
-               :fx    250}))
+               :fx    350}))
        (remove #(nil? (:id %)))                            ;; remove reactions that are null (mostly from input fields???)
-       (into {} (map (fn [trace] [(:id trace) trace])))
-       (vals)
-       ))
+       (distinct-k :id)))
+
+;; Use http://bl.ocks.org/GerHobbelt/3683278 to constrain nodes
 
 (defn trace->sub-graph [traces extra-nodes]
   (let [disposed-ids         (->> (select-type :sub/dispose traces)
@@ -71,10 +69,11 @@
         unmounted-components (->> (select-type :componentWillUnmount traces)
                                   (map get-reaction)
                                   set)
+
         sub-nodes            (select-sub-nodes traces :sub/create disposed-ids 10)
-        view-nodes           (select-view-nodes traces :render unmounted-components 5)
+        view-nodes          nil #_ (select-view-nodes traces :render unmounted-components 5)
         sub-links            (select-links traces :sub/run disposed-ids 1)
-        view-links           (select-links traces :render unmounted-components 0.5)
+        view-links        nil #_   (select-links traces :render unmounted-components 0.5)
         all-nodes            (concat extra-nodes sub-nodes view-nodes)
         node-ids             (set (map :id all-nodes))
         nodes-links          (->> (mapcat (fn [{:keys [source target]}] [source target]) view-links) set)
