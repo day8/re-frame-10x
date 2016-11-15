@@ -11,7 +11,10 @@
             [reagent.ratom :as ratom]
             [re-frame.utils :as rutils]
             [goog.object :as gob]
-            [re-frame.interop :as interop]))
+            [re-frame.interop :as interop]
+
+            [devtools.formatters.core :as devtools]
+            ))
 
 (defn comp-name [c]
   (let [n (or (component/component-path c)
@@ -72,7 +75,8 @@
               (fn [] (this-as c
                               (trace/with-trace {:op-type   key
                                                  :operation (last (str/split (comp-name c) #" > "))
-                                                 :tags      {:component-path (reagent.impl.component/component-path c)}})
+                                                 :tags      {:component-path (reagent.impl.component/component-path c)
+                                                             :reaction       (rutils/reagent-id ($ c :cljsRatom))}})
                               (.call (real-custom-wrapper key f) c c)))
 
               (real-custom-wrapper key f))))
@@ -151,7 +155,9 @@
           [:tbody
            (doall
              (for [{:keys [type id operation tags duration] :as trace} showing-traces]
-               (let [row-style (merge padding {:border-top (case type :event "1px solid lightgrey" nil)})]
+               (let [row-style (merge padding {:border-top (case type :event "1px solid lightgrey" nil)})
+                     _         (js/console.log (devtools/header-api-call tags))
+                     ]
                  (list [:tr {:key   id
                              :style {:color (case type
                                               :sub/create "green"
@@ -169,7 +175,8 @@
                          (.toFixed duration 1) " ms"]]
                        (when true
                          [:tr {:key (str id "-details")}
-                          [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]])))))]]]))))
+                          [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]])
+                       ))))]]]))))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0
