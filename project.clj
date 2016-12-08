@@ -1,4 +1,4 @@
-(defproject day8.re-frame/abra "0.0.3"
+(defproject day8.re-frame/abra "0.0.4-SNAPSHOT"
   :description "Tracing and developer tools for re-frame apps"
   :url         "https://github.com/Day8/re-frame-trace"
   :license     {:name "MIT"}
