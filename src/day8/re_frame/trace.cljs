@@ -193,11 +193,11 @@
   ;; Add clear button
   ;; Filter out different trace types
   (let [position       (r/atom :right)
-        size           (r/atom 0.5)
-        showing?       (r/atom true)
+        size           (r/atom 0.3)
+        showing?       (r/atom false)
         dragging?      (r/atom false)
         pin-to-bottom? (r/atom true)
-        selected-tab   (r/atom :subvis)
+        selected-tab   (r/atom :traces)
         handle-keys    (fn [e]
                          (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
                                tag-name        (.-tagName (.-target e))
