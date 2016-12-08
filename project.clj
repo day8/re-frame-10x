@@ -7,4 +7,6 @@
                  [reagent                    "0.6.0"]
                  [re-frame                   "0.8.1-SNAPSHOT"]
                  [cljsjs/d3 "4.2.2-0"]]
+  :deploy-repositories {"releases" :clojars
+                        "snapshots" :clojars}
   :profiles {:dev {:dependencies [[binaryage/dirac "RELEASE"]]}})
