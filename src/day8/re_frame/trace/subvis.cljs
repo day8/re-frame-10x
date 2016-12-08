@@ -42,7 +42,6 @@
         svg-a        (atom nil)
         simulation-a (atom nil)]
     (fn []
-      (println "Render subvis")
       [:div
        {:style {:padding "10px"}}
        [:h1 "SUBVIS"]
@@ -68,9 +67,7 @@
          :d3-update        (fn [ratom]
                              (let [old-g @prev-graph        ;; TODO: is this working?
                                    graph (reset! prev-graph (graph/trace->sub-graph @ratom [app-db-node]))]
-                               (js/console.log (clojure.data/diff old-g graph))
                                (when (not= old-g graph)
-                                 (println "Running")
                                  (let [simulation   @simulation-a
                                        color        @color-a
                                        svg          @svg-a

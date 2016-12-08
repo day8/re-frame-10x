@@ -1,6 +1,6 @@
 (ns day8.re-frame.trace
   (:require [day8.re-frame.trace.subvis :as subvis]
-            [re-frame.tracing :as trace :include-macros true]
+            [re-frame.trace :as trace :include-macros true]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
             [reagent.core :as r]
@@ -94,12 +94,17 @@
 
 (def traces (interop/ratom []))
 (defn log-trace? [trace]
-  (let [render-type? (= (:type trace) :render)]
-    (not (and render-type?
-              (str/includes? (or (get-in trace [:tags :component-path]) "") "day8.re_frame.trace")))))
+  (let [rendering? (= (:op-type trace) :render)]
+    (if-not rendering?
+      true
+      (not (str/includes? (or (get-in trace [:tags :component-path]) "") "day8.re_frame.trace")))
+
+
+   #_ (if-let [comp-p (get-in trace [:tags :component-path])]
+      (println comp-p))))
 
 (defn init-tracing! []
-  (re-frame.tracing/register-trace-cb ::cb (fn [new-traces]
+  (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
                                              (let [new-traces (filter log-trace? new-traces)]
                                                (swap! traces #(reduce conj % new-traces)))))
   (monkey-patch-reagent)
@@ -129,7 +134,7 @@
       (let [slower-than-ms-int   (js/parseInt @slower-than-ms)
             slower-than-bold-int (js/parseInt @slower-than-bold)
             op-filter            (when-not (str/blank? @search)
-                                   (filter #(str/includes? (str (:operation %) " " (:type %)) @search)))
+                                   (filter #(str/includes? (str (:operation %) " " (:op-type %)) @search)))
             ms-filter            (when-not (str/blank? @slower-than-ms)
                                    (filter #(< slower-than-ms-int (:duration %))))
             transducers          (apply comp (remove nil? [ms-filter op-filter]))
@@ -154,19 +159,19 @@
            [:th "meta"]]
           [:tbody
            (doall
-             (for [{:keys [type id operation tags duration] :as trace} showing-traces]
-               (let [row-style (merge padding {:border-top (case type :event "1px solid lightgrey" nil)})
+             (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
+               (let [row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
                      #_ #_ _         (js/console.log (devtools/header-api-call tags))
                      ]
                  (list [:tr {:key   id
-                             :style {:color (case type
+                             :style {:color (case op-type
                                               :sub/create "green"
                                               :sub/run "red"
                                               :event "blue"
                                               :render "purple"
                                               :re-frame.router/fsm-trigger "red"
                                               nil)}}
-                        [:td {:style row-style} (str type)]
+                        [:td {:style row-style} (str op-type)]
                         [:td {:style row-style} operation]
                         [:td
                          {:style (merge row-style {:font-weight (if (< slower-than-bold-int duration)
@@ -193,7 +198,6 @@
         dragging?      (r/atom false)
         pin-to-bottom? (r/atom true)
         selected-tab   (r/atom :subvis)
-        _              (js/console.log "Rendering devtools")
         handle-keys    (fn [e]
                          (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
                                tag-name        (.-tagName (.-target e))

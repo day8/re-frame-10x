@@ -2,7 +2,7 @@
   (:require [clojure.set :as set]))
 
 (defn select-type [type traces]
-  (filter #(= type (:type %)) traces))
+  (filter #(= type (:op-type %)) traces))
 
 (defn get-reaction [trace]
   (get-in trace [:tags :reaction]))
