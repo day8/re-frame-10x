@@ -113,17 +113,16 @@
 (defn search-input [{:keys [title on-save on-stop]}]
   (let [val  (r/atom title)
         save #(let [v (-> @val str clojure.string/trim)]
-               (on-save v))]
-    (fn [props]
-      [:input (merge props
-                     {:type        "text"
-                      :value       @val
-                      :auto-focus  true
-                      :on-blur     save
-                      :on-change   #(reset! val (-> % .-target .-value))
-                      :on-key-down #(case (.-which %)
-                                     13 (save)
-                                     nil)})])))
+                (on-save v))]
+    (fn []
+      [:input {:type        "text"
+               :value       @val
+               :auto-focus  true
+               :on-blur     save
+               :on-change   #(reset! val (-> % .-target .-value))
+               :on-key-down #(case (.-which %)
+                               13 (save)
+                               nil)}])))
 
 
 (defn render-traces []
