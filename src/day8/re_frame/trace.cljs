@@ -40,7 +40,7 @@
                                               (ratom/run-in-reaction #(reagent.impl.component/do-render c) c "cljsRatom"
                                                                      batch/queue-render reagent.impl.component/rat-opts)
                                               (._run rat false))
-                                 cljs-ratom ($ c :cljsRatom)]               ;; actually a reaction
+                                 cljs-ratom ($ c :cljsRatom)] ;; actually a reaction
                              (trace/merge-trace!
                                {:tags {:reaction      (rutils/reagent-id cljs-ratom)
                                        :input-signals (when cljs-ratom
@@ -73,11 +73,11 @@
             (case key
               :componentWillUnmount
               (fn [] (this-as c
-                              (trace/with-trace {:op-type   key
-                                                 :operation (last (str/split (comp-name c) #" > "))
-                                                 :tags      {:component-path (reagent.impl.component/component-path c)
-                                                             :reaction       (rutils/reagent-id ($ c :cljsRatom))}})
-                              (.call (real-custom-wrapper key f) c c)))
+                       (trace/with-trace {:op-type   key
+                                          :operation (last (str/split (comp-name c) #" > "))
+                                          :tags      {:component-path (reagent.impl.component/component-path c)
+                                                      :reaction       (rutils/reagent-id ($ c :cljsRatom))}})
+                       (.call (real-custom-wrapper key f) c c)))
 
               (real-custom-wrapper key f))))
 
@@ -100,13 +100,13 @@
       (not (str/includes? (or (get-in trace [:tags :component-path]) "") "day8.re_frame.trace")))
 
 
-   #_ (if-let [comp-p (get-in trace [:tags :component-path])]
-      (println comp-p))))
+    #_(if-let [comp-p (get-in trace [:tags :component-path])]
+        (println comp-p))))
 
 (defn init-tracing! []
   (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
-                                             (let [new-traces (filter log-trace? new-traces)]
-                                               (swap! traces #(reduce conj % new-traces)))))
+                                           (let [new-traces (filter log-trace? new-traces)]
+                                             (swap! traces #(reduce conj % new-traces)))))
   (monkey-patch-reagent)
   )
 
@@ -160,7 +160,7 @@
            (doall
              (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
                (let [row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
-                     #_ #_ _         (js/console.log (devtools/header-api-call tags))
+                     #_#__ (js/console.log (devtools/header-api-call tags))
                      ]
                  (list [:tr {:key   id
                              :style {:color (case op-type
@@ -211,7 +211,7 @@
       {:component-will-mount   #(js/window.addEventListener "keydown" handle-keys)
        :component-will-unmount #(js/window.removeEventListener "keydown" handle-keys)
        :display-name           "devtools outer"
-       :reagent-render       (fn []
+       :reagent-render         (fn []
                                  (let [draggable-area 10
                                        full-width     js/window.innerWidth
                                        full-height    js/window.innerHeight
