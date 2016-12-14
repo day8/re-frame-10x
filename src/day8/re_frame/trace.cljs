@@ -103,10 +103,17 @@
     #_(if-let [comp-p (get-in trace [:tags :component-path])]
         (println comp-p))))
 
-(defn init-tracing! []
+(defn disable-tracing! []
+  (re-frame.trace/remove-trace-cb ::cb))
+
+(defn enable-tracing! []
   (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
                                            (let [new-traces (filter log-trace? new-traces)]
-                                             (swap! traces #(reduce conj % new-traces)))))
+                                             (swap! traces #(reduce conj % new-traces))))))
+
+(defn init-tracing!
+  "Sets up any intial state that needs to be there for tracing. Does not enable tracing."
+  []
   (monkey-patch-reagent)
   )
 
@@ -206,6 +213,9 @@
                              (cond
                                (and (= key "h") (.-ctrlKey e))
                                (do (swap! showing? not)
+                                   (if @showing?
+                                     (enable-tracing!)
+                                     (disable-tracing!))
                                    (.preventDefault e))))))]
     (r/create-class
       {:component-will-mount   #(js/window.addEventListener "keydown" handle-keys)
