@@ -3,7 +3,7 @@
             [day8.re-frame.trace.d3 :as d3t]
             [day8.re-frame.trace.graph :as graph]
             [reagent.core :as r]
-            [re-frame.utils :as rutils]
+            [re-frame.interop :as interop]
             [re-frame.db :as db]
             [goog.object :as gob]
             [clojure.set :as set]))
@@ -17,7 +17,7 @@
                               {:id 3 :group 2}]
                       :links [{:source 1 :target 2 :value 1}]}))
 
-(def app-db-node {:id    (rutils/reagent-id db/app-db)
+(def app-db-node {:id    (interop/reagent-id db/app-db)
                   :title "app-db"
                   :group 1
                   :r     20

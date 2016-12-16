@@ -9,7 +9,6 @@
             [reagent.impl.component :as component]
             [reagent.impl.batching :as batch]
             [reagent.ratom :as ratom]
-            [re-frame.utils :as rutils]
             [goog.object :as gob]
             [re-frame.interop :as interop]
 
@@ -42,9 +41,9 @@
                                               (._run rat false))
                                  cljs-ratom ($ c :cljsRatom)] ;; actually a reaction
                              (trace/merge-trace!
-                               {:tags {:reaction      (rutils/reagent-id cljs-ratom)
+                               {:tags {:reaction      (interop/reagent-id cljs-ratom)
                                        :input-signals (when cljs-ratom
-                                                        (map rutils/reagent-id (gob/get cljs-ratom "watching" :none)))}})
+                                                        (map interop/reagent-id (gob/get cljs-ratom "watching" :none)))}})
                              res)))))})
 
 
@@ -76,7 +75,7 @@
                        (trace/with-trace {:op-type   key
                                           :operation (last (str/split (comp-name c) #" > "))
                                           :tags      {:component-path (reagent.impl.component/component-path c)
-                                                      :reaction       (rutils/reagent-id ($ c :cljsRatom))}})
+                                                      :reaction       (interop/reagent-id ($ c :cljsRatom))}})
                        (.call (real-custom-wrapper key f) c c)))
 
               (real-custom-wrapper key f))))

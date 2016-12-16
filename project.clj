@@ -5,7 +5,7 @@
   :dependencies [[org.clojure/clojure        "1.8.0"]
                  [org.clojure/clojurescript  "1.9.227"]
                  [reagent                    "0.6.0"]
-                 [re-frame                   "0.9.0-alpha1"]
+                 [re-frame                   "0.9.0"]
                  [cljsjs/d3 "4.2.2-0"]]
   :deploy-repositories {"releases" :clojars
                         "snapshots" :clojars}
