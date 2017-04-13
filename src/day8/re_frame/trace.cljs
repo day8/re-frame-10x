@@ -251,3 +251,7 @@
                                         :subvis [subvis/render-subvis traces]
                                         [render-traces])]]]))})))
 
+(defn inject-devtools! []
+  (let [div (.createElement js/document "div")]
+    (.appendChild (.-body js/document) div)
+    (r/render [devtools] div)))
