@@ -18,11 +18,12 @@ Compile your app with `:closure-defines: "re_frame.trace.trace_enabled_QMARK_" t
 
 So when using leiningen, add the following to `project.clj`:
 
-- `[day8.re-frame/trace "0.1.0"]` in `:dev :dependencies`
+- `[day8.re-frame/trace "0.1.0"]` in `:profiles :dev :dependencies`
 
     ```cljs
-    {:dev
-       {:dependencies [day8.re-frame/trace "0.1.0"] }}
+    {:profiles
+       {:dev
+          {:dependencies [day8.re-frame/trace "0.1.0"] }}
     ```
 - `:closure-defines: "re_frame.trace.trace_enabled_QMARK_" true` and `:preloads [day8.re-frame.trace.preload]` in `:compiler`
 
