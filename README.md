@@ -14,16 +14,27 @@ re-frame has instrumentation to collect traces throughout various important poin
 
 ## Getting started
 
-Compile your app with `:closure-defines: "re_frame.trace.trace_enabled_QMARK_" true` and `:preloads [day8.re-frame.trace.preload]`, e.g.
+Compile your app with `:closure-defines: "re_frame.trace.trace_enabled_QMARK_" true` and `:preloads [day8.re-frame.trace.preload]`.
 
-```cljs
-    {:builds
-       [{:id           "dev"
-         :source-paths ["src" "dev"]
-         :compiler     {...
-                        :closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}
-                        :preloads             [day8.re-frame.trace.preload]}}]}
-```
+So when using leiningen, add the following to `project.clj`:
+
+- `[day8.re-frame/trace "0.1.0"]` in `:profiles :dev :dependencies`
+
+    ```cljs
+    {:profiles
+       {:dev
+          {:dependencies [day8.re-frame/trace "0.1.0"] }}
+    ```
+- `:closure-defines: "re_frame.trace.trace_enabled_QMARK_" true` and `:preloads [day8.re-frame.trace.preload]` in `:compiler`
+
+    ```cljs
+        {:builds
+           [{:id           "dev"
+             :source-paths ["src" "dev"]
+             :compiler     {...
+                            :closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}
+                            :preloads             [day8.re-frame.trace.preload]}}]}
+    ```
 
 By default, re-frame tracing is compiled out, so it won't impose a performance cost in production. The trade-off here is that you need to explicitly enable it in development.
 
