@@ -41,3 +41,20 @@ By default, re-frame tracing is compiled out, so it won't impose a performance c
 The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#preloads) option (`:preloads [day8.re-frame.trace.preload]`) has to be set in order to automatically monkeypatch Reagent to add appropriate lifecycle hooks. Yes this is gross, and yes we will try and make a PR to reagent to add proper hooks, once we know exactly what we need. The preload namespace also injects a div containing the devtools panel into the DOM.
 
 Now you can start up your application. Once it is loaded, press Ctrl+H to slide open the trace panel and enable tracing. When the panel is closed, tracing is disabled.
+
+
+## development
+
+### setting up re-frame-trace for development
+
+- Clone `re-frame-trace` to your machine.
+- Go into the root directory of a project you'd like to use as a host to test re-frame-trace with. For example, you can use the [todo-mvc](https://github.com/Day8/re-frame/tree/master/examples/todomvc) project.
+- Add re-frame-trace into this project using the [instructions](#getting-started) above.
+- Create a folder called `checkouts:`
+  ```
+  mkdir checkouts
+  ```
+- Create a symlink from your local re-frame-trace project in the checkouts folder:
+  ```
+  ln -s path/to/your/local/re-frame-trace checkouts/re-frame-trace
+  ```
