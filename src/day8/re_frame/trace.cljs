@@ -251,7 +251,15 @@
                                         :subvis [subvis/render-subvis traces]
                                         [render-traces])]]]))})))
 
+(defn panel-div []
+  (let [id    "--re-frame-trace--"
+        panel (.getElementById js/document id)]
+    (if panel
+      panel
+      (let [new-panel (.createElement js/document "div")]
+        (.setAttribute new-panel "id" id)
+        (.appendChild (.-body js/document) new-panel)
+        new-panel))))
+
 (defn inject-devtools! []
-  (let [div (.createElement js/document "div")]
-    (.appendChild (.-body js/document) div)
-    (r/render [devtools] div)))
+  (r/render [devtools] (panel-div)))
