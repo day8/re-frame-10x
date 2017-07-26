@@ -118,7 +118,7 @@
 
 (defn search-input [{:keys [title on-save on-stop]}]
   (let [val  (r/atom title)
-        save #(let [v (-> @val str clojure.string/trim)]
+        save #(let [v (-> @val str str/trim)]
                 (on-save v))]
     (fn []
       [:input {:type        "text"
@@ -139,7 +139,7 @@
       (let [slower-than-ms-int   (js/parseInt @slower-than-ms)
             slower-than-bold-int (js/parseInt @slower-than-bold)
             op-filter            (when-not (str/blank? @filter-items)
-                                   (filter #(str/includes? (str (:operation %) " " (:op-type %)) @filter-items)))
+                                   (filter #(str/includes? (str/lower-case (str (:operation %) " " (:op-type %))) @filter-items)))
             ms-filter            (when-not (str/blank? @slower-than-ms)
                                    (filter #(< slower-than-ms-int (:duration %))))
             transducers          (apply comp (remove nil? [ms-filter op-filter]))
