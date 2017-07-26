@@ -152,15 +152,9 @@
         [:div
          {:style {:padding "10px"}}
          [:h1 "TRACES"]
-         [:span filter-msg [:button {:style {:background "#aae0ec"
-                                             :padding 7
-                                             }
-                                     :on-click #(do (trace/reset-tracing!) (reset! traces []))} " Clear traces"]] [:br]
+         [:span filter-msg [:button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} " Clear traces"]] [:br]
          [:span "Filter events " [search-input {:on-save #(reset! filter-items %)}]
-          [:button {:style {:background "#aae0ec"
-                            :padding 7
-                            :margin 5}}
-           "+"]
+          [:button "+"]
           ;; [:button {:style {:background "#aae0ec"
           ;;                   :padding 7
           ;;                   :margin 5}}
@@ -195,8 +189,8 @@
                          (.toFixed duration 1) " ms"]]
                        (when true
                          [:tr {:key (str id "-details")}
-                          [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]])
-                       ))))]]]))))
+                          [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]])))))]]]))))
+
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0
@@ -254,13 +248,9 @@
                                                                          (reset! size (/ (- full-width x)
                                                                                          full-width)))))}]
                                      [:div {:style {:width "100%" :height "100%" :overflow "auto"}}
-                                      [:button {:style {:background "#aae0ec"
-                                                        :padding 7
-                                                        :margin 5}
+                                      [:button {:class (str "tab " (when (= @selected-tab :traces) "active"))
                                                 :on-click #(reset! selected-tab :traces)} "Traces"]
-                                      [:button {:style {:background "#aae0ec"
-                                                        :padding 7
-                                                        :margin 5}
+                                      [:button {:class (str "tab " (when (= @selected-tab :subvis) "active"))
                                                 :on-click #(reset! selected-tab :subvis)} "SubVis"]
                                       (case @selected-tab
                                         :traces [render-traces]
@@ -277,5 +267,49 @@
         (.appendChild (.-body js/document) new-panel)
         new-panel))))
 
+(defn inject-styles []
+  (let [id    "--re-frame-trace-styles--"
+        styles-el (.getElementById js/document id)
+        new-styles-el (.createElement js/document "style")
+        new-styles "
+#--re-frame-trace-- tbody {
+  color: #aaa;
+}
+#--re-frame-trace-- tr:nth-child(even) {
+  background: aliceblue;
+}
+#--re-frame-trace-- button {
+  background: lightblue;
+  padding: 5px 5px 3px;
+  margin: 5px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+#--re-frame-trace-- .tab {
+  background: transparent;
+  border-bottom: 3px solid #eee;
+  padding-bottom: 1px;
+  border-radius: 0;
+}
+#--re-frame-trace-- .tab.active {
+  background: transparent;
+  border-bottom: 3px solid lightblue;
+  padding-bottom: 1px;
+  border-radius: 0;
+}
+"]
+    (.setAttribute new-styles-el "id" id)
+    (-> new-styles-el
+        (.-innerHTML)
+        (set! new-styles))
+    (if styles-el
+      (-> styles-el
+          (.-parentNode)
+          (.replaceChild new-styles-el styles-el))
+      (let []
+        (.appendChild (.-head js/document) new-styles-el)
+        new-styles-el))))
+
 (defn inject-devtools! []
+  (inject-styles)
   (r/render [devtools] (panel-div)))
