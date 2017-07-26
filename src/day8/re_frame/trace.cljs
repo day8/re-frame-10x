@@ -123,6 +123,7 @@
     (fn []
       [:input {:type        "text"
                :value       @val
+               :style       {:margin 7}
                :auto-focus  true
                :on-blur     save
                :on-change   #(reset! val (-> % .-target .-value))
@@ -130,36 +131,45 @@
                                13 (save)
                                nil)}])))
 
-
 (defn render-traces []
-  (let [search           (r/atom "")
+  (let [filter-items     (r/atom "")
         slower-than-ms   (r/atom "")
         slower-than-bold (r/atom "")]
     (fn []
       (let [slower-than-ms-int   (js/parseInt @slower-than-ms)
             slower-than-bold-int (js/parseInt @slower-than-bold)
-            op-filter            (when-not (str/blank? @search)
-                                   (filter #(str/includes? (str (:operation %) " " (:op-type %)) @search)))
+            op-filter            (when-not (str/blank? @filter-items)
+                                   (filter #(str/includes? (str (:operation %) " " (:op-type %)) @filter-items)))
             ms-filter            (when-not (str/blank? @slower-than-ms)
                                    (filter #(< slower-than-ms-int (:duration %))))
             transducers          (apply comp (remove nil? [ms-filter op-filter]))
             showing-traces       (sequence transducers @traces)
 
-            filter-msg           (if (and (str/blank? @search) (str/blank? @slower-than-ms))
+            filter-msg           (if (and (str/blank? @filter-items) (str/blank? @slower-than-ms))
                                    (str "Filter " (count @traces) " events: ")
                                    (str "Filtering " (count showing-traces) " of " (count @traces) " events:"))
             padding              {:padding "0px 5px 0px 5px"}]
         [:div
          {:style {:padding "10px"}}
          [:h1 "TRACES"]
-         [:span filter-msg [:button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} " Clear traces"]] [:br]
-         [:span "Filter events " [search-input {:on-save #(reset! search %)}]] [:br]
-         [:span "Filter slower than " [search-input {:on-save #(reset! slower-than-ms %)}] "ms "] [:br]
-         [:span "Bold slower than " [search-input {:on-save #(reset! slower-than-bold %)}] "ms "]
+         [:span filter-msg [:button {:style {:background "#aae0ec"
+                                             :padding 7
+                                             }
+                                     :on-click #(do (trace/reset-tracing!) (reset! traces []))} " Clear traces"]] [:br]
+         [:span "Filter events " [search-input {:on-save #(reset! filter-items %)}]
+          [:button {:style {:background "#aae0ec"
+                            :padding 7
+                            :margin 5}}
+           "+"]
+          ;; [:button {:style {:background "#aae0ec"
+          ;;                   :padding 7
+          ;;                   :margin 5}}
+          ;;  "-"]]
+          [:br]]
          [:table
           {:cell-spacing "0" :width "100%"}
           [:thead>tr
-           [:th "op"]
+           [:th "operation"]
            [:th "event"]
            [:th "meta"]]
           [:tbody
@@ -244,8 +254,14 @@
                                                                          (reset! size (/ (- full-width x)
                                                                                          full-width)))))}]
                                      [:div {:style {:width "100%" :height "100%" :overflow "auto"}}
-                                      [:button {:on-click #(reset! selected-tab :traces)} "Traces"]
-                                      [:button {:on-click #(reset! selected-tab :subvis)} "SubVis"]
+                                      [:button {:style {:background "#aae0ec"
+                                                        :padding 7
+                                                        :margin 5}
+                                                :on-click #(reset! selected-tab :traces)} "Traces"]
+                                      [:button {:style {:background "#aae0ec"
+                                                        :padding 7
+                                                        :margin 5}
+                                                :on-click #(reset! selected-tab :subvis)} "SubVis"]
                                       (case @selected-tab
                                         :traces [render-traces]
                                         :subvis [subvis/render-subvis traces]
