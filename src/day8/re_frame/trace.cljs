@@ -153,7 +153,7 @@
          {:style {:padding "10px"}}
          [:h1 "TRACES"]
          [:span filter-msg [:button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} " Clear traces"]] [:br]
-         [:span "Filter events " [search-input {:on-save #(reset! filter-items %)}]
+         [:span "Filter events " [search-input {:on-save #(reset! filter-items (str/lower-case %))}]
           [:button "+"]
           ;; [:button {:style {:background "#aae0ec"
           ;;                   :padding 7
