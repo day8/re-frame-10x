@@ -119,7 +119,8 @@
 (defn search-input [{:keys [title on-save on-stop]}]
   (let [val  (r/atom title)
         save #(let [v (-> @val str str/trim)]
-                (on-save v))]
+                (when (pos? (count v))
+                  (on-save v)))]
     (fn []
       [:input {:type        "text"
                :value       @val
