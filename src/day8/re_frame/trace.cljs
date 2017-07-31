@@ -128,7 +128,9 @@
                :auto-focus  true
                :on-change   #(reset! val (-> % .-target .-value))
                :on-key-down #(case (.-which %)
-                               13 (save)
+                               13 (do
+                                    (save)
+                                    (reset! val ""))
                                nil)}])))
 
 (defn render-traces []
