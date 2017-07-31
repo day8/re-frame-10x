@@ -132,20 +132,20 @@
                                nil)}])))
 
 (defn render-traces []
-  (let [filter-items     (r/atom "")
+  (let [filter-input     (r/atom "")
+        filter-items     (r/atom []) ;; [{:id (random-uuid) :query "showing" :filter-type "contains"} {:id (random-uuid) :query "Reagent" :filter-type "contains"}
         slower-than-ms   (r/atom "")
         slower-than-bold (r/atom "")]
     (fn []
       (let [slower-than-ms-int   (js/parseInt @slower-than-ms)
             slower-than-bold-int (js/parseInt @slower-than-bold)
-            op-filter            (when-not (str/blank? @filter-items)
-                                   (filter #(str/includes? (str/lower-case (str (:operation %) " " (:op-type %))) @filter-items)))
+            op-filter            (when-not (str/blank? @filter-input)
+                                   (filter #(str/includes? (str/lower-case (str (:operation %) " " (:op-type %))) @filter-input)))
             ms-filter            (when-not (str/blank? @slower-than-ms)
                                    (filter #(< slower-than-ms-int (:duration %))))
             transducers          (apply comp (remove nil? [ms-filter op-filter]))
             showing-traces       (sequence transducers @traces)
-
-            filter-msg           (if (and (str/blank? @filter-items) (str/blank? @slower-than-ms))
+            filter-msg           (if (and (str/blank? @filter-input) (str/blank? @slower-than-ms))
                                    (str "Filter " (count @traces) " events: ")
                                    (str "Filtering " (count showing-traces) " of " (count @traces) " events:"))
             padding              {:padding "0px 5px 0px 5px"}]
@@ -153,13 +153,26 @@
          {:style {:padding "10px"}}
          [:h1 "TRACES"]
          [:span filter-msg [:button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} " Clear traces"]] [:br]
-         [:span "Filter events " [search-input {:on-save #(reset! filter-items (str/lower-case %))}]
+         [:span "Filter events " [search-input {:value @filter-input
+                                                :on-save (fn [query]
+                                                           (do
+                                                             (reset! filter-input "")
+                                                             (swap! filter-items conj {:id (random-uuid)
+                                                                                       :query (str/lower-case query)
+                                                                                       :filter-type "contains"})))}]
           [:button "+"]
           ;; [:button {:style {:background "#aae0ec"
           ;;                   :padding 7
           ;;                   :margin 5}}
           ;;  "-"]]
           [:br]]
+         [:div.filter-items
+          (for [item @filter-items]
+            ^{:key (:id item)}
+            [:span [:div.filter-item {:style {:paddingLeft 90}} (:query item)
+                    [:button {:on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
+                     "-"]]])]
+
          [:table
           {:cell-spacing "0" :width "100%"}
           [:thead>tr
