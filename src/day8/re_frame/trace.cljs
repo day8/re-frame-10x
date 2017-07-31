@@ -116,7 +116,7 @@
   (monkey-patch-reagent)
   )
 
-(defn search-input [{:keys [title on-save on-stop]}]
+(defn search-input [{:keys [title on-save on-change on-stop]}]
   (let [val  (r/atom title)
         save #(let [v (-> @val str str/trim)]
                 (when (pos? (count v))
@@ -126,7 +126,8 @@
                :value       @val
                :style       {:margin 7}
                :auto-focus  true
-               :on-change   #(reset! val (-> % .-target .-value))
+               :on-change   #(do (reset! val (-> % .-target .-value))
+                                 (on-change %))
                :on-key-down #(case (.-which %)
                                13 (do
                                     (save)
@@ -135,9 +136,10 @@
 
 (defn render-traces []
   (let [filter-input     (r/atom "")
-        filter-items     (r/atom []) ;; [{:id (random-uuid) :query "showing" :filter-type "contains"} {:id (random-uuid) :query "Reagent" :filter-type "contains"}
+        filter-items     (r/atom [])
         slower-than-ms   (r/atom "")
-        slower-than-bold (r/atom "")]
+        slower-than-bold (r/atom "")
+        filter-type      (r/atom "contains")]
     (fn []
       (let [slower-than-ms-int   (js/parseInt @slower-than-ms)
             slower-than-bold-int (js/parseInt @slower-than-bold)
@@ -150,31 +152,36 @@
             filter-msg           (if (and (str/blank? @filter-input) (str/blank? @slower-than-ms))
                                    (str "Filter " (count @traces) " events: ")
                                    (str "Filtering " (count showing-traces) " of " (count @traces) " events:"))
-            padding              {:padding "0px 5px 0px 5px"}]
+            padding              {:padding "0px 5px 0px 5px"}
+            save-query           (fn [_]
+                                   (swap! filter-items conj {:id (random-uuid)
+                                                             :query (str/lower-case @filter-input)
+                                                             :filter-type @filter-type}))]
         [:div
          {:style {:padding "10px"}}
          [:h1 "TRACES"]
          [:span filter-msg [:button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} " Clear traces"]] [:br]
-         [:span "Filter events " [search-input {:value @filter-input
-                                                :on-save (fn [query]
-                                                           (do
-                                                             (reset! filter-input "")
-                                                             (swap! filter-items conj {:id (random-uuid)
-                                                                                       :query (str/lower-case query)
-                                                                                       :filter-type "contains"})))}]
-          [:button "+"]
+         [:span "Filter events "
+          [:select {:value @filter-type :on-change (fn [e]
+                                                       (reset! filter-type (.. e -target -value))
+                                                       (println (.. e -target -value)))}
+           [:option "contains"]
+           [:option "slower than"]]
+          [search-input {:on-save save-query
+                         :on-change #(reset! filter-input (.. % -target -value))}]
+          [:button {:on-click save-query} "+"]
           ;; [:button {:style {:background "#aae0ec"
           ;;                   :padding 7
           ;;                   :margin 5}}
           ;;  "-"]]
-          [:br]]
-         [:div.filter-items
-          (for [item @filter-items]
-            ^{:key (:id item)}
-            [:span [:div.filter-item {:style {:paddingLeft 90}} (:query item)
-                    [:button {:on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
-                     "-"]]])]
-
+          [:br]
+          [:div.filter-items
+           (map (fn [item]
+                    ^{:key (:id item)}
+                    [:span [:div.filter-item {:style {:paddingLeft 90}} (:filter-type item) " " (:query item)
+                            [:button {:on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
+                             "-"]]])
+                @filter-items)]]
          [:table
           {:cell-spacing "0" :width "100%"}
           [:thead>tr
