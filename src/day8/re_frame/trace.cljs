@@ -126,7 +126,6 @@
                :value       @val
                :style       {:margin 7}
                :auto-focus  true
-               :on-blur     save
                :on-change   #(reset! val (-> % .-target .-value))
                :on-key-down #(case (.-which %)
                                13 (save)
