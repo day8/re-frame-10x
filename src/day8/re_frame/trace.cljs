@@ -134,7 +134,35 @@
                                     (reset! val ""))
                                nil)}])))
 
-(defn render-traces []
+(defn render-traces [padding slower-than-bold-int showing-traces]
+  (doall
+    (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
+      (let [row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
+            #_#__ (js/console.log (devtools/header-api-call tags))]
+
+        (list [:tr {:key   id
+                    :style {:color (case op-type
+                                     :sub/create "green"
+                                     :sub/run "red"
+                                     :event "blue"
+                                     :render "purple"
+                                     :re-frame.router/fsm-trigger "red"
+                                     nil)}}
+               [:td {:style row-style} (str op-type)]
+               [:td {:style row-style} operation]
+               [:td
+                {:style (merge row-style {:font-weight (if (< slower-than-bold-int duration)
+                                                         "bold"
+                                                         "")})}
+                (.toFixed duration 1) " ms"]]
+              (when true
+                [:tr {:key (str id "-details")}
+                 [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]]))))))
+
+(defonce app-state [:traces {:filter-input ""
+                             :filter-items []}]) ;; [{:id (random-uuid) :query "showing" :filter-type "contains"} {:id (random-uuid) :query "Reagent" :filter-type "contains"}
+
+(defn render-trace-panel []
   (let [filter-input     (r/atom "")
         filter-items     (r/atom [])
         slower-than-ms   (r/atom "")
@@ -188,31 +216,7 @@
            [:th "operation"]
            [:th "event"]
            [:th "meta"]]
-          [:tbody
-           (doall
-             (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
-               (let [row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
-                     #_#__ (js/console.log (devtools/header-api-call tags))
-                     ]
-                 (list [:tr {:key   id
-                             :style {:color (case op-type
-                                              :sub/create "green"
-                                              :sub/run "red"
-                                              :event "blue"
-                                              :render "purple"
-                                              :re-frame.router/fsm-trigger "red"
-                                              nil)}}
-                        [:td {:style row-style} (str op-type)]
-                        [:td {:style row-style} operation]
-                        [:td
-                         {:style (merge row-style {:font-weight (if (< slower-than-bold-int duration)
-                                                                  "bold"
-                                                                  "")})}
-                         (.toFixed duration 1) " ms"]]
-                       (when true
-                         [:tr {:key (str id "-details")}
-                          [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]])))))]]]))))
-
+          [:tbody (render-traces padding slower-than-bold-int showing-traces)]]]))))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0
