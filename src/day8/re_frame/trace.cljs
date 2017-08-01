@@ -1,5 +1,7 @@
 (ns day8.re-frame.trace
   (:require [day8.re-frame.trace.subvis :as subvis]
+            [day8.re-frame.trace.styles :as styles]
+            [day8.re-frame.trace.components :as components]
             [re-frame.trace :as trace :include-macros true]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
@@ -187,9 +189,8 @@
                                                              :filter-type @filter-type}))]
         [:div
          {:style {:padding "10px"}}
-         [:h1 "TRACES"]
-         [:span filter-msg [:button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} " Clear traces"]] [:br]
-         [:span "Filter events "
+         [:span filter-msg "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} " Clear"] ")"] [:br]
+         [:span
           [:select {:value @filter-type :on-change (fn [e]
                                                        (reset! filter-type (.. e -target -value))
                                                        (println (.. e -target -value)))}
@@ -197,19 +198,21 @@
            [:option "slower than"]]
           [search-input {:on-save save-query
                          :on-change #(reset! filter-input (.. % -target -value))}]
-          [:button {:on-click save-query} "+"]
+          [:button.button.icon-button {:on-click save-query}
+           [components/icon-add]]
           ;; [:button {:style {:background "#aae0ec"
           ;;                   :padding 7
           ;;                   :margin 5}}
           ;;  "-"]]
-          [:br]
-          [:div.filter-items
+          [:br]]
+         [:ul.filter-items
            (map (fn [item]
                     ^{:key (:id item)}
-                    [:span [:div.filter-item {:style {:paddingLeft 90}} (:filter-type item) " " (:query item)
-                            [:button {:on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
-                             "-"]]])
-                @filter-items)]]
+                    [:li.filter-item.button
+                      {:on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
+                      (:filter-type item) ": " [:span.filter-item-string (:query item)]
+                      [:button.icon-button [components/icon-remove]]])
+                @filter-items)]
          [:table
           {:cell-spacing "0" :width "100%"}
           [:thead>tr
@@ -274,9 +277,9 @@
                                                                          (reset! size (/ (- full-width x)
                                                                                          full-width)))))}]
                                      [:div {:style {:width "100%" :height "100%" :overflow "auto"}}
-                                      [:button {:class (str "tab " (when (= @selected-tab :traces) "active"))
+                                      [:button {:class (str "tab button " (when (= @selected-tab :traces) "active"))
                                                 :on-click #(reset! selected-tab :traces)} "Traces"]
-                                      [:button {:class (str "tab " (when (= @selected-tab :subvis) "active"))
+                                      [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
                                                 :on-click #(reset! selected-tab :subvis)} "SubVis"]
                                       (case @selected-tab
                                         :traces [render-traces]
@@ -291,39 +294,14 @@
       (let [new-panel (.createElement js/document "div")]
         (.setAttribute new-panel "id" id)
         (.appendChild (.-body js/document) new-panel)
+        (js/window.focus new-panel)
         new-panel))))
 
 (defn inject-styles []
   (let [id    "--re-frame-trace-styles--"
         styles-el (.getElementById js/document id)
         new-styles-el (.createElement js/document "style")
-        new-styles "
-#--re-frame-trace-- tbody {
-  color: #aaa;
-}
-#--re-frame-trace-- tr:nth-child(even) {
-  background: aliceblue;
-}
-#--re-frame-trace-- button {
-  background: lightblue;
-  padding: 5px 5px 3px;
-  margin: 5px;
-  border-radius: 2px;
-  cursor: pointer;
-}
-#--re-frame-trace-- .tab {
-  background: transparent;
-  border-bottom: 3px solid #eee;
-  padding-bottom: 1px;
-  border-radius: 0;
-}
-#--re-frame-trace-- .tab.active {
-  background: transparent;
-  border-bottom: 3px solid lightblue;
-  padding-bottom: 1px;
-  border-radius: 0;
-}
-"]
+        new-styles styles/panel-styles]
     (.setAttribute new-styles-el "id" id)
     (-> new-styles-el
         (.-innerHTML)
