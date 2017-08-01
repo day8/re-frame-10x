@@ -44,7 +44,6 @@
     (fn []
       [:div
        {:style {:padding "10px"}}
-       [:h1 "SUBVIS"]
        [d3t/create-d3
         {:render-component (fn [ratom]
                              [:svg#d3cmp {:width width :height height}])
