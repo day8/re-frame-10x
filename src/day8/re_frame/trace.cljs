@@ -136,10 +136,33 @@
                                     (reset! val ""))
                                nil)}])))
 
-(defn render-traces [padding slower-than-bold-int showing-traces]
+(defn construct-string [trace]
+  (clojure.string/lower-case (str (:operation trace) " " (:op-type trace))))
+
+(defn has-word [traces q]
+  (filter #(clojure.string/includes? (construct-string %) (:query q)) traces))
+
+(defn has-duration [traces q]
+  (filter #(< (js/parseInt (:query q)) (:duration %)) traces))
+
+(defn filter-by-word [traces queries]
+  (mapcat (partial has-word traces) queries))
+
+(defn filter-by-duration [traces queries]
+  (mapcat (partial has-duration traces) queries))
+
+(defn run-all-filters [traces queries]
+  (let [[word-queries duration-queries] (vals (group-by #(= (:filter-type %) "contains") queries))
+        traces-filtered-by-words      (filter-by-word traces word-queries)]
+    (if duration-queries
+      (filter-by-duration traces-filtered-by-words duration-queries)
+      traces-filtered-by-words)))
+
+(defn render-traces [showing-traces]
   (doall
     (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
-      (let [row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
+      (let [padding   {:padding "0px 5px 0px 5px"}
+            row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
             #_#__ (js/console.log (devtools/header-api-call tags))]
 
         (list [:tr {:key   id
@@ -157,6 +180,7 @@
                                                          "bold"
                                                          "")
                                           :white-space "nowrap"})}
+
                 (.toFixed duration 1) " ms"]]
               (when true
                 [:tr {:key (str id "-details")}
@@ -168,19 +192,11 @@
 (defn render-trace-panel []
   (let [filter-input     (r/atom "")
         filter-items     (r/atom [])
-        slower-than-ms   (r/atom "")
-        slower-than-bold (r/atom "")
         filter-type      (r/atom "contains")]
     (fn []
-      (let [slower-than-ms-int   (js/parseInt @slower-than-ms)
-            slower-than-bold-int (js/parseInt @slower-than-bold)
-            op-filter            (when-not (str/blank? @filter-input)
-                                   (filter #(str/includes? (str/lower-case (str (:operation %) " " (:op-type %))) @filter-input)))
-            ms-filter            (when-not (str/blank? @slower-than-ms)
-                                   (filter #(< slower-than-ms-int (:duration %))))
-            transducers          (apply comp (remove nil? [ms-filter op-filter]))
-            showing-traces       (sequence transducers @traces)
-            padding              {:padding "0px 5px 0px 5px"}
+      (let [showing-traces       (if (= @filter-items [])
+                                   @traces
+                                   (run-all-filters @traces @filter-items))
             save-query           (fn [_]
                                    (swap! filter-items conj {:id (random-uuid)
                                                              :query (str/lower-case @filter-input)
@@ -225,7 +241,7 @@
              (when (pos? (count @traces))
                [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
            [:th "meta"]]
-          [:tbody (render-traces padding slower-than-bold-int showing-traces)]]]))))
+          [:tbody (render-traces showing-traces)]]]))))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0
