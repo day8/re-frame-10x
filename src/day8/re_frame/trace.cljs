@@ -279,9 +279,9 @@
                                       [:button {:class (str "tab " (when (= @selected-tab :subvis) "active"))
                                                 :on-click #(reset! selected-tab :subvis)} "SubVis"]
                                       (case @selected-tab
-                                        :traces [render-traces]
+                                        :traces [render-trace-panel]
                                         :subvis [subvis/render-subvis traces]
-                                        [render-traces])]]]))})))
+                                        [render-trace-panel])]]]))})))
 
 (defn panel-div []
   (let [id    "--re-frame-trace--"
