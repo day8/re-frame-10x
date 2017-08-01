@@ -143,10 +143,10 @@
         (list [:tr {:key   id
                     :style {:color (case op-type
                                      :sub/create "green"
-                                     :sub/run "red"
+                                     :sub/run "#fd701e"
                                      :event "blue"
                                      :render "purple"
-                                     :re-frame.router/fsm-trigger "red"
+                                     :re-frame.router/fsm-trigger "#fd701e"
                                      nil)}}
                [:td {:style row-style} (str op-type)]
                [:td {:style row-style} operation]
