@@ -14,8 +14,8 @@
             [goog.object :as gob]
             [re-frame.interop :as interop]
 
-            [devtools.formatters.core :as devtools]
-            ))
+            [devtools.formatters.core :as devtools]))
+
 
 (defn comp-name [c]
   (let [n (or (component/component-path c)
@@ -179,9 +179,6 @@
                                    (filter #(< slower-than-ms-int (:duration %))))
             transducers          (apply comp (remove nil? [ms-filter op-filter]))
             showing-traces       (sequence transducers @traces)
-            filter-msg           (if (and (str/blank? @filter-input) (str/blank? @slower-than-ms))
-                                   (str "Filter " (count @traces) " events: ")
-                                   (str "Filtering " (count showing-traces) " of " (count @traces) " events:"))
             padding              {:padding "0px 5px 0px 5px"}
             save-query           (fn [_]
                                    (swap! filter-items conj {:id (random-uuid)
@@ -189,7 +186,6 @@
                                                              :filter-type @filter-type}))]
         [:div
          {:style {:padding "10px"}}
-         [:span filter-msg "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} " Clear"] ")"] [:br]
          [:span
           [:select {:value @filter-type :on-change (fn [e]
                                                        (reset! filter-type (.. e -target -value))
@@ -216,8 +212,15 @@
          [:table
           {:cell-spacing "0" :width "100%"}
           [:thead>tr
-           [:th "operation"]
-           [:th "event"]
+           [:th "operations"]
+           [:th
+             (when (pos? (count showing-traces))
+               (str (count showing-traces) " of "))
+             (when (pos? (count @traces))
+               (str (count @traces)))
+             " events "
+             (when (pos? (count @traces))
+               [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
            [:th "meta"]]
           [:tbody (render-traces padding slower-than-bold-int showing-traces)]]]))))
 

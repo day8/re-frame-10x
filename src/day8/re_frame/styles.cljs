@@ -15,6 +15,10 @@
   border-radius: 2px;
   cursor: pointer;
 }
+#--re-frame-trace-- .text-button {
+  border-bottom: 1px dotted #888;
+  font-weight: normal;
+}
 #--re-frame-trace-- .icon-button {
   vertical-align: middle;
   font-size: 10px;
