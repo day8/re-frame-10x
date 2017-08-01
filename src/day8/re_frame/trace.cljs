@@ -63,9 +63,9 @@
                 (trace/with-trace {:op-type   :render
                                    :tags      {:component-path (reagent.impl.component/component-path c)}
                                    :operation (last (str/split name #" > "))}
-                                  (real-renderer c)
+                                  (real-renderer c)))))
 
-                                  ))))
+
 
     (set! reagent.impl.component/static-fns static-fns)
 
@@ -90,8 +90,8 @@
     #_(set! reagent.impl.batching/schedule schedule
             #_(fn []
                 (reagent.impl.batching/do-after-render (fn [] (trace/with-trace {:op-type :raf-end})))
-                (real-schedule)))
-    ))
+                (real-schedule)))))
+
 
 (def traces (interop/ratom []))
 (defn log-trace? [trace]
@@ -115,8 +115,8 @@
 (defn init-tracing!
   "Sets up any intial state that needs to be there for tracing. Does not enable tracing."
   []
-  (monkey-patch-reagent)
-  )
+  (monkey-patch-reagent))
+
 
 (defn search-input [{:keys [title on-save on-change on-stop]}]
   (let [val  (r/atom title)
@@ -124,9 +124,9 @@
                 (when (pos? (count v))
                   (on-save v)))]
     (fn []
-      [:input {:type        "text"
+      [:input {:style       {:margin-left 7}
+               :type        "text"
                :value       @val
-               :style       {:margin 7}
                :auto-focus  true
                :on-change   #(do (reset! val (-> % .-target .-value))
                                  (on-change %))
@@ -185,30 +185,32 @@
                                                              :query (str/lower-case @filter-input)
                                                              :filter-type @filter-type}))]
         [:div
-         {:style {:padding "10px"}}
-         [:span
-          [:select {:value @filter-type :on-change (fn [e]
-                                                       (reset! filter-type (.. e -target -value))
-                                                       (println (.. e -target -value)))}
-           [:option "contains"]
-           [:option "slower than"]]
-          [search-input {:on-save save-query
-                         :on-change #(reset! filter-input (.. % -target -value))}]
-          [:button.button.icon-button {:on-click save-query}
-           [components/icon-add]]
-          ;; [:button {:style {:background "#aae0ec"
-          ;;                   :padding 7
-          ;;                   :margin 5}}
-          ;;  "-"]]
-          [:br]]
-         [:ul.filter-items
-           (map (fn [item]
-                    ^{:key (:id item)}
-                    [:li.filter-item.button
-                      {:on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
-                      (:filter-type item) ": " [:span.filter-item-string (:query item)]
-                      [:button.icon-button [components/icon-remove]]])
-                @filter-items)]
+         [:div.filter-control {:style {:margin-bottom 20}}
+           [:div.filter-control-input
+            {:style {:margin-bottom 10}}
+            [:select {:value @filter-type :on-change (fn [e]
+                                                         (reset! filter-type (.. e -target -value))
+                                                         (println (.. e -target -value)))}
+             [:option "contains"]
+             [:option "slower than"]]
+            [search-input {:on-save save-query
+                           :on-change #(reset! filter-input (.. % -target -value))}]
+            [:button.button.icon-button {:on-click save-query
+                                         :style {:margin 0}}
+             [components/icon-add]]
+            ;; [:button {:style {:background "#aae0ec"
+            ;;                   :padding 7
+            ;;                   :margin 5}}
+            ;;  "-"]]
+            [:br]]
+           [:ul.filter-items
+             (map (fn [item]
+                      ^{:key (:id item)}
+                      [:li.filter-item.button
+                        {:on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
+                        (:filter-type item) ": " [:span.filter-item-string (:query item)]
+                        [:button.icon-button [components/icon-remove]]])
+                  @filter-items)]]
          [:table
           {:cell-spacing "0" :width "100%"}
           [:thead>tr
@@ -234,7 +236,7 @@
   ;; Add clear button
   ;; Filter out different trace types
   (let [position       (r/atom :right)
-        size           (r/atom 0.3)
+        size           (r/atom 0.35)
         showing?       (r/atom false)
         dragging?      (r/atom false)
         pin-to-bottom? (r/atom true)
@@ -265,29 +267,35 @@
                                        transition     (if @showing?
                                                         ease-transition
                                                         (str ease-transition ", opacity 0.01s linear 0.2s"))]
-                                   [:div {:style {:position "fixed" :width "0px" :height "0px" :top "0px" :left "0px" :z-index 99999999}}
-                                    [:div {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.298039) 0px 0px 4px" :background "white"
-                                                   :left       left :top "0px" :width (str (* 100 @size) "%") :height "100%"
-                                                   :transition transition}}
-                                     [:div.resizer {:style         (resizer-style draggable-area)
-                                                    :on-mouse-down #(reset! dragging? true)
-                                                    :on-mouse-up   #(reset! dragging? false)
-                                                    :on-mouse-move (fn [e]
-                                                                     (when @dragging?
-                                                                       (let [x (.-clientX e)
-                                                                             y (.-clientY e)]
-                                                                         (.preventDefault e)
-                                                                         (reset! size (/ (- full-width x)
-                                                                                         full-width)))))}]
-                                     [:div {:style {:width "100%" :height "100%" :overflow "auto"}}
-                                      [:button {:class (str "tab button " (when (= @selected-tab :traces) "active"))
-                                                :on-click #(reset! selected-tab :traces)} "Traces"]
-                                      [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
-                                                :on-click #(reset! selected-tab :subvis)} "SubVis"]
-                                      (case @selected-tab
-                                        :traces [render-trace-panel]
-                                        :subvis [subvis/render-subvis traces]
-                                        [render-trace-panel])]]]))})))
+                                   [:div.panel-wrapper
+                                    {:style {:position "fixed" :width "0px" :height "0px" :top "0px" :left "0px" :z-index 99999999}}
+                                    [:div.panel
+                                      {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.298039) 0px 0px 4px" :background "white"
+                                               :left       left :top "0px" :width (str (* 100 @size) "%") :height "100%"
+                                               :transition transition}}
+                                      [:div.panel-resizer {:style         (resizer-style draggable-area)
+                                                           :on-mouse-down #(reset! dragging? true)
+                                                           :on-mouse-up   #(reset! dragging? false)
+                                                           :on-mouse-move (fn [e]
+                                                                           (when @dragging?
+                                                                             (let [x (.-clientX e)
+                                                                                   y (.-clientY e)]
+                                                                               (.preventDefault e)
+                                                                               (reset! size (/ (- full-width x)
+                                                                                               full-width)))))}]
+                                      [:div.panel-content
+                                        {:style {:width "100%" :height "100%" :display "flex" :flex-direction "column"}}
+                                        [:div.panel-content-top
+                                          [:div.nav
+                                            [:button {:class (str "tab button " (when (= @selected-tab :traces) "active"))
+                                                      :on-click #(reset! selected-tab :traces)} "Traces"]
+                                            [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
+                                                      :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
+                                        [:div.panel-content-scrollable
+                                          (case @selected-tab
+                                            :traces [render-trace-panel]
+                                            :subvis [subvis/render-subvis traces]
+                                            [render-trace-panel])]]]]))})))
 
 (defn panel-div []
   (let [id    "--re-frame-trace--"

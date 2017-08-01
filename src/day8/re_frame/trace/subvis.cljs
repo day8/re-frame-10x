@@ -43,7 +43,6 @@
         simulation-a (atom nil)]
     (fn []
       [:div
-       {:style {:padding "10px"}}
        [d3t/create-d3
         {:render-component (fn [ratom]
                              [:svg#d3cmp {:width width :height height}])
@@ -183,9 +182,8 @@
 
                                                                 (.. simulation
                                                                     (restart)
-                                                                    (alpha 0.3)))))
-                                       ]
-                                   ))))}
+                                                                    (alpha 0.3)))))]))))}
+
+
         traces-ratom]
        [:hr]])))
-
