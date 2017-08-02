@@ -155,7 +155,8 @@
                [:td
                 {:style (merge row-style {:font-weight (if (< slower-than-bold-int duration)
                                                          "bold"
-                                                         "")})}
+                                                         "")
+                                          :white-space "nowrap"})}
                 (.toFixed duration 1) " ms"]]
               (when true
                 [:tr {:key (str id "-details")}
