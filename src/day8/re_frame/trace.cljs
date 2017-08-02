@@ -213,7 +213,7 @@
           [:thead>tr
            [:th "operations"]
            [:th
-             (when (pos? (count showing-traces))
+             (when (pos? (count @filter-items))
                (str (count showing-traces) " of "))
              (when (pos? (count @traces))
                (str (count @traces)))
