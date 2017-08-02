@@ -142,7 +142,7 @@
       (str/includes? (str/lower-case (str (:operation trace) " " (:op-type trace)))
                     (:query query)))
     (fn [trace]
-      (< (js/parseInt (:query query)) (:duration trace)))))
+      (< (:query query) (:duration trace)))))
 
 (defn render-traces [showing-traces]
   (doall
@@ -175,17 +175,23 @@
 (defn render-trace-panel []
   (let [filter-input     (r/atom "")
         filter-items     (r/atom [])
-        filter-type      (r/atom :contains)]
+        filter-type      (r/atom :contains)
+        input-error      (r/atom false)]
     (fn []
       (let [showing-traces       (if (= @filter-items [])
                                    @traces
                                    (filter (apply every-pred (map query->fn @filter-items)) @traces))
             save-query           (fn [_]
-                                   (swap! filter-items conj {:id (random-uuid)
-                                                             :query (if (= @filter-type :contains)
-                                                                      (str/lower-case @filter-input)
-                                                                      (js/parseInt @filter-input))
-                                                             :filter-type @filter-type}))]
+                                   (if (and (= @filter-type :slower-than)
+                                            (js/isNaN (js/parseFloat @filter-input)))
+                                     (reset! input-error true)
+                                     (do
+                                       (reset! input-error false)
+                                       (swap! filter-items conj {:id (random-uuid)
+                                                                 :query (if (= @filter-type :contains)
+                                                                          (str/lower-case @filter-input)
+                                                                          (js/parseFloat @filter-input))
+                                                                 :filter-type @filter-type}))))]
         [:div
          [:div.filter-control {:style {:margin-bottom 20}}
            [:div.filter-control-input
@@ -200,6 +206,9 @@
             [:button.button.icon-button {:on-click save-query
                                          :style {:margin 0}}
              [components/icon-add]]
+            (if @input-error
+              [:div.input-error {:style {:color "red" :margin-top 5}}
+               "Please enter a valid number."])
             [:br]]
            [:ul.filter-items
              (map (fn [item]
