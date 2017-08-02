@@ -137,7 +137,7 @@
                                nil)}])))
 
 (defn query->fn [query]
-  (if (= "contains" (:filter-type query))
+  (if (= :contains (:filter-type query))
     (fn [trace]
       (str/includes? (str/lower-case (str (:operation trace) " " (:op-type trace)))
                     (:query query)))
@@ -150,7 +150,6 @@
       (let [padding   {:padding "0px 5px 0px 5px"}
             row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
             #_#__ (js/console.log (devtools/header-api-call tags))]
-
         (list [:tr {:key   id
                     :style {:color (case op-type
                                      :sub/create "green"
@@ -172,21 +171,17 @@
                 [:tr {:key (str id "-details")}
                  [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]]))))))
 
-(defonce app-state [:traces {:filter-input ""
-                             :filter-items []}]) ;; [{:id (random-uuid) :query "showing" :filter-type "contains"} {:id (random-uuid) :query "Reagent" :filter-type "contains"}
-
 (defn render-trace-panel []
   (let [filter-input     (r/atom "")
         filter-items     (r/atom [])
-        filter-type      (r/atom "contains")]
+        filter-type      (r/atom :contains)]
     (fn []
       (let [showing-traces       (if (= @filter-items [])
                                    @traces
                                    (filter (apply every-pred (map query->fn @filter-items)) @traces))
             save-query           (fn [_]
-                                   (println @filter-type @filter-input)
                                    (swap! filter-items conj {:id (random-uuid)
-                                                             :query (if (= @filter-type "contains")
+                                                             :query (if (= @filter-type :contains)
                                                                       (str/lower-case @filter-input)
                                                                       (js/parseInt @filter-input))
                                                              :filter-type @filter-type}))]
@@ -195,19 +190,15 @@
            [:div.filter-control-input
             {:style {:margin-bottom 10}}
             [:select {:value @filter-type :on-change (fn [e]
-                                                         (reset! filter-type (.. e -target -value))
-                                                         (println (.. e -target -value)))}
-             [:option "contains"]
-             [:option "slower than"]]
+                                                         (reset! filter-type
+                                                                 (keyword (str/replace (.. e -target -value) " " "-"))))}
+             [:option :contains]
+             [:option :slower-than]]
             [search-input {:on-save save-query
                            :on-change #(reset! filter-input (.. % -target -value))}]
             [:button.button.icon-button {:on-click save-query
                                          :style {:margin 0}}
              [components/icon-add]]
-            ;; [:button {:style {:background "#aae0ec"
-            ;;                   :padding 7
-            ;;                   :margin 5}}
-            ;;  "-"]]
             [:br]]
            [:ul.filter-items
              (map (fn [item]
