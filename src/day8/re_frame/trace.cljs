@@ -136,27 +136,13 @@
                                     (reset! val ""))
                                nil)}])))
 
-(defn construct-string [trace]
-  (clojure.string/lower-case (str (:operation trace) " " (:op-type trace))))
-
-(defn has-word [traces q]
-  (filter #(clojure.string/includes? (construct-string %) (:query q)) traces))
-
-(defn has-duration [traces q]
-  (filter #(< (js/parseInt (:query q)) (:duration %)) traces))
-
-(defn filter-by-word [traces queries]
-  (mapcat (partial has-word traces) queries))
-
-(defn filter-by-duration [traces queries]
-  (mapcat (partial has-duration traces) queries))
-
-(defn run-all-filters [traces queries]
-  (let [[word-queries duration-queries] (vals (group-by #(= (:filter-type %) "contains") queries))
-        traces-filtered-by-words      (filter-by-word traces word-queries)]
-    (if duration-queries
-      (filter-by-duration traces-filtered-by-words duration-queries)
-      traces-filtered-by-words)))
+(defn query->fn [query]
+  (if (= "contains" (:filter-type query))
+    (fn [trace]
+      (str/includes? (str/lower-case (str (:operation trace) " " (:op-type trace)))
+                    (:query query)))
+    (fn [trace]
+      (< (js/parseInt (:query query)) (:duration trace)))))
 
 (defn render-traces [showing-traces]
   (doall
@@ -196,10 +182,13 @@
     (fn []
       (let [showing-traces       (if (= @filter-items [])
                                    @traces
-                                   (run-all-filters @traces @filter-items))
+                                   (filter (apply every-pred (map query->fn @filter-items)) @traces))
             save-query           (fn [_]
+                                   (println @filter-type @filter-input)
                                    (swap! filter-items conj {:id (random-uuid)
-                                                             :query (str/lower-case @filter-input)
+                                                             :query (if (= @filter-type "contains")
+                                                                      (str/lower-case @filter-input)
+                                                                      (js/parseInt @filter-input))
                                                              :filter-type @filter-type}))]
         [:div
          [:div.filter-control {:style {:margin-bottom 20}}
