@@ -161,9 +161,10 @@
                [:td {:style row-style} (str op-type)]
                [:td {:style row-style} operation]
                [:td
-                {:style (merge row-style {:font-weight (if (< slower-than-bold-int duration)
-                                                         "bold"
-                                                         "")
+                {:style (merge row-style {
+                                          ; :font-weight (if (< slower-than-bold-int duration)
+                                          ;                "bold"
+                                          ;                "")
                                           :white-space "nowrap"})}
 
                 (.toFixed duration 1) " ms"]]
@@ -203,10 +204,12 @@
            [:ul.filter-items
              (map (fn [item]
                       ^{:key (:id item)}
-                      [:li.filter-item.button
-                        {:on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
-                        (:filter-type item) ": " [:span.filter-item-string (:query item)]
-                        [:button.icon-button [components/icon-remove]]])
+                      [:li.filter-item
+                        [:button.button
+                          {:style {:margin 0}
+                           :on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
+                          (:filter-type item) ": " [:span.filter-item-string (:query item)]
+                          [:span.icon-button [components/icon-remove]]]])
                   @filter-items)]]
          [:table
           {:cell-spacing "0" :width "100%"}

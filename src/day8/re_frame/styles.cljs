@@ -22,6 +22,12 @@
   border-bottom: 1px dotted #888;
   font-weight: normal;
 }
+#--re-frame-trace-- .button:focus, .text-button:focus {
+  border-radius: 2px 2px 0 0;
+  -webkit-box-shadow: inset 0px -5px 0px 0px rgba(0,0,0,0.3);
+  -moz-box-shadow: inset 0px -5px 0px 0px rgba(0,0,0,0.3);
+  box-shadow: inset 0px -5px 0px 0px rgba(0,0,0,0.3);
+}
 #--re-frame-trace-- .icon-button {
   font-size: 10px;
 }
