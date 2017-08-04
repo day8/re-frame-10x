@@ -196,11 +196,10 @@
          [:div.filter-control {:style {:margin-bottom 20}}
            [:div.filter-control-input
             {:style {:margin-bottom 10}}
-            [:select {:value @filter-type :on-change (fn [e]
-                                                         (reset! filter-type
-                                                                 (keyword (str/replace (.. e -target -value) " " "-"))))}
-             [:option :contains]
-             [:option :slower-than]]
+            [:select {:value @filter-type
+                      :on-change #(reset! filter-type (keyword (.. % -target -value)))}
+             [:option {:value "contains"} "contains"]
+             [:option {:value "slower-than"} "slower than"]]
             [search-input {:on-save save-query
                            :on-change #(reset! filter-input (.. % -target -value))}]
             [:button.button.icon-button {:on-click save-query
