@@ -243,54 +243,56 @@
 (defn devtools []
   ;; Add clear button
   ;; Filter out different trace types
-  (let [position       (r/atom :right)
-        size           (r/atom 0.35)
-        showing?       (r/atom false)
-        dragging?      (r/atom false)
-        pin-to-bottom? (r/atom true)
-        selected-tab   (r/atom :traces)
-        handle-keys    (fn [e]
-                         (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
-                               tag-name        (.-tagName (.-target e))
-                               key             (.-key e)
-                               entering-input? (contains? #{"INPUT" "SELECT" "TEXTAREA"} tag-name)]
-                           (when (and (not entering-input?) combo-key?)
-                             (cond
-                               (and (= key "h") (.-ctrlKey e))
-                               (do (swap! showing? not)
-                                   (if @showing?
-                                     (enable-tracing!)
-                                     (disable-tracing!))
-                                   (.preventDefault e))))))]
+  (let [position          (r/atom :right)
+        panel-width-ratio (r/atom 0.35)
+        showing?          (r/atom false)
+        dragging?         (r/atom false)
+        pin-to-bottom?    (r/atom true)
+        selected-tab      (r/atom :traces)
+        window-width      js/window.innerWidth
+        handle-keys       (fn [e]
+                           (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
+                                 tag-name        (.-tagName (.-target e))
+                                 key             (.-key e)
+                                 entering-input? (contains? #{"INPUT" "SELECT" "TEXTAREA"} tag-name)]
+                             (when (and (not entering-input?) combo-key?)
+                               (cond
+                                 (and (= key "h") (.-ctrlKey e))
+                                 (do (swap! showing? not)
+                                     (if @showing?
+                                       (enable-tracing!)
+                                       (disable-tracing!))
+                                     (.preventDefault e))))))
+        handle-mousemove  (fn [e]
+                           (when @dragging?
+                             (let [x (.-clientX e)
+                                   y (.-clientY e)]
+                               (.preventDefault e)
+                               (reset! panel-width-ratio (/ (- window-width x) window-width)))))]
     (r/create-class
-      {:component-will-mount   #(js/window.addEventListener "keydown" handle-keys)
-       :component-will-unmount #(js/window.removeEventListener "keydown" handle-keys)
+      {:component-will-mount   (fn []
+                                 (js/window.addEventListener "keydown" handle-keys)
+                                 (js/window.addEventListener "mousemove" handle-mousemove))
+       :component-will-unmount (fn []
+                                 (js/window.removeEventListener "keydown" handle-keys)
+                                 (js/window.removeEventListener "mousemove" handle-mousemove))
        :display-name           "devtools outer"
        :reagent-render         (fn []
                                  (let [draggable-area 10
-                                       full-width     js/window.innerWidth
-                                       full-height    js/window.innerHeight
-                                       left           (if @showing? (str (* 100 (- 1 @size)) "%")
-                                                                    (str full-width "px"))
-                                       transition     (if @showing?
-                                                        ease-transition
-                                                        (str ease-transition ", opacity 0.01s linear 0.2s"))]
+                                       left           (if @showing? (str (* 100 (- 1 @panel-width-ratio)) "%")
+                                                                    (str window-width "px"))
+                                       transition     (if @dragging?
+                                                        ""
+                                                        ease-transition)]
                                    [:div.panel-wrapper
                                     {:style {:position "fixed" :width "0px" :height "0px" :top "0px" :left "0px" :z-index 99999999}}
                                     [:div.panel
-                                      {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.298039) 0px 0px 4px" :background "white"
-                                               :left       left :top "0px" :width (str (* 100 @size) "%") :height "100%"
+                                      {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px" :background "white"
+                                               :left       left :top "0px" :width (str (inc (int (* 100 @panel-width-ratio))) "%") :height "100%"
                                                :transition transition}}
                                       [:div.panel-resizer {:style         (resizer-style draggable-area)
                                                            :on-mouse-down #(reset! dragging? true)
-                                                           :on-mouse-up   #(reset! dragging? false)
-                                                           :on-mouse-move (fn [e]
-                                                                           (when @dragging?
-                                                                             (let [x (.-clientX e)
-                                                                                   y (.-clientY e)]
-                                                                               (.preventDefault e)
-                                                                               (reset! size (/ (- full-width x)
-                                                                                               full-width)))))}]
+                                                           :on-mouse-up   #(reset! dragging? false)}]
                                       [:div.panel-content
                                         {:style {:width "100%" :height "100%" :display "flex" :flex-direction "column"}}
                                         [:div.panel-content-top
