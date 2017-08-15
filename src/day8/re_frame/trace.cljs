@@ -192,10 +192,9 @@
                                                                           (str/lower-case @filter-input)
                                                                           (js/parseFloat @filter-input))
                                                                  :filter-type @filter-type}))))]
-        [:div
-         [:div.filter-control {:style {:margin-bottom 20}}
+        [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
+          [:div.filter-control
            [:div.filter-control-input
-            {:style {:margin-bottom 10}}
             [:select {:value @filter-type
                       :on-change #(reset! filter-type (keyword (.. % -target -value)))}
              [:option {:value "contains"} "contains"]
@@ -207,8 +206,7 @@
              [components/icon-add]]
             (if @input-error
               [:div.input-error {:style {:color "red" :margin-top 5}}
-               "Please enter a valid number."])
-            [:br]]
+               "Please enter a valid number."])]
            [:ul.filter-items
              (map (fn [item]
                       ^{:key (:id item)}
@@ -219,20 +217,21 @@
                           (:filter-type item) ": " [:span.filter-item-string (:query item)]
                           [:span.icon-button [components/icon-remove]]]])
                   @filter-items)]]
-         [:table
-          {:cell-spacing "0" :width "100%"}
-          [:thead>tr
-           [:th "operations"]
-           [:th
-             (when (pos? (count @filter-items))
-               (str (count showing-traces) " of "))
-             (when (pos? (count @traces))
-               (str (count @traces)))
-             " events "
-             (when (pos? (count @traces))
-               [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
-           [:th "meta"]]
-          [:tbody (render-traces showing-traces)]]]))))
+         [:div.panel-content-scrollable
+           [:table
+            {:cell-spacing "0" :width "100%"}
+            [:thead>tr
+             [:th "operations"]
+             [:th
+               (when (pos? (count @filter-items))
+                 (str (count showing-traces) " of "))
+               (when (pos? (count @traces))
+                 (str (count @traces)))
+               " events "
+               (when (pos? (count @traces))
+                 [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
+             [:th "meta"]]
+            [:tbody (render-traces showing-traces)]]]]))))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0
@@ -301,11 +300,10 @@
                                                       :on-click #(reset! selected-tab :traces)} "Traces"]
                                             [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
                                                       :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
-                                        [:div.panel-content-scrollable
-                                          (case @selected-tab
-                                            :traces [render-trace-panel]
-                                            :subvis [subvis/render-subvis traces]
-                                            [render-trace-panel])]]]]))})))
+                                        (case @selected-tab
+                                          :traces [render-trace-panel]
+                                          :subvis [subvis/render-subvis traces
+                                                    [:div.panel-content-scrollable]])]]]))})))
 
 (defn panel-div []
   (let [id    "--re-frame-trace--"
