@@ -159,7 +159,9 @@
                                      :re-frame.router/fsm-trigger "#fd701e"
                                      nil)}}
                [:td {:style row-style} (str op-type)]
-               [:td {:style row-style} operation]
+               [:td {:style row-style} (if (= PersistentVector (type (js->clj operation)))
+                                         (second operation)
+                                         operation)]
                [:td
                 {:style (merge row-style {
                                           ; :font-weight (if (< slower-than-bold-int duration)
