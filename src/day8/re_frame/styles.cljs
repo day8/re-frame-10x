@@ -54,6 +54,7 @@
   list-style-type: none;
   padding: 0;
   margin: 0 -5px;
+  margin-top: 10px;
 }
 #--re-frame-trace-- .filter-items li {
   color: #333;
@@ -89,9 +90,12 @@
   flex: 1;
 }
 #--re-frame-trace-- .panel-content-scrollable {
-  padding: 10px;
+  margin: 10px 0 0 10px;
   flex: 1 0 auto;
   height: 100%;
   overflow: auto;
+}
+#--re-frame-trace-- .filter-control {
+  margin: 10px 0 0 10px;
 }
 ")
