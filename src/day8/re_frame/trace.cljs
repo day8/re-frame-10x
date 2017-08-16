@@ -113,7 +113,7 @@
                                              (swap! traces #(reduce conj % new-traces))))))
 
 (defn init-tracing!
-  "Sets up any intial state that needs to be there for tracing. Does not enable tracing."
+  "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
   []
   (monkey-patch-reagent))
 
