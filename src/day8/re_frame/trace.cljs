@@ -149,6 +149,8 @@
     (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
       (let [padding   {:padding "0px 5px 0px 5px"}
             row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
+            show?     (get-in @trace-detail-expansions [:overrides id]
+                              (:showing @trace-detail-expansions))
             #_#__ (js/console.log (devtools/header-api-call tags))]
         (list [:tr {:key   id
                     :style {:color (case op-type
@@ -160,13 +162,10 @@
                                      nil)}}
                [:td {:style (merge row-style {:cursor "pointer"})
                      :on-click (fn [e]
-                                 (when (:showing @trace-detail-expansions)
-                                   (swap! trace-detail-expansions assoc :showing false))
+                                 (when show?
+                                   (swap! trace-detail-expansions assoc-in [:overrides id] true))
                                  (swap! trace-detail-expansions update-in [:overrides id] not))}
-                (if (or (get-in @trace-detail-expansions [:overrides id])
-                        (:showing @trace-detail-expansions))
-                  "▼"
-                  "▶")]
+                (if show? "▼" "▶")]
                [:td {:style row-style} (str op-type)]
                [:td {:style row-style} (if (= PersistentVector (type (js->clj operation)))
                                          (second operation)
@@ -179,12 +178,9 @@
                                           :white-space "nowrap"})}
 
                 (.toFixed duration 1) " ms"]]
-              (when (or (get-in @trace-detail-expansions [:overrides id])
-                        (:showing @trace-detail-expansions))
+              (when show?
                 [:tr {:key (str id "-details")}
                  [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]]))))))
-
-
 
 (defn render-trace-panel []
   (let [filter-input               (r/atom "")
