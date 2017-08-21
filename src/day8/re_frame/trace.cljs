@@ -2,6 +2,7 @@
   (:require [day8.re-frame.trace.subvis :as subvis]
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components :as components]
+            [day8.re-frame.trace.localstorage :as localstorage]
             [re-frame.trace :as trace :include-macros true]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
