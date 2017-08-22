@@ -6,6 +6,7 @@
             [re-frame.trace :as trace :include-macros true]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
+            [cljs.reader :as reader]
             [reagent.core :as r]
             [reagent.interop :refer-macros [$ $!]]
             [reagent.impl.util :as util]
@@ -186,13 +187,14 @@
                                         (str (subs tag-str 0 string-size-limit) " ...")
                                         tag-str))]]))))))
 
-(defn render-trace-panel []
+(defn render-trace-panel [])
   (let [filter-input               (r/atom "")
         filter-items               (r/atom [])
         filter-type                (r/atom :contains)
         input-error                (r/atom false)
         trace-detail-expansions    (r/atom {:show-all? false :overrides {}})]
     (fn []
+      (localstorage/set! "filter-items" (str @filter-items))
       (let [showing-traces       (if (= @filter-items [])
                                    @traces
                                    (filter (apply every-pred (map query->fn @filter-items)) @traces))
@@ -254,7 +256,7 @@
                (when (pos? (count @traces))
                  [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
              [:th "meta"]]
-            [:tbody (render-traces showing-traces trace-detail-expansions)]]]]))))
+            [:tbody (render-traces showing-traces trace-detail-expansions)]]]])))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0

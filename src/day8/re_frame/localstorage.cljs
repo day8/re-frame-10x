@@ -9,7 +9,7 @@
 
 (defn get! [key]
   (let [store (storage)]
-    (.get store key)))
+    (cljs.reader/read-string (.get store key))))
 
 (defn set! [key val]
   (let [store (storage)]
