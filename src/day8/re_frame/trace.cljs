@@ -152,18 +152,19 @@
             show-row? (get-in @trace-detail-expansions [:overrides id]
                         (:show-all? @trace-detail-expansions))
             #_#__ (js/console.log (devtools/header-api-call tags))]
-        (list [:tr {:key   id
-                    :style {:color (case op-type
-                                     :sub/create "green"
-                                     :sub/run "#fd701e"
-                                     :event "blue"
-                                     :render "purple"
-                                     :re-frame.router/fsm-trigger "#fd701e"
-                                     nil)}}
-               [:td {:style (merge row-style {:cursor "pointer"})
-                     :on-click #(swap! trace-detail-expansions update-in [:overrides id]
-                                       (fn [bool] (if show-row? false (not bool))))}
-                (if show-row? "▼" "▶")]
+        (list [:tr {:key      id
+                    :on-click (fn [ev]
+                                (swap! trace-detail-expansions update-in [:overrides id]
+                                       #(if show-row? false (not %))))
+                    :style    {:color (case op-type
+                                        :sub/create "green"
+                                        :sub/run "#fd701e"
+                                        :event "blue"
+                                        :render "purple"
+                                        :re-frame.router/fsm-trigger "#fd701e"
+                                        nil)}}
+               [:td {:style row-style}
+                [:button (if show-row? "▼" "▶")]]
                [:td {:style row-style} (str op-type)]
                [:td {:style row-style} (if (= PersistentVector (type (js->clj operation)))
                                          (second operation)
@@ -232,8 +233,10 @@
             [:thead>tr
              [:th [:button.text-button
                    {:style {:cursor "pointer"}
-                    :on-click (fn [e]
+                    :on-click (fn [ev]
+                                ;; Always reset expansions
                                 (swap! trace-detail-expansions assoc :overrides {})
+                                ;; Then toggle :show-all?
                                 (swap! trace-detail-expansions update :show-all? not))}
                    (if (:show-all? @trace-detail-expansions) "-" "+")]]
              [:th "operations"]
