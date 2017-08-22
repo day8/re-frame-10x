@@ -144,11 +144,19 @@
     (fn [trace]
       (< (:query query) (:duration trace)))))
 
-(defn render-traces [showing-traces]
+(defn render-traces [showing-traces filter-items]
   (doall
     (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
-      (let [padding   {:padding "0px 5px 0px 5px"}
-            row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
+      (let [hover-trace      (r/atom false)
+            padding          {:padding "0px 5px 0px 5px"}
+            row-style        (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
+            op-name          (if (= PersistentVector (type (js->clj operation)))
+                               (second operation)
+                               operation)
+            save-query       (fn [filter-for-string]
+                               (swap! filter-items conj {:id (random-uuid)
+                                                         :query (str/lower-case (name filter-for-string))
+                                                         :filter-type :contains}))
             #_#__ (js/console.log (devtools/header-api-call tags))]
         (list [:tr {:key   id
                     :style {:color (case op-type
@@ -158,10 +166,18 @@
                                      :render "purple"
                                      :re-frame.router/fsm-trigger "#fd701e"
                                      nil)}}
-               [:td {:style row-style} (str op-type)]
-               [:td {:style row-style} (if (= PersistentVector (type (js->clj operation)))
-                                         (second operation)
-                                         operation)]
+               [:td {:style row-style
+                     :on-click #(save-query op-type)}
+                    [:div {:class (str "op-type " (when @hover-trace "active-trace"))
+                           :on-mouse-over #(reset! hover-trace true)
+                           :on-mouse-leave #(reset! hover-trace false)}
+                     (str op-type)]]
+               [:td {:style row-style
+                     :on-click #(save-query op-name)}
+                    [:div {:class (str "op-name " (when @hover-trace "active-trace"))
+                           :on-mouse-over #(reset! hover-trace true)
+                           :on-mouse-leave #(reset! hover-trace false)}
+                     op-name]]
                [:td
                 {:style (merge row-style {
                                           ; :font-weight (if (< slower-than-bold-int duration)
@@ -233,7 +249,7 @@
                (when (pos? (count @traces))
                  [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
              [:th "meta"]]
-            [:tbody (render-traces showing-traces)]]]]))))
+            [:tbody (render-traces showing-traces filter-items)]]]]))))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0

@@ -66,6 +66,11 @@
 #--re-frame-trace-- .filter-items li .filter-item-string {
   color: #616cdb;
 }
+#--re-frame-trace-- .active-trace {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.05);
+  width: fit-content;
+}
 #--re-frame-trace-- .icon {
   display: inline-block;
   width: 1em;
