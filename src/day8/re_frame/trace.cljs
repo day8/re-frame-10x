@@ -149,8 +149,8 @@
     (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
       (let [padding   {:padding "0px 5px 0px 5px"}
             row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
-            show?     (get-in @trace-detail-expansions [:overrides id]
-                              (:showing @trace-detail-expansions))
+            show-row? (get-in @trace-detail-expansions [:overrides id]
+                        (:show-all? @trace-detail-expansions))
             #_#__ (js/console.log (devtools/header-api-call tags))]
         (list [:tr {:key   id
                     :style {:color (case op-type
@@ -161,11 +161,9 @@
                                      :re-frame.router/fsm-trigger "#fd701e"
                                      nil)}}
                [:td {:style (merge row-style {:cursor "pointer"})
-                     :on-click (fn [e]
-                                 (when show?
-                                   (swap! trace-detail-expansions assoc-in [:overrides id] true))
-                                 (swap! trace-detail-expansions update-in [:overrides id] not))}
-                (if show? "▼" "▶")]
+                     :on-click #(swap! trace-detail-expansions update-in [:overrides id]
+                                       (fn [bool] (if show-row? false (not bool))))}
+                (if show-row? "▼" "▶")]
                [:td {:style row-style} (str op-type)]
                [:td {:style row-style} (if (= PersistentVector (type (js->clj operation)))
                                          (second operation)
@@ -178,7 +176,7 @@
                                           :white-space "nowrap"})}
 
                 (.toFixed duration 1) " ms"]]
-              (when show?
+              (when show-row?
                 [:tr {:key (str id "-details")}
                  [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]]))))))
 
@@ -187,7 +185,7 @@
         filter-items               (r/atom [])
         filter-type                (r/atom :contains)
         input-error                (r/atom false)
-        trace-detail-expansions    (r/atom {:showing false :overrides {}})]
+        trace-detail-expansions    (r/atom {:show-all? false :overrides {}})]
     (fn []
       (let [showing-traces       (if (= @filter-items [])
                                    @traces
@@ -235,10 +233,9 @@
              [:th [:button.text-button
                    {:style {:cursor "pointer"}
                     :on-click (fn [e]
-                                (when (:showing @trace-detail-expansions)
-                                  (swap! trace-detail-expansions assoc :overrides {}))
-                                (swap! trace-detail-expansions update :showing not))}
-                   (if (:showing @trace-detail-expansions) "-" "+")]]
+                                (swap! trace-detail-expansions assoc :overrides {})
+                                (swap! trace-detail-expansions update :show-all? not))}
+                   (if (:show-all? @trace-detail-expansions) "-" "+")]]
              [:th "operations"]
              [:th
                (when (pos? (count @filter-items))
