@@ -179,7 +179,9 @@
                 (.toFixed duration 1) " ms"]]
               (when show-row?
                 [:tr {:key (str id "-details")}
-                 [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]]))))))
+                 [:td {:col-span 3} (with-out-str (pprint/pprint (if-let [params (:event tags)]
+                                                                   params
+                                                                   (dissoc tags :query-v :duration))))]]))))))
 
 (defn render-trace-panel []
   (let [filter-input               (r/atom "")
