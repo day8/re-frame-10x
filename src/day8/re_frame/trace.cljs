@@ -144,11 +144,13 @@
     (fn [trace]
       (< (:query query) (:duration trace)))))
 
-(defn render-traces [showing-traces filter-items]
+(defn render-traces [showing-traces filter-items trace-detail-expansions]
   (doall
     (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
       (let [padding          {:padding "0px 5px 0px 5px"}
             row-style        (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
+            show-row? (get-in @trace-detail-expansions [:overrides id]
+                        (:show-all? @trace-detail-expansions))
             op-name          (if (vector? operation)
                                (second operation)
                                operation)
@@ -158,6 +160,9 @@
                                                          :filter-type :contains}))
             #_#__ (js/console.log (devtools/header-api-call tags))]
         (list [:tr {:key   id
+                    :on-click (fn [ev]
+                                (swap! trace-detail-expansions update-in [:overrides id]
+                                       #(if show-row? false (not %))))
                     :style {:color (case op-type
                                      :sub/create "green"
                                      :sub/run "#fd701e"
@@ -165,6 +170,8 @@
                                      :render "purple"
                                      :re-frame.router/fsm-trigger "#fd701e"
                                      nil)}}
+               [:td {:style row-style}
+                [:button (if show-row? "▼" "▶")]]
                [:td {:style row-style
                      :on-click #(save-query op-type)}
                     [:div.op-string
@@ -181,15 +188,16 @@
                                           :white-space "nowrap"})}
 
                 (.toFixed duration 1) " ms"]]
-              (when true
+              (when show-row?
                 [:tr {:key (str id "-details")}
                  [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]]))))))
 
 (defn render-trace-panel []
-  (let [filter-input     (r/atom "")
-        filter-items     (r/atom [])
-        filter-type      (r/atom :contains)
-        input-error      (r/atom false)]
+  (let [filter-input               (r/atom "")
+        filter-items               (r/atom [])
+        filter-type                (r/atom :contains)
+        input-error                (r/atom false)
+        trace-detail-expansions    (r/atom {:show-all? false :overrides {}})]
     (fn []
       (let [showing-traces       (if (= @filter-items [])
                                    @traces
@@ -234,6 +242,14 @@
            [:table
             {:cell-spacing "0" :width "100%"}
             [:thead>tr
+             [:th [:button.text-button
+                   {:style {:cursor "pointer"}
+                    :on-click (fn [ev]
+                                ;; Always reset expansions
+                                (swap! trace-detail-expansions assoc :overrides {})
+                                ;; Then toggle :show-all?
+                                (swap! trace-detail-expansions update :show-all? not))}
+                   (if (:show-all? @trace-detail-expansions) "-" "+")]]
              [:th "operations"]
              [:th
                (when (pos? (count @filter-items))
@@ -244,7 +260,7 @@
                (when (pos? (count @traces))
                  [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
              [:th "meta"]]
-            [:tbody (render-traces showing-traces filter-items)]]]]))))
+            [:tbody (render-traces showing-traces filter-items trace-detail-expansions)]]]]))))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0

@@ -9,6 +9,11 @@
 #--re-frame-trace-- tbody {
   color: #aaa;
 }
+#--re-frame-trace-- tr:hover {
+  transition: all 0.1s ease-out;
+  background: aliceblue;
+  filter: brightness(90%);
+}
 #--re-frame-trace-- tr:nth-child(even) {
   background: aliceblue;
 }
