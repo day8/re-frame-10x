@@ -147,10 +147,9 @@
 (defn render-traces [showing-traces filter-items]
   (doall
     (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
-      (let [hover-trace      (r/atom false)
-            padding          {:padding "0px 5px 0px 5px"}
+      (let [padding          {:padding "0px 5px 0px 5px"}
             row-style        (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
-            op-name          (if (= PersistentVector (type (js->clj operation)))
+            op-name          (if (vector? operation)
                                (second operation)
                                operation)
             save-query       (fn [filter-for-string]
@@ -168,15 +167,11 @@
                                      nil)}}
                [:td {:style row-style
                      :on-click #(save-query op-type)}
-                    [:div {:class (str "op-type " (when @hover-trace "active-trace"))
-                           :on-mouse-over #(reset! hover-trace true)
-                           :on-mouse-leave #(reset! hover-trace false)}
+                    [:div.op-string
                      (str op-type)]]
                [:td {:style row-style
                      :on-click #(save-query op-name)}
-                    [:div {:class (str "op-name " (when @hover-trace "active-trace"))
-                           :on-mouse-over #(reset! hover-trace true)
-                           :on-mouse-leave #(reset! hover-trace false)}
+                    [:div.op-string
                      op-name]]
                [:td
                 {:style (merge row-style {
