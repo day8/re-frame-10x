@@ -172,14 +172,18 @@
                                      nil)}}
                [:td {:style row-style}
                 [:button (if show-row? "▼" "▶")]]
-               [:td {:style row-style
-                     :on-click #(save-query op-type)}
+               [:td {:style row-style}
                     [:div.op-string
-                     (str op-type)]]
-               [:td {:style row-style
-                     :on-click #(save-query op-name)}
+                     [:span {:on-click (fn [ev]
+                                         (save-query op-type)
+                                         (.stopPropagation ev))
+                             :style    {:cursor "pointer"}} (str op-type)]]]
+               [:td {:style    row-style}
                     [:div.op-string
-                     op-name]]
+                     [:span {:on-click (fn [ev]
+                                         (save-query op-name)
+                                         (.stopPropagation ev))
+                             :style {:cursor "pointer"}}] op-name]]
                [:td
                 {:style (merge row-style {
                                           ; :font-weight (if (< slower-than-bold-int duration)
