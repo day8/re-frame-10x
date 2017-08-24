@@ -270,7 +270,8 @@
   ;; Add clear button
   ;; Filter out different trace types
   (let [position          (r/atom :right)
-        panel-width-ratio (r/atom 0.35)
+        panel-width-ratio (r/atom (or (localstorage/get "panel-width-ratio")
+                                      0.35))
         showing?          (r/atom false)
         dragging?         (r/atom false)
         pin-to-bottom?    (r/atom true)
@@ -295,6 +296,11 @@
                                    y (.-clientY e)]
                                (.preventDefault e)
                                (reset! panel-width-ratio (/ (- window-width x) window-width)))))]
+
+    (add-watch panel-width-ratio
+               :update-panel-width-ratio
+               (fn [_ _ _ new-state]
+                 (localstorage/save! "panel-width-ratio" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
                                  (js/window.addEventListener "keydown" handle-keys)
