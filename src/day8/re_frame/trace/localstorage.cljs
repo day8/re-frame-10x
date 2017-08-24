@@ -4,15 +4,23 @@
             [cljs.reader :as reader])
   (:refer-clojure :exclude [get]))
 
-(def mech (goog.storage.mechanism.HTML5LocalStorage.))
+(def storage (goog.storage.Storage. (goog.storage.mechanism.HTML5LocalStorage.)))
 
-(defn- storage []
-  (goog.storage.Storage. mech))
+(defn- safe-key [key]
+  "Adds a unique prefix to keys to ensure they don't collide with the host application"
+  (str "day8.re-frame.trace." key))
 
-(defn get [key]
-  (when-let [value (.get (storage) key)]
-    (cljs.reader/read-string value)))
+(defn get
+  "Gets a re-frame-trace value from local storage."
+  ([key]
+   (get key nil))
+  ([key not-found]
+   (let [value (.get storage (safe-key key))]
+     (if (undefined? value)
+       not-found
+       (reader/read-string value)))))
 
-(defn save! [key value]
-  (let [store (storage)]
-    (.set store key (pr-str value))))
+(defn save!
+  "Saves a re-frame-trace value to local storage."
+  [key value]
+  (.set storage (safe-key key) (pr-str value)))
