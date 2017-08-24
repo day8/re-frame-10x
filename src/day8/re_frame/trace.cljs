@@ -188,7 +188,7 @@
 
 (defn render-trace-panel []
   (let [filter-input               (r/atom "")
-        filter-items               (r/atom (or (localstorage/load "filter-items")
+        filter-items               (r/atom (or (localstorage/get "filter-items")
                                                []))
         filter-type                (r/atom :contains)
         input-error                (r/atom false)
