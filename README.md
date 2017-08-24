@@ -2,6 +2,8 @@
 
 A trace panel for re-frame.
 
+**Status:** Alpha.
+
 ## Motivation
 
 re-frame provides a data driven architecture, but we need to be able to inspect it. re-frame-trace takes inspiration from [redux-devtools](https://github.com/gaearon/redux-devtools), and provides several ways to visualise the structure and state of your re-frame application.
