@@ -270,8 +270,7 @@
   ;; Add clear button
   ;; Filter out different trace types
   (let [position          (r/atom :right)
-        panel-width-ratio (r/atom (or (localstorage/get "panel-width-ratio")
-                                      0.35))
+        panel-width-ratio (r/atom (localstorage/get "panel-width-ratio" 0.35))
         showing?          (r/atom false)
         dragging?         (r/atom false)
         pin-to-bottom?    (r/atom true)
