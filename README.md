@@ -99,3 +99,26 @@ You need both the re-frame-trace project _and_ a test project to develop it agai
   ```
 
 - Now run your test project however you usually run it, and re-frame-trace should be in there. \o/
+
+- Additionally, if modifying the `.less` CSS files, compile the css by running within the re-frame-trace directory:
+
+  ```
+  lein less auto
+  ```
+
+  to watch for changes, or one time by running:
+
+  ```
+  lein less once
+  ```
+
+
+### Developing CSS
+
+The CSS for the trace panel are defined both inline and within `src/day8/re_frame/less`. To develop the styles, run
+
+```
+lein less auto
+```
+
+and the .less file will automatically compile to css on file changes. Don't edit the file within `src/day8/re_frame/css` directly, or it will be overwriten. We are using css preprocessing because in order to isolate the panel styles, we are namespacing the panell styles with the id `#--re-frame-trace--`.
