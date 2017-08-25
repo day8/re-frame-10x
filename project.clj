@@ -7,6 +7,13 @@
                  [reagent                    "0.6.0"]
                  [re-frame                   "0.9.0"]
                  [cljsjs/d3 "4.2.2-0"]]
+  :plugins [[lein-less "1.7.5"]]
   :deploy-repositories {"releases" :clojars
                         "snapshots" :clojars}
+
+  :figwheel {:css-dirs ["src/day8/re_frame/css"]}
+
+  :less {:source-paths ["src/day8/re_frame/less"]
+         :target-path  "src/day8/re_frame/css"}
+
   :profiles {:dev {:dependencies [[binaryage/dirac "RELEASE"]]}})
