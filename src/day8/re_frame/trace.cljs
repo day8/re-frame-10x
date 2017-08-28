@@ -280,7 +280,7 @@
   ;; Filter out different trace types
   (let [position          (r/atom :right)
         panel-width-ratio (r/atom (localstorage/get "panel-width-ratio" 0.35))
-        showing?          (r/atom false)
+        showing?          (r/atom (localstorage/get "show-panel" false))
         dragging?         (r/atom false)
         pin-to-bottom?    (r/atom true)
         selected-tab      (r/atom :traces)
@@ -304,11 +304,14 @@
                                    y (.-clientY e)]
                                (.preventDefault e)
                                (reset! panel-width-ratio (/ (- window-width x) window-width)))))]
-
     (add-watch panel-width-ratio
                :update-panel-width-ratio
                (fn [_ _ _ new-state]
                  (localstorage/save! "panel-width-ratio" new-state)))
+    (add-watch showing?
+               :update-show-panel
+               (fn [_ _ _ new-state]
+                 (localstorage/save! "show-panel" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
                                  (js/window.addEventListener "keydown" handle-keys)
