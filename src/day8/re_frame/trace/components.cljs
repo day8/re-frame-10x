@@ -23,7 +23,7 @@
   ;; at-end?: element.scrollHeight - element.scrollTop === element.clientHeight
   (> tolerance (- (.-scrollHeight el) (.-scrollTop el) (.-clientHeight el))))
 
-(defn autoscroll-list [{:keys [class scroll?] :as opts} childr]
+(defn autoscroll-list [{:keys [class]} child]
   (let [should-scroll (r/atom true)]
     (r/create-class
       {:display-name "autoscroll-list"
@@ -37,9 +37,8 @@
                          (reset! should-scroll (scrolled-to-end? n 100))))
        :component-did-update
                      (fn [this]
-                       (let [scroll? (:scroll? (r/props this))
-                             n       (r/dom-node this)]
-                         (when (and scroll? @should-scroll)
+                       (let [n       (r/dom-node this)]
+                         (when @should-scroll
                            (scroll! n [0 (.-scrollTop n)] [0 (.-scrollHeight n)] 1600))))
        :reagent-render
                      (fn [{:keys [class]} child]

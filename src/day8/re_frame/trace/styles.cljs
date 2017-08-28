@@ -95,7 +95,7 @@
   flex: 1;
 }
 #--re-frame-trace-- .panel-content-scrollable {
-  margin: 10px;
+  margin: 0 0 10px 5px;
   overflow: auto;
   flex: 1 1 auto;
 }

@@ -227,7 +227,7 @@
                           (:filter-type item) ": " [:span.filter-item-string (:query item)]
                           [:span.icon-button [components/icon-remove]]]])
                   @filter-items)]]
-         [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
+         [components/autoscroll-list {:class "panel-content-scrollable"}
           [:table
            {:style {:margin-bottom 10}
             :cell-spacing "0" :width "100%"}
