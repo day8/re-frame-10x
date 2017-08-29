@@ -94,7 +94,7 @@
                 (real-schedule)))))
 
 
-(def traces (interop/ratom (localstorage/get "traces" [])))
+(def traces (interop/ratom []))
 
 (defn log-trace? [trace]
   (let [rendering? (= (:op-type trace) :render)]
@@ -192,15 +192,7 @@
         filter-items               (r/atom (localstorage/get "filter-items" []))
         filter-type                (r/atom :contains)
         input-error                (r/atom false)
-        trace-detail-expansions    (r/atom (localstorage/get "trace-detail-expansion" {:show-all? false :overrides {}}))]
-    (add-watch traces
-               :update-traces
-               (fn [_ _ _ new-state]
-                 (localstorage/save! "traces" new-state)))
-    (add-watch trace-detail-expansions
-               :update-trace-detail-expansions
-               (fn [_ _ _ new-state]
-                 (localstorage/save! "trace-detail-expansion" new-state)))
+        trace-detail-expansions    (r/atom {:show-all? false :overrides {}})]
     (add-watch filter-items
                :update-localstorage
                (fn [_ _ _ new-state]
