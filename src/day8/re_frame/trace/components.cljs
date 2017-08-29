@@ -23,23 +23,28 @@
   ;; at-end?: element.scrollHeight - element.scrollTop === element.clientHeight
   (> tolerance (- (.-scrollHeight el) (.-scrollTop el) (.-clientHeight el))))
 
-(defn autoscroll-list [{:keys [class]} child]
-  (let [should-scroll (r/atom true)]
+(defn autoscroll-list [{:keys [class scroll?]} child]
+  "Reagent component that enables scrolling for the elements of its child dom-node.
+   Scrolling is only enabled if the list is scrolled to the end.
+   Scrolling can be set as option for debugging purposes.
+   Thanks to Martin Klepsch! Original code can be found here:
+       https://gist.github.com/martinklepsch/440e6fd96714fac8c66d892e0be2aaa0"
+  (let [node          (r/atom nil)
+        should-scroll (r/atom true)]
     (r/create-class
       {:display-name "autoscroll-list"
        :component-did-mount
-                     (fn [this]
-                       (let [n (r/dom-node this)]
-                         (scroll! n [0 (.-scrollTop n)] [0 (.-scrollHeight n)] 0)))
+                     (fn [_]
+                       (scroll! @node [0 (.-scrollTop @node)] [0 (.-scrollHeight @node)] 0))
        :component-will-update
-                     (fn [this]
-                       (let [n (r/dom-node this)]
-                         (reset! should-scroll (scrolled-to-end? n 100))))
+                     (fn [_]
+                       (reset! should-scroll (scrolled-to-end? @node 100)))
        :component-did-update
-                     (fn [this]
-                       (let [n       (r/dom-node this)]
-                         (when @should-scroll
-                           (scroll! n [0 (.-scrollTop n)] [0 (.-scrollHeight n)] 1600))))
+                     (fn [_]
+                       (when (and scroll? @should-scroll)
+                         (scroll! @node [0 (.-scrollTop @node)] [0 (.-scrollHeight @node)] 1600)))
        :reagent-render
                      (fn [{:keys [class]} child]
-                       [:div {:class class} child])})))
+                       [:div {:class class :ref (fn [dom-node]
+                                                  (reset! node dom-node))}
+                        child])})))
