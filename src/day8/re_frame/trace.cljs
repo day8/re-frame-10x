@@ -267,6 +267,11 @@
 
 (def ease-transition "left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out")
 
+(defn toggle-traces [showing?]
+  (if @showing?
+    (enable-tracing!)
+    (disable-tracing!)))
+
 (defn devtools []
   ;; Add clear button
   ;; Filter out different trace types
@@ -286,9 +291,7 @@
                                (cond
                                  (and (= key "h") (.-ctrlKey e))
                                  (do (swap! showing? not)
-                                     (if @showing?
-                                       (enable-tracing!)
-                                       (disable-tracing!))
+                                     (toggle-traces showing?)
                                      (.preventDefault e))))))
         handle-mousemove  (fn [e]
                            (when @dragging?
@@ -306,6 +309,7 @@
                  (localstorage/save! "show-panel" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
+                                 (toggle-traces showing?)
                                  (js/window.addEventListener "keydown" handle-keys)
                                  (js/window.addEventListener "mousemove" handle-mousemove))
        :component-will-unmount (fn []
