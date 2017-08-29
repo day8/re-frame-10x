@@ -2,6 +2,7 @@
   (:require [day8.re-frame.trace.subvis :as subvis]
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components :as components]
+            [day8.re-frame.trace.localstorage :as localstorage]
             [re-frame.trace :as trace :include-macros true]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
@@ -201,14 +202,22 @@
                 (.toFixed duration 1) " ms"]]
               (when show-row?
                 [:tr {:key (str id "-details")}
-                 [:td {:col-span 3} (with-out-str (pprint/pprint (dissoc tags :query-v :event :duration)))]]))))))
+                 [:td {:col-span 3} (let [tag-str (with-out-str (pprint/pprint tags))
+                                          string-size-limit 400]
+                                      (if (< string-size-limit (count tag-str))
+                                        (str (subs tag-str 0 string-size-limit) " ...")
+                                        tag-str))]]))))))
 
 (defn render-trace-panel []
   (let [filter-input               (r/atom "")
-        filter-items               (r/atom [])
+        filter-items               (r/atom (localstorage/get "filter-items" []))
         filter-type                (r/atom :contains)
         input-error                (r/atom false)
         trace-detail-expansions    (r/atom {:show-all? false :overrides {}})]
+    (add-watch filter-items
+               :update-localstorage
+               (fn [_ _ _ new-state]
+                 (localstorage/save! "filter-items" new-state)))
     (fn []
       (let [showing-traces       (if (= @filter-items [])
                                    @traces
@@ -281,7 +290,7 @@
   ;; Add clear button
   ;; Filter out different trace types
   (let [position          (r/atom :right)
-        panel-width-ratio (r/atom 0.35)
+        panel-width-ratio (r/atom (localstorage/get "panel-width-ratio" 0.35))
         showing?          (r/atom false)
         dragging?         (r/atom false)
         pin-to-bottom?    (r/atom true)
@@ -306,6 +315,11 @@
                                    y (.-clientY e)]
                                (.preventDefault e)
                                (reset! panel-width-ratio (/ (- window-width x) window-width)))))]
+
+    (add-watch panel-width-ratio
+               :update-panel-width-ratio
+               (fn [_ _ _ new-state]
+                 (localstorage/save! "panel-width-ratio" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
                                  (js/window.addEventListener "keydown" handle-keys)

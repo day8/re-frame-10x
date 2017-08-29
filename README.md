@@ -2,6 +2,10 @@
 
 A trace panel for re-frame.
 
+[![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
+
+**Status:** Alpha.
+
 ## Motivation
 
 re-frame provides a data driven architecture, but we need to be able to inspect it. re-frame-trace takes inspiration from [redux-devtools](https://github.com/gaearon/redux-devtools), and provides several ways to visualise the structure and state of your re-frame application.
@@ -12,7 +16,9 @@ re-frame provides a data driven architecture, but we need to be able to inspect 
 
 If you are using leiningen, modify `project.clj` in the following ways. When puzzling over the various possible leiningen configurations, it's often helpful to look at a sample [project.clj](https://github.com/technomancy/leiningen/blob/stable/sample.project.clj).
 
-- Add re-frame-trace as a dev dependency by placing `[day8.re-frame/trace "0.1.0"]` within `:profiles :dev :dependencies`. For example:
+[![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
+
+- Add re-frame-trace as a dev dependency by placing `[day8.re-frame/trace "VERSION"]` within `:profiles :dev :dependencies`. For example:
 
   ```cljs
   :profiles
