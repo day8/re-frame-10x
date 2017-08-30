@@ -121,4 +121,4 @@ The CSS for the trace panel are defined both inline and within `src/day8/re_fram
 lein less auto
 ```
 
-and the .less file will automatically compile to css on file changes. Don't edit the file within `src/day8/re_frame/css` directly, or it will be overwriten. We are using css preprocessing because in order to isolate the panel styles, we are namespacing the panell styles with the id `#--re-frame-trace--`.
+and the .less file will automatically compile to css on file changes. Don't edit the file within `src/day8/re_frame/css` directly, or it will be overwriten. We are using css preprocessing because in order to isolate the panel styles, we are namespacing the panel styles with the id `#--re-frame-trace--`.
