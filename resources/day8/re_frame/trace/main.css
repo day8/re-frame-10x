@@ -1,7 +1,374 @@
 #--re-frame-trace-- {
+  all: initial;
+  /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
+  /* Document
+     ========================================================================== */
+  /**
+   * 1. Correct the line height in all browsers.
+   * 2. Prevent adjustments of font size after orientation changes in
+   *    IE on Windows Phone and in iOS.
+   */
+  line-height: 1.15;
+  /* 1 */
+  -ms-text-size-adjust: 100%;
+  /* 2 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */
+  /* Sections
+     ========================================================================== */
+  /**
+   * Add the correct display in IE 9-.
+   */
+  /**
+   * Correct the font size and margin on `h1` elements within `section` and
+   * `article` contexts in Chrome, Firefox, and Safari.
+   */
+  /**
+   * 1. Correct the inheritance and scaling of font size in all browsers.
+   * 2. Correct the odd `em` font sizing in all browsers.
+   */
+  /* Text-level semantics
+     ========================================================================== */
+  /**
+   * 1. Remove the gray background on active links in IE 10.
+   * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.
+   */
+  /**
+   * Prevent the duplicate application of `bolder` by the next rule in Safari 6.
+   */
+  /**
+   * Add the correct font weight in Chrome, Edge, and Safari.
+   */
+  /**
+   * 1. Correct the inheritance and scaling of font size in all browsers.
+   * 2. Correct the odd `em` font sizing in all browsers.
+   */
+  /**
+   * Add the correct background and color in IE 9-.
+   */
+  /**
+   * Add the correct font size in all browsers.
+   */
+  /**
+   * Prevent `sub` and `sup` elements from affecting the line height in
+   * all browsers.
+   */
+  /* Embedded content
+     ========================================================================== */
+  /**
+   * Add the correct display in IE 9-.
+   */
+  /**
+   * Add the correct display in iOS 4-7.
+   */
+  /**
+   * Remove the border on images inside links in IE 10-.
+   */
+  /**
+   * Hide the overflow in IE.
+   */
+  /* Forms
+     ========================================================================== */
+  /**
+   * 1. Change the font styles in all browsers (opinionated).
+   * 2. Remove the margin in Firefox and Safari.
+   */
+  /**
+   * Show the overflow in IE.
+   * 1. Show the overflow in Edge.
+   */
+  /**
+   * Remove the inheritance of text transform in Edge, Firefox, and IE.
+   * 1. Remove the inheritance of text transform in Firefox.
+   */
+  /**
+   * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`
+   *    controls in Android 4.
+   * 2. Correct the inability to style clickable types in iOS and Safari.
+   */
+  /**
+   * Remove the inner border and padding in Firefox.
+   */
+  /**
+   * Restore the focus styles unset by the previous rule.
+   */
+  /**
+   * Remove the default vertical scrollbar in IE.
+   */
+  /**
+   * 1. Add the correct box sizing in IE 10-.
+   * 2. Remove the padding in IE 10-.
+   */
+  /**
+   * Correct the cursor style of increment and decrement buttons in Chrome.
+   */
+  /**
+   * 1. Correct the odd appearance in Chrome and Safari.
+   * 2. Correct the outline style in Safari.
+   */
+  /**
+   * Remove the inner padding and cancel buttons in Chrome and Safari on macOS.
+   */
+  /**
+   * 1. Correct the inability to style clickable types in iOS and Safari.
+   * 2. Change font properties to `inherit` in Safari.
+   */
+  /* Hidden
+     ========================================================================== */
+  /**
+   * Add the correct display in IE 10-.
+   */
+  /* re-frame-trace styles
+     ========================================================================== */
   background: white;
-  color: black;
   font-family: 'courier new', monospace;
+}
+#--re-frame-trace-- * {
+  all: unset;
+}
+#--re-frame-trace-- div,
+#--re-frame-trace-- footer,
+#--re-frame-trace-- header,
+#--re-frame-trace-- nav {
+  display: block;
+}
+#--re-frame-trace-- h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+#--re-frame-trace-- pre {
+  font-family: monospace, monospace;
+  /* 1 */
+  font-size: 1em;
+  /* 2 */
+}
+#--re-frame-trace-- a {
+  background-color: transparent;
+  /* 1 */
+  -webkit-text-decoration-skip: objects;
+  /* 2 */
+}
+#--re-frame-trace-- b,
+#--re-frame-trace-- strong {
+  font-weight: inherit;
+}
+#--re-frame-trace-- b,
+#--re-frame-trace-- strong {
+  font-weight: bolder;
+}
+#--re-frame-trace-- code {
+  font-family: monospace, monospace;
+  /* 1 */
+  font-size: 1em;
+  /* 2 */
+}
+#--re-frame-trace-- mark {
+  background-color: #ff0;
+  color: #000;
+}
+#--re-frame-trace-- small {
+  font-size: 80%;
+}
+#--re-frame-trace-- sub,
+#--re-frame-trace-- sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+#--re-frame-trace-- sub {
+  bottom: -0.25em;
+}
+#--re-frame-trace-- sup {
+  top: -0.5em;
+}
+#--re-frame-trace-- audio,
+#--re-frame-trace-- video {
+  display: inline-block;
+}
+#--re-frame-trace-- audio:not([controls]) {
+  display: none;
+  height: 0;
+}
+#--re-frame-trace-- img {
+  border-style: none;
+}
+#--re-frame-trace-- svg:not(:root) {
+  overflow: hidden;
+}
+#--re-frame-trace-- option {
+  display: block;
+}
+#--re-frame-trace-- button,
+#--re-frame-trace-- input,
+#--re-frame-trace-- optgroup,
+#--re-frame-trace-- select,
+#--re-frame-trace-- textarea {
+  font-family: sans-serif;
+  /* 1 */
+  font-size: 100%;
+  /* 1 */
+  line-height: 1.15;
+  /* 1 */
+  margin: 0;
+  /* 2 */
+  border: 1px solid black;
+}
+#--re-frame-trace-- button,
+#--re-frame-trace-- input {
+  /* 1 */
+  overflow: visible;
+}
+#--re-frame-trace-- button,
+#--re-frame-trace-- select {
+  /* 1 */
+  text-transform: none;
+}
+#--re-frame-trace-- button,
+#--re-frame-trace-- html [type="button"],
+#--re-frame-trace-- [type="reset"],
+#--re-frame-trace-- [type="submit"] {
+  -webkit-appearance: button;
+  /* 2 */
+}
+#--re-frame-trace-- button::-moz-focus-inner,
+#--re-frame-trace-- [type="button"]::-moz-focus-inner,
+#--re-frame-trace-- [type="reset"]::-moz-focus-inner,
+#--re-frame-trace-- [type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+#--re-frame-trace-- button:-moz-focusring,
+#--re-frame-trace-- [type="button"]:-moz-focusring,
+#--re-frame-trace-- [type="reset"]:-moz-focusring,
+#--re-frame-trace-- [type="submit"]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+#--re-frame-trace-- textarea {
+  overflow: auto;
+}
+#--re-frame-trace-- [type="checkbox"],
+#--re-frame-trace-- [type="radio"] {
+  box-sizing: border-box;
+  /* 1 */
+  padding: 0;
+  /* 2 */
+}
+#--re-frame-trace-- [type="number"]::-webkit-inner-spin-button,
+#--re-frame-trace-- [type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+#--re-frame-trace-- [type="search"] {
+  -webkit-appearance: textfield;
+  /* 1 */
+  outline-offset: -2px;
+  /* 2 */
+}
+#--re-frame-trace-- [type="search"]::-webkit-search-cancel-button,
+#--re-frame-trace-- [type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+#--re-frame-trace-- ::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  /* 1 */
+  font: inherit;
+  /* 2 */
+}
+#--re-frame-trace-- [hidden] {
+  display: none;
+}
+#--re-frame-trace-- h1,
+#--re-frame-trace-- h2,
+#--re-frame-trace-- h3,
+#--re-frame-trace-- h4,
+#--re-frame-trace-- p,
+#--re-frame-trace-- blockquote,
+#--re-frame-trace-- figure,
+#--re-frame-trace-- ol,
+#--re-frame-trace-- ul {
+  margin: 0;
+  padding: 0;
+}
+#--re-frame-trace-- main,
+#--re-frame-trace-- li {
+  display: block;
+}
+#--re-frame-trace-- h1,
+#--re-frame-trace-- h2,
+#--re-frame-trace-- h3,
+#--re-frame-trace-- h4 {
+  font-size: inherit;
+}
+#--re-frame-trace-- strong {
+  font-weight: bold;
+}
+#--re-frame-trace-- a,
+#--re-frame-trace-- button {
+  color: inherit;
+  transition: .3s;
+}
+#--re-frame-trace-- a {
+  text-decoration: none;
+}
+#--re-frame-trace-- button {
+  overflow: visible;
+  border: 0;
+  font: inherit;
+  -webkit-font-smoothing: inherit;
+  letter-spacing: inherit;
+  background: none;
+  cursor: pointer;
+}
+#--re-frame-trace-- ::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+#--re-frame-trace-- :focus {
+  outline: 0;
+}
+#--re-frame-trace-- img {
+  max-width: 100%;
+  height: auto;
+  border: 0;
+}
+#--re-frame-trace-- table,
+#--re-frame-trace-- thead,
+#--re-frame-trace-- tbody,
+#--re-frame-trace-- tfoot,
+#--re-frame-trace-- tr,
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-color: inherit;
+  vertical-align: inherit;
+  text-align: left;
+  font-weight: inherit;
+  -webkit-border-horizontal-spacing: 0;
+  -webkit-border-vertical-spacing: 0;
+}
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+  display: table-cell;
+}
+#--re-frame-trace-- tr {
+  display: table-row;
+}
+#--re-frame-trace-- thead {
+  display: table-header-group;
+}
+#--re-frame-trace-- tbody {
+  display: table-row-group;
+}
+#--re-frame-trace-- table {
+  display: table;
+  width: 100%;
 }
 #--re-frame-trace-- tbody {
   color: #aaa;
