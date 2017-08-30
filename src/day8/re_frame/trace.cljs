@@ -236,29 +236,30 @@
                           (:filter-type item) ": " [:span.filter-item-string (:query item)]
                           [:span.icon-button [components/icon-remove]]]])
                   @filter-items)]]
-         [:div.panel-content-scrollable
-           [:table
-            {:cell-spacing "0" :width "100%"}
-            [:thead>tr
-             [:th [:button.text-button
-                   {:style {:cursor "pointer"}
-                    :on-click (fn [ev]
-                                ;; Always reset expansions
-                                (swap! trace-detail-expansions assoc :overrides {})
-                                ;; Then toggle :show-all?
-                                (swap! trace-detail-expansions update :show-all? not))}
-                   (if (:show-all? @trace-detail-expansions) "-" "+")]]
-             [:th "operations"]
-             [:th
-               (when (pos? (count @filter-items))
-                 (str (count showing-traces) " of "))
-               (when (pos? (count @traces))
-                 (str (count @traces)))
-               " events "
-               (when (pos? (count @traces))
-                 [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
-             [:th "meta"]]
-            [:tbody (render-traces showing-traces trace-detail-expansions)]]]]))))
+         [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
+          [:table
+           {:style {:margin-bottom 10}
+            :cell-spacing "0" :width "100%"}
+           [:thead>tr
+            [:th [:button.text-button
+                  {:style {:cursor "pointer"}
+                   :on-click (fn [ev]
+                               ;; Always reset expansions
+                               (swap! trace-detail-expansions assoc :overrides {})
+                               ;; Then toggle :show-all?
+                               (swap! trace-detail-expansions update :show-all? not))}
+                  (if (:show-all? @trace-detail-expansions) "-" "+")]]
+            [:th "operations"]
+            [:th
+              (when (pos? (count @filter-items))
+                (str (count showing-traces) " of "))
+              (when (pos? (count @traces))
+                (str (count @traces)))
+              " events "
+              (when (pos? (count @traces))
+                [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
+            [:th "meta"]]
+           [:tbody (render-traces showing-traces trace-detail-expansions)]]]]))))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0

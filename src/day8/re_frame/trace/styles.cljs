@@ -95,12 +95,12 @@
   flex: 1;
 }
 #--re-frame-trace-- .panel-content-scrollable {
-  margin: 10px 0 0 10px;
-  flex: 1 0 auto;
-  height: 100%;
+  margin: 0 0 10px 5px;
   overflow: auto;
+  flex: 1 1 auto;
 }
 #--re-frame-trace-- .filter-control {
   margin: 10px 0 0 10px;
+  flex: none;
 }
 ")
