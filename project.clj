@@ -13,7 +13,7 @@
 
   :figwheel {:css-dirs ["src/day8/re_frame/css"]}
 
-  :less {:source-paths ["src/day8/re_frame/less"]
+  :less {:source-paths ["resources/day8/re_frame/trace"]
          :target-path  "src/day8/re_frame/css"}
 
   :profiles {:dev {:dependencies [[binaryage/dirac "RELEASE"]]}})
