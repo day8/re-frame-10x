@@ -95,6 +95,7 @@
 
 
 (def traces (interop/ratom []))
+
 (defn log-trace? [trace]
   (let [rendering? (= (:op-type trace) :render)]
     (if-not rendering?
@@ -267,12 +268,17 @@
 
 (def ease-transition "left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out")
 
+(defn toggle-traces [showing?]
+  (if @showing?
+    (enable-tracing!)
+    (disable-tracing!)))
+
 (defn devtools []
   ;; Add clear button
   ;; Filter out different trace types
   (let [position          (r/atom :right)
         panel-width-ratio (r/atom (localstorage/get "panel-width-ratio" 0.35))
-        showing?          (r/atom false)
+        showing?          (r/atom (localstorage/get "show-panel" false))
         dragging?         (r/atom false)
         pin-to-bottom?    (r/atom true)
         selected-tab      (r/atom :traces)
@@ -286,9 +292,7 @@
                                (cond
                                  (and (= key "h") (.-ctrlKey e))
                                  (do (swap! showing? not)
-                                     (if @showing?
-                                       (enable-tracing!)
-                                       (disable-tracing!))
+                                     (toggle-traces showing?)
                                      (.preventDefault e))))))
         handle-mousemove  (fn [e]
                            (when @dragging?
@@ -296,13 +300,17 @@
                                    y (.-clientY e)]
                                (.preventDefault e)
                                (reset! panel-width-ratio (/ (- window-width x) window-width)))))]
-
     (add-watch panel-width-ratio
                :update-panel-width-ratio
                (fn [_ _ _ new-state]
                  (localstorage/save! "panel-width-ratio" new-state)))
+    (add-watch showing?
+               :update-show-panel
+               (fn [_ _ _ new-state]
+                 (localstorage/save! "show-panel" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
+                                 (toggle-traces showing?)
                                  (js/window.addEventListener "keydown" handle-keys)
                                  (js/window.addEventListener "mousemove" handle-mousemove))
        :component-will-unmount (fn []
