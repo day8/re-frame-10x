@@ -164,8 +164,7 @@
 (defn render-traces [showing-traces filter-items filter-input trace-detail-expansions]
   (doall
     (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
-      (let [padding          {:padding "0px 5px 0px 5px"}
-            row-style        (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
+      (let [row-style        {:border-top (case op-type :event "1px solid lightgrey" nil)}
             show-row?        (get-in @trace-detail-expansions [:overrides id]
                                (:show-all? @trace-detail-expansions))
             op-name          (if (vector? operation)
@@ -207,14 +206,13 @@
                 (.toFixed duration 1) " ms"]]
               (when show-row?
                 [:tr {:key (str id "-details")}
-                 [:td.trace-details {:col-span 3
+                 [:td.trace-details {:col-span 4
                                      :on-click #(.log js/console tags)}
                    (let [tag-str (with-out-str (pprint/pprint tags))
                          string-size-limit 400]
                         (if (< string-size-limit (count tag-str))
                           (str (subs tag-str 0 string-size-limit) " ...")
                           tag-str))]]))))))
-
 (defn render-trace-panel []
   (let [filter-input               (r/atom "")
         filter-items               (r/atom (localstorage/get "filter-items" []))
