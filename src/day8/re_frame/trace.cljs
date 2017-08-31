@@ -147,12 +147,20 @@
       (< (:query query) (:duration trace)))))
 
 (defn add-filter [filter-items filter-input filter-type]
+  ;; prevent duplicate filter strings
   (if-not (some #(= filter-input (:query %)) @filter-items)
-    (swap! filter-items conj {:id (random-uuid)
-                              :query (if (= filter-type :contains)
-                                       (str/lower-case filter-input)
-                                       (js/parseFloat filter-input))
-                              :filter-type filter-type})))
+    (do
+      ;; if existing, remove prior filter for :slower-than
+      (when (and (= :slower-than filter-type)
+                 (some #(= filter-type (:filter-type %)) @filter-items))
+        (swap! filter-items (fn [item]
+                              (remove #(= :slower-than (:filter-type %)) item))))
+      ;; add new filter
+      (swap! filter-items conj {:id (random-uuid)
+                                :query (if (= filter-type :contains)
+                                         (str/lower-case filter-input)
+                                         (js/parseFloat filter-input))
+                                :filter-type filter-type}))))
 
 (defn render-traces [showing-traces filter-items filter-input trace-detail-expansions]
   (doall
