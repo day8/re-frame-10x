@@ -11,6 +11,16 @@
   :deploy-repositories {"releases" :clojars
                         "snapshots" :clojars}
 
+  :release-tasks [["vcs" "assert-committed"]
+                  ["change" "version" "leiningen.release/bump-version" "release"]
+                  ["less" "once"]
+                  ["vcs" "commit"]
+                  ["vcs" "tag"]
+                  ["deploy"]
+                  ["change" "version" "leiningen.release/bump-version"]
+                  ["vcs" "commit"]
+                  ["vcs" "push"]]
+
   :figwheel {:css-dirs ["src/day8/re_frame/css"]}
 
   :less {:source-paths ["resources/day8/re_frame/trace"]
