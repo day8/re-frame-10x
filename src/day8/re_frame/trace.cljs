@@ -95,6 +95,7 @@
 
 
 (def traces (interop/ratom []))
+
 (defn log-trace? [trace]
   (let [rendering? (= (:op-type trace) :render)]
     (if-not rendering?
@@ -252,29 +253,30 @@
                           (:filter-type item) ": " [:span.filter-item-string (:query item)]
                           [:span.icon-button [components/icon-remove]]]])
                   @filter-items)]]
-         [:div.panel-content-scrollable
-           [:table
-            {:cell-spacing "0" :width "100%"}
-            [:thead>tr
-             [:th [:button.text-button
-                   {:style {:cursor "pointer"}
-                    :on-click (fn [ev]
-                                ;; Always reset expansions
-                                (swap! trace-detail-expansions assoc :overrides {})
-                                ;; Then toggle :show-all?
-                                (swap! trace-detail-expansions update :show-all? not))}
-                   (if (:show-all? @trace-detail-expansions) "-" "+")]]
-             [:th "operations"]
-             [:th
-               (when (pos? (count @filter-items))
-                 (str (count showing-traces) " of "))
-               (when (pos? (count @traces))
-                 (str (count @traces)))
-               " events "
-               (when (pos? (count @traces))
-                 [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
-             [:th "meta"]]
-            [:tbody (render-traces showing-traces filter-items filter-input trace-detail-expansions)]]]]))))
+         [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
+          [:table
+           {:style {:margin-bottom 10}
+            :cell-spacing "0" :width "100%"}
+           [:thead>tr
+            [:th [:button.text-button
+                  {:style {:cursor "pointer"}
+                   :on-click (fn [ev]
+                               ;; Always reset expansions
+                               (swap! trace-detail-expansions assoc :overrides {})
+                               ;; Then toggle :show-all?
+                               (swap! trace-detail-expansions update :show-all? not))}
+                  (if (:show-all? @trace-detail-expansions) "-" "+")]]
+            [:th "operations"]
+            [:th
+              (when (pos? (count @filter-items))
+                (str (count showing-traces) " of "))
+              (when (pos? (count @traces))
+                (str (count @traces)))
+              " events "
+              (when (pos? (count @traces))
+                [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
+            [:th "meta"]]
+           [:tbody (render-traces showing-traces filter-items filter-input trace-detail-expansions)]]]]))))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0
@@ -282,12 +284,17 @@
 
 (def ease-transition "left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out")
 
+(defn toggle-traces [showing?]
+  (if @showing?
+    (enable-tracing!)
+    (disable-tracing!)))
+
 (defn devtools []
   ;; Add clear button
   ;; Filter out different trace types
   (let [position          (r/atom :right)
         panel-width-ratio (r/atom (localstorage/get "panel-width-ratio" 0.35))
-        showing?          (r/atom false)
+        showing?          (r/atom (localstorage/get "show-panel" false))
         dragging?         (r/atom false)
         pin-to-bottom?    (r/atom true)
         selected-tab      (r/atom :traces)
@@ -301,9 +308,7 @@
                                (cond
                                  (and (= key "h") (.-ctrlKey e))
                                  (do (swap! showing? not)
-                                     (if @showing?
-                                       (enable-tracing!)
-                                       (disable-tracing!))
+                                     (toggle-traces showing?)
                                      (.preventDefault e))))))
         handle-mousemove  (fn [e]
                            (when @dragging?
@@ -311,13 +316,17 @@
                                    y (.-clientY e)]
                                (.preventDefault e)
                                (reset! panel-width-ratio (/ (- window-width x) window-width)))))]
-
     (add-watch panel-width-ratio
                :update-panel-width-ratio
                (fn [_ _ _ new-state]
                  (localstorage/save! "panel-width-ratio" new-state)))
+    (add-watch showing?
+               :update-show-panel
+               (fn [_ _ _ new-state]
+                 (localstorage/save! "show-panel" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
+                                 (toggle-traces showing?)
                                  (js/window.addEventListener "keydown" handle-keys)
                                  (js/window.addEventListener "mousemove" handle-mousemove))
        :component-will-unmount (fn []
