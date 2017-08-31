@@ -147,11 +147,12 @@
       (< (:query query) (:duration trace)))))
 
 (defn add-filter [filter-items filter-input filter-type]
-  (swap! filter-items conj {:id (random-uuid)
-                            :query (if (= filter-type :contains)
-                                     (str/lower-case filter-input)
-                                     (js/parseFloat filter-input))
-                            :filter-type filter-type}))
+  (if-not (some #(= filter-input (:query %)) @filter-items)
+    (swap! filter-items conj {:id (random-uuid)
+                              :query (if (= filter-type :contains)
+                                       (str/lower-case filter-input)
+                                       (js/parseFloat filter-input))
+                              :filter-type filter-type})))
 
 (defn render-traces [showing-traces filter-items filter-input trace-detail-expansions]
   (doall
