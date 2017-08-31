@@ -21,9 +21,9 @@
                   ["vcs" "commit"]
                   ["vcs" "push"]]
 
-  :figwheel {:css-dirs ["src/day8/re_frame/css"]}
+  :figwheel {:css-dirs ["resources/day8/re_frame/trace"]}
 
   :less {:source-paths ["resources/day8/re_frame/trace"]
-         :target-path  "src/day8/re_frame/css"}
+         :target-path  "resources/day8/re_frame/trace"}
 
   :profiles {:dev {:dependencies [[binaryage/dirac "RELEASE"]]}})
