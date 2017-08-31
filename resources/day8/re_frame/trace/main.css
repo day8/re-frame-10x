@@ -162,6 +162,14 @@
 #--re-frame-trace-- table {
   display: table;
 }
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+  display: table-cell;
+  padding: 0 5px;
+}
+#--re-frame-trace-- tr {
+  display: table-row;
+}
 #--re-frame-trace-- thead {
   display: table-header-group;
 }
