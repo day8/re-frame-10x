@@ -268,7 +268,6 @@
               [:div.filter-control-input {:style {:margin-left 10}}
                 [search-input {:on-save save-query
                                :on-change #(reset! filter-input (.. % -target -value))}]
-                [components/icon-add]
                 (if @input-error
                   [:div.input-error {:style {:color "red" :margin-top 5}}
                    "Please enter a valid number."])]]]
