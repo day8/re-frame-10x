@@ -146,31 +146,49 @@
     (fn [trace]
       (< (:query query) (:duration trace)))))
 
-(defn render-traces [showing-traces trace-detail-expansions]
+(defn add-filter [filter-items filter-input filter-type]
+  (swap! filter-items conj {:id (random-uuid)
+                            :query (if (= filter-type :contains)
+                                     (str/lower-case filter-input)
+                                     (js/parseFloat filter-input))
+                            :filter-type filter-type}))
+
+(defn render-traces [showing-traces filter-items filter-input trace-detail-expansions]
   (doall
     (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
-      (let [padding   {:padding "0px 5px 0px 5px"}
-            row-style (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
-            show-row? (get-in @trace-detail-expansions [:overrides id]
-                        (:show-all? @trace-detail-expansions))
+      (let [padding          {:padding "0px 5px 0px 5px"}
+            row-style        (merge padding {:border-top (case op-type :event "1px solid lightgrey" nil)})
+            show-row?        (get-in @trace-detail-expansions [:overrides id]
+                               (:show-all? @trace-detail-expansions))
+            op-name          (if (vector? operation)
+                               (second operation)
+                               operation)
             #_#__ (js/console.log (devtools/header-api-call tags))]
-        (list [:tr {:key      id
+        (list [:tr {:key   id
                     :on-click (fn [ev]
                                 (swap! trace-detail-expansions update-in [:overrides id]
                                        #(if show-row? false (not %))))
-                    :style    {:color (case op-type
-                                        :sub/create "green"
-                                        :sub/run "#fd701e"
-                                        :event "blue"
-                                        :render "purple"
-                                        :re-frame.router/fsm-trigger "#fd701e"
-                                        nil)}}
+                    :style {:color (case op-type
+                                     :sub/create "green"
+                                     :sub/run "#fd701e"
+                                     :event "blue"
+                                     :render "purple"
+                                     :re-frame.router/fsm-trigger "#fd701e"
+                                     nil)}}
                [:td {:style row-style}
                 [:button (if show-row? "▼" "▶")]]
-               [:td {:style row-style} (str op-type)]
-               [:td {:style row-style} (if (= PersistentVector (type (js->clj operation)))
-                                         (second operation)
-                                         operation)]
+               [:td {:style row-style}
+                    [:div.op-string
+                     [:span {:on-click (fn [ev]
+                                         (add-filter filter-items (name op-type) :contains)
+                                         (.stopPropagation ev))}
+                      (str op-type)]]]
+               [:td {:style    row-style}
+                    [:div.op-string
+                     [:span {:on-click (fn [ev]
+                                         (add-filter filter-items (name op-name) :contains)
+                                         (.stopPropagation ev))}
+                      op-name]]]
                [:td
                 {:style (merge row-style {
                                           ; :font-weight (if (< slower-than-bold-int duration)
@@ -207,11 +225,9 @@
                                      (reset! input-error true)
                                      (do
                                        (reset! input-error false)
-                                       (swap! filter-items conj {:id (random-uuid)
-                                                                 :query (if (= @filter-type :contains)
-                                                                          (str/lower-case @filter-input)
-                                                                          (js/parseFloat @filter-input))
-                                                                 :filter-type @filter-type}))))]
+                                       (add-filter filter-items @filter-input @filter-type))))]
+
+
         [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
           [:div.filter-control
            [:div.filter-control-input
@@ -260,7 +276,7 @@
               (when (pos? (count @traces))
                 [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
             [:th "meta"]]
-           [:tbody (render-traces showing-traces trace-detail-expansions)]]]]))))
+           [:tbody (render-traces showing-traces filter-items filter-input trace-detail-expansions)]]]]))))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0
