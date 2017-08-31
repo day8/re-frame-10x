@@ -145,16 +145,12 @@
     (fn [trace]
       (< (:query query) (:duration trace)))))
 
-(defn add-filter [filter-items filter-input filter-type from-mouse?]
+(defn add-filter [filter-items filter-input filter-type]
   (swap! filter-items conj {:id (random-uuid)
-                            :query (if from-mouse?
-                                     (str/lower-case (name filter-input))
-                                     (if (= @filter-type :contains)
-                                       (str/lower-case @filter-input)
-                                       (js/parseFloat @filter-input)))
-                            :filter-type (if from-mouse?
-                                           :contains
-                                           @filter-type)}))
+                            :query (if (= filter-type :contains)
+                                     (str/lower-case filter-input)
+                                     (js/parseFloat filter-input))
+                            :filter-type filter-type}))
 
 (defn render-traces [showing-traces filter-items filter-input trace-detail-expansions]
   (doall
@@ -183,13 +179,13 @@
                [:td {:style row-style}
                     [:div.op-string
                      [:span {:on-click (fn [ev]
-                                         (add-filter filter-items (name op-type) :contains true)
+                                         (add-filter filter-items (name op-type) :contains)
                                          (.stopPropagation ev))}
                       (str op-type)]]]
                [:td {:style    row-style}
                     [:div.op-string
                      [:span {:on-click (fn [ev]
-                                         (add-filter filter-items (name op-name) :contains true)
+                                         (add-filter filter-items (name op-name) :contains)
                                          (.stopPropagation ev))}
                       op-name]]]
                [:td
@@ -228,7 +224,7 @@
                                      (reset! input-error true)
                                      (do
                                        (reset! input-error false)
-                                       (add-filter filter-items filter-input filter-type false))))]
+                                       (add-filter filter-items @filter-input @filter-type))))]
 
 
         [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
