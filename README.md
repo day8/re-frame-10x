@@ -117,10 +117,20 @@ You need both the re-frame-trace project _and_ a test project to develop it agai
 
 ### Developing CSS
 
-The CSS for the trace panel are defined both inline and within `src/day8/re_frame/less`. To develop the styles, run
+The styles for the trace panel are defined both inline and in a LESS file. To develop the styles, edit `resources/day8/re_frame/trace/main.less` and run
 
 ```
 lein less auto
 ```
 
-and the .less file will automatically compile to css on file changes. Don't edit the file within `src/day8/re_frame/css` directly, or it will be overwriten. We are using css preprocessing because in order to isolate the panel styles, we are namespacing the panel styles with the id `#--re-frame-trace--`.
+to watch the LESS file and automatically recompile on changes.
+
+**Don't edit the CSS file `resources/day8/re_frame/trace/main.css` directly**, as it will be overwritten.
+
+We are using CSS preprocessing because in order to isolate the panel styles, we are namespacing the panel styles with the id `#--re-frame-trace--`.
+
+#### Problems while developing CSS
+
+- You may need to then save a `.cljs` file to trigger a figwheel reload.
+- Did you run `lein less auto` to compile LESS to CSS?
+- Try clearing your browser cache/hard-reloading

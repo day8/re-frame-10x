@@ -1,10 +1,226 @@
+@light-purple: #616cdb;
+@light-blue: lightblue;
+@light-gray: #efeef1;
+@text-color: #222;
+@text-color-muted: #aaa;
+
 #--re-frame-trace-- {
+
+  all: initial;
+
+  * {
+    all: unset;
+  }
+
+  /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
+
+  line-height: 1.15;
+
+  div,
+  nav {
+    display: block;
+  }
+
+  pre {
+    font-family: monospace, monospace;
+    font-size: 1em;
+  }
+
+  /* Text-level semantics
+     ========================================================================== */
+
+  a, a:visited {
+    color: @text-color;
+    border-bottom: 1px #333 dotted;
+  }
+  a:hover, a:focus {
+    border-bottom: 1px #666666 solid;
+  }
+
+  code {
+    font-family: monospace, monospace;
+    font-size: 1em;
+  }
+
+  small {
+    font-size: 80%;
+  }
+
+  // Prevent `sub` and `sup` elements from affecting the line height
+  sub,
+  sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+
+  sub {
+    bottom: -0.25em;
+  }
+
+  sup {
+    top: -0.5em;
+  }
+
+  /* Embedded content
+     ========================================================================== */
+
+  img {
+    border-style: none;
+  }
+
+
+  /* Forms
+     ========================================================================== */
+
+  option {
+    display: block;
+  }
+
+  button,
+  input,
+  optgroup,
+  select,
+  textarea {
+    font-family: "courier new", monospace;
+    font-size: 100%;
+    // line-height: 1.15;
+    padding: 3px 3px 1px 3px;
+    border: 1px solid black;
+  }
+
+  button, // Show the overflow in IE.
+  input { // Show the overflow in Edge.
+    overflow: visible;
+  }
+
+  /**
+   * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`
+   *    controls in Android 4.
+   * 2. Correct the inability to style clickable types in iOS and Safari.
+   */
+
+  button,
+  html [type="button"], /* 1 */
+  [type="reset"],
+  [type="submit"] {
+    -webkit-appearance: button; /* 2 */
+  }
+
+  // Restore the focus styles unset by the previous rule.
+  button:-moz-focusring,
+  [type="button"]:-moz-focusring,
+  [type="reset"]:-moz-focusring,
+  [type="submit"]:-moz-focusring {
+    outline: 1px dotted ButtonText;
+  }
+
+  textarea {
+    overflow: auto; // Remove the default vertical scrollbar in IE.
+  }
+
+  [type="checkbox"],
+  [type="radio"] {
+    box-sizing: border-box; // IE 10-
+  }
+
+  // Correct the cursor style of increment and decrement buttons in Chrome.
+  [type="number"]::-webkit-inner-spin-button,
+  [type="number"]::-webkit-outer-spin-button {
+    height: auto;
+  }
+
+  [type="search"] {
+    -webkit-appearance: textfield; // Correct the odd appearance in Chrome and Safari.
+    outline-offset: -2px; // Correct the outline style in Safari.
+  }
+
+  ::-webkit-file-upload-button {
+    -webkit-appearance: button; // Correct the inability to style clickable types in iOS and Safari.
+  }
+
+
+  /* Hidden
+     ========================================================================== */
+
+  /**
+   * Add the correct display in IE 10-.
+   */
+
+  [hidden] {
+    display: none;
+  }
+
+  li {
+    display: block;
+  }
+  button {
+    overflow: visible;
+    border: 0;
+    -webkit-font-smoothing: inherit;
+    letter-spacing: inherit;
+    background: none;
+    cursor: pointer;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    border: 0;
+  }
+
+  // tables
+
+  table,
+  thead,
+  tbody,
+  tfoot,
+  tr,
+  th,
+  td {
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border-color: inherit;
+    vertical-align: inherit;
+    text-align: left;
+    font-weight: inherit;
+    -webkit-border-horizontal-spacing: 0;
+    -webkit-border-vertical-spacing: 0;
+  }
+  th, td {
+    display: table-cell;
+    padding: 0 5px;
+  }
+  tr {
+    display: table-row;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tbody {
+    display: table-row-group;
+  }
+  table {
+    display: table;
+    width: 100%;
+  }
+
+
+  /* re-frame-trace styles
+     ========================================================================== */
+
+
   background: white;
-  color: black;
   font-family: 'courier new', monospace;
 
   tbody {
-    color: #aaa;
+    color: @text-color-muted;
   }
   tr:hover {
     transition: all 0.1s ease-out;
@@ -48,7 +264,7 @@
   }
   .tab.active {
     background: transparent;
-    border-bottom: 3px solid lightblue;
+    border-bottom: 3px solid @light-blue;
     border-radius: 0;
     padding-bottom: 1px;
   }
@@ -60,7 +276,7 @@
   }
   .filter-items li {
     color: #333;
-    background: #efefef;
+    background: @light-gray;
     display: inline-block;
     font-size: 0.9em;
     margin:  5px;
@@ -68,7 +284,7 @@
   .filter-items {
     li {
       .filter-item-string {
-        color: #616cdb;
+        color: @light-purple;
       }
     }
 
@@ -88,16 +304,20 @@
     background: white;
     font-family: 'courier new', monospace;
     font-size: 1em;
+    padding: 2px 0 0 0;
+    -moz-appearance: menulist;
+    -webkit-appearance: menulist;
+    appearance: menulist;
   }
   .nav {
-    background: #efeef1;
-    color: #222;
+    background: @light-gray;
+    color: @text-color;
   }
   .panel-content-top {
     flex: 1;
   }
   .panel-content-scrollable {
-    margin: 10px 0 0 10px;
+    margin: 0 10px;
     flex: 1 0 auto;
     height: 100%;
     overflow: auto;

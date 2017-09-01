@@ -1,7 +1,177 @@
 #--re-frame-trace-- {
+  all: initial;
+  /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
+  line-height: 1.15;
+  /* Text-level semantics
+     ========================================================================== */
+  /* Embedded content
+     ========================================================================== */
+  /* Forms
+     ========================================================================== */
+  /**
+   * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`
+   *    controls in Android 4.
+   * 2. Correct the inability to style clickable types in iOS and Safari.
+   */
+  /* Hidden
+     ========================================================================== */
+  /**
+   * Add the correct display in IE 10-.
+   */
+  /* re-frame-trace styles
+     ========================================================================== */
   background: white;
-  color: black;
   font-family: 'courier new', monospace;
+}
+#--re-frame-trace-- * {
+  all: unset;
+}
+#--re-frame-trace-- div,
+#--re-frame-trace-- nav {
+  display: block;
+}
+#--re-frame-trace-- pre {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+#--re-frame-trace-- a,
+#--re-frame-trace-- a:visited {
+  color: #333;
+  border-bottom: 1px #333 dotted;
+}
+#--re-frame-trace-- a:hover,
+#--re-frame-trace-- a:focus {
+  border-bottom: 1px #666666 solid;
+}
+#--re-frame-trace-- code {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+#--re-frame-trace-- small {
+  font-size: 80%;
+}
+#--re-frame-trace-- sub,
+#--re-frame-trace-- sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+#--re-frame-trace-- sub {
+  bottom: -0.25em;
+}
+#--re-frame-trace-- sup {
+  top: -0.5em;
+}
+#--re-frame-trace-- img {
+  border-style: none;
+}
+#--re-frame-trace-- option {
+  display: block;
+}
+#--re-frame-trace-- button,
+#--re-frame-trace-- input,
+#--re-frame-trace-- optgroup,
+#--re-frame-trace-- select,
+#--re-frame-trace-- textarea {
+  font-family: "courier new", monospace;
+  font-size: 100%;
+  padding: 3px 3px 1px 3px;
+  border: 1px solid black;
+}
+#--re-frame-trace-- button,
+#--re-frame-trace-- input {
+  overflow: visible;
+}
+#--re-frame-trace-- button,
+#--re-frame-trace-- html [type="button"],
+#--re-frame-trace-- [type="reset"],
+#--re-frame-trace-- [type="submit"] {
+  -webkit-appearance: button;
+  /* 2 */
+}
+#--re-frame-trace-- button:-moz-focusring,
+#--re-frame-trace-- [type="button"]:-moz-focusring,
+#--re-frame-trace-- [type="reset"]:-moz-focusring,
+#--re-frame-trace-- [type="submit"]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+#--re-frame-trace-- textarea {
+  overflow: auto;
+}
+#--re-frame-trace-- [type="checkbox"],
+#--re-frame-trace-- [type="radio"] {
+  box-sizing: border-box;
+}
+#--re-frame-trace-- [type="number"]::-webkit-inner-spin-button,
+#--re-frame-trace-- [type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+#--re-frame-trace-- [type="search"] {
+  -webkit-appearance: textfield;
+  outline-offset: -2px;
+}
+#--re-frame-trace-- ::-webkit-file-upload-button {
+  -webkit-appearance: button;
+}
+#--re-frame-trace-- [hidden] {
+  display: none;
+}
+#--re-frame-trace-- li {
+  display: block;
+}
+#--re-frame-trace-- button {
+  overflow: visible;
+  border: 0;
+  -webkit-font-smoothing: inherit;
+  letter-spacing: inherit;
+  background: none;
+  cursor: pointer;
+}
+#--re-frame-trace-- img {
+  max-width: 100%;
+  height: auto;
+  border: 0;
+}
+#--re-frame-trace-- table,
+#--re-frame-trace-- thead,
+#--re-frame-trace-- tbody,
+#--re-frame-trace-- tfoot,
+#--re-frame-trace-- tr,
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-color: inherit;
+  vertical-align: inherit;
+  text-align: left;
+  font-weight: inherit;
+  -webkit-border-horizontal-spacing: 0;
+  -webkit-border-vertical-spacing: 0;
+}
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+  display: table-cell;
+  padding: 0 5px;
+}
+#--re-frame-trace-- tr {
+  display: table-row;
+}
+#--re-frame-trace-- thead {
+  display: table-header-group;
+}
+#--re-frame-trace-- tbody {
+  display: table-row-group;
+}
+#--re-frame-trace-- table {
+  display: table;
+  width: 100%;
 }
 #--re-frame-trace-- tbody {
   color: #aaa;
@@ -81,6 +251,10 @@
   background: white;
   font-family: 'courier new', monospace;
   font-size: 1em;
+  padding: 2px 0 0 0;
+  -moz-appearance: menulist;
+  -webkit-appearance: menulist;
+  appearance: menulist;
 }
 #--re-frame-trace-- .nav {
   background: #efeef1;
@@ -90,7 +264,7 @@
   flex: 1;
 }
 #--re-frame-trace-- .panel-content-scrollable {
-  margin: 10px 0 0 10px;
+  margin: 0 10px;
   flex: 1 0 auto;
   height: 100%;
   overflow: auto;
