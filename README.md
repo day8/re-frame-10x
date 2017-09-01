@@ -43,6 +43,8 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
                       :preloads             [day8.re-frame.trace.preload]}}]}
   ```
 
+[cljs-devtools](https://github.com/binaryage/cljs-devtools) is not required to use re-frame-trace, but it is highly recommended.
+
 ## Usage
 
 - Start up your application.

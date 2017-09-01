@@ -98,3 +98,6 @@
 #--re-frame-trace-- .filter-control {
   margin: 10px 0 0 10px;
 }
+#--re-frame-trace-- .trace-details {
+  cursor: pointer;
+}
