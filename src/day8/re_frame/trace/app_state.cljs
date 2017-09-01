@@ -27,8 +27,8 @@
 (defn view
   [data]
   (if (coll? data)
-    [:div {:class (str (namespace-css "collection") " " (namespace-css (css-munge (type-string data))))}]
-    [:span {:class (namespace-css (css-munge (type-string data)))} (str data)]))
+    [:div  {:class (str (namespace-css "collection") " " (namespace-css (css-munge (type-string data))))}]
+    [:span {:class (str (namespace-css "primative") " " (namespace-css (css-munge (type-string data))))} (str data)]))
 
 (defn crawl
   [data]
@@ -37,8 +37,6 @@
     (view data)))
 
 (defn tab [data]
-  (pprint data)
-  (pprint (crawl data))
   [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
     [:div.panel-content-scrollable
      (crawl data)]])
