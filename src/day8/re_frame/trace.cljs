@@ -200,7 +200,7 @@
               (when show-row?
                 [:tr {:key (str id "-details")}
                  [:td.trace-details {:col-span 3
-                                     :on-click #(.log js/console (clj->js tags))}
+                                     :on-click #(.log js/console tags)}
                    (let [tag-str (with-out-str (pprint/pprint tags))
                          string-size-limit 400]
                         (if (< string-size-limit (count tag-str))
