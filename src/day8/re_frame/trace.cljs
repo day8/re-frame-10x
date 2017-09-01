@@ -5,6 +5,7 @@
             [day8.re-frame.trace.components :as components]
             [day8.re-frame.trace.localstorage :as localstorage]
             [re-frame.trace :as trace :include-macros true]
+            [re-frame.db :as db]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
             [reagent.core :as r]
@@ -25,8 +26,6 @@
     (if-not (empty? n)
       n
       "")))
-
-
 
 (def static-fns
   {:render
@@ -206,14 +205,14 @@
 
                 (.toFixed duration 1) " ms"]]
               (when show-row?
-                [:tr {:key (str id "-details")}]))))))
+                [:tr {:key (str id "-details")}
                  [:td.trace-details {:col-span 4
                                      :on-click #(.log js/console tags)}
                    (let [tag-str (with-out-str (pprint/pprint tags))
                          string-size-limit 400]
                         (if (< string-size-limit (count tag-str))
                           (str (subs tag-str 0 string-size-limit) " ...")
-                          tag-str))]
+                          tag-str))]]))))))
 (defn render-trace-panel []
   (let [filter-input               (r/atom "")
         filter-items               (r/atom (localstorage/get "filter-items" []))
@@ -372,8 +371,8 @@
                                           :traces [render-trace-panel]
                                           :subvis [subvis/render-subvis traces
                                                     [:div.panel-content-scrollable]]
-                                          :app-state [app-state/tab @traces])]]]))})))
-
+                                          :app-state [app-state/tab @db/app-db])]]]))})))
+(pprint/pprint @db/app-db)
 (defn panel-div []
   (let [id    "--re-frame-trace--"
         panel (.getElementById js/document id)]
