@@ -5,6 +5,7 @@
             [day8.re-frame.trace.components :as components]
             [day8.re-frame.trace.localstorage :as localstorage]
             [re-frame.trace :as trace :include-macros true]
+            [re-frame.db :as db]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
             [clojure.set :as set]
@@ -26,8 +27,6 @@
     (if-not (empty? n)
       n
       "")))
-
-
 
 (def static-fns
   {:render
@@ -399,7 +398,7 @@
                                           :traces [render-trace-panel]
                                           :subvis [subvis/render-subvis traces
                                                     [:div.panel-content-scrollable]]
-                                          :app-state [app-state/tab @traces])]]]))})))
+                                          :app-state [app-state/tab @db/app-db])]]]))})))
 
 (defn panel-div []
   (let [id    "--re-frame-trace--"
