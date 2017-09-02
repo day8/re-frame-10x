@@ -236,7 +236,7 @@
                                        (add-filter filter-items @filter-input @filter-type))))]
 
 
-        [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
+        [:div.tab-contents
           [:div.filter-control
            [:div.filter-control-input
             [:select {:value @filter-type

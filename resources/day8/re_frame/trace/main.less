@@ -314,13 +314,17 @@
     color: @text-color;
   }
   .panel-content-top {
-    flex: 1;
   }
   .panel-content-scrollable {
     margin: 0 10px;
-    flex: 1 0 auto;
+    flex: 1 1 auto;
     height: 100%;
     overflow: auto;
+  }
+  .tab-contents {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
   }
   .filter-control {
     margin: 10px 0 0 10px;
