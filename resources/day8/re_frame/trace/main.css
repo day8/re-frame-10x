@@ -36,7 +36,7 @@
 }
 #--re-frame-trace-- a,
 #--re-frame-trace-- a:visited {
-  color: #333;
+  color: #222222;
   border-bottom: 1px #333 dotted;
 }
 #--re-frame-trace-- a:hover,
@@ -174,7 +174,7 @@
   width: 100%;
 }
 #--re-frame-trace-- tbody {
-  color: #aaa;
+  color: #aaaaaa;
 }
 #--re-frame-trace-- tr:hover {
   transition: all 0.1s ease-out;
@@ -216,7 +216,7 @@
 }
 #--re-frame-trace-- .tab.active {
   background: transparent;
-  border-bottom: 3px solid lightblue;
+  border-bottom: 3px solid #add8e6;
   border-radius: 0;
   padding-bottom: 1px;
 }
@@ -228,7 +228,7 @@
 }
 #--re-frame-trace-- .filter-items li {
   color: #333;
-  background: #efefef;
+  background: #efeef1;
   display: inline-block;
   font-size: 0.9em;
   margin: 5px;
@@ -258,7 +258,7 @@
 }
 #--re-frame-trace-- .nav {
   background: #efeef1;
-  color: #222;
+  color: #222222;
 }
 #--re-frame-trace-- .panel-content-top {
   flex: 1;
