@@ -1,9 +1,11 @@
 (ns day8.re-frame.trace
   (:require [day8.re-frame.trace.subvis :as subvis]
+            [day8.re-frame.trace.app-state :as app-state]
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components :as components]
             [day8.re-frame.trace.localstorage :as localstorage]
             [re-frame.trace :as trace :include-macros true]
+            [re-frame.db :as db]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
             [reagent.core :as r]
@@ -24,8 +26,6 @@
     (if-not (empty? n)
       n
       "")))
-
-
 
 (def static-fns
   {:render
@@ -364,12 +364,14 @@
                                             [:button {:class (str "tab button " (when (= @selected-tab :traces) "active"))
                                                       :on-click #(reset! selected-tab :traces)} "Traces"]
                                             [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
-                                                      :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
+                                                      :on-click #(reset! selected-tab :subvis)} "SubVis"]
+                                            [:button {:class (str "tab button " (when (= @selected-tab :app-state) "active"))
+                                                      :on-click #(reset! selected-tab :app-state)} "app-state"]]]
                                         (case @selected-tab
                                           :traces [render-trace-panel]
                                           :subvis [subvis/render-subvis traces
-                                                    [:div.panel-content-scrollable]])]]]))})))
-
+                                                    [:div.panel-content-scrollable]]
+                                          :app-state [app-state/tab @db/app-db])]]]))})))
 (defn panel-div []
   (let [id    "--re-frame-trace--"
         panel (.getElementById js/document id)]
