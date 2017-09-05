@@ -259,11 +259,16 @@
 #--re-frame-trace-- .nav {
   background: #efeef1;
   color: #222222;
+}
 #--re-frame-trace-- .panel-content-scrollable {
   margin: 0 10px;
   flex: 1 1 auto;
   height: 100%;
   overflow: auto;
+  padding-top: 10px;
+  -webkit-box-shadow: inset -1px 18px 13px -22px rgba(0, 0, 0, 0.7);
+  -moz-box-shadow: inset -1px 18px 13px -22px rgba(0, 0, 0, 0.7);
+  box-shadow: inset -1px 18px 13px -22px rgba(0, 0, 0, 0.7);
 }
 #--re-frame-trace-- .tab-contents {
   display: flex;
