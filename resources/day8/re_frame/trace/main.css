@@ -77,7 +77,7 @@
   font-family: "courier new", monospace;
   font-size: 100%;
   padding: 3px 3px 1px 3px;
-  border: 1px solid black;
+  border: 1px solid #999999;
 }
 #--re-frame-trace-- button,
 #--re-frame-trace-- input {
@@ -155,13 +155,8 @@
   -webkit-border-horizontal-spacing: 0;
   -webkit-border-vertical-spacing: 0;
 }
-#--re-frame-trace-- th,
-#--re-frame-trace-- td {
-  display: table-cell;
-  padding: 0 5px;
-}
-#--re-frame-trace-- tr {
-  display: table-row;
+#--re-frame-trace-- table {
+  display: table;
 }
 #--re-frame-trace-- thead {
   display: table-header-group;
@@ -169,20 +164,77 @@
 #--re-frame-trace-- tbody {
   display: table-row-group;
 }
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+  display: table-cell;
+}
+#--re-frame-trace-- tr {
+  display: table-row;
+}
 #--re-frame-trace-- table {
-  display: table;
   width: 100%;
+  font-size: 14px;
 }
 #--re-frame-trace-- tbody {
-  color: #aaaaaa;
+  color: #222222;
+}
+#--re-frame-trace-- thead {
+  font-weight: bold;
+}
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+  padding: 8px 5px;
 }
 #--re-frame-trace-- tr:hover {
-  transition: all 0.1s ease-out;
-  background: aliceblue;
-  filter: brightness(90%);
+  background: #f7f7f8;
 }
-#--re-frame-trace-- tr:nth-child(even) {
-  background: aliceblue;
+#--re-frame-trace-- tr.trace--trace {
+  border-top: 1px solid #ececec;
+}
+#--re-frame-trace-- tr.trace--sub-create .trace--op {
+  color: #119457;
+}
+#--re-frame-trace-- tr.trace--sub-run .trace--op {
+  color: #762cff;
+}
+#--re-frame-trace-- tr.trace--event .trace--op {
+  color: #ab8c00;
+}
+#--re-frame-trace-- tr.trace--render .trace--op {
+  color: #0091e2;
+}
+#--re-frame-trace-- tr.trace--fsm-trigger .trace--op {
+  color: #284694;
+}
+#--re-frame-trace-- tr td.trace--toggle {
+  color: #8f8f8f;
+  padding: 0;
+  text-align: right;
+}
+#--re-frame-trace-- tr td.trace--op {
+  color: #8f8f8f;
+  padding-left: 0;
+  white-space: nowrap;
+}
+#--re-frame-trace-- tr td.trace--op-string {
+  word-break: break-all;
+}
+#--re-frame-trace-- tr td.trace--details-tags {
+  color: #8f8f8f;
+  cursor: pointer;
+}
+#--re-frame-trace-- tr td.trace--meta {
+  color: #8f8f8f;
+  white-space: nowrap;
+  text-align: right;
+}
+#--re-frame-trace-- tr td .op-string {
+  cursor: pointer;
+  padding: 1px;
+}
+#--re-frame-trace-- tr td .op-string:hover {
+  border-bottom: 1px dotted #616cdb;
+  padding-bottom: 0;
 }
 #--re-frame-trace-- .button {
   padding: 5px 5px 3px;
@@ -216,7 +268,7 @@
 }
 #--re-frame-trace-- .tab.active {
   background: transparent;
-  border-bottom: 3px solid #add8e6;
+  border-bottom: 3px solid #808080;
   border-radius: 0;
   padding-bottom: 1px;
 }
@@ -277,7 +329,4 @@
 }
 #--re-frame-trace-- .filter-control {
   margin: 10px 0 0 10px;
-}
-#--re-frame-trace-- .trace-details {
-  cursor: pointer;
 }

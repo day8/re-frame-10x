@@ -164,8 +164,7 @@
 (defn render-traces [showing-traces filter-items filter-input trace-detail-expansions]
   (doall
     (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
-      (let [row-style        {:border-top (case op-type :event "1px solid lightgrey" nil)}
-            show-row?        (get-in @trace-detail-expansions [:overrides id]
+      (let [show-row?        (get-in @trace-detail-expansions [:overrides id]
                                (:show-all? @trace-detail-expansions))
             op-name          (if (vector? operation)
                                (second operation)
@@ -175,39 +174,33 @@
                     :on-click (fn [ev]
                                 (swap! trace-detail-expansions update-in [:overrides id]
                                        #(if show-row? false (not %))))
-                    :style {:color (case op-type
-                                     :sub/create "green"
-                                     :sub/run "#fd701e"
-                                     :event "blue"
-                                     :render "purple"
-                                     :re-frame.router/fsm-trigger "#fd701e"
-                                     nil)}}
-               [:td {:style row-style}
+                    :class (str/join " " ["trace--trace"
+                                          (case op-type
+                                           :sub/create "trace--sub-create"
+                                           :sub/run "trace--sub-run"
+                                           :event "trace--event"
+                                           :render "trace--render"
+                                           :re-frame.router/fsm-trigger "trace--fsm-trigger"
+                                           nil)])}
+               [:td.trace--toggle
                 [:button (if show-row? "▼" "▶")]]
-               [:td {:style row-style}
-                    [:div.op-string
-                     [:span {:on-click (fn [ev]
-                                         (add-filter filter-items (name op-type) :contains)
-                                         (.stopPropagation ev))}
-                      (str op-type)]]]
-               [:td {:style    row-style}
-                    [:div.op-string
-                     [:span {:on-click (fn [ev]
-                                         (add-filter filter-items (name op-name) :contains)
-                                         (.stopPropagation ev))}
-                      op-name]]]
-               [:td
-                {:style (merge row-style {
-                                          ; :font-weight (if (< slower-than-bold-int duration)
-                                          ;                "bold"
-                                          ;                "")
-                                          :white-space "nowrap"})}
-
+               [:td.trace--op
+                    [:span.op-string {:on-click (fn [ev]
+                                                  (add-filter filter-items (name op-type) :contains)
+                                                  (.stopPropagation ev))}
+                      (str op-type)]]
+               [:td.trace--op-string
+                    [:span.op-string {:on-click (fn [ev]
+                                                  (add-filter filter-items (name op-name) :contains)
+                                                  (.stopPropagation ev))}
+                      op-name]]
+               [:td.trace--meta
                 (.toFixed duration 1) " ms"]]
               (when show-row?
-                [:tr {:key (str id "-details")}
-                 [:td.trace-details {:col-span 4
-                                     :on-click #(.log js/console tags)}
+                [:tr.trace--details {:key (str id "-details")}
+                 [:td]
+                 [:td.trace--details-tags {:col-span 4
+                                           :on-click #(.log js/console tags)}
                    (let [tag-str (with-out-str (pprint/pprint tags))
                          string-size-limit 400]
                         (if (< string-size-limit (count tag-str))
@@ -266,7 +259,8 @@
            {:style {:margin-bottom 10}
             :cell-spacing "0" :width "100%"}
            [:thead>tr
-            [:th [:button.text-button
+            [:th {:style {:padding 0}}
+              [:button.text-button
                   {:style {:cursor "pointer"}
                    :on-click (fn [ev]
                                ;; Always reset expansions
@@ -283,7 +277,7 @@
               " events "
               (when (pos? (count @traces))
                 [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
-            [:th "meta"]]
+            [:th {:style {:text-align "right"}} "meta"]]
            [:tbody (render-traces showing-traces filter-items filter-input trace-detail-expansions)]]]]))))
 
 (defn resizer-style [draggable-area]
