@@ -325,7 +325,7 @@
         showing?          (r/atom (localstorage/get "show-panel" false))
         dragging?         (r/atom false)
         pin-to-bottom?    (r/atom true)
-        selected-tab      (r/atom :traces)
+        selected-tab      (r/atom (localstorage/get "selected-tab" :traces))
         window-width      js/window.innerWidth
         handle-keys       (fn [e]
                            (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
@@ -353,6 +353,10 @@
                :update-show-panel
                (fn [_ _ _ new-state]
                  (localstorage/save! "show-panel" new-state)))
+    (add-watch selected-tab
+               :update-selected-tab
+               (fn [_ _ _ new-state]
+                 (localstorage/save! "selected-tab" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
                                  (toggle-traces showing?)
