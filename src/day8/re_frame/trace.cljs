@@ -317,13 +317,13 @@
 (defn devtools []
   ;; Add clear button
   ;; Filter out different trace types
-  (let [position             (r/atom :right)
-        panel-width%         (r/atom (localstorage/get "panel-width-ratio" 0.35))
-        showing?             (r/atom (localstorage/get "show-panel" false))
-        dragging?            (r/atom false)
-        pin-to-bottom?       (r/atom true)
-        selected-tab         (r/atom :traces)
-        window-width         (r/atom js/window.innerWidth)
+  (let [position          (r/atom :right)
+        panel-width%      (r/atom (localstorage/get "panel-width-ratio" 0.35))
+        showing?          (r/atom (localstorage/get "show-panel" false))
+        dragging?         (r/atom false)
+        pin-to-bottom?    (r/atom true)
+        selected-tab      (r/atom (localstorage/get "selected-tab" :traces))
+        window-width      js/window.innerWidth
         handle-window-resize (fn [e]
                                ;; N.B. I don't think this should be a perf bottleneck.
                                (reset! window-width js/window.innerWidth))
@@ -356,6 +356,10 @@
                :update-show-panel
                (fn [_ _ _ new-state]
                  (localstorage/save! "show-panel" new-state)))
+    (add-watch selected-tab
+               :update-selected-tab
+               (fn [_ _ _ new-state]
+                 (localstorage/save! "selected-tab" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
                                  (toggle-traces showing?)
