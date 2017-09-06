@@ -1,11 +1,11 @@
 @background-blue: #e7f1ff;
 @background-gray: #f7f7f8;
-@dark-green: #119457;
-@dark-gold: #ab8c00;
+@dark-green: #008766;
+@dark-gold: #A66900;
 @dark-purple: #762cff;
 @dark-blue: #284694;
 @dark-gray: gray;
-@dark-skyblue: #0091e2;
+@dark-skyblue: #007CC2;
 @medium-gray: #999;
 @light-purple: #616cdb;
 @light-blue: lightblue;
@@ -237,7 +237,7 @@
     font-weight: bold;
   }
   th, td {
-    padding: 8px 5px;
+    padding: 10px 5px;
   }
   tr {
     &:hover {
@@ -291,8 +291,16 @@
         word-break: break-all;
       }
       &.trace--details-tags {
+        padding: 0;
         color: @text-color-muted;
         cursor: pointer;
+
+        .trace--details-tags-text {
+          border-left: 3px solid @light-gray;
+          padding: 8px 5px;
+          padding-left: 8px;
+          margin-bottom: 5px;
+        }
       }
       &.trace--meta {
         color: @text-color-muted;

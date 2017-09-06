@@ -183,7 +183,7 @@
 }
 #--re-frame-trace-- th,
 #--re-frame-trace-- td {
-  padding: 8px 5px;
+  padding: 10px 5px;
 }
 #--re-frame-trace-- tr:hover {
   background: #f7f7f8;
@@ -192,16 +192,16 @@
   border-top: 1px solid #ececec;
 }
 #--re-frame-trace-- tr.trace--sub-create .trace--op {
-  color: #119457;
+  color: #008766;
 }
 #--re-frame-trace-- tr.trace--sub-run .trace--op {
   color: #762cff;
 }
 #--re-frame-trace-- tr.trace--event .trace--op {
-  color: #ab8c00;
+  color: #a66900;
 }
 #--re-frame-trace-- tr.trace--render .trace--op {
-  color: #0091e2;
+  color: #007cc2;
 }
 #--re-frame-trace-- tr.trace--fsm-trigger .trace--op {
   color: #284694;
@@ -220,8 +220,15 @@
   word-break: break-all;
 }
 #--re-frame-trace-- tr td.trace--details-tags {
+  padding: 0;
   color: #8f8f8f;
   cursor: pointer;
+}
+#--re-frame-trace-- tr td.trace--details-tags .trace--details-tags-text {
+  border-left: 3px solid #efeef1;
+  padding: 8px 5px;
+  padding-left: 8px;
+  margin-bottom: 5px;
 }
 #--re-frame-trace-- tr td.trace--meta {
   color: #8f8f8f;

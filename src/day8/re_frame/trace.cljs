@@ -201,11 +201,12 @@
                  [:td]
                  [:td.trace--details-tags {:col-span 4
                                            :on-click #(.log js/console tags)}
-                   (let [tag-str (with-out-str (pprint/pprint tags))
-                         string-size-limit 400]
-                        (if (< string-size-limit (count tag-str))
-                          (str (subs tag-str 0 string-size-limit) " ...")
-                          tag-str))]]))))))
+                   [:div.trace--details-tags-text
+                     (let [tag-str (with-out-str (pprint/pprint tags))
+                           string-size-limit 400]
+                          (if (< string-size-limit (count tag-str))
+                            (str (subs tag-str 0 string-size-limit) " ...")
+                            tag-str))]]]))))))
 (defn render-trace-panel []
   (let [filter-input               (r/atom "")
         filter-items               (r/atom (localstorage/get "filter-items" []))
