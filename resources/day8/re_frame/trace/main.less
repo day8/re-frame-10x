@@ -236,10 +236,16 @@
   thead {
     font-weight: bold;
   }
-  th, td {
-    padding: 10px 5px;
-  }
+
   tr {
+    th, td {
+      padding: 10px 0;
+    }
+
+    th:first-child {
+      text-align: right;
+    }
+
     &:hover {
       background: @background-gray;
     }
@@ -289,6 +295,7 @@
       }
       &.trace--op-string {
         word-break: break-all;
+        width: 100%;
       }
       &.trace--details-tags {
         padding: 0;
@@ -317,9 +324,15 @@
         }
       }
     }
-  }
-  tr:nth-child(even) {
-    // background: @background-gray;
+
+    th, td {
+      &:first-child {
+        padding-left: 7px;
+      }
+      &:last-child {
+        padding-right: 7px;
+      }
+    }
   }
   .button {
     padding: 5px 5px 3px;
@@ -407,7 +420,7 @@
   .panel-content-top {
   }
   .panel-content-scrollable {
-    margin: 0 10px;
+    padding-top: 10px;
     flex: 1 1 auto;
     height: 100%;
     overflow: auto;

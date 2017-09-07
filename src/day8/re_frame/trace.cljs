@@ -257,8 +257,6 @@
                   @filter-items)]]
          [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
           [:table
-           {:style {:margin-bottom 10}
-            :cell-spacing "0" :width "100%"}
            [:thead>tr
             [:th {:style {:padding 0}}
               [:button.text-button

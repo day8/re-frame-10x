@@ -181,9 +181,12 @@
 #--re-frame-trace-- thead {
   font-weight: bold;
 }
-#--re-frame-trace-- th,
-#--re-frame-trace-- td {
-  padding: 10px 5px;
+#--re-frame-trace-- tr th,
+#--re-frame-trace-- tr td {
+  padding: 10px 0;
+}
+#--re-frame-trace-- tr th:first-child {
+  text-align: right;
 }
 #--re-frame-trace-- tr:hover {
   background: #f7f7f8;
@@ -218,6 +221,7 @@
 }
 #--re-frame-trace-- tr td.trace--op-string {
   word-break: break-all;
+  width: 100%;
 }
 #--re-frame-trace-- tr td.trace--details-tags {
   padding: 0;
@@ -242,6 +246,14 @@
 #--re-frame-trace-- tr td .op-string:hover {
   border-bottom: 1px dotted #616cdb;
   padding-bottom: 0;
+}
+#--re-frame-trace-- tr th:first-child,
+#--re-frame-trace-- tr td:first-child {
+  padding-left: 7px;
+}
+#--re-frame-trace-- tr th:last-child,
+#--re-frame-trace-- tr td:last-child {
+  padding-right: 7px;
 }
 #--re-frame-trace-- .button {
   padding: 5px 5px 3px;
@@ -320,7 +332,6 @@
   color: #222222;
 }
 #--re-frame-trace-- .panel-content-scrollable {
-  margin: 0 10px;
   flex: 1 1 auto;
   height: 100%;
   overflow: auto;
