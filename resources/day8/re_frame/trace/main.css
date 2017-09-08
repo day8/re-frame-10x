@@ -207,6 +207,17 @@
 #--re-frame-trace-- tr.trace--fsm-trigger .trace--op {
   color: #284694;
 }
+#--re-frame-trace-- tr.trace--details {
+  color: #8f8f8f;
+}
+#--re-frame-trace-- tr.trace--details:hover {
+  color: #5c5c5c;
+}
+#--re-frame-trace-- tr.trace--details:hover .trace--details-icon:before {
+  color: #222222;
+  cursor: pointer;
+  content: "🖶";
+}
 #--re-frame-trace-- tr td.trace--toggle {
   color: #a8a8a8;
   padding: 0;
@@ -226,7 +237,6 @@
 }
 #--re-frame-trace-- tr td.trace--details-tags {
   padding: 0;
-  color: #8f8f8f;
   cursor: pointer;
 }
 #--re-frame-trace-- tr td.trace--details-tags .trace--details-tags-text {

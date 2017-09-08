@@ -281,6 +281,17 @@
       }
     }
     &.trace--details {
+      color: @text-color-muted;
+
+      &:hover {
+        color: darken(@text-color-muted, 20);
+
+        .trace--details-icon:before {
+          color: @text-color;
+          cursor: pointer;
+          content: "🖶";
+        }
+      }
     }
 
     td {
@@ -304,7 +315,6 @@
       }
       &.trace--details-tags {
         padding: 0;
-        color: @text-color-muted;
         cursor: pointer;
 
         .trace--details-tags-text {

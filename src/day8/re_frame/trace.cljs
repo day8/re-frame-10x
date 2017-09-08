@@ -205,14 +205,16 @@
                             (when show-row?
                               [:tr.trace--details {:key (str id "-details")}
                                [:td]
-                               [:td.trace--details-tags {:col-span 4
+                               [:td.trace--details-tags {:col-span 2
                                                          :on-click #(.log js/console tags)}
                                  [:div.trace--details-tags-text
                                    (let [tag-str (with-out-str (pprint/pprint tags))
                                          string-size-limit 400]
                                         (if (< string-size-limit (count tag-str))
                                           (str (subs tag-str 0 string-size-limit) " ...")
-                                          tag-str))]]]))))))))
+                                          tag-str))]]
+                               [:td.trace--meta.trace--details-icon
+                                  {:on-click #(.log js/console tags)}]]))))))))
 (defn render-trace-panel []
   (let [filter-input               (r/atom "")
         filter-items               (r/atom (localstorage/get "filter-items" []))
