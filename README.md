@@ -114,6 +114,8 @@ You need both the re-frame-trace project _and_ a test project to develop it agai
   lein less once
   ```
 
+  And then any time you want to reload the CSS, you have to **manually save/touch `styles.cljs`**. Figwheel will not do it for you. ([See below](#problems-while-developing-css) for details).
+
 
 ### Developing CSS
 
@@ -131,6 +133,6 @@ We are using CSS preprocessing because in order to isolate the panel styles, we 
 
 #### Problems while developing CSS
 
-- You may need to then save a `.cljs` file to trigger a figwheel reload.
-- Did you run `lein less auto` to compile LESS to CSS?
-- Try clearing your browser cache/hard-reloading
+- You must touch or save the `styles.cljs` file to trigger a CSS reload if you're editing `main.less`. This is because `styles.cljs` slurps `main.css` with a macro that happens before Clojurescript compilation, so figwheel isn't aware of the changes.
+- Did you run `lein less auto` or `lein less once` to compile LESS to CSS?
+- Try clearing your browser cache/hard-reloading.
