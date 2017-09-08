@@ -83,6 +83,10 @@
 #--re-frame-trace-- input {
   overflow: visible;
 }
+#--re-frame-trace-- button:focus,
+#--re-frame-trace-- select:focus {
+  outline: #999999 dotted 1px;
+}
 #--re-frame-trace-- button,
 #--re-frame-trace-- html [type="button"],
 #--re-frame-trace-- [type="reset"],
@@ -210,13 +214,19 @@
 #--re-frame-trace-- tr.trace--details {
   color: #8f8f8f;
 }
-#--re-frame-trace-- tr.trace--details:hover {
+#--re-frame-trace-- tr.trace--details:hover,
+#--re-frame-trace-- tr.trace--details:focus {
   color: #5c5c5c;
 }
-#--re-frame-trace-- tr.trace--details:hover .trace--details-icon:before {
+#--re-frame-trace-- tr.trace--details:hover .trace--details-icon:before,
+#--re-frame-trace-- tr.trace--details:focus .trace--details-icon:before {
   color: #222222;
   cursor: pointer;
   content: "🖶";
+}
+#--re-frame-trace-- tr.trace--details:focus .trace--details-tags-text {
+  border-left: 1px dotted #999999;
+  padding-left: 7px;
 }
 #--re-frame-trace-- tr td.trace--toggle {
   color: #a8a8a8;
@@ -225,6 +235,7 @@
 }
 #--re-frame-trace-- tr td.trace--toggle button:focus {
   color: #222222;
+  outline: none;
 }
 #--re-frame-trace-- tr td.trace--op {
   color: #8f8f8f;
@@ -278,12 +289,8 @@
   border-bottom: 1px dotted #888;
   font-weight: normal;
 }
-#--re-frame-trace-- .button:focus,
 #--re-frame-trace-- .text-button:focus {
-  border-radius: 2px 2px 0 0;
-  -webkit-box-shadow: inset 0px -5px 0px 0px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px -5px 0px 0px rgba(0, 0, 0, 0.3);
-  box-shadow: inset 0px -5px 0px 0px rgba(0, 0, 0, 0.3);
+  outline: #999999 dotted 1px;
 }
 #--re-frame-trace-- .icon-button {
   font-size: 10px;
@@ -306,18 +313,16 @@
 }
 #--re-frame-trace-- ul.filter-items {
   list-style-type: none;
-  padding: 0;
-  margin: 0 -5px;
-  margin-top: 10px;
+  margin: 0 5px;
 }
-#--re-frame-trace-- .filter-items li {
+#--re-frame-trace-- ul.filter-items li {
   color: #333;
   background: #efeef1;
   display: inline-block;
   font-size: 0.9em;
-  margin: 5px;
+  margin: 10px 5px;
 }
-#--re-frame-trace-- .filter-items li .filter-item-string {
+#--re-frame-trace-- ul.filter-items li .filter-item-string {
   color: #616cdb;
 }
 #--re-frame-trace-- .icon {
@@ -331,14 +336,34 @@
 #--re-frame-trace-- .icon-remove {
   margin-left: 10px;
 }
-#--re-frame-trace-- select {
+#--re-frame-trace-- .filter {
+  box-shadow: -7px 15px 6px -15px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+}
+#--re-frame-trace-- .filter .filter-control select {
+  border: none;
+  border-bottom: 1px solid #8f8f8f;
   background: white;
+  display: inline-block;
   font-family: 'courier new', monospace;
   font-size: 1em;
   padding: 2px 0 0 0;
   -moz-appearance: menulist;
   -webkit-appearance: menulist;
   appearance: menulist;
+}
+#--re-frame-trace-- .filter .filter-control .filter-control-input {
+  border-bottom: 1px solid #8f8f8f;
+  display: inline-block;
+}
+#--re-frame-trace-- .filter .filter-control .filter-control-input:before {
+  display: inline-block;
+  color: #8f8f8f;
+  content: "⚲";
+  transform: rotate(-45deg);
+}
+#--re-frame-trace-- .filter .filter-control .filter-control-input input {
+  border: none;
 }
 #--re-frame-trace-- .nav {
   background: #efeef1;
@@ -349,9 +374,7 @@
   height: 100%;
   overflow: auto;
   padding-top: 10px;
-  -webkit-box-shadow: inset -1px 18px 13px -22px rgba(0, 0, 0, 0.7);
-  -moz-box-shadow: inset -1px 18px 13px -22px rgba(0, 0, 0, 0.7);
-  box-shadow: inset -1px 18px 13px -22px rgba(0, 0, 0, 0.7);
+  z-index: 1000;
 }
 #--re-frame-trace-- .tab-contents {
   display: flex;

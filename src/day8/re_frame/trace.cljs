@@ -126,8 +126,7 @@
                 (when (pos? (count v))
                   (on-save v)))]
     (fn []
-      [:input {:style       {:margin-left 7}
-               :type        "text"
+      [:input {:type        "text"
                :value       @val
                :auto-focus  true
                :on-change   #(do (reset! val (-> % .-target .-value))
@@ -203,7 +202,8 @@
                              [:td.trace--meta
                               (.toFixed duration 1) " ms"]]
                             (when show-row?
-                              [:tr.trace--details {:key (str id "-details")}
+                              [:tr.trace--details {:key (str id "-details")
+                                                   :tab-index 0}
                                [:td]
                                [:td.trace--details-tags {:col-span 2
                                                          :on-click #(.log js/console tags)}
@@ -239,30 +239,31 @@
 
 
         [:div.tab-contents
-          [:div.filter-control
-           [:div.filter-control-input
-            [:select {:value @filter-type
-                      :on-change #(reset! filter-type (keyword (.. % -target -value)))}
-             [:option {:value "contains"} "contains"]
-             [:option {:value "slower-than"} "slower than"]]
-            [search-input {:on-save save-query
-                           :on-change #(reset! filter-input (.. % -target -value))}]
-            [:button.button.icon-button {:on-click save-query
-                                         :style {:margin 0}}
-             [components/icon-add]]
-            (if @input-error
-              [:div.input-error {:style {:color "red" :margin-top 5}}
-               "Please enter a valid number."])]
-           [:ul.filter-items
-             (map (fn [item]
-                      ^{:key (:id item)}
-                      [:li.filter-item
-                        [:button.button
-                          {:style {:margin 0}
-                           :on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
-                          (:filter-type item) ": " [:span.filter-item-string (:query item)]
-                          [:span.icon-button [components/icon-remove]]]])
-                  @filter-items)]]
+          [:div.filter
+            [:div.filter-control
+              [:select {:value @filter-type
+                        :on-change #(reset! filter-type (keyword (.. % -target -value)))}
+                [:option {:value "contains"} "contains"]
+                [:option {:value "slower-than"} "slower than"]]
+              [:div.filter-control-input {:style {:margin-left 10}}
+                [search-input {:on-save save-query
+                               :on-change #(reset! filter-input (.. % -target -value))}]
+                [:button.button.icon-button {:on-click save-query
+                                             :style {:margin 0}}
+                 [components/icon-add]]
+                (if @input-error
+                  [:div.input-error {:style {:color "red" :margin-top 5}}
+                   "Please enter a valid number."])]]
+            [:ul.filter-items
+               (map (fn [item]
+                        ^{:key (:id item)}
+                        [:li.filter-item
+                          [:button.button
+                            {:style {:margin 0}
+                             :on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
+                            (:filter-type item) ": " [:span.filter-item-string (:query item)]
+                            [:span.icon-button [components/icon-remove]]]])
+                    @filter-items)]]
          [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
           [:table
            [:thead>tr
