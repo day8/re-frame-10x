@@ -212,6 +212,9 @@
   padding: 0;
   text-align: right;
 }
+#--re-frame-trace-- tr td.trace--toggle button:focus {
+  color: #222222;
+}
 #--re-frame-trace-- tr td.trace--op {
   color: #8f8f8f;
   padding-left: 0;
