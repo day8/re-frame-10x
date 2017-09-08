@@ -161,52 +161,58 @@
                                              (js/parseFloat filter-input))
                               :filter-type filter-type})))
 
-(defn render-traces [showing-traces filter-items filter-input trace-detail-expansions]
+(defn render-traces [visible-traces filter-items filter-input trace-detail-expansions]
   (doall
-    (for [{:keys [op-type id operation tags duration] :as trace} showing-traces]
-      (let [show-row?        (get-in @trace-detail-expansions [:overrides id]
-                               (:show-all? @trace-detail-expansions))
-            op-name          (if (vector? operation)
-                               (second operation)
-                               operation)
-            #_#__ (js/console.log (devtools/header-api-call tags))]
-        (list [:tr {:key   id
-                    :on-click (fn [ev]
-                                (swap! trace-detail-expansions update-in [:overrides id]
-                                       #(if show-row? false (not %))))
-                    :class (str/join " " ["trace--trace"
-                                          (case op-type
-                                           :sub/create "trace--sub-create"
-                                           :sub/run "trace--sub-run"
-                                           :event "trace--event"
-                                           :render "trace--render"
-                                           :re-frame.router/fsm-trigger "trace--fsm-trigger"
-                                           nil)])}
-               [:td.trace--toggle
-                [:button (if show-row? "▼" "▶")]]
-               [:td.trace--op
-                    [:span.op-string {:on-click (fn [ev]
-                                                  (add-filter filter-items (name op-type) :contains)
-                                                  (.stopPropagation ev))}
-                      (str op-type)]]
-               [:td.trace--op-string
-                    [:span.op-string {:on-click (fn [ev]
-                                                  (add-filter filter-items (name op-name) :contains)
-                                                  (.stopPropagation ev))}
-                      op-name]]
-               [:td.trace--meta
-                (.toFixed duration 1) " ms"]]
-              (when show-row?
-                [:tr.trace--details {:key (str id "-details")}
-                 [:td]
-                 [:td.trace--details-tags {:col-span 4
-                                           :on-click #(.log js/console tags)}
-                   [:div.trace--details-tags-text
-                     (let [tag-str (with-out-str (pprint/pprint tags))
-                           string-size-limit 400]
-                          (if (< string-size-limit (count tag-str))
-                            (str (subs tag-str 0 string-size-limit) " ...")
-                            tag-str))]]]))))))
+    (->>
+      visible-traces
+      (map-indexed (fn [index {:keys [op-type id operation tags duration] :as trace}]
+                    (let [show-row?        (get-in @trace-detail-expansions [:overrides id]
+                                             (:show-all? @trace-detail-expansions))
+                          op-name          (if (vector? operation)
+                                             (second operation)
+                                             operation)
+                          #_#__ (js/console.log (devtools/header-api-call tags))]
+                      (list [:tr {:key   id
+                                  :on-click (fn [ev]
+                                              (swap! trace-detail-expansions update-in [:overrides id]
+                                                     #(if show-row? false (not %))))
+                                  :class (str/join " " ["trace--trace"
+                                                        (case op-type
+                                                         :sub/create "trace--sub-create"
+                                                         :sub/run "trace--sub-run"
+                                                         :event "trace--event"
+                                                         :render "trace--render"
+                                                         :re-frame.router/fsm-trigger "trace--fsm-trigger"
+                                                         nil)
+                                                        (if (even? index)
+                                                          "trace--trace-even"
+                                                          "trace--trace-odd")])}
+
+                             [:td.trace--toggle
+                              [:button (if show-row? "▼" "▶")]]
+                             [:td.trace--op
+                                  [:span.op-string {:on-click (fn [ev]
+                                                                (add-filter filter-items (name op-type) :contains)
+                                                                (.stopPropagation ev))}
+                                    (str op-type)]]
+                             [:td.trace--op-string
+                                  [:span.op-string {:on-click (fn [ev]
+                                                                (add-filter filter-items (name op-name) :contains)
+                                                                (.stopPropagation ev))}
+                                    op-name]]
+                             [:td.trace--meta
+                              (.toFixed duration 1) " ms"]]
+                            (when show-row?
+                              [:tr.trace--details {:key (str id "-details")}
+                               [:td]
+                               [:td.trace--details-tags {:col-span 4
+                                                         :on-click #(.log js/console tags)}
+                                 [:div.trace--details-tags-text
+                                   (let [tag-str (with-out-str (pprint/pprint tags))
+                                         string-size-limit 400]
+                                        (if (< string-size-limit (count tag-str))
+                                          (str (subs tag-str 0 string-size-limit) " ...")
+                                          tag-str))]]]))))))))
 (defn render-trace-panel []
   (let [filter-input               (r/atom "")
         filter-items               (r/atom (localstorage/get "filter-items" []))
@@ -218,7 +224,7 @@
                (fn [_ _ _ new-state]
                  (localstorage/save! "filter-items" new-state)))
     (fn []
-      (let [showing-traces       (if (= @filter-items [])
+      (let [visible-traces       (if (= @filter-items [])
                                    @traces
                                    (filter (apply every-pred (map query->fn @filter-items)) @traces))
             save-query           (fn [_]
@@ -270,14 +276,14 @@
             [:th "operations"]
             [:th
               (when (pos? (count @filter-items))
-                (str (count showing-traces) " of "))
+                (str (count visible-traces) " of "))
               (when (pos? (count @traces))
                 (str (count @traces)))
               " events "
               (when (pos? (count @traces))
                 [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
             [:th {:style {:text-align "right"}} "meta"]]
-           [:tbody (render-traces showing-traces filter-items filter-input trace-detail-expansions)]]]]))))
+           [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]))))
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0

@@ -183,16 +183,14 @@
 }
 #--re-frame-trace-- tr th,
 #--re-frame-trace-- tr td {
-  padding: 10px 0;
+  padding: 6px;
 }
 #--re-frame-trace-- tr th:first-child {
   text-align: right;
 }
-#--re-frame-trace-- tr:hover {
-  background: #f7f7f8;
-}
-#--re-frame-trace-- tr.trace--trace {
-  border-top: 1px solid #ececec;
+#--re-frame-trace-- tr.trace--trace-even,
+#--re-frame-trace-- tr.trace--trace-even + .trace--details {
+  background: #fafafa;
 }
 #--re-frame-trace-- tr.trace--sub-create .trace--op {
   color: #008766;
@@ -210,7 +208,7 @@
   color: #284694;
 }
 #--re-frame-trace-- tr td.trace--toggle {
-  color: #8f8f8f;
+  color: #a8a8a8;
   padding: 0;
   text-align: right;
 }
@@ -229,7 +227,6 @@
   cursor: pointer;
 }
 #--re-frame-trace-- tr td.trace--details-tags .trace--details-tags-text {
-  border-left: 3px solid #efeef1;
   padding: 8px 5px;
   padding-left: 8px;
   margin-bottom: 5px;
@@ -246,6 +243,9 @@
 #--re-frame-trace-- tr td .op-string:hover {
   border-bottom: 1px dotted #616cdb;
   padding-bottom: 0;
+}
+#--re-frame-trace-- tr:hover .trace--toggle {
+  color: #222222;
 }
 #--re-frame-trace-- tr th:first-child,
 #--re-frame-trace-- tr td:first-child {

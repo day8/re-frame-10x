@@ -1,5 +1,6 @@
 @background-blue: #e7f1ff;
-@background-gray: #f7f7f8;
+@background-gray: #a8a8a8;
+@background-gray-hint: #fafafa;
 @dark-green: #008766;
 @dark-gold: #A66900;
 @dark-purple: #762cff;
@@ -239,19 +240,19 @@
 
   tr {
     th, td {
-      padding: 10px 0;
+      padding: 6px;
     }
 
     th:first-child {
       text-align: right;
     }
 
-    &:hover {
-      background: @background-gray;
+    &.trace--trace {
     }
 
-    &.trace--trace {
-      border-top: 1px solid #ececec;
+    &.trace--trace-even,
+    &.trace--trace-even + .trace--details {
+      background: @background-gray-hint;
     }
 
     &.trace--sub-create {
@@ -284,7 +285,7 @@
 
     td {
       &.trace--toggle {
-        color: @text-color-muted;
+        color: @background-gray;
         padding: 0;
         text-align: right;
       }
@@ -303,7 +304,6 @@
         cursor: pointer;
 
         .trace--details-tags-text {
-          border-left: 3px solid @light-gray;
           padding: 8px 5px;
           padding-left: 8px;
           margin-bottom: 5px;
@@ -322,6 +322,12 @@
           border-bottom: 1px dotted @light-purple;
           padding-bottom: 0;
         }
+      }
+    }
+
+    &:hover {
+      .trace--toggle {
+        color: @text-color;
       }
     }
 
