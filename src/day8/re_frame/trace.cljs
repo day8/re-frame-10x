@@ -278,8 +278,9 @@
                   (if (:show-all? @trace-detail-expansions) "-" "+")]]
             [:th "operations"]
             [:th
-              [:span {:class (str/join " " ["filter-items-count"
-                                            (when (pos? (count @filter-items)) "highlight")])}
+              [:button {:class (str/join " " ["filter-items-count"
+                                              (when (pos? (count @filter-items)) "active")])
+                        :on-click #(reset! filter-items [])}
                 (when (pos? (count @filter-items))
                   (str (count visible-traces) " of "))
                 (str (count @traces))]

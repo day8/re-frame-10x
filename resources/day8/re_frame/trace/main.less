@@ -494,7 +494,14 @@
   .filter-control {
     margin: 10px 0 0 10px;
   }
-  .highlight {
-    background: @yellow;
+
+  .filter-items-count {
+    &.active {
+      background: @yellow;
+
+      &:hover {
+        text-decoration: line-through;
+      }
+    }
   }
 }
