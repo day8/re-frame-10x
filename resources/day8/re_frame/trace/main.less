@@ -11,6 +11,7 @@
 @light-purple: #616cdb;
 @light-blue: lightblue;
 @light-gray: #efeef1;
+@yellow: yellow;
 @text-color: #222;
 @text-color-muted: #8f8f8f;
 
@@ -409,15 +410,21 @@
     list-style-type: none;
     margin: 0 5px;
 
-    li {
-      color: #333;
-      background: @light-gray;
+    .filter-item {
+      color: @text-color-muted;
+      background: @background-gray-hint;
+      border: 1px solid @light-gray;
       display: inline-block;
       font-size: 0.9em;
       margin: 10px 5px;
 
       .filter-item-string {
-        color: @light-purple;
+        color: @text-color;
+        background: @yellow;
+      }
+
+      &:hover {
+        text-decoration: line-through;
       }
     }
   }
@@ -486,5 +493,8 @@
   }
   .filter-control {
     margin: 10px 0 0 10px;
+  }
+  .highlight {
+    background: @yellow;
   }
 }

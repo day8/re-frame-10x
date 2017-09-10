@@ -315,15 +315,20 @@
   list-style-type: none;
   margin: 0 5px;
 }
-#--re-frame-trace-- ul.filter-items li {
-  color: #333;
-  background: #efeef1;
+#--re-frame-trace-- ul.filter-items .filter-item {
+  color: #8f8f8f;
+  background: #fafafa;
+  border: 1px solid #efeef1;
   display: inline-block;
   font-size: 0.9em;
   margin: 10px 5px;
 }
-#--re-frame-trace-- ul.filter-items li .filter-item-string {
-  color: #616cdb;
+#--re-frame-trace-- ul.filter-items .filter-item .filter-item-string {
+  color: #222222;
+  background: #ffff00;
+}
+#--re-frame-trace-- ul.filter-items .filter-item:hover {
+  text-decoration: line-through;
 }
 #--re-frame-trace-- .icon {
   display: inline-block;
@@ -383,4 +388,7 @@
 }
 #--re-frame-trace-- .filter-control {
   margin: 10px 0 0 10px;
+}
+#--re-frame-trace-- .highlight {
+  background: #ffff00;
 }

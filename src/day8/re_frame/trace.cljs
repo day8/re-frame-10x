@@ -278,10 +278,11 @@
                   (if (:show-all? @trace-detail-expansions) "-" "+")]]
             [:th "operations"]
             [:th
-              (when (pos? (count @filter-items))
-                (str (count visible-traces) " of "))
-              (when (pos? (count @traces))
-                (str (count @traces)))
+              [:span {:class (str/join " " ["filter-items-count"
+                                            (when (pos? (count @filter-items)) "highlight")])}
+                (when (pos? (count @filter-items))
+                  (str (count visible-traces) " of "))
+                (str (count @traces))]
               " events "
               (when (pos? (count @traces))
                 [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
