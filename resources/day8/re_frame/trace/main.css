@@ -244,7 +244,6 @@
 }
 #--re-frame-trace-- tr td.trace--op-string {
   word-break: break-all;
-  width: 100%;
 }
 #--re-frame-trace-- tr td.trace--details-tags {
   padding: 0;

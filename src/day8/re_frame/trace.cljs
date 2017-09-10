@@ -248,9 +248,7 @@
               [:div.filter-control-input {:style {:margin-left 10}}
                 [search-input {:on-save save-query
                                :on-change #(reset! filter-input (.. % -target -value))}]
-                [:button.button.icon-button {:on-click save-query
-                                             :style {:margin 0}}
-                 [components/icon-add]]
+                 [components/icon-add]
                 (if @input-error
                   [:div.input-error {:style {:color "red" :margin-top 5}}
                    "Please enter a valid number."])]]
@@ -261,8 +259,7 @@
                           [:button.button
                             {:style {:margin 0}
                              :on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
-                            (:filter-type item) ": " [:span.filter-item-string (:query item)]
-                            [:span.icon-button [components/icon-remove]]]])
+                            (:filter-type item) ": " [:span.filter-item-string (:query item)]]])
                     @filter-items)]]
          [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
           [:table
