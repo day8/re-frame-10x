@@ -230,14 +230,14 @@
                  (localstorage/save! "filter-items" new-state)))
     (fn []
       (let [toggle-category-fn   (fn [category-keys]
-                                   (swap! categories #(set (if (empty? (set/intersection @categories category-keys))
-                                                             (concat category-keys @categories)
-                                                             (remove category-keys @categories)))))
+                                   (swap! categories #(set (if (empty? (set/intersection % category-keys))
+                                                             (concat category-keys %)
+                                                             (remove category-keys %)))))
             set-active           (fn [category]
                                    (when (contains? @categories category) "active"))
             visible-traces       (cond->> @traces
-                                   (not (empty? @categories))   (filter #(when (contains? @categories (:op-type %)) %))
-                                   (not (empty? @filter-items)) (filter (apply every-pred (map query->fn @filter-items))))
+                                   (not (empty? @categories))    (filter #(when (contains? @categories (:op-type %)) %))
+                                   (not (empty? @filter-items))  (filter (apply every-pred (map query->fn @filter-items))))
             save-query           (fn [_]
                                    (if (and (= @filter-type :slower-than)
                                             (js/isNaN (js/parseFloat @filter-input)))
@@ -260,15 +260,16 @@
                "re-frame"]
               [:li.filter-category {:class (set-active :render)
                                     :on-click #(toggle-category-fn #{:render :componentWillUnmount})}
-               "reagent"]
+               "reagent"]]
+             [:div
               [:select {:value @filter-type
                         :on-change #(reset! filter-type (keyword (.. % -target -value)))}
                 [:option {:value "contains"} "contains"]
                 [:option {:value "slower-than"} "slower than"]]
               [:div.filter-control-input {:style {:margin-left 10}}
                 [search-input {:on-save save-query
-                               :on-change #(reset! filter-input (.. % -target -value))}
-                 [components/icon-add]]
+                               :on-change #(reset! filter-input (.. % -target -value))}]
+                [components/icon-add]
                 (if @input-error
                   [:div.input-error {:style {:color "red" :margin-top 5}}
                    "Please enter a valid number."])]]]
