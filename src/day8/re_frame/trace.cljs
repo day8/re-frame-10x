@@ -6,6 +6,7 @@
             [re-frame.trace :as trace :include-macros true]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
+            [clojure.set :as set]
             [reagent.core :as r]
             [reagent.interop :refer-macros [$ $!]]
             [reagent.impl.util :as util]
@@ -215,20 +216,28 @@
                                           tag-str))]]
                                [:td.trace--meta.trace--details-icon
                                   {:on-click #(.log js/console tags)}]]))))))))
+
 (defn render-trace-panel []
   (let [filter-input               (r/atom "")
         filter-items               (r/atom (localstorage/get "filter-items" []))
         filter-type                (r/atom :contains)
         input-error                (r/atom false)
+        categories                 (r/atom #{:event :sub/run :sub/create})
         trace-detail-expansions    (r/atom {:show-all? false :overrides {}})]
     (add-watch filter-items
                :update-localstorage
                (fn [_ _ _ new-state]
                  (localstorage/save! "filter-items" new-state)))
     (fn []
-      (let [visible-traces       (if (= @filter-items [])
-                                   @traces
-                                   (filter (apply every-pred (map query->fn @filter-items)) @traces))
+      (let [toggle-category-fn   (fn [category-keys]
+                                   (swap! categories #(set (if (empty? (set/intersection @categories category-keys))
+                                                             (concat category-keys @categories)
+                                                             (remove category-keys @categories)))))
+            set-active           (fn [category]
+                                   (when (contains? @categories category) "active"))
+            visible-traces       (cond->> @traces
+                                   (not (empty? @categories))   (filter #(when (contains? @categories (:op-type %)) %))
+                                   (not (empty? @filter-items)) (filter (apply every-pred (map query->fn @filter-items))))
             save-query           (fn [_]
                                    (if (and (= @filter-type :slower-than)
                                             (js/isNaN (js/parseFloat @filter-input)))
@@ -236,22 +245,33 @@
                                      (do
                                        (reset! input-error false)
                                        (add-filter filter-items @filter-input @filter-type))))]
-
-
         [:div.tab-contents
           [:div.filter
             [:div.filter-control
+             [:ul.filter-categories "show: "
+              [:li.filter-category {:class (set-active :event)
+                                    :on-click #(toggle-category-fn #{:event})}
+               "events"]
+              [:li.filter-category {:class (set-active :sub/run)
+                                    :on-click #(toggle-category-fn #{:sub/run :sub/create})}
+               "subscriptions"]
+              [:li.filter-category {:class (set-active :re-frame.router/fsm-trigger)
+                                    :on-click #(toggle-category-fn #{:re-frame.router/fsm-trigger})}
+               "re-frame"]
+              [:li.filter-category {:class (set-active :render)
+                                    :on-click #(toggle-category-fn #{:render :componentWillUnmount})}
+               "reagent"]
               [:select {:value @filter-type
                         :on-change #(reset! filter-type (keyword (.. % -target -value)))}
                 [:option {:value "contains"} "contains"]
                 [:option {:value "slower-than"} "slower than"]]
               [:div.filter-control-input {:style {:margin-left 10}}
                 [search-input {:on-save save-query
-                               :on-change #(reset! filter-input (.. % -target -value))}]
-                 [components/icon-add]
+                               :on-change #(reset! filter-input (.. % -target -value))}
+                 [components/icon-add]]
                 (if @input-error
                   [:div.input-error {:style {:color "red" :margin-top 5}}
-                   "Please enter a valid number."])]]
+                   "Please enter a valid number."])]]]
             [:ul.filter-items
                (map (fn [item]
                         ^{:key (:id item)}
