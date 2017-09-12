@@ -236,8 +236,8 @@
             set-active           (fn [category]
                                    (when (contains? @categories category) "active"))
             visible-traces       (cond->> @traces
-                                   (not (empty? @categories))    (filter #(when (contains? @categories (:op-type %)) %))
-                                   (not (empty? @filter-items))  (filter (apply every-pred (map query->fn @filter-items))))
+                                   (seq @categories)    (filter #(when (contains? @categories (:op-type %)) %))
+                                   (seq @filter-items)  (filter (apply every-pred (map query->fn @filter-items))))
             save-query           (fn [_]
                                    (if (and (= @filter-type :slower-than)
                                             (js/isNaN (js/parseFloat @filter-input)))
