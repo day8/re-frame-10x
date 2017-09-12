@@ -394,6 +394,9 @@
 #--re-frame-trace-- .filter-items-count.active:hover {
   text-decoration: line-through;
 }
+#--re-frame-trace-- .filter-fields {
+  margin-top: 10px;
+}
 #--re-frame-trace-- .filter-category {
   display: inline-block;
   background: #efeef1;

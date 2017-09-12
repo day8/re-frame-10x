@@ -233,10 +233,8 @@
                                    (swap! categories #(set (if (empty? (set/intersection % category-keys))
                                                              (concat category-keys %)
                                                              (remove category-keys %)))))
-            set-active           (fn [category]
-                                   (when (contains? @categories category) "active"))
             visible-traces       (cond->> @traces
-                                   (seq @categories)    (filter #(when (contains? @categories (:op-type %)) %))
+                                   (seq @categories)    (filter (fn [trace] (when (contains? @categories (:op-type trace)) trace)))
                                    (seq @filter-items)  (filter (apply every-pred (map query->fn @filter-items))))
             save-query           (fn [_]
                                    (if (and (= @filter-type :slower-than)
@@ -249,19 +247,19 @@
           [:div.filter
             [:div.filter-control
              [:ul.filter-categories "show: "
-              [:li.filter-category {:class (set-active :event)
+              [:li.filter-category {:class (when (contains? @categories :event) "active")
                                     :on-click #(toggle-category-fn #{:event})}
                "events"]
-              [:li.filter-category {:class (set-active :sub/run)
+              [:li.filter-category {:class (when (contains? @categories :sub/run) "active")
                                     :on-click #(toggle-category-fn #{:sub/run :sub/create})}
                "subscriptions"]
-              [:li.filter-category {:class (set-active :re-frame.router/fsm-trigger)
-                                    :on-click #(toggle-category-fn #{:re-frame.router/fsm-trigger})}
-               "re-frame"]
-              [:li.filter-category {:class (set-active :render)
-                                    :on-click #(toggle-category-fn #{:render :componentWillUnmount})}
-               "reagent"]]
-             [:div
+              [:li.filter-category {:class (when (contains? @categories :render) "active")
+                                    :on-click #(toggle-category-fn #{:render})}
+               "reagent"]
+              [:li.filter-category {:class (when (contains? @categories :re-frame.router/fsm-trigger) "active")
+                                    :on-click #(toggle-category-fn #{:re-frame.router/fsm-trigger :componentWillUnmount})}
+               "internals"]]
+             [:div.filter-fields
               [:select {:value @filter-type
                         :on-change #(reset! filter-type (keyword (.. % -target -value)))}
                 [:option {:value "contains"} "contains"]
