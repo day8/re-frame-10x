@@ -394,3 +394,17 @@
 #--re-frame-trace-- .filter-items-count.active:hover {
   text-decoration: line-through;
 }
+#--re-frame-trace-- .filter-fields {
+  margin-top: 10px;
+}
+#--re-frame-trace-- .filter-category {
+  display: inline-block;
+  background: #efeef1;
+  cursor: pointer;
+  padding: 5px;
+  margin: 5px;
+  opacity: 0.3;
+}
+#--re-frame-trace-- .active {
+  opacity: 1;
+}
