@@ -230,9 +230,10 @@
                  (localstorage/save! "filter-items" new-state)))
     (fn []
       (let [toggle-category-fn   (fn [category-keys]
-                                   (swap! categories #(set (if (empty? (set/intersection % category-keys))
-                                                             (concat category-keys %)
-                                                             (remove category-keys %)))))
+                                   (swap! categories #(if (set/superset? % category-keys)
+                                                        (set/difference % category-keys)
+                                                        (set/union % category-keys))))
+
             visible-traces       (cond->> @traces
                                    (seq @categories)    (filter (fn [trace] (when (contains? @categories (:op-type trace)) trace)))
                                    (seq @filter-items)  (filter (apply every-pred (map query->fn @filter-items))))
