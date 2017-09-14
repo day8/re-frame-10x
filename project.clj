@@ -6,7 +6,8 @@
                  [org.clojure/clojurescript  "1.9.227"]
                  [reagent                    "0.6.0"]
                  [re-frame                   "0.9.0"]
-                 [cljsjs/d3 "4.2.2-0"]]
+                 [cljsjs/d3                  "4.2.2-0"]
+                 [binaryage/devtools         "0.9.4"]]
   :plugins [[lein-less "1.7.5"]]
   :deploy-repositories {"releases" :clojars
                         "snapshots" :clojars}
