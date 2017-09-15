@@ -344,7 +344,8 @@
                              (let [x (.-clientX e)
                                    y (.-clientY e)]
                                (.preventDefault e)
-                               (reset! panel-width-ratio (/ (- window-width x) window-width)))))]
+                               (reset! panel-width-ratio (/ (- window-width x) window-width)))))
+        handle-mouse-up   (fn [e] (reset! dragging? false))]
     (add-watch panel-width-ratio
                :update-panel-width-ratio
                (fn [_ _ _ new-state]
@@ -357,10 +358,12 @@
       {:component-will-mount   (fn []
                                  (toggle-traces showing?)
                                  (js/window.addEventListener "keydown" handle-keys)
-                                 (js/window.addEventListener "mousemove" handle-mousemove))
+                                 (js/window.addEventListener "mousemove" handle-mousemove)
+                                 (js/window.addEventListener "mouseup" handle-mouse-up))
        :component-will-unmount (fn []
                                  (js/window.removeEventListener "keydown" handle-keys)
-                                 (js/window.removeEventListener "mousemove" handle-mousemove))
+                                 (js/window.removeEventListener "mousemove" handle-mousemove)
+                                 (js/window.removeEventListener "mouseup" handle-mouse-up))
        :display-name           "devtools outer"
        :reagent-render         (fn []
                                  (let [draggable-area 10
@@ -376,8 +379,7 @@
                                                :left       left :top "0px" :width (str (inc (int (* 100 @panel-width-ratio))) "%") :height "100%"
                                                :transition transition}}
                                       [:div.panel-resizer {:style         (resizer-style draggable-area)
-                                                           :on-mouse-down #(reset! dragging? true)
-                                                           :on-mouse-up   #(reset! dragging? false)}]
+                                                           :on-mouse-down #(reset! dragging? true)}]
                                       [:div.panel-content
                                         {:style {:width "100%" :height "100%" :display "flex" :flex-direction "column"}}
                                         [:div.panel-content-top
