@@ -574,4 +574,14 @@
       content: "}";
     }
   }
+  .re-frame-trace--object {
+    &:before {
+      color: @text-color-muted;
+      content: "▶ ";
+    }
+    &:after {
+      color: @text-color;
+      content: "{...}";
+    }
+  }
 }
