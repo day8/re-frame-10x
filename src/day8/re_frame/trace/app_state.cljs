@@ -32,20 +32,15 @@
 
 (defn jsonml-style
   [style-map]
-  ; {:style (get style-map "style")}
-  {:style {:background "rgba(0,0,0,0.1)"}})
+  {:style {:background "rgba(0,0,0,0.04)"}})
 
 (defn str->hiccup
   [string]
-  ; (println string)
-  (cond (= string "span")  :span
-        (= string "style") :style
-        ; (= string "}")     nil
-        ; (= string "{")     nil
-        ; (= string " ")     nil
-        ; (= string ", ")    nil
-        :else              string))
-
+  (println string)
+  (cond (= string "span")   :span
+        (= string "style")  :style
+        (= string "object") :span.re-frame-trace--object
+        :else               string))
 
 (defn crawl
   [data]
@@ -63,5 +58,5 @@
 (defn tab [data]
   [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
     [:div.panel-content-scrollable
-      (jsonml->hiccup (js->clj (cljs-devtools/header-api-call data)))]])
+      (jsonml->hiccup (js->clj (cljs-devtools/header-api-call data) :keywordize-keys true))]])
       ; (crawl data)]])
