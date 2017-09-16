@@ -457,3 +457,11 @@
   color: #8f8f8f;
   content: "}";
 }
+#--re-frame-trace-- .re-frame-trace--object:before {
+  color: #8f8f8f;
+  content: "▶ ";
+}
+#--re-frame-trace-- .re-frame-trace--object:after {
+  color: #222222;
+  content: "{...}";
+}
