@@ -36,10 +36,8 @@
 
 (defn str->hiccup
   [string]
-  (println string)
   (cond (= string "span")   :span
         (= string "style")  :style
-        (= string "object") :span.re-frame-trace--object
         :else               string))
 
 (defn crawl
@@ -49,14 +47,18 @@
     (view data)))
 
 (defn jsonml->hiccup
-  [data]
+  [jsonml]
   (cond
-    (vector? data) (mapv jsonml->hiccup data)
-    (map? data)    (jsonml-style data)
-    :else          (str->hiccup data)))
+    (array? jsonml)    (if (= "object" (get jsonml 0))
+                         [:span.re-frame-trace--object
+                           (jsonml->hiccup (cljs-devtools/header-api-call
+                                             (.-object (get jsonml 1))
+                                             (.-config (get jsonml 1))))]
+                         (mapv jsonml->hiccup jsonml))
+    (object? jsonml)   (jsonml-style jsonml)
+    :else              (str->hiccup jsonml)))
 
 (defn tab [data]
   [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
     [:div.panel-content-scrollable
-      (jsonml->hiccup (js->clj (cljs-devtools/header-api-call data) :keywordize-keys true))]])
-      ; (crawl data)]])
+      (jsonml->hiccup (cljs-devtools/header-api-call data))]])
