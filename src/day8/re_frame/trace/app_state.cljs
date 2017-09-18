@@ -30,14 +30,16 @@
     [:div  {:class (str (namespace-css "collection") " " (namespace-css (css-munge (type-string data))))}]
     [:span {:class (str (namespace-css "primative") " " (namespace-css (css-munge (type-string data))))} (str data)]))
 
-(defn jsonml-style
-  [style-map]
-  {:style {:background "rgba(0,0,0,0.04)"}})
+(defn string->css [css-string]
+  (->> (map #(str/split % #":") (str/split (get css-string "style") #";"))
+       (reduce (fn [acc [property value]]
+                 (assoc acc (keyword property) value)) {})))
 
 (defn str->hiccup
   [string]
   (cond (= string "span")   :span
         (= string "style")  :style
+        (= string ", ")     " "
         :else               string))
 
 (defn crawl
@@ -55,7 +57,7 @@
                                              (.-object (get jsonml 1))
                                              (.-config (get jsonml 1))))]
                          (mapv jsonml->hiccup jsonml))
-    (object? jsonml)   (jsonml-style jsonml)
+    (object? jsonml)   {:style (string->css (js->clj jsonml))}
     :else              (str->hiccup jsonml)))
 
 (defn tab [data]
