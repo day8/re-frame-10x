@@ -461,6 +461,10 @@
   color: #8f8f8f;
   content: "▶ ";
 }
+#--re-frame-trace-- .re-frame-trace--object.expanded:before {
+  color: #8f8f8f;
+  content: "▼ ";
+}
 #--re-frame-trace-- .re-frame-trace--object > span {
   vertical-align: text-top;
 }
