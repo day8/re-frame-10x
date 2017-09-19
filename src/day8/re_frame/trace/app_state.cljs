@@ -6,7 +6,8 @@
             [cljs.pprint :refer [pprint]]))
 
 (defn string->css [css-string]
-  (->> (map #(str/split % #":") (str/split (get css-string "style") #";"))
+  (->> (str/split (get css-string "style") #";")
+       (map #(str/split % #":"))
        (reduce (fn [acc [property value]]
                  (assoc acc (keyword property) value)) {})))
 
