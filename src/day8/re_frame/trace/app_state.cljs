@@ -53,7 +53,7 @@
   (cond
     (array? jsonml)    (if (= "object" (get jsonml 0))
                          [:span.re-frame-trace--object
-                           (jsonml->hiccup (cljs-devtools/header-api-call
+                           (jsonml->hiccup (cljs-devtools/body-api-call
                                              (.-object (get jsonml 1))
                                              (.-config (get jsonml 1))))]
                          (mapv jsonml->hiccup jsonml))
