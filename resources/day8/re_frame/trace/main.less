@@ -579,7 +579,12 @@
       color: @text-color-muted;
       content: "▶ ";
     }
-    // display: block;
+    &.expanded {
+      &:before {
+        color: @text-color-muted;
+        content: "▼ ";
+      }
+    }
 
     &>span {
       vertical-align: text-top;
