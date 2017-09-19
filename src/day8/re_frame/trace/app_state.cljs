@@ -23,8 +23,10 @@
   [jsonml]
   (let [expand? (r/atom true)]
     (fn []
-      [:span.re-frame-trace--object
-        {:on-click #(swap! expand? not)}
+      [:span
+        {:class (str/join " " ["re-frame-trace--object"
+                               (when @expand? "expanded")])
+         :on-click #(swap! expand? not)}
         (jsonml->hiccup (if @expand?
                           (cljs-devtools/body-api-call
                             (.-object (get jsonml 1))
