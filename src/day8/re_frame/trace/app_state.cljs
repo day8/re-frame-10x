@@ -22,7 +22,7 @@
 (defn data-structure
   [jsonml]
   (let [expand? (r/atom true)]
-    (fn []
+    (fn [jsonml]
       [:span
         {:class (str/join " " ["re-frame-trace--object"
                                (when @expand? "expanded")])
