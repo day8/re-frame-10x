@@ -464,3 +464,16 @@
 #--re-frame-trace-- .re-frame-trace--object > span {
   vertical-align: text-top;
 }
+#--re-frame-trace-- .data-structure-editable.string:before {
+  color: #8f8f8f;
+  content: "\"";
+}
+#--re-frame-trace-- .data-structure-editable.string:after {
+  color: #8f8f8f;
+  content: "\"";
+}
+#--re-frame-trace-- .data-structure-editable input {
+  border: none;
+  border-bottom: 1px #333 dotted;
+  padding: 0;
+}
