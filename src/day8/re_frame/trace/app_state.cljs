@@ -22,13 +22,15 @@
 
 (defn data-structure
   [jsonml]
-  (let [expand? (r/atom true)]
+  (let [expanded? (r/atom true)]
     (fn [jsonml]
       [:span
         {:class (str/join " " ["re-frame-trace--object"
-                               (when @expand? "expanded")])
-         :on-click #(swap! expand? not)}
-        (jsonml->hiccup (if @expand?
+                               (when @expanded? "expanded")])}
+        [:span {:class "toggle"
+                :on-click #(swap! expanded? not)}
+           (if @expanded? "▼" "▶")]
+        (jsonml->hiccup (if @expanded?
                           (cljs-devtools/body-api-call
                             (.-object (get jsonml 1))
                             (.-config (get jsonml 1)))
