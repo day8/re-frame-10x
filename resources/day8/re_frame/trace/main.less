@@ -576,14 +576,23 @@
     }
   }
   .re-frame-trace--object {
-    &:before {
+    .toggle {
       color: @text-color-muted;
-      content: "▶ ";
+      cursor: pointer;
     }
-    &.expanded {
+    &>span {
+      vertical-align: text-top;
+    }
+  }
+  .data-structure-editable {
+    &.string {
       &:before {
         color: @text-color-muted;
-        content: "▼ ";
+        content: "\"";
+      }
+      &:after {
+        color: @text-color-muted;
+        content: "\"";
       }
     }
 

@@ -457,13 +457,9 @@
   color: #8f8f8f;
   content: "}";
 }
-#--re-frame-trace-- .re-frame-trace--object:before {
+#--re-frame-trace-- .re-frame-trace--object .toggle {
   color: #8f8f8f;
-  content: "▶ ";
-}
-#--re-frame-trace-- .re-frame-trace--object.expanded:before {
-  color: #8f8f8f;
-  content: "▼ ";
+  cursor: pointer;
 }
 #--re-frame-trace-- .re-frame-trace--object > span {
   vertical-align: text-top;
