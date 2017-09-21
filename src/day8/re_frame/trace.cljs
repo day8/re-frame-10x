@@ -397,7 +397,7 @@
                                           :traces [render-trace-panel]
                                           :subvis [subvis/render-subvis traces
                                                     [:div.panel-content-scrollable]]
-                                          :app-state [app-state/tab @db/app-db])]]]))})))
+                                          :app-state [app-state/render-state db/app-db])]]]))})))
 (defn panel-div []
   (let [id    "--re-frame-trace--"
         panel (.getElementById js/document id)]

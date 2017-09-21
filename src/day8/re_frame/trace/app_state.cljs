@@ -1,9 +1,7 @@
 (ns day8.re-frame.trace.app-state
   (:require [reagent.core :as r]
             [clojure.string :as str]
-            [devtools.formatters.core :as cljs-devtools]
-
-            [cljs.pprint :refer [pprint]]))
+            [devtools.formatters.core :as cljs-devtools]))
 
 (defn string->css [css-string]
   (->> (str/split (get css-string "style") #";")
@@ -45,7 +43,7 @@
         :else jsonml))))
 
 
-(defn tab [data]
+(defn render-state  [data]
   [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
     [:div.panel-content-scrollable
-     (jsonml->hiccup (cljs-devtools/header-api-call data))]])
+     (jsonml->hiccup (cljs-devtools/header-api-call @data))]])
