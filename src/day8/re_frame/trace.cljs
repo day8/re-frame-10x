@@ -394,15 +394,16 @@
                                           [:div.nav
                                             [:button {:class (str "tab button " (when (= @selected-tab :traces) "active"))
                                                       :on-click #(reset! selected-tab :traces)} "Traces"]
-                                            [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
-                                                      :on-click #(reset! selected-tab :subvis)} "SubVis"]
                                             [:button {:class (str "tab button " (when (= @selected-tab :app-state) "active"))
-                                                      :on-click #(reset! selected-tab :app-state)} "app-state"]]]
+                                                      :on-click #(reset! selected-tab :app-state)} "app-state"]
+                                            [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
+                                                      :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
                                         (case @selected-tab
                                           :traces [render-trace-panel]
+                                          :app-state [app-state/render-state db/app-db]
                                           :subvis [subvis/render-subvis traces
-                                                    [:div.panel-content-scrollable]]
-                                          :app-state [app-state/render-state db/app-db])]]]))})))
+                                                    [:div.panel-content-scrollable]])]]]))})))
+
 (defn panel-div []
   (let [id    "--re-frame-trace--"
         panel (.getElementById js/document id)]
