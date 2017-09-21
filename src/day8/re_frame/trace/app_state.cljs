@@ -36,14 +36,15 @@
   (if (number? jsonml)
     jsonml
     (let [[head & args]             jsonml
-          tagnames                  #{"span" "ol" "li" "div"}]
+          tagnames                  #{"div" "span" "ol" "li" "table" "tr" "td"}]
       (cond
         (contains? tagnames head)   (let [[style & children] args]
-                                      [(keyword head) {:style (-> (js->clj style)
-                                                                  (get "style")
-                                                                  (string->css))}
-                                       (into [:div {:style {:display "inline-block"}}]
-                                             (mapv jsonml->hiccup children))])
+                                      (into
+                                        [(keyword head) {:style (-> (js->clj style)
+                                                                    (get "style")
+                                                                    (string->css))}]
+                                        (map jsonml->hiccup children)))
+
         (= head "object")           [data-structure jsonml]
         (= jsonml ", ")             " "
         :else jsonml))))
