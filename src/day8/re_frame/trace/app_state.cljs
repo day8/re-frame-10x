@@ -11,17 +11,9 @@
        (reduce (fn [acc [property value]]
                  (assoc acc (keyword property) value)) {})))
 
-(defn str->hiccup
-  [string]
-  (cond (= string "span")   :span
-        (= string "style")  :style
-        (= string ", ")     " "
-        :else               string))
-
 (declare jsonml->hiccup)
 
-(defn data-structure
-  [jsonml]
+(defn data-structure [jsonml]
   (let [expanded? (r/atom true)]
     (fn [jsonml]
       [:span
@@ -38,17 +30,22 @@
                             (.-object (get jsonml 1))
                             (.-config (get jsonml 1)))))])))
 
-(defn jsonml->hiccup
-  [jsonml]
-  (cond
-    (and (array? jsonml)
-         (= "object" (first jsonml))) [data-structure jsonml]
-    (array? jsonml)                   (mapv jsonml->hiccup jsonml)
-    (object? jsonml)                  {:style (string->css (js->clj jsonml))}
-    (or (string? jsonml)
-        (integer? jsonml))            (str->hiccup jsonml)))
+(defn jsonml->hiccup [jsonml]
+  (if (number? jsonml)
+    jsonml
+    (let [[head & args] jsonml
+          tagnames #{"span" "ol" "li" "div"}]
+      (cond
+        (contains? tagnames head)   (let [[style & children] args]
+                                      [(keyword head) {:style (string->css (js->clj style))}
+                                       (into [:div {:style {:display "inline-block"}}]
+                                             (mapv jsonml->hiccup children))])
+        (= head "object")           [data-structure jsonml]
+        (= jsonml ", ")             " "
+        :else jsonml))))
+
 
 (defn tab [data]
   [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
     [:div.panel-content-scrollable
-      (jsonml->hiccup (cljs-devtools/header-api-call data))]])
+     (jsonml->hiccup (cljs-devtools/header-api-call data))]])
