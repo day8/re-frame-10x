@@ -4,7 +4,11 @@
             [devtools.formatters.core :as cljs-devtools]))
 
 (defn string->css [css-string]
-  (->> (str/split (get css-string "style") #";")
+  "This function converts jsonml css-strings to valid css maps for hiccup.
+  Example: 'margin-left:0px;min-height:14px;' converts to
+           {:margin-left '0px', :min-height '14px'}"
+
+  (->> (str/split css-string #";")
        (map #(str/split % #":"))
        (reduce (fn [acc [property value]]
                  (assoc acc (keyword property) value)) {})))
@@ -31,17 +35,18 @@
 (defn jsonml->hiccup [jsonml]
   (if (number? jsonml)
     jsonml
-    (let [[head & args] jsonml
-          tagnames #{"span" "ol" "li" "div"}]
+    (let [[head & args]             jsonml
+          tagnames                  #{"span" "ol" "li" "div"}]
       (cond
         (contains? tagnames head)   (let [[style & children] args]
-                                      [(keyword head) {:style (string->css (js->clj style))}
+                                      [(keyword head) {:style (-> (js->clj style)
+                                                                  (get "style")
+                                                                  (string->css))}
                                        (into [:div {:style {:display "inline-block"}}]
                                              (mapv jsonml->hiccup children))])
         (= head "object")           [data-structure jsonml]
         (= jsonml ", ")             " "
         :else jsonml))))
-
 
 (defn render-state  [data]
   [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
