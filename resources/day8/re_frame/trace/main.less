@@ -413,11 +413,13 @@
     border-radius: 0;
     padding-bottom: 1px;
   }
-  ul.filter-items {
+  ul.filter-items,
+  .subtrees {
     list-style-type: none;
     margin: 0 5px;
 
-    .filter-item {
+    .filter-item,
+    .subtree-button {
       color: @text-color-muted;
       background: @background-gray-hint;
       border: 1px solid @light-gray;
@@ -428,6 +430,10 @@
       .filter-item-string {
         color: @text-color;
         background: @yellow;
+      }
+
+      .subtree-button-string {
+        color: @text-color;
       }
 
       &:hover {

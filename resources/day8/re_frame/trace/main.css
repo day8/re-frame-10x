@@ -321,11 +321,15 @@
   border-radius: 0;
   padding-bottom: 1px;
 }
-#--re-frame-trace-- ul.filter-items {
+#--re-frame-trace-- ul.filter-items,
+#--re-frame-trace-- .subtrees {
   list-style-type: none;
   margin: 0 5px;
 }
-#--re-frame-trace-- ul.filter-items .filter-item {
+#--re-frame-trace-- ul.filter-items .filter-item,
+#--re-frame-trace-- .subtrees .filter-item,
+#--re-frame-trace-- ul.filter-items .subtree-button,
+#--re-frame-trace-- .subtrees .subtree-button {
   color: #8f8f8f;
   background: #fafafa;
   border: 1px solid #efeef1;
@@ -333,11 +337,23 @@
   font-size: 0.9em;
   margin: 10px 5px;
 }
-#--re-frame-trace-- ul.filter-items .filter-item .filter-item-string {
+#--re-frame-trace-- ul.filter-items .filter-item .filter-item-string,
+#--re-frame-trace-- .subtrees .filter-item .filter-item-string,
+#--re-frame-trace-- ul.filter-items .subtree-button .filter-item-string,
+#--re-frame-trace-- .subtrees .subtree-button .filter-item-string {
   color: #222222;
   background: #ffff00;
 }
-#--re-frame-trace-- ul.filter-items .filter-item:hover {
+#--re-frame-trace-- ul.filter-items .filter-item .subtree-button-string,
+#--re-frame-trace-- .subtrees .filter-item .subtree-button-string,
+#--re-frame-trace-- ul.filter-items .subtree-button .subtree-button-string,
+#--re-frame-trace-- .subtrees .subtree-button .subtree-button-string {
+  color: #222222;
+}
+#--re-frame-trace-- ul.filter-items .filter-item:hover,
+#--re-frame-trace-- .subtrees .filter-item:hover,
+#--re-frame-trace-- ul.filter-items .subtree-button:hover,
+#--re-frame-trace-- .subtrees .subtree-button:hover {
   text-decoration: line-through;
 }
 #--re-frame-trace-- .icon {
@@ -465,5 +481,16 @@
   cursor: pointer;
 }
 #--re-frame-trace-- .re-frame-trace--object > span {
+  vertical-align: text-top;
+}
+#--re-frame-trace-- .data-structure-editable.string:before {
+  color: #8f8f8f;
+  content: "\"";
+}
+#--re-frame-trace-- .data-structure-editable.string:after {
+  color: #8f8f8f;
+  content: "\"";
+}
+#--re-frame-trace-- .data-structure-editable > span {
   vertical-align: text-top;
 }
