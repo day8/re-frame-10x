@@ -2,28 +2,9 @@
   (:require [reagent.core :as r]
             [clojure.string :as str]
             [devtools.formatters.core :as cljs-devtools]
-            [day8.re-frame.trace.localstorage :as localstorage]))
+            [day8.re-frame.trace.localstorage :as localstorage]
+            [day8.re-frame.trace.components :as components]))
 
-(defn search-input [{:keys [title placeholder on-save on-change on-stop]}]
-  (let [val  (r/atom title)
-        save #(let [v (-> @val str str/trim)]
-                (when (pos? (count v))
-                  (on-save v)))]
-    (fn []
-      [:input {:type        "text"
-               :value       @val
-               :auto-focus  true
-               :placeholder placeholder
-               :size        (if (> 20 (count (str @val)))
-                              25
-                              (count (str @val)))
-               :on-change   #(do (reset! val (-> % .-target .-value))
-                                 (on-change %))
-               :on-key-down #(case (.-which %)
-                               13 (do
-                                    (save)
-                                    (reset! val ""))
-                               nil)}])))
 
 (defn string->css [css-string]
   "This function converts jsonml css-strings to valid css maps for hiccup.
@@ -100,18 +81,18 @@
       [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
         [:div.panel-content-scrollable {:style {:margin 10}}
           [:div.filter-control-input
-            [search-input {:placeholder ":path :into :app-state"
-                           :on-save (fn [path]
-                                      (if false ;; TODO check if path exists
-                                        (reset! input-error true)
-                                        (do
-                                          ; (reset! input-error false)
-                                          ;; TODO check if input already wrapped in braces
-                                          (swap! subtree-paths conj (cljs.reader/read-string (str "[" path "]"))))))
-                           :on-change #(reset! subtree-input (.. % -target -value))}]]
-            ; (if @input-error
-            ;   [:div.input-error {:style {:color "red" :margin-top 5}}
-            ;    "Please enter a valid path."])]]
+            [components/search-input {:placeholder ":path :into :app-state"
+                                      :on-save (fn [path]
+                                                 (if false ;; TODO check if path exists
+                                                   (reset! input-error true)
+                                                   (do
+                                                     ; (reset! input-error false)
+                                                     ;; TODO check if input already wrapped in braces
+                                                     (swap! subtree-paths #(into #{(cljs.reader/read-string (str "[" path "]"))} %)))))
+                                      :on-change #(reset! subtree-input (.. % -target -value))}]]
+                       ; (if @input-error
+                       ;   [:div.input-error {:style {:color "red" :margin-top 5}}
+                       ;    "Please enter a valid path."])]]
 
           [:div.subtrees {:style {:margin "20px 0"}}
             (doall
