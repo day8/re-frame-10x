@@ -25,6 +25,7 @@
         {:class (str/join " " ["re-frame-trace--object"
                                (when @expanded? "expanded")])}
         [:span {:class "toggle"
+                :style {:margin-left 1}
                 :on-click #(swap! expanded? not)}
            [:button (if @expanded? "▼" "▶")]]
         (jsonml->hiccup (if @expanded?
@@ -59,6 +60,7 @@
         {:class (str/join " " ["re-frame-trace--object"
                                (when @expanded? "expanded")])}
         [:span {:class "toggle"
+                :style {:margin-left 1}
                 :on-click #(swap! expanded? not)}
            [:button (if @expanded? "▼ " "▶ ")]]
         (or title "data")
@@ -71,12 +73,19 @@
 
 (defn render-state  [data]
   (let [subtree-input  (r/atom "")
+        last-valid-subtree-input (r/atom "")
         subtree-paths  (r/atom (localstorage/get "subtree-paths" #{}))
         input-error    (r/atom false)]
     (add-watch subtree-paths
                :update-localstorage
                (fn [_ _ _ new-state]
                  (localstorage/save! "subtree-paths" new-state)))
+    (add-watch subtree-input
+               :update-subtree-autocomplete
+               (fn [_ _ prev-state new-state]
+                 (when-let [preview (try (get-in @data (cljs.reader/read-string (str "[" @subtree-input "]")))
+                                         (catch js/Error e nil))]
+                   (reset! last-valid-subtree-input @subtree-input))))
     (fn []
       [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
         [:div.panel-content-scrollable {:style {:margin 10}}
@@ -88,12 +97,21 @@
                                                    (do
                                                      ; (reset! input-error false)
                                                      ;; TODO check if input already wrapped in braces
+                                                     (reset! subtree-input "")
                                                      (swap! subtree-paths #(into #{(cljs.reader/read-string (str "[" path "]"))} %)))))
                                       :on-change #(reset! subtree-input (.. % -target -value))}]]
                        ; (if @input-error
                        ;   [:div.input-error {:style {:color "red" :margin-top 5}}
                        ;    "Please enter a valid path."])]]
-
+          (when (not (zero? (count @subtree-input)))
+            [:div
+             [:div {:style {:margin "10px 0"}}
+               (when (coll? (get-in @data (cljs.reader/read-string (str "[" @last-valid-subtree-input "]"))))
+                 (when-let [keys (keys (get-in @data (cljs.reader/read-string (str "[" @last-valid-subtree-input "]"))))]
+                   (map (fn [key] [:button.label {:key (str key)}
+                                    (str key)])
+                        keys)))]
+             [:div (str (get-in @data (cljs.reader/read-string (str "[" @last-valid-subtree-input "]"))))]])
           [:div.subtrees {:style {:margin "20px 0"}}
             (doall
               (map (fn [path]
@@ -106,4 +124,4 @@
                                  [:span.subtree-button-string
                                    (str path)]]]]])
                 @subtree-paths))]
-          [subtree @data [:span.label "app-state"]]]])))
+          [subtree @data [:button.label "app-state"]]]])))
