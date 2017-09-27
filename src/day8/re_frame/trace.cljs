@@ -120,24 +120,6 @@
   []
   (monkey-patch-reagent))
 
-
-(defn search-input [{:keys [title on-save on-change on-stop]}]
-  (let [val  (r/atom title)
-        save #(let [v (-> @val str str/trim)]
-                (when (pos? (count v))
-                  (on-save v)))]
-    (fn []
-      [:input {:type        "text"
-               :value       @val
-               :auto-focus  true
-               :on-change   #(do (reset! val (-> % .-target .-value))
-                                 (on-change %))
-               :on-key-down #(case (.-which %)
-                               13 (do
-                                    (save)
-                                    (reset! val ""))
-                               nil)}])))
-
 (defn query->fn [query]
   (if (= :contains (:filter-type query))
     (fn [trace]
@@ -263,8 +245,8 @@
                 [:option {:value "contains"} "contains"]
                 [:option {:value "slower-than"} "slower than"]]
               [:div.filter-control-input {:style {:margin-left 10}}
-                [search-input {:on-save save-query
-                               :on-change #(reset! filter-input (.. % -target -value))}]
+                [components/search-input {:on-save save-query
+                                          :on-change #(reset! filter-input (.. % -target -value))}]
                 (if @input-error
                   [:div.input-error {:style {:color "red" :margin-top 5}}
                    "Please enter a valid number."])]]]
