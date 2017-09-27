@@ -4,8 +4,6 @@
             [devtools.formatters.core :as cljs-devtools]
             [day8.re-frame.trace.localstorage :as localstorage]))
 
-;; TODO move search-input into components ns
-
 (defn search-input [{:keys [title placeholder on-save on-change on-stop]}]
   (let [val  (r/atom title)
         save #(let [v (-> @val str str/trim)]
@@ -40,14 +38,14 @@
 (declare jsonml->hiccup)
 
 (defn data-structure [jsonml]
-  (let [expanded? (r/atom true)]
+  (let [expanded? (r/atom false)]
     (fn [jsonml]
       [:span
         {:class (str/join " " ["re-frame-trace--object"
                                (when @expanded? "expanded")])}
         [:span {:class "toggle"
                 :on-click #(swap! expanded? not)}
-           (if @expanded? "▼" "▶")]
+           [:button (if @expanded? "▼" "▶")]]
         (jsonml->hiccup (if @expanded?
                           (cljs-devtools/body-api-call
                             (.-object (get jsonml 1))
@@ -73,7 +71,24 @@
         (= jsonml ", ")             " "
         :else jsonml))))
 
-(defn render-state [data]
+(defn subtree [data title]
+  (let [expanded? (r/atom false)]
+    (fn [data]
+      [:div
+        {:class (str/join " " ["re-frame-trace--object"
+                               (when @expanded? "expanded")])}
+        [:span {:class "toggle"
+                :on-click #(swap! expanded? not)}
+           [:button (if @expanded? "▼ " "▶ ")]]
+        (or title "data")
+        [:div {:style {:margin-left 20}}
+          (cond
+            (and @expanded?
+              (or (string? data)
+                  (number? data)))  [:div {:style {:margin "10px 0"}} data]
+            @expanded?              (jsonml->hiccup (cljs-devtools/header-api-call data)))]])))
+
+(defn render-state  [data]
   (let [subtree-input  (r/atom "")
         subtree-paths  (r/atom (localstorage/get "subtree-paths" #{}))
         input-error    (r/atom false)]
@@ -87,7 +102,7 @@
           [:div.filter-control-input
             [search-input {:placeholder ":path :into :app-state"
                            :on-save (fn [path]
-                                      (if false ;; TODO check if path exists in app-state
+                                      (if false ;; TODO check if path exists
                                         (reset! input-error true)
                                         (do
                                           ; (reset! input-error false)
@@ -104,19 +119,10 @@
                      ^{:key path}
                      [:div.subtree-wrapper {:style {:margin "10px 0"}}
                        [:div.subtree
-                         [:button.subtree-button {:on-click #(swap! subtree-paths disj path)}
-                           [:span.subtree-button-string
-                             (str path)]]
-                         [:div {:style {:margin-top 10
-                                        :margin-left 10
-                                        :padding-bottom 10}}
-                           (if-let [jsonml (cljs-devtools/header-api-call (get-in @data path))]
-                             (jsonml->hiccup jsonml)
-                             (get-in @data path))]]])
+                             [subtree
+                               (get-in @data path)
+                               [:button.subtree-button {:on-click #(swap! subtree-paths disj path)}
+                                 [:span.subtree-button-string
+                                   (str path)]]]]])
                 @subtree-paths))]
-
-          [:div [:h1 {:style {:font-size 20
-                              :margin-top 30
-                              :display "block"}}
-                  "app-state"]]
-          [:div {:style {:margin-top 10}} (jsonml->hiccup (cljs-devtools/header-api-call @data))]]])))
+          [subtree @data [:span.label "app-state"]]]])))

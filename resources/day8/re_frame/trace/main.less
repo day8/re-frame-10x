@@ -243,6 +243,16 @@
   font-family: 'courier new', monospace;
   color: @text-color;
 
+  /* mixins */
+  .label {
+    color: @text-color-muted;
+    background: @background-gray-hint;
+    border: 1px solid @light-gray;
+    font-size: 0.9em;
+    margin: 10px 5px;
+    color: @text-color;
+  }
+
   table {
     width: 100%;
     font-size: 14px;
@@ -420,12 +430,8 @@
 
     .filter-item,
     .subtree-button {
-      color: @text-color-muted;
-      background: @background-gray-hint;
-      border: 1px solid @light-gray;
+      .label;
       display: inline-block;
-      font-size: 0.9em;
-      margin: 10px 5px;
 
       .filter-item-string {
         color: @text-color;

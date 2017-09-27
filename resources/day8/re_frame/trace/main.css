@@ -23,6 +23,7 @@
   background: white;
   font-family: 'courier new', monospace;
   color: #222222;
+  /* mixins */
   /* app-state data viewer
      ========================================================================== */
 }
@@ -186,6 +187,14 @@
 #--re-frame-trace-- tr {
   display: table-row;
 }
+#--re-frame-trace-- .label {
+  color: #8f8f8f;
+  background: #fafafa;
+  border: 1px solid #efeef1;
+  font-size: 0.9em;
+  margin: 10px 5px;
+  color: #222222;
+}
 #--re-frame-trace-- table {
   width: 100%;
   font-size: 14px;
@@ -333,9 +342,10 @@
   color: #8f8f8f;
   background: #fafafa;
   border: 1px solid #efeef1;
-  display: inline-block;
   font-size: 0.9em;
   margin: 10px 5px;
+  color: #222222;
+  display: inline-block;
 }
 #--re-frame-trace-- ul.filter-items .filter-item .filter-item-string,
 #--re-frame-trace-- .subtrees .filter-item .filter-item-string,
