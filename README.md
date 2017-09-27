@@ -47,6 +47,8 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ## Usage
 
+- **Make sure you have followed all of the installation instructions above.**
+
 - Start up your application.
 
 - Once it is loaded, focus the document window and press `ctrl-h` to slide open the trace panel and enable tracing.
