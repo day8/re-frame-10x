@@ -18,47 +18,55 @@
 
 (declare jsonml->hiccup)
 
-(defn data-structure [jsonml]
-  (let [expanded? (r/atom false)]
-    (fn [jsonml]
-      [:span
-        {:class (str/join " " ["re-frame-trace--object"
-                               (when @expanded? "expanded")])}
-        [:span {:class "toggle"
-                :on-click #(swap! expanded? not)}
-           [:button (if @expanded? "▼" "▶")]]
-        (jsonml->hiccup (if @expanded?
-                          (cljs-devtools/body-api-call
-                            (.-object (get jsonml 1))
-                            (.-config (get jsonml 1)))
-                          (cljs-devtools/header-api-call
-                            (.-object (get jsonml 1))
-                            (.-config (get jsonml 1)))))])))
+(defn data-structure
+  ([jsonml]
+   (data-structure jsonml 0))
+  ([jsonml depth]
+   (let [expanded? (r/atom false)]
+     (fn [jsonml]
+       [:div
+         {:class (str/join " " ["re-frame-trace--object"
+                                (when @expanded? "expanded")])}
+         [:span {:class "toggle"
+                 :on-click #(swap! expanded? not)}
+            [:button (if @expanded? "▼" "▶")]]
+         (jsonml->hiccup (if @expanded?
+                           (cljs-devtools/body-api-call
+                             (.-object (get jsonml 1))
+                             (.-config (get jsonml 1)))
+                           (cljs-devtools/header-api-call
+                             (.-object (get jsonml 1))
+                             (.-config (get jsonml 1))))
+                         (+ depth 1))]))))
 
-(defn jsonml->hiccup [jsonml]
-  (if (number? jsonml)
-    jsonml
-    (let [[head & args]             jsonml
-          tagnames                  #{"div" "span" "ol" "li" "table" "tr" "td"}]
-      (cond
-        (contains? tagnames head)   (let [[style & children] args]
-                                      (into
-                                        [(keyword head) {:style (-> (js->clj style)
-                                                                    (get "style")
-                                                                    (string->css))}]
-                                        (map jsonml->hiccup children)))
+(defn jsonml->hiccup
+  ([jsonml]
+   (jsonml->hiccup jsonml 0))
+  ([jsonml depth]
+   (if (number? jsonml)
+     jsonml
+     (let [[head & args]             jsonml
+           tagnames                  #{"div" "span" "ol" "li" "table" "tr" "td"}]
+       (cond
+         (contains? tagnames head)   (let [[style & children] args]
+                                       (into
+                                         [(keyword head) {:style (-> (js->clj style)
+                                                                     (get "style")
+                                                                     (string->css))}]
+                                         (map jsonml->hiccup children)))
 
-        (= head "object")           [data-structure jsonml]
-        (= jsonml ", ")             " "
-        :else jsonml))))
+         (= head "object")           [data-structure jsonml (+ depth 1)]
+         (= jsonml ", ")             " "
+         :else                       jsonml)))))
 
 (defn subtree [data title]
-  (let [expanded? (r/atom false)]
+  (let [expanded? (r/atom true)]
     (fn [data]
       [:div
         {:class (str/join " " ["re-frame-trace--object"
                                (when @expanded? "expanded")])}
-        [:span {:class "toggle"
+        [:span {:style {:margin-left 1}
+                :class "toggle"
                 :on-click #(swap! expanded? not)}
            [:button (if @expanded? "▼ " "▶ ")]]
         (or title "data")
