@@ -362,7 +362,11 @@
 #--re-frame-trace-- ul.filter-items .filter-item:hover,
 #--re-frame-trace-- .subtrees .filter-item:hover,
 #--re-frame-trace-- ul.filter-items .subtree-button:hover,
-#--re-frame-trace-- .subtrees .subtree-button:hover {
+#--re-frame-trace-- .subtrees .subtree-button:hover,
+#--re-frame-trace-- ul.filter-items .filter-item:focus,
+#--re-frame-trace-- .subtrees .filter-item:focus,
+#--re-frame-trace-- ul.filter-items .subtree-button:focus,
+#--re-frame-trace-- .subtrees .subtree-button:focus {
   text-decoration: line-through;
 }
 #--re-frame-trace-- .icon {
