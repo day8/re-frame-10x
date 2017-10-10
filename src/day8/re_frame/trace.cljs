@@ -1,9 +1,11 @@
 (ns day8.re-frame.trace
   (:require [day8.re-frame.trace.subvis :as subvis]
+            [day8.re-frame.trace.app-state :as app-state]
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components :as components]
             [day8.re-frame.trace.localstorage :as localstorage]
             [re-frame.trace :as trace :include-macros true]
+            [re-frame.db :as db]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
             [clojure.set :as set]
@@ -25,8 +27,6 @@
     (if-not (empty? n)
       n
       "")))
-
-
 
 (def static-fns
   {:render
@@ -119,24 +119,6 @@
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
   []
   (monkey-patch-reagent))
-
-
-(defn search-input [{:keys [title on-save on-change on-stop]}]
-  (let [val  (r/atom title)
-        save #(let [v (-> @val str str/trim)]
-                (when (pos? (count v))
-                  (on-save v)))]
-    (fn []
-      [:input {:type        "text"
-               :value       @val
-               :auto-focus  true
-               :on-change   #(do (reset! val (-> % .-target .-value))
-                                 (on-change %))
-               :on-key-down #(case (.-which %)
-                               13 (do
-                                    (save)
-                                    (reset! val ""))
-                               nil)}])))
 
 (defn query->fn [query]
   (if (= :contains (:filter-type query))
@@ -266,9 +248,8 @@
                 [:option {:value "contains"} "contains"]
                 [:option {:value "slower-than"} "slower than"]]
               [:div.filter-control-input {:style {:margin-left 10}}
-                [search-input {:on-save save-query
-                               :on-change #(reset! filter-input (.. % -target -value))}]
-                [components/icon-add]
+                [components/search-input {:on-save save-query
+                                          :on-change #(reset! filter-input (.. % -target -value))}]
                 (if @input-error
                   [:div.input-error {:style {:color "red" :margin-top 5}}
                    "Please enter a valid number."])]]]
@@ -326,7 +307,7 @@
         showing?          (r/atom (localstorage/get "show-panel" false))
         dragging?         (r/atom false)
         pin-to-bottom?    (r/atom true)
-        selected-tab      (r/atom :traces)
+        selected-tab      (r/atom (localstorage/get "selected-tab" :traces))
         window-width      js/window.innerWidth
         handle-keys       (fn [e]
                            (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
@@ -354,6 +335,10 @@
                :update-show-panel
                (fn [_ _ _ new-state]
                  (localstorage/save! "show-panel" new-state)))
+    (add-watch selected-tab
+               :update-selected-tab
+               (fn [_ _ _ new-state]
+                 (localstorage/save! "selected-tab" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
                                  (toggle-traces showing?)
@@ -386,10 +371,13 @@
                                           [:div.nav
                                             [:button {:class (str "tab button " (when (= @selected-tab :traces) "active"))
                                                       :on-click #(reset! selected-tab :traces)} "Traces"]
+                                            [:button {:class (str "tab button " (when (= @selected-tab :app-state) "active"))
+                                                      :on-click #(reset! selected-tab :app-state)} "app-state"]
                                             [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
                                                       :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
                                         (case @selected-tab
                                           :traces [render-trace-panel]
+                                          :app-state [app-state/render-state db/app-db]
                                           :subvis [subvis/render-subvis traces
                                                     [:div.panel-content-scrollable]])]]]))})))
 

@@ -214,6 +214,13 @@
   table {
     display: table;
   }
+  th, td {
+    display: table-cell;
+    padding: 0 5px;
+  }
+  tr {
+    display: table-row;
+  }
   thead {
     display: table-header-group;
   }
@@ -234,6 +241,17 @@
 
   background: white;
   font-family: 'courier new', monospace;
+  color: @text-color;
+
+  /* mixins */
+  .label {
+    color: @text-color-muted;
+    background: @background-gray-hint;
+    border: 1px solid @light-gray;
+    font-size: 0.9em;
+    margin: 10px 5px;
+    color: @text-color;
+  }
 
   table {
     width: 100%;
@@ -405,24 +423,27 @@
     border-radius: 0;
     padding-bottom: 1px;
   }
-  ul.filter-items {
+  ul.filter-items,
+  .subtrees {
     list-style-type: none;
     margin: 0 5px;
 
-    .filter-item {
-      color: @text-color-muted;
-      background: @background-gray-hint;
-      border: 1px solid @light-gray;
+    .filter-item,
+    .subtree-button {
+      .label;
       display: inline-block;
-      font-size: 0.9em;
-      margin: 10px 5px;
 
       .filter-item-string {
         color: @text-color;
         background: @yellow;
       }
 
-      &:hover {
+      .subtree-button-string {
+        color: @text-color;
+      }
+
+      &:hover,
+      &:focus {
         text-decoration: line-through;
       }
     }
@@ -516,5 +537,81 @@
   }
   .active {
     opacity: 1;
+  }
+
+  /* app-state data viewer
+     ========================================================================== */
+
+  .re-frame-trace--collection {
+    border-left: 1px solid @light-gray;
+    margin-left: 10px;
+    padding-left: 10px;
+    // background: rgba(0, 0, 0, 0.07);
+  }
+  .re-frame-trace--primative:not(:first-child) {
+    margin-left: 10px;
+    // color: @text-color-muted;
+  }
+  .re-frame-trace--number {
+  }
+  .re-frame-trace--boolean {
+    font-style: italic;
+  }
+  .re-frame-trace--string {
+    &:before {
+      color: @text-color-muted;
+      content: "\"";
+    }
+    &:after {
+      color: @text-color-muted;
+      content: "\"";
+    }
+  }
+  .re-frame-trace--nil {
+    text-decoration: line-through;
+    font-style: italic;
+  }
+  .re-frame-trace--keyword {
+    color: @light-purple;
+  }
+  .re-frame-trace--symbol {
+  }
+  .re-frame-trace--cljs-core-PersistentArrayMap,
+  .re-frame-trace--cljs-core-PersistentTreeMap,
+  .re-frame-trace--cljs-core-PersistentVector {
+    &:before {
+      color: @text-color-muted;
+      content: "{";
+    }
+    &:after {
+      color: @text-color-muted;
+      content: "}";
+    }
+  }
+  .re-frame-trace--object {
+    display: block;
+    .toggle {
+      color: @text-color-muted;
+      cursor: pointer;
+    }
+    &>span {
+      vertical-align: text-top;
+    }
+  }
+  .data-structure-editable {
+    &.string {
+      &:before {
+        color: @text-color-muted;
+        content: "\"";
+      }
+      &:after {
+        color: @text-color-muted;
+        content: "\"";
+      }
+    }
+
+    &>span {
+      vertical-align: text-top;
+    }
   }
 }
