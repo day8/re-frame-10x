@@ -7,7 +7,7 @@
 (def storage (goog.storage.Storage. (goog.storage.mechanism.HTML5LocalStorage.)))
 
 (defn- safe-key [key]
-  "Adds a unique prefix to keys to ensure they don't collide with the host application"
+  "Adds a unique prefix to local storage keys to ensure they don't collide with the host application"
   (str "day8.re-frame.trace." key))
 
 (defn get

@@ -322,12 +322,12 @@
   ;; Add clear button
   ;; Filter out different trace types
   (let [position          (r/atom :right)
-        panel-width-ratio (r/atom (localstorage/get "panel-width-ratio" 0.35))
+        panel-width% (r/atom (localstorage/get "panel-width-ratio" 0.35))
         showing?          (r/atom (localstorage/get "show-panel" false))
         dragging?         (r/atom false)
         pin-to-bottom?    (r/atom true)
         selected-tab      (r/atom :traces)
-        window-width      js/window.innerWidth
+        window-width      (r/atom js/window.innerWidth)
         handle-keys       (fn [e]
                            (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
                                  tag-name        (.-tagName (.-target e))
@@ -342,11 +342,14 @@
         handle-mousemove  (fn [e]
                            (when @dragging?
                              (let [x (.-clientX e)
-                                   y (.-clientY e)]
+                                   y (.-clientY e)
+                                   new-window-width js/window.innerWidth]
                                (.preventDefault e)
-                               (reset! panel-width-ratio (/ (- window-width x) window-width)))))
+                               ;; Set a minimum width of 5% to prevent people from accidentally dragging it too small.
+                               (reset! panel-width% (max (/ (- new-window-width x) new-window-width) 0.05))
+                               (reset! window-width new-window-width))))
         handle-mouse-up   (fn [e] (reset! dragging? false))]
-    (add-watch panel-width-ratio
+    (add-watch panel-width%
                :update-panel-width-ratio
                (fn [_ _ _ new-state]
                  (localstorage/save! "panel-width-ratio" new-state)))
@@ -367,8 +370,8 @@
        :display-name           "devtools outer"
        :reagent-render         (fn []
                                  (let [draggable-area 10
-                                       left           (if @showing? (str (* 100 (- 1 @panel-width-ratio)) "%")
-                                                                    (str window-width "px"))
+                                       left           (if @showing? (str (* 100 (- 1 @panel-width%)) "%")
+                                                                    (str @window-width "px"))
                                        transition     (if @dragging?
                                                         ""
                                                         ease-transition)]
@@ -376,7 +379,7 @@
                                     {:style {:position "fixed" :width "0px" :height "0px" :top "0px" :left "0px" :z-index 99999999}}
                                     [:div.panel
                                       {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px" :background "white"
-                                               :left       left :top "0px" :width (str (inc (int (* 100 @panel-width-ratio))) "%") :height "100%"
+                                               :left       left :top "0px" :width (str (inc (int (* 100 @panel-width%))) "%") :height "100%"
                                                :transition transition}}
                                       [:div.panel-resizer {:style         (resizer-style draggable-area)
                                                            :on-mouse-down #(reset! dragging? true)}]
