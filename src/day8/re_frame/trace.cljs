@@ -183,10 +183,7 @@
                                                          :event "trace--event"
                                                          :render "trace--render"
                                                          :re-frame.router/fsm-trigger "trace--fsm-trigger"
-                                                         nil)
-                                                        (if (even? index)
-                                                          "trace--trace-even"
-                                                          "trace--trace-odd")])}
+                                                         nil)])}
 
                              [:td.trace--toggle
                               [:button (if show-row? "▼" "▶")]]

@@ -192,8 +192,7 @@
 #--re-frame-trace-- tr th:first-child {
   text-align: right;
 }
-#--re-frame-trace-- tr.trace--trace-even,
-#--re-frame-trace-- tr.trace--trace-even + .trace--details {
+#--re-frame-trace-- tr:nth-child(even) {
   background: #fafafa;
 }
 #--re-frame-trace-- tr.trace--sub-create .trace--op {
