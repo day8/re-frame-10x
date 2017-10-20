@@ -393,34 +393,49 @@
                                           :subvis [subvis/render-subvis traces
                                                     [:div.panel-content-scrollable]])]]]))})))
 
-(defn panel-div []
-  (let [id    "--re-frame-trace--"
-        panel (.getElementById js/document id)]
-    (if panel
-      panel
-      (let [new-panel (.createElement js/document "div")]
-        (.setAttribute new-panel "id" id)
-        (.appendChild (.-body js/document) new-panel)
-        (js/window.focus new-panel)
-        new-panel))))
+(defn panel-shadow
+  "Attaches the panel to the dom and returns the shadow root for rendering.
 
-(defn inject-styles []
-  (let [id    "--re-frame-trace-styles--"
-        styles-el (.getElementById js/document id)
+  Creates a re-frame-trace div on the body of the document
+  and attaches a shadow root, returning the root.
+  Returns an existing shadow root if one exists."
+  []
+  (let [id    "--re-frame-trace--root"]
+    (if-let [panel (.getElementById js/document id)]
+      (.-shadowRoot panel)
+      (let [new-panel (.createElement js/document "div")
+            _ (.setAttribute new-panel "id" id)
+            _ (.appendChild (.-body js/document) new-panel)
+            shadow (.attachShadow new-panel (clj->js {:mode "open"}))]
+        (js/window.focus new-panel)
+        shadow))))
+
+(defn tracing-div
+  "Returns a div inside the shadow-root that can be used for rendering into with React/Reagent.
+  Creates it if it does not exist."
+  [shadow-root]
+  (let [id "--re-frame-trace--"]
+    (if-let [div (.querySelector shadow-root (str "#" id))]
+      div
+      (let [new-div (.createElement js/document "div")]
+        (.setAttribute new-div "id" id)
+        (.appendChild shadow-root new-div)
+        new-div))))
+
+(defn inject-styles [shadow-root]
+  (let [id "--re-frame-trace-styles--"
+        styles-el (.querySelector shadow-root (str "#" id))
         new-styles-el (.createElement js/document "style")
         new-styles styles/panel-styles]
     (.setAttribute new-styles-el "id" id)
-    (-> new-styles-el
-        (.-innerHTML)
-        (set! new-styles))
+    (set! (.-innerHTML new-styles-el) new-styles)
     (if styles-el
-      (-> styles-el
-          (.-parentNode)
-          (.replaceChild new-styles-el styles-el))
-      (let []
-        (.appendChild (.-head js/document) new-styles-el)
-        new-styles-el))))
+      (.replaceChild (.-parentNode styles-el) new-styles-el styles-el)
+      (.appendChild shadow-root new-styles-el))
+    styles-el))
 
 (defn inject-devtools! []
-  (inject-styles)
-  (r/render [devtools] (panel-div)))
+  (let [shadow-root (panel-shadow)
+        div (tracing-div shadow-root)]
+    (inject-styles shadow-root)
+    (r/render [devtools] div)))
