@@ -318,34 +318,37 @@
 (defn devtools []
   ;; Add clear button
   ;; Filter out different trace types
-  (let [position          (r/atom :right)
-        panel-width% (r/atom (localstorage/get "panel-width-ratio" 0.35))
-        showing?          (r/atom (localstorage/get "show-panel" false))
-        dragging?         (r/atom false)
-        pin-to-bottom?    (r/atom true)
-        selected-tab      (r/atom :traces)
-        window-width      (r/atom js/window.innerWidth)
-        handle-keys       (fn [e]
-                           (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
-                                 tag-name        (.-tagName (.-target e))
-                                 key             (.-key e)
-                                 entering-input? (contains? #{"INPUT" "SELECT" "TEXTAREA"} tag-name)]
-                             (when (and (not entering-input?) combo-key?)
-                               (cond
-                                 (and (= key "h") (.-ctrlKey e))
-                                 (do (swap! showing? not)
-                                     (toggle-traces showing?)
-                                     (.preventDefault e))))))
-        handle-mousemove  (fn [e]
-                           (when @dragging?
-                             (let [x (.-clientX e)
-                                   y (.-clientY e)
-                                   new-window-width js/window.innerWidth]
-                               (.preventDefault e)
-                               ;; Set a minimum width of 5% to prevent people from accidentally dragging it too small.
-                               (reset! panel-width% (max (/ (- new-window-width x) new-window-width) 0.05))
-                               (reset! window-width new-window-width))))
-        handle-mouse-up   (fn [e] (reset! dragging? false))]
+  (let [position             (r/atom :right)
+        panel-width%         (r/atom (localstorage/get "panel-width-ratio" 0.35))
+        showing?             (r/atom (localstorage/get "show-panel" false))
+        dragging?            (r/atom false)
+        pin-to-bottom?       (r/atom true)
+        selected-tab         (r/atom :traces)
+        window-width         (r/atom js/window.innerWidth)
+        handle-window-resize (fn [e]
+                               ;; N.B. I don't think this should be a perf bottleneck.
+                               (reset! window-width js/window.innerWidth))
+        handle-keys          (fn [e]
+                               (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
+                                     tag-name        (.-tagName (.-target e))
+                                     key             (.-key e)
+                                     entering-input? (contains? #{"INPUT" "SELECT" "TEXTAREA"} tag-name)]
+                                 (when (and (not entering-input?) combo-key?)
+                                   (cond
+                                     (and (= key "h") (.-ctrlKey e))
+                                     (do (swap! showing? not)
+                                         (toggle-traces showing?)
+                                         (.preventDefault e))))))
+        handle-mousemove     (fn [e]
+                               (when @dragging?
+                                 (let [x                (.-clientX e)
+                                       y                (.-clientY e)
+                                       new-window-width js/window.innerWidth]
+                                   (.preventDefault e)
+                                   ;; Set a minimum width of 5% to prevent people from accidentally dragging it too small.
+                                   (reset! panel-width% (max (/ (- new-window-width x) new-window-width) 0.05))
+                                   (reset! window-width new-window-width))))
+        handle-mouse-up      (fn [e] (reset! dragging? false))]
     (add-watch panel-width%
                :update-panel-width-ratio
                (fn [_ _ _ new-state]
@@ -359,11 +362,13 @@
                                  (toggle-traces showing?)
                                  (js/window.addEventListener "keydown" handle-keys)
                                  (js/window.addEventListener "mousemove" handle-mousemove)
-                                 (js/window.addEventListener "mouseup" handle-mouse-up))
+                                 (js/window.addEventListener "mouseup" handle-mouse-up)
+                                 (js/window.addEventListener "resize" handle-window-resize))
        :component-will-unmount (fn []
                                  (js/window.removeEventListener "keydown" handle-keys)
                                  (js/window.removeEventListener "mousemove" handle-mousemove)
-                                 (js/window.removeEventListener "mouseup" handle-mouse-up))
+                                 (js/window.removeEventListener "mouseup" handle-mouse-up)
+                                 (js/window.removeEventListener "resize" handle-window-resize))
        :display-name           "devtools outer"
        :reagent-render         (fn []
                                  (let [draggable-area 10
