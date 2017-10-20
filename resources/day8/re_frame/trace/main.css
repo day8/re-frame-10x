@@ -448,59 +448,10 @@
 #--re-frame-trace-- .active {
   opacity: 1;
 }
-#--re-frame-trace-- .re-frame-trace--collection {
-  border-left: 1px solid #efeef1;
-  margin-left: 10px;
-  padding-left: 10px;
-}
-#--re-frame-trace-- .re-frame-trace--primative:not(:first-child) {
-  margin-left: 10px;
-}
-#--re-frame-trace-- .re-frame-trace--boolean {
-  font-style: italic;
-}
-#--re-frame-trace-- .re-frame-trace--string:before {
-  color: #8f8f8f;
-  content: "\"";
-}
-#--re-frame-trace-- .re-frame-trace--string:after {
-  color: #8f8f8f;
-  content: "\"";
-}
-#--re-frame-trace-- .re-frame-trace--nil {
-  text-decoration: line-through;
-  font-style: italic;
-}
-#--re-frame-trace-- .re-frame-trace--keyword {
-  color: #616cdb;
-}
-#--re-frame-trace-- .re-frame-trace--cljs-core-PersistentArrayMap:before,
-#--re-frame-trace-- .re-frame-trace--cljs-core-PersistentTreeMap:before,
-#--re-frame-trace-- .re-frame-trace--cljs-core-PersistentVector:before {
-  color: #8f8f8f;
-  content: "{";
-}
-#--re-frame-trace-- .re-frame-trace--cljs-core-PersistentArrayMap:after,
-#--re-frame-trace-- .re-frame-trace--cljs-core-PersistentTreeMap:after,
-#--re-frame-trace-- .re-frame-trace--cljs-core-PersistentVector:after {
-  color: #8f8f8f;
-  content: "}";
-}
 #--re-frame-trace-- .re-frame-trace--object .toggle {
   color: #8f8f8f;
   cursor: pointer;
 }
 #--re-frame-trace-- .re-frame-trace--object > span {
-  vertical-align: text-top;
-}
-#--re-frame-trace-- .data-structure-editable.string:before {
-  color: #8f8f8f;
-  content: "\"";
-}
-#--re-frame-trace-- .data-structure-editable.string:after {
-  color: #8f8f8f;
-  content: "\"";
-}
-#--re-frame-trace-- .data-structure-editable > span {
   vertical-align: text-top;
 }
