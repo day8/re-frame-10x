@@ -35,7 +35,14 @@
                             (.-object (get jsonml 1))
                             (.-config (get jsonml 1)))))])))
 
-(defn jsonml->hiccup [jsonml]
+(defn jsonml->hiccup
+  "JSONML is the format used by Chrome's Custom Object Formatters.
+  The spec is at https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview.
+
+  JSONML is pretty much Hiccup over JSON. Chrome's implementation of this can
+  be found at https://cs.chromium.org/chromium/src/third_party/WebKit/Source/devtools/front_end/object_ui/CustomPreviewComponent.js
+  "
+  [jsonml]
   (if (number? jsonml)
     jsonml
     (let [[head & args]             jsonml
