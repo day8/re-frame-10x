@@ -2,6 +2,7 @@
   all: initial;
   /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
   line-height: 1.15;
+  font-size: 14px;
   /* Text-level semantics
      ========================================================================== */
   /* Embedded content
@@ -457,4 +458,5 @@
 }
 #--re-frame-trace-- .expansion-button {
   font-family: sans-serif;
+  width: 16px;
 }
