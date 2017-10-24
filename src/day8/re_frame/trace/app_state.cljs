@@ -26,7 +26,7 @@
                                (when @expanded? "expanded")])}
         [:span {:class "toggle"
                 :on-click #(swap! expanded? not)}
-           [:button (if @expanded? "▼" "▶")]]
+           [:button.expansion-button (if @expanded? "▼" "▶")]]
         (jsonml->hiccup (if @expanded?
                           (cljs-devtools/body-api-call
                             (.-object (get jsonml 1))
@@ -60,7 +60,7 @@
                                (when @expanded? "expanded")])}
         [:span {:class "toggle"
                 :on-click #(swap! expanded? not)}
-           [:button (if @expanded? "▼ " "▶ ")]]
+           [:button.expansion-button (if @expanded? "▼ " "▶ ")]]
         (or title "data")
         [:div {:style {:margin-left 20}}
           (cond
