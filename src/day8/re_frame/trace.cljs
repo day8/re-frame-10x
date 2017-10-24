@@ -168,7 +168,7 @@
                                                          nil)])}
 
                              [:td.trace--toggle
-                              [:button (if show-row? "▼" "▶")]]
+                              [:button.expansion-button (if show-row? "▼" "▶")]]
                              [:td.trace--op
                                   [:span.op-string {:on-click (fn [ev]
                                                                 (add-filter filter-items (name op-type) :contains)

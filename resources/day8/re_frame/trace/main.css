@@ -455,3 +455,6 @@
 #--re-frame-trace-- .re-frame-trace--object > span {
   vertical-align: text-top;
 }
+#--re-frame-trace-- .expansion-button {
+  font-family: sans-serif;
+}
