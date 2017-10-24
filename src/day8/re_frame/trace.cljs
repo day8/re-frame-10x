@@ -21,15 +21,15 @@
 
 ;; from https://github.com/reagent-project/reagent/blob/3fd0f1b1d8f43dbf169d136f0f905030d7e093bd/src/reagent/impl/component.cljs#L274
 (defn fiber-component-path [fiber]
-  (let [name (some-> fiber
-                     ($ :type)
-                     ($ :displayName))
+  (let [name   (some-> fiber
+                       ($ :type)
+                       ($ :displayName))
         parent (some-> fiber
                        ($ :return))
-        path (some-> parent
-                     fiber-component-path
-                     (str " > "))
-        res (str path name)]
+        path   (some-> parent
+                       fiber-component-path
+                       (str " > "))
+        res    (str path name)]
     (when-not (empty? res) res)))
 
 (defn component-path [c]
@@ -180,6 +180,30 @@
                                              (js/parseFloat filter-input))
                               :filter-type filter-type})))
 
+(defn ^string truncate
+  "Truncate a string to length `n`"
+  [n string]
+  (if (> (count string) n)
+    (str (subs string 0 (dec n)) "…")
+    string))
+
+(defn preview-param
+  "Render parameters in abbreviated form, showing content only for keywords/strings/symbols and entering vectors to a depth of 1."
+  ([param] (preview-param 0 vector? 1 param))
+  ([depth enter-pred max-depth param]
+   (if (or (keyword? param) (string? param) (symbol? param))
+     (truncate 16 (str param))
+     (cond (map? param) "{…}"
+           (vector? param) (if (< depth max-depth)
+                             (str "[" (str/join ", " (mapv #(preview-param (inc depth) enter-pred max-depth %) param)) "]")
+                             "[…]")
+           (set? param) "#{…}"
+           (fn? param) (or (some-> (.-name param)
+                                   (str/replace #"(^.*\$)(.*)" "$2"))
+                           "ƒ")
+           (list? param) "(…)"
+           :else "<…>"))))
+
 (defn render-traces [visible-traces filter-items filter-input trace-detail-expansions]
   (doall
     (->>
@@ -215,7 +239,15 @@
                                   [:span.op-string {:on-click (fn [ev]
                                                                 (add-filter filter-items (name op-name) :contains)
                                                                 (.stopPropagation ev))}
-                                    op-name]]
+                                   (str op-name " ")
+                                   [:span
+                                    {:style {:opacity 0.5
+                                             :display "inline-block"}}
+                                    (when-let [[_ & params] (or (get tags :query-v)
+                                                                (get tags :event))]
+                                      (->> (map preview-param params)
+                                           (str/join ", ")
+                                           (truncate 40)))]]]
                              [:td.trace--meta
                               (.toFixed duration 1) " ms"]]
                             (when show-row?
