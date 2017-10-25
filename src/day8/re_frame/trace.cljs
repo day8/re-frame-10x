@@ -226,6 +226,18 @@
   (assert (= (truncate-string 7 :middle "123456789") "12...89"))
   (assert (= (truncate-string 8 :middle "123456789") "12...789")))
 
+(defn ^string segments-within [n segments]
+  (loop [segments segments
+         length 0
+         out '()]
+    (let [segment (peek segments)]
+      (cond (empty? segments) out
+            (<= (+ length (count segment))
+                n)
+            (recur (pop segments)
+                   (+ length (count segment))
+                   (cons segment out))
+            :else out))))
 
 (defn ^string truncate-named
   [n named]
@@ -241,10 +253,17 @@
              (truncate-string (- n (count prefix)) :start the-name)))
       (let [end (str "/" the-name)
             prefix (if kw? ":" "")
-            ns-budget (- n (count end) (count prefix))]
+            ns-budget (- n (count end) (count prefix))
+            ns-string (some->> (segments-within ns-budget (str/split the-ns #"\."))
+                               (seq)
+                               (str/join "."))]
         (str prefix
-             (truncate-string ns-budget :start the-ns)
+             (when-not (= (count ns-string) (count the-ns))
+               "…")
+             ns-string
+
              end)))))
+
 (defn ^string truncate [n location param]
   (if (satisfies? INamed param)
     (truncate-named n param)
@@ -266,8 +285,8 @@
   (assert (= (truncate-named 5 :city/saskatoon) ":…/…n"))
   (assert (= (truncate-named 11 :city/saskatoon) ":…/…skatoon"))
   (assert (= (truncate-named 12 :city/saskatoon) ":…/saskatoon"))
-  (assert (= (truncate-named 13 :city/saskatoon) ":…y/saskatoon"))
-  (assert (= (truncate-named 14 :city/saskatoon) ":…ty/saskatoon"))
+  (assert (= (truncate-named 13 :city/saskatoon) ":…/saskatoon"))
+  (assert (= (truncate-named 14 :city/saskatoon) ":…/saskatoon"))
   (assert (= (truncate-named 15 :city/saskatoon) ":city/saskatoon"))
   (assert (= (truncate-named 16 :city/saskatoon) ":city/saskatoon"))
 
@@ -275,16 +294,24 @@
   (assert (= (truncate-named 9 'saskatoon) "saskatoon"))
   (assert (= (truncate-named 10 'saskatoon) "saskatoon"))
 
-  (assert (= (truncate-named 1  'city/saskatoon) "…/…"))
-  (assert (= (truncate-named 2  'city/saskatoon) "…/…"))
-  (assert (= (truncate-named 3  'city/saskatoon) "…/…"))
-  (assert (= (truncate-named 4  'city/saskatoon) "…/…n"))
+  (assert (= (truncate-named 1 'city/saskatoon) "…/…"))
+  (assert (= (truncate-named 2 'city/saskatoon) "…/…"))
+  (assert (= (truncate-named 3 'city/saskatoon) "…/…"))
+  (assert (= (truncate-named 4 'city/saskatoon) "…/…n"))
   (assert (= (truncate-named 10 'city/saskatoon) "…/…skatoon"))
   (assert (= (truncate-named 11 'city/saskatoon) "…/saskatoon"))
-  (assert (= (truncate-named 12 'city/saskatoon) "…y/saskatoon"))
-  (assert (= (truncate-named 13 'city/saskatoon) "…ty/saskatoon"))
+  (assert (= (truncate-named 12 'city/saskatoon) "…/saskatoon"))
+  (assert (= (truncate-named 13 'city/saskatoon) "…/saskatoon"))
   (assert (= (truncate-named 14 'city/saskatoon) "city/saskatoon"))
   (assert (= (truncate-named 15 'city/saskatoon) "city/saskatoon")))
+
+(defn str->namespaced-sym [s]
+  (if (string? s)
+    (let [name (second (re-find #"\.([^.]+)$" s))]
+      (if name (symbol (subs s 0 (- (count s) (count name) 1))
+                       name)
+               (symbol s)))
+    s))
 
 (defn edges
   "Return left and right edges of a collection (eg. brackets plus prefixes), defaults to [< >]."
@@ -351,7 +378,7 @@
                                [:span.op-string {:on-click (fn [ev]
                                                              (add-filter filter-items (name op-name) :contains)
                                                              (.stopPropagation ev))}
-                                (str (truncate 16 :middle op-name) " ")
+                                (truncate 20 :middle (str->namespaced-sym op-name)) " "
                                 [:span
                                  {:style {:opacity 0.5
                                           :display "inline-block"}}
@@ -382,7 +409,7 @@
         filter-items            (r/atom (localstorage/get "filter-items" []))
         filter-type             (r/atom :contains)
         input-error             (r/atom false)
-        categories              (r/atom #{:event :sub/run :sub/create})
+        categories              (r/atom #{:event :render :sub/run :sub/create})
         trace-detail-expansions (r/atom {:show-all? false :overrides {}})]
     (add-watch filter-items
                :update-localstorage
