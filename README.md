@@ -24,7 +24,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
   :profiles
      {:dev
         {:dependencies [[some-other-package  "0.0.0"]
-                        [day8.re-frame/trace "0.1.7"]] }}
+                        [day8.re-frame/trace "0.0.0 (see version above)"]] }}
   ```
 
 - Locate the `:compiler` map under `:dev` and add:
