@@ -3,6 +3,74 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+## [0.1.8] - 2017-10-25
+
+### Added
+
+* Add a new App State panel. This lets you visualise your application state and inspect it. You can add multiple selections to view a subset of your application state.
+
+### Fixed
+
+* Handle window viewport size changing and other dragging bugs. This _should_ be the last of them, but open an issue if you still find glitches when resizing.
+
+## [0.1.7] - 2017-09-25
+
+### Changed
+
+* Improve style resetting
+* Visual improvements
+
+### Fixed
+
+* Fix panel resizing behaviour under edge cases
+
+## [0.1.6] - 2017-09-05
+
+### Added
+
+* Log trace data to the console when clicking on it.
+
+## [0.1.5] - 2017-08-31
+
+### Changed
+
+* Put CSS in resources directory
+
+## [0.1.4] - 2017-08-31
+
+### Added
+
+* Save settings to localstorage to persist across reloads
+* Autoscroll to the bottom of the traces panel when at the bottom
+* Use LESS for CSS
+
+## [0.1.3] - 2017-08-24
+
+### Added
+
+* Show/hide traces
+
+## [0.1.2] - 2017-08-16
+
+### Changed
+
+* Move styles and components to trace folder
+
+## [0.1.1] - 2017-08-16
+
+### Added
+
+* Add event filtering
+* Pin the filter input to the top of the panel
+
+### Changed
+
+* Improve installation instructions
+
+### Fixed
+
+* Fix panel resizing
+
 ## [0.1.0] - 2017-05-02
 
 ### Changed
@@ -26,16 +94,8 @@ All notable changes to this project will be documented in this file. This change
 
 This was a botched deploy. See 0.0.8.
 
-## [0.0.6 - 2017-03-28]
+## [0.0.6] - 2017-03-28
 
 ### Added
 
 * Added getting started instructions to README.
-
-
-
-
-[Unreleased]: https://github.com/your-name/keen/compare/0.0.8...HEAD
-[0.0.8]: https://github.com/your-name/keen/compare/0.0.7...0.0.8
-[0.0.7]: https://github.com/your-name/keen/compare/0.0.6...0.0.7
-[0.0.6]: https://github.com/your-name/keen/compare/0.0.5...0.0.6
