@@ -4,8 +4,8 @@
   :license     {:name "MIT"}
   :dependencies [[org.clojure/clojure        "1.8.0"]
                  [org.clojure/clojurescript  "1.9.227"]
-                 [reagent                    "0.6.0"]
-                 [re-frame                   "0.9.0"]
+                 [reagent                    "0.6.0" :scope "provided"]
+                 [re-frame                   "0.9.0" :scope "provided"]
                  [cljsjs/d3                  "4.2.2-0"]
                  [binaryage/devtools         "0.9.4"]]
   :plugins [[lein-less "1.7.5"]]
