@@ -305,7 +305,7 @@
         dragging?         (r/atom false)
         pin-to-bottom?    (r/atom true)
         selected-tab      (r/atom (localstorage/get "selected-tab" :traces))
-        window-width      js/window.innerWidth
+        window-width      (r/atom js/window.innerWidth)
         handle-window-resize (fn [e]
                                ;; N.B. I don't think this should be a perf bottleneck.
                                (reset! window-width js/window.innerWidth))
