@@ -94,14 +94,14 @@
                 (reagent.impl.batching/do-after-render (fn [] (trace/with-trace {:op-type :raf-end})))
                 (real-schedule)))))
 
-
+(def total-traces (interop/ratom 0))
 (def traces (interop/ratom []))
 
 (defn log-trace? [trace]
   (let [rendering? (= (:op-type trace) :render)]
     (if-not rendering?
       true
-      (not (str/includes? (or (get-in trace [:tags :component-path]) "") "day8.re_frame.trace")))
+      (not (str/includes? (get-in trace [:tags :component-path] "") "day8.re_frame.trace")))
 
 
     #_(if-let [comp-p (get-in trace [:tags :component-path])]
@@ -112,8 +112,17 @@
 
 (defn enable-tracing! []
   (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
-                                           (let [new-traces (filter log-trace? new-traces)]
-                                             (swap! traces #(reduce conj % new-traces))))))
+                                           (when-let [new-traces (filter log-trace? new-traces)]
+                                             (swap! total-traces + (count new-traces))
+                                             (swap! traces (fn [existing]
+                                                             (let [new  (reduce conj existing new-traces)
+                                                                   size (count new)]
+                                                               (if (< 4000 size)
+                                                                 (let [new2 (subvec new (- size 2000))]
+                                                                   (if (< @total-traces 20000) ;; Create a new vector to avoid structurally sharing all traces forever
+                                                                     (do (reset! total-traces 0)
+                                                                         (into [] new2))))
+                                                                 new))))))))
 
 (defn init-tracing!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
