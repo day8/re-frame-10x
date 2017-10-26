@@ -50,7 +50,7 @@
        :component-did-update
                      (fn [_]
                        (when (and scroll? @should-scroll)
-                         (scroll! @node [0 (.-scrollTop @node)] [0 (.-scrollHeight @node)] 1600)))
+                         (scroll! @node [0 (.-scrollTop @node)] [0 (.-scrollHeight @node)] 500)))
        :reagent-render
                      (fn [{:keys [class]} child]
                        [:div {:class class :ref (fn [dom-node]
