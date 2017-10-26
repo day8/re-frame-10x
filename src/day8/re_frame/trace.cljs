@@ -387,7 +387,7 @@
                                                       :on-click #(reset! selected-tab :traces)} "Traces"]
                                             [:button {:class (str "tab button " (when (= @selected-tab :app-state) "active"))
                                                       :on-click #(reset! selected-tab :app-state)} "app-state"]
-                                            [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
+                                            #_[:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
                                                       :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
                                         (case @selected-tab
                                           :traces [render-trace-panel]
