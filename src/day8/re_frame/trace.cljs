@@ -178,7 +178,7 @@
                                   [:span.op-string {:on-click (fn [ev]
                                                                 (add-filter filter-items (name op-name) :contains)
                                                                 (.stopPropagation ev))}
-                                    op-name]]
+                                    (str op-name)]]
                              [:td.trace--meta
                               (.toFixed duration 1) " ms"]]
                             (when show-row?
