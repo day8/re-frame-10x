@@ -1,10 +1,11 @@
 (ns day8.re-frame.trace
-  (:require [day8.re-frame.trace.subvis :as subvis]
+  (:require [day8.re-frame.trace.app-state :as app-state]
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components :as components]
             [day8.re-frame.trace.localstorage :as localstorage]
             [day8.re-frame.trace.data-previews :as data-previews]
             [re-frame.trace :as trace :include-macros true]
+            [re-frame.db :as db]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
             [clojure.set :as set]
@@ -114,7 +115,7 @@
                 (reagent.impl.batching/do-after-render (fn [] (trace/with-trace {:op-type :raf-end})))
                 (real-schedule)))))
 
-
+(def total-traces (interop/ratom 0))
 (def traces (interop/ratom []))
 
 (defn log-trace? [trace]
@@ -132,37 +133,28 @@
 
 (defn enable-tracing! []
   (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
-                                           (let [new-traces (filter log-trace? new-traces)]
-                                             (swap! traces #(reduce conj % new-traces))))))
+                                           (when-let [new-traces (filter log-trace? new-traces)]
+                                             (swap! total-traces + (count new-traces))
+                                             (swap! traces (fn [existing]
+                                                             (let [new  (reduce conj existing new-traces)
+                                                                   size (count new)]
+                                                               (if (< 4000 size)
+                                                                 (let [new2 (subvec new (- size 2000))]
+                                                                   (if (< @total-traces 20000) ;; Create a new vector to avoid structurally sharing all traces forever
+                                                                     (do (reset! total-traces 0)
+                                                                         (into [] new2))))
+                                                                 new))))))))
 
 (defn init-tracing!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
   []
   (monkey-patch-reagent))
 
-
-(defn search-input [{:keys [title on-save on-change on-stop]}]
-  (let [val  (r/atom title)
-        save #(let [v (-> @val str str/trim)]
-                (when (pos? (count v))
-                  (on-save v)))]
-    (fn []
-      [:input {:type        "text"
-               :value       @val
-               :auto-focus  true
-               :on-change   #(do (reset! val (-> % .-target .-value))
-                                 (on-change %))
-               :on-key-down #(case (.-which %)
-                               13 (do
-                                    (save)
-                                    (reset! val ""))
-                               nil)}])))
-
 (defn query->fn [query]
   (if (= :contains (:filter-type query))
     (fn [trace]
       (str/includes? (str/lower-case (str (:operation trace) " " (:op-type trace)))
-                     (:query query)))
+                    (:query query)))
     (fn [trace]
       (< (:query query) (:duration trace)))))
 
@@ -206,7 +198,7 @@
                                                          nil)])}
 
                              [:td.trace--toggle
-                              [:button (if show-row? "▼" "▶")]]
+                              [:button.expansion-button (if show-row? "▼" "▶")]]
                              [:td.trace--op
                                   [:span.op-string {:on-click (fn [ev]
                                                                 (add-filter filter-items (name op-type) :contains)
@@ -291,9 +283,8 @@
                 [:option {:value "contains"} "contains"]
                 [:option {:value "slower-than"} "slower than"]]
               [:div.filter-control-input {:style {:margin-left 10}}
-                [search-input {:on-save save-query
-                               :on-change #(reset! filter-input (.. % -target -value))}]
-                [components/icon-add]
+                [components/search-input {:on-save save-query
+                                          :on-change #(reset! filter-input (.. % -target -value))}]
                 (if @input-error
                   [:div.input-error {:style {:color "red" :margin-top 5}}
                    "Please enter a valid number."])]]]
@@ -346,13 +337,13 @@
 (defn devtools []
   ;; Add clear button
   ;; Filter out different trace types
-  (let [position             (r/atom :right)
-        panel-width%         (r/atom (localstorage/get "panel-width-ratio" 0.35))
-        showing?             (r/atom (localstorage/get "show-panel" false))
-        dragging?            (r/atom false)
-        pin-to-bottom?       (r/atom true)
-        selected-tab         (r/atom :traces)
-        window-width         (r/atom js/window.innerWidth)
+  (let [position          (r/atom :right)
+        panel-width%      (r/atom (localstorage/get "panel-width-ratio" 0.35))
+        showing?          (r/atom (localstorage/get "show-panel" false))
+        dragging?         (r/atom false)
+        pin-to-bottom?    (r/atom true)
+        selected-tab      (r/atom (localstorage/get "selected-tab" :traces))
+        window-width      (r/atom js/window.innerWidth)
         handle-window-resize (fn [e]
                                ;; N.B. I don't think this should be a perf bottleneck.
                                (reset! window-width js/window.innerWidth))
@@ -385,6 +376,10 @@
                :update-show-panel
                (fn [_ _ _ new-state]
                  (localstorage/save! "show-panel" new-state)))
+    (add-watch selected-tab
+               :update-selected-tab
+               (fn [_ _ _ new-state]
+                 (localstorage/save! "selected-tab" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
                                  (toggle-traces showing?)
@@ -419,11 +414,14 @@
                                           [:div.nav
                                             [:button {:class (str "tab button " (when (= @selected-tab :traces) "active"))
                                                       :on-click #(reset! selected-tab :traces)} "Traces"]
-                                            [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
+                                            [:button {:class (str "tab button " (when (= @selected-tab :app-state) "active"))
+                                                      :on-click #(reset! selected-tab :app-state)} "app-state"]
+                                            #_[:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
                                                       :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
                                         (case @selected-tab
                                           :traces [render-trace-panel]
-                                          :subvis [subvis/render-subvis traces
+                                          :app-state [app-state/render-state db/app-db]
+                                          #_:subvis #_[subvis/render-subvis traces
                                                     [:div.panel-content-scrollable]])]]]))})))
 
 (defn panel-div []
