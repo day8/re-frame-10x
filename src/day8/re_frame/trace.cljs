@@ -3,6 +3,7 @@
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components :as components]
             [day8.re-frame.trace.localstorage :as localstorage]
+            [day8.re-frame.trace.data-previews :as data-previews]
             [re-frame.trace :as trace :include-macros true]
             [cljs.pprint :as pprint]
             [clojure.string :as str]
@@ -180,317 +181,154 @@
                                              (js/parseFloat filter-input))
                               :filter-type filter-type})))
 
-(defn ^string truncate-string
-  "Truncate a string to length `n`.
-
-  Removal occurs at `cut-from`, which may be :start, :end, or :middle.
-
-  Truncation is indicated by `…` at start/end, or `...` at middle, for readability. "
-  ([n string]
-   (n :end string))
-  ([n cut-from string]
-   (let [c (count string)]
-     (if (> c n)
-       (case cut-from
-         :start (str "…" (subs string (- c (dec n)) c))
-         :end (str (subs string 0 (dec n)) "…")
-         :middle (case n
-                   1 "…"
-                   2 (truncate-string n :start string)
-                   3 (str (subs string 0 1) "…" (subs string (dec c) c))
-                   (let [content-budget (- n 2)
-                         per-side-budget (-> content-budget
-                                             (/ 2)
-                                             (js/Math.floor))]
-                     ;; 100 - 9 = 91 / 2 = 45
-                     ;; subs string 0
-                     (str (subs string 0 (cond-> per-side-budget
-                                                 (even? content-budget)
-                                                 (dec)))
-                          "..."
-                          (subs string (- c per-side-budget) c)))))
-       string))))
-
-(comment
-  (assert (= (truncate-string 5 :start "123456789") "…6789"))
-  (assert (= (truncate-string 5 :end "123456789") "1234…"))
-
-  ;; special case use of … for short :middle-truncated strings
-  (assert (= (truncate-string 1 :middle "123456789") "…"))
-  (assert (= (truncate-string 2 :middle "123456789") "…9"))
-  (assert (= (truncate-string 3 :middle "123456789") "1…9"))
-
-  (assert (= (truncate-string 4 :middle "123456789") "...9"))
-  (assert (= (truncate-string 5 :middle "123456789") "1...9"))
-  (assert (= (truncate-string 6 :middle "123456789") "1...89"))
-  (assert (= (truncate-string 7 :middle "123456789") "12...89"))
-  (assert (= (truncate-string 8 :middle "123456789") "12...789")))
-
-(defn ^string segments-within [n segments]
-  (loop [segments segments
-         length 0
-         out '()]
-    (let [segment (peek segments)]
-      (cond (empty? segments) out
-            (<= (+ length (count segment))
-                n)
-            (recur (pop segments)
-                   (+ length (count segment))
-                   (cons segment out))
-            :else out))))
-
-(defn ^string truncate-named
-  [n named]
-  (let [the-ns (namespace named)
-        the-name (name named)
-        kw? (keyword? named)
-        ns-prefix-size (if kw? 3 2)]
-    (if (or (> (count the-name) (if the-ns (- n ns-prefix-size) n))
-            (nil? the-ns))
-      (let [prefix (cond-> (if kw? ":" "")
-                           the-ns (str "…/"))]
-        (str prefix
-             (truncate-string (- n (count prefix)) :start the-name)))
-      (let [end (str "/" the-name)
-            prefix (if kw? ":" "")
-            ns-budget (- n (count end) (count prefix))
-            ns-string (some->> (segments-within ns-budget (str/split the-ns #"\."))
-                               (seq)
-                               (str/join "."))]
-        (str prefix
-             (when-not (= (count ns-string) (count the-ns))
-               "…")
-             ns-string
-
-             end)))))
-
-(defn ^string truncate [n location param]
-  (if (satisfies? INamed param)
-    (truncate-named n param)
-    (truncate-string n location (str param))))
-
-(comment
-
-  (assert (= (truncate-named 1 :saskatoon) ":…"))
-  (assert (= (truncate-named 2 :saskatoon) ":…"))
-  (assert (= (truncate-named 3 :saskatoon) ":…n"))
-  (assert (= (truncate-named 9 :saskatoon) ":…skatoon"))
-  (assert (= (truncate-named 10 :saskatoon) ":saskatoon"))
-
-
-  (assert (= (truncate-named 1 :city/saskatoon) ":…/…"))
-  (assert (= (truncate-named 2 :city/saskatoon) ":…/…"))
-  (assert (= (truncate-named 3 :city/saskatoon) ":…/…"))
-  (assert (= (truncate-named 4 :city/saskatoon) ":…/…"))
-  (assert (= (truncate-named 5 :city/saskatoon) ":…/…n"))
-  (assert (= (truncate-named 11 :city/saskatoon) ":…/…skatoon"))
-  (assert (= (truncate-named 12 :city/saskatoon) ":…/saskatoon"))
-  (assert (= (truncate-named 13 :city/saskatoon) ":…/saskatoon"))
-  (assert (= (truncate-named 14 :city/saskatoon) ":…/saskatoon"))
-  (assert (= (truncate-named 15 :city/saskatoon) ":city/saskatoon"))
-  (assert (= (truncate-named 16 :city/saskatoon) ":city/saskatoon"))
-
-  (assert (= (truncate-named 8 'saskatoon) "…skatoon"))
-  (assert (= (truncate-named 9 'saskatoon) "saskatoon"))
-  (assert (= (truncate-named 10 'saskatoon) "saskatoon"))
-
-  (assert (= (truncate-named 1 'city/saskatoon) "…/…"))
-  (assert (= (truncate-named 2 'city/saskatoon) "…/…"))
-  (assert (= (truncate-named 3 'city/saskatoon) "…/…"))
-  (assert (= (truncate-named 4 'city/saskatoon) "…/…n"))
-  (assert (= (truncate-named 10 'city/saskatoon) "…/…skatoon"))
-  (assert (= (truncate-named 11 'city/saskatoon) "…/saskatoon"))
-  (assert (= (truncate-named 12 'city/saskatoon) "…/saskatoon"))
-  (assert (= (truncate-named 13 'city/saskatoon) "…/saskatoon"))
-  (assert (= (truncate-named 14 'city/saskatoon) "city/saskatoon"))
-  (assert (= (truncate-named 15 'city/saskatoon) "city/saskatoon")))
-
-(defn str->namespaced-sym [s]
-  (if (string? s)
-    (let [name (second (re-find #"\.([^.]+)$" s))]
-      (if name (symbol (subs s 0 (- (count s) (count name) 1))
-                       name)
-               (symbol s)))
-    s))
-
-(defn edges
-  "Return left and right edges of a collection (eg. brackets plus prefixes), defaults to [< >]."
-  [coll]
-  (cond (map? coll) [\{ \}]
-        (vector? coll) [\[ \]]
-        (set? coll) ["#{" \}]
-        (list? coll) ["(" ")"]
-        :else ["<" ">"]))
-
-(defn with-edges
-  "Wrap `value` with edges of `coll`"
-  [coll value]
-  (let [[left right] (edges coll)]
-    (str left value right)))
-
-(defn preview-param
-  "Render parameters in abbreviated form, showing content only for keywords/strings/symbols and entering vectors to a depth of 1."
-  ([param] (preview-param 0 vector? 1 param))
-  ([depth enter-pred max-depth param]
-   (cond
-     (satisfies? INamed param) (truncate-named 16 param)
-     (string? param) (truncate-string 16 :middle param)
-     (fn? param) (or (some-> (.-name param)
-                             (str/replace #"(^.*\$)(.*)" "$2"))
-                     "ƒ")
-     (and (enter-pred param)
-          (< depth max-depth)) (with-edges param
-                                           (str/join ", " (mapv (partial preview-param (inc depth) enter-pred max-depth) param)))
-     :else (with-edges param "…"))))
-
 (defn render-traces [visible-traces filter-items filter-input trace-detail-expansions]
   (doall
     (->>
       visible-traces
       (map-indexed (fn [index {:keys [op-type id operation tags duration] :as trace}]
-                     (let [show-row? (get-in @trace-detail-expansions [:overrides id]
+                    (let [show-row?        (get-in @trace-detail-expansions [:overrides id]
                                              (:show-all? @trace-detail-expansions))
-                           op-name   (if (vector? operation)
-                                       (second operation)
-                                       operation)
-                           #_#__ (js/console.log (devtools/header-api-call tags))]
-                       (list [:tr {:key      id
-                                   :on-click (fn [ev]
-                                               (swap! trace-detail-expansions update-in [:overrides id]
-                                                      #(if show-row? false (not %))))
-                                   :class    (str/join " " ["trace--trace"
-                                                            (case op-type
-                                                              :sub/create "trace--sub-create"
-                                                              :sub/run "trace--sub-run"
-                                                              :event "trace--event"
-                                                              :render "trace--render"
-                                                              :re-frame.router/fsm-trigger "trace--fsm-trigger"
-                                                              nil)])}
+                          op-name          (if (vector? operation)
+                                             (second operation)
+                                             operation)
+                          #_#__ (js/console.log (devtools/header-api-call tags))]
+                      (list [:tr {:key   id
+                                  :on-click (fn [ev]
+                                              (swap! trace-detail-expansions update-in [:overrides id]
+                                                     #(if show-row? false (not %))))
+                                  :class (str/join " " ["trace--trace"
+                                                        (case op-type
+                                                         :sub/create "trace--sub-create"
+                                                         :sub/run "trace--sub-run"
+                                                         :event "trace--event"
+                                                         :render "trace--render"
+                                                         :re-frame.router/fsm-trigger "trace--fsm-trigger"
+                                                         nil)])}
 
-                              [:td.trace--toggle
-                               [:button (if show-row? "▼" "▶")]]
-                              [:td.trace--op
-                               [:span.op-string {:on-click (fn [ev]
-                                                             (add-filter filter-items (name op-type) :contains)
-                                                             (.stopPropagation ev))}
-                                (str op-type)]]
-                              [:td.trace--op-string
-                               [:span.op-string {:on-click (fn [ev]
-                                                             (add-filter filter-items (name op-name) :contains)
-                                                             (.stopPropagation ev))}
-                                (truncate 20 :middle (str->namespaced-sym op-name)) " "
-                                [:span
-                                 {:style {:opacity 0.5
-                                          :display "inline-block"}}
-                                 (when-let [[_ & params] (or (get tags :query-v)
-                                                             (get tags :event))]
-                                   (->> (map preview-param params)
-                                        (str/join ", ")
-                                        (truncate-string :middle 40)))]]]
-                              [:td.trace--meta
-                               (.toFixed duration 1) " ms"]]
-                             (when show-row?
-                               [:tr.trace--details {:key       (str id "-details")
-                                                    :tab-index 0}
-                                [:td]
-                                [:td.trace--details-tags {:col-span 2
-                                                          :on-click #(.log js/console tags)}
+                             [:td.trace--toggle
+                              [:button (if show-row? "▼" "▶")]]
+                             [:td.trace--op
+                                  [:span.op-string {:on-click (fn [ev]
+                                                                (add-filter filter-items (name op-type) :contains)
+                                                                (.stopPropagation ev))}
+                                    (str op-type)]]
+                             [:td.trace--op-string
+                                  [:span.op-string {:on-click (fn [ev]
+                                                                (add-filter filter-items (name op-name) :contains)
+                                                                (.stopPropagation ev))}
+                                   (data-previews/truncate 20 :middle (data-previews/str->namespaced-sym op-name)) " "
+                                   [:span
+                                    {:style {:opacity 0.5
+                                             :display "inline-block"}}
+                                    (when-let [[_ & params] (or (get tags :query-v)
+                                                                (get tags :event))]
+                                      (->> (map data-previews/preview-param params)
+                                           (str/join ", ")
+                                           (data-previews/truncate-string :middle 40)))]]]
+                             [:td.trace--meta
+                              (.toFixed duration 1) " ms"]]
+                            (when show-row?
+                              [:tr.trace--details {:key (str id "-details")
+                                                   :tab-index 0}
+                               [:td]
+                               [:td.trace--details-tags {:col-span 2
+                                                         :on-click #(.log js/console tags)}
                                  [:div.trace--details-tags-text
-                                  (let [tag-str           (with-out-str (pprint/pprint tags))
-                                        string-size-limit 400]
-                                    (if (< string-size-limit (count tag-str))
-                                      (str (subs tag-str 0 string-size-limit) " ...")
-                                      tag-str))]]
-                                [:td.trace--meta.trace--details-icon
-                                 {:on-click #(.log js/console tags)}]]))))))))
+                                   (let [tag-str (with-out-str (pprint/pprint tags))
+                                         string-size-limit 400]
+                                        (if (< string-size-limit (count tag-str))
+                                          (str (subs tag-str 0 string-size-limit) " ...")
+                                          tag-str))]]
+                               [:td.trace--meta.trace--details-icon
+                                  {:on-click #(.log js/console tags)}]]))))))))
 
 (defn render-trace-panel []
-  (let [filter-input            (r/atom "")
-        filter-items            (r/atom (localstorage/get "filter-items" []))
-        filter-type             (r/atom :contains)
-        input-error             (r/atom false)
-        categories              (r/atom #{:event :render :sub/run :sub/create})
-        trace-detail-expansions (r/atom {:show-all? false :overrides {}})]
+  (let [filter-input               (r/atom "")
+        filter-items               (r/atom (localstorage/get "filter-items" []))
+        filter-type                (r/atom :contains)
+        input-error                (r/atom false)
+        categories                 (r/atom #{:event :render})
+        trace-detail-expansions    (r/atom {:show-all? false :overrides {}})]
     (add-watch filter-items
                :update-localstorage
                (fn [_ _ _ new-state]
                  (localstorage/save! "filter-items" new-state)))
     (fn []
-      (let [toggle-category-fn (fn [category-keys]
-                                 (swap! categories #(if (set/superset? % category-keys)
-                                                      (set/difference % category-keys)
-                                                      (set/union % category-keys))))
+      (let [toggle-category-fn   (fn [category-keys]
+                                   (swap! categories #(if (set/superset? % category-keys)
+                                                        (set/difference % category-keys)
+                                                        (set/union % category-keys))))
 
-            visible-traces     (cond->> @traces
-                                        (seq @categories) (filter (fn [trace] (when (contains? @categories (:op-type trace)) trace)))
-                                        (seq @filter-items) (filter (apply every-pred (map query->fn @filter-items))))
-            save-query         (fn [_]
-                                 (if (and (= @filter-type :slower-than)
-                                          (js/isNaN (js/parseFloat @filter-input)))
-                                   (reset! input-error true)
-                                   (do
-                                     (reset! input-error false)
-                                     (add-filter filter-items @filter-input @filter-type))))]
+            visible-traces       (cond->> @traces
+                                   (seq @categories)    (filter (fn [trace] (when (contains? @categories (:op-type trace)) trace)))
+                                   (seq @filter-items)  (filter (apply every-pred (map query->fn @filter-items))))
+            save-query           (fn [_]
+                                   (if (and (= @filter-type :slower-than)
+                                            (js/isNaN (js/parseFloat @filter-input)))
+                                     (reset! input-error true)
+                                     (do
+                                       (reset! input-error false)
+                                       (add-filter filter-items @filter-input @filter-type))))]
         [:div.tab-contents
-         [:div.filter
-          [:div.filter-control
-           [:ul.filter-categories "show: "
-            [:li.filter-category {:class    (when (contains? @categories :event) "active")
-                                  :on-click #(toggle-category-fn #{:event})}
-             "events"]
-            [:li.filter-category {:class    (when (contains? @categories :sub/run) "active")
-                                  :on-click #(toggle-category-fn #{:sub/run :sub/create})}
-             "subscriptions"]
-            [:li.filter-category {:class    (when (contains? @categories :render) "active")
-                                  :on-click #(toggle-category-fn #{:render})}
-             "reagent"]
-            [:li.filter-category {:class    (when (contains? @categories :re-frame.router/fsm-trigger) "active")
-                                  :on-click #(toggle-category-fn #{:re-frame.router/fsm-trigger :componentWillUnmount})}
-             "internals"]]
-           [:div.filter-fields
-            [:select {:value     @filter-type
-                      :on-change #(reset! filter-type (keyword (.. % -target -value)))}
-             [:option {:value "contains"} "contains"]
-             [:option {:value "slower-than"} "slower than"]]
-            [:div.filter-control-input {:style {:margin-left 10}}
-             [search-input {:on-save   save-query
-                            :on-change #(reset! filter-input (.. % -target -value))}]
-             [components/icon-add]
-             (if @input-error
-               [:div.input-error {:style {:color "red" :margin-top 5}}
-                "Please enter a valid number."])]]]
-          [:ul.filter-items
-           (map (fn [item]
-                  ^{:key (:id item)}
-                  [:li.filter-item
-                   [:button.button
-                    {:style    {:margin 0}
-                     :on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
-                    (:filter-type item) ": " [:span.filter-item-string (:query item)]]])
-                @filter-items)]]
+          [:div.filter
+            [:div.filter-control
+             [:ul.filter-categories "show: "
+              [:li.filter-category {:class (when (contains? @categories :event) "active")
+                                    :on-click #(toggle-category-fn #{:event})}
+               "events"]
+              [:li.filter-category {:class (when (contains? @categories :sub/run) "active")
+                                    :on-click #(toggle-category-fn #{:sub/run :sub/create})}
+               "subscriptions"]
+              [:li.filter-category {:class (when (contains? @categories :render) "active")
+                                    :on-click #(toggle-category-fn #{:render})}
+               "reagent"]
+              [:li.filter-category {:class (when (contains? @categories :re-frame.router/fsm-trigger) "active")
+                                    :on-click #(toggle-category-fn #{:re-frame.router/fsm-trigger :componentWillUnmount})}
+               "internals"]]
+             [:div.filter-fields
+              [:select {:value @filter-type
+                        :on-change #(reset! filter-type (keyword (.. % -target -value)))}
+                [:option {:value "contains"} "contains"]
+                [:option {:value "slower-than"} "slower than"]]
+              [:div.filter-control-input {:style {:margin-left 10}}
+                [search-input {:on-save save-query
+                               :on-change #(reset! filter-input (.. % -target -value))}]
+                [components/icon-add]
+                (if @input-error
+                  [:div.input-error {:style {:color "red" :margin-top 5}}
+                   "Please enter a valid number."])]]]
+            [:ul.filter-items
+               (map (fn [item]
+                        ^{:key (:id item)}
+                        [:li.filter-item
+                          [:button.button
+                            {:style {:margin 0}
+                             :on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
+                            (:filter-type item) ": " [:span.filter-item-string (:query item)]]])
+                    @filter-items)]]
          [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
           [:table
            [:thead>tr
             [:th {:style {:padding 0}}
-             [:button.text-button
-              {:style    {:cursor "pointer"}
-               :on-click (fn [ev]
-                           ;; Always reset expansions
-                           (swap! trace-detail-expansions assoc :overrides {})
-                           ;; Then toggle :show-all?
-                           (swap! trace-detail-expansions update :show-all? not))}
-              (if (:show-all? @trace-detail-expansions) "-" "+")]]
+              [:button.text-button
+                  {:style {:cursor "pointer"}
+                   :on-click (fn [ev]
+                               ;; Always reset expansions
+                               (swap! trace-detail-expansions assoc :overrides {})
+                               ;; Then toggle :show-all?
+                               (swap! trace-detail-expansions update :show-all? not))}
+                  (if (:show-all? @trace-detail-expansions) "-" "+")]]
             [:th "operations"]
             [:th
-             [:button {:class    (str/join " " ["filter-items-count"
-                                                (when (pos? (count @filter-items)) "active")])
-                       :on-click #(reset! filter-items [])}
-              (when (pos? (count @filter-items))
-                (str (count visible-traces) " of "))
-              (str (count @traces))]
-             " events "
-             (when (pos? (count @traces))
-               [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
+              [:button {:class (str/join " " ["filter-items-count"
+                                              (when (pos? (count @filter-items)) "active")])
+                        :on-click #(reset! filter-items [])}
+                (when (pos? (count @filter-items))
+                  (str (count visible-traces) " of "))
+                (str (count @traces))]
+              " events "
+              (when (pos? (count @traces))
+                [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
             [:th {:style {:text-align "right"}} "meta"]]
            [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]))))
 
@@ -570,23 +408,23 @@
                                    [:div.panel-wrapper
                                     {:style {:position "fixed" :width "0px" :height "0px" :top "0px" :left "0px" :z-index 99999999}}
                                     [:div.panel
-                                     {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px" :background "white"
-                                              :left       left :top "0px" :width (str (inc (int (* 100 @panel-width%))) "%") :height "100%"
-                                              :transition transition}}
-                                     [:div.panel-resizer {:style         (resizer-style draggable-area)
-                                                          :on-mouse-down #(reset! dragging? true)}]
-                                     [:div.panel-content
-                                      {:style {:width "100%" :height "100%" :display "flex" :flex-direction "column"}}
-                                      [:div.panel-content-top
-                                       [:div.nav
-                                        [:button {:class    (str "tab button " (when (= @selected-tab :traces) "active"))
-                                                  :on-click #(reset! selected-tab :traces)} "Traces"]
-                                        [:button {:class    (str "tab button " (when (= @selected-tab :subvis) "active"))
-                                                  :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
-                                      (case @selected-tab
-                                        :traces [render-trace-panel]
-                                        :subvis [subvis/render-subvis traces
-                                                 [:div.panel-content-scrollable]])]]]))})))
+                                      {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px" :background "white"
+                                               :left       left :top "0px" :width (str (inc (int (* 100 @panel-width%))) "%") :height "100%"
+                                               :transition transition}}
+                                      [:div.panel-resizer {:style         (resizer-style draggable-area)
+                                                           :on-mouse-down #(reset! dragging? true)}]
+                                      [:div.panel-content
+                                        {:style {:width "100%" :height "100%" :display "flex" :flex-direction "column"}}
+                                        [:div.panel-content-top
+                                          [:div.nav
+                                            [:button {:class (str "tab button " (when (= @selected-tab :traces) "active"))
+                                                      :on-click #(reset! selected-tab :traces)} "Traces"]
+                                            [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
+                                                      :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
+                                        (case @selected-tab
+                                          :traces [render-trace-panel]
+                                          :subvis [subvis/render-subvis traces
+                                                    [:div.panel-content-scrollable]])]]]))})))
 
 (defn panel-div []
   (let [id    "--re-frame-trace--"
@@ -600,10 +438,10 @@
         new-panel))))
 
 (defn inject-styles []
-  (let [id            "--re-frame-trace-styles--"
-        styles-el     (.getElementById js/document id)
+  (let [id    "--re-frame-trace-styles--"
+        styles-el (.getElementById js/document id)
         new-styles-el (.createElement js/document "style")
-        new-styles    styles/panel-styles]
+        new-styles styles/panel-styles]
     (.setAttribute new-styles-el "id" id)
     (-> new-styles-el
         (.-innerHTML)
