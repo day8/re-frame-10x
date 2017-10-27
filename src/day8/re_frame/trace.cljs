@@ -1,6 +1,6 @@
 (ns day8.re-frame.trace
   (:require [day8.re-frame.trace.subvis :as subvis]
-            [day8.re-frame.trace.app-state :as app-state]
+            [day8.re-frame.trace.app-db :as app-state]
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components :as components]
             [day8.re-frame.trace.localstorage :as localstorage]
@@ -374,26 +374,27 @@
                                    [:div.panel-wrapper
                                     {:style {:position "fixed" :width "0px" :height "0px" :top "0px" :left "0px" :z-index 99999999}}
                                     [:div.panel
-                                      {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px" :background "white"
-                                               :left       left :top "0px" :width (str (inc (int (* 100 @panel-width%))) "%") :height "100%"
-                                               :transition transition}}
-                                      [:div.panel-resizer {:style         (resizer-style draggable-area)
-                                                           :on-mouse-down #(reset! dragging? true)}]
-                                      [:div.panel-content
-                                        {:style {:width "100%" :height "100%" :display "flex" :flex-direction "column"}}
-                                        [:div.panel-content-top
-                                          [:div.nav
-                                            [:button {:class (str "tab button " (when (= @selected-tab :traces) "active"))
-                                                      :on-click #(reset! selected-tab :traces)} "Traces"]
-                                            [:button {:class (str "tab button " (when (= @selected-tab :app-state) "active"))
-                                                      :on-click #(reset! selected-tab :app-state)} "app-state"]
-                                            #_[:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
-                                                      :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
-                                        (case @selected-tab
-                                          :traces [render-trace-panel]
-                                          :app-state [app-state/render-state db/app-db]
-                                          :subvis [subvis/render-subvis traces
-                                                    [:div.panel-content-scrollable]])]]]))})))
+                                     {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px" :background "white"
+                                              :left       left :top "0px" :width (str (inc (int (* 100 @panel-width%))) "%") :height "100%"
+                                              :transition transition}}
+                                     [:div.panel-resizer {:style         (resizer-style draggable-area)
+                                                          :on-mouse-down #(reset! dragging? true)}]
+                                     [:div.panel-content
+                                      {:style {:width "100%" :height "100%" :display "flex" :flex-direction "column"}}
+                                      [:div.panel-content-top
+                                       [:div.nav
+                                        [:button {:class    (str "tab button " (when (= @selected-tab :traces) "active"))
+                                                  :on-click #(reset! selected-tab :traces)} "Traces"]
+                                        [:button {:class    (str "tab button " (when (= @selected-tab :app-db) "active"))
+                                                  :on-click #(reset! selected-tab :app-db)} "App DB"]
+                                        #_[:button {:class    (str "tab button " (when (= @selected-tab :subvis) "active"))
+                                                    :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
+                                      (case @selected-tab
+                                        :traces [render-trace-panel]
+                                        :app-db [app-state/render-state db/app-db]
+                                        :subvis [subvis/render-subvis traces
+                                                 [:div.panel-content-scrollable]]
+                                        [app-state/render-state db/app-db])]]]))})))
 
 (defn panel-div []
   (let [id    "--re-frame-trace--"

@@ -1,4 +1,4 @@
-(ns day8.re-frame.trace.app-state
+(ns day8.re-frame.trace.app-db
   (:require [reagent.core :as r]
             [clojure.string :as str]
             [devtools.formatters.core :as cljs-devtools]
