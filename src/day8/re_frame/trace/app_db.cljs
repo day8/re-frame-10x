@@ -16,6 +16,18 @@
        (reduce (fn [acc [property value]]
                  (assoc acc (keyword property) value)) {})))
 
+(def config {:well-known-types #{"cljs.core/Keyword"}
+
+             :render-bools     false
+             :render-strings   false
+             :render-numbers   false
+             :render-keywords  false
+             :render-symbols   false
+             :render-instances false
+             :render-types     false
+             :render-functions false
+             })
+
 (declare jsonml->hiccup)
 
 (defn data-structure [jsonml]
@@ -74,7 +86,7 @@
             (and @expanded?
               (or (string? data)
                   (number? data)))  [:div {:style {:margin "10px 0"}} data]
-            @expanded?              (jsonml->hiccup (cljs-devtools/header-api-call data)))]])))
+            @expanded?              (jsonml->hiccup (cljs-devtools/header-api-call data config :extra)))]])))
 
 (defn render-state  [data]
   (let [subtree-input  (r/atom "")
@@ -113,4 +125,4 @@
                                  [:span.subtree-button-string
                                    (str path)]]]]])
                 @subtree-paths))]
-          [subtree @data [:span.label "app-state"]]]])))
+          [subtree @data [:span.label "app-db"]]]])))
