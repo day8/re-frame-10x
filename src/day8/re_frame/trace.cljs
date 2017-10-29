@@ -3,7 +3,7 @@
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components :as components]
             [day8.re-frame.trace.localstorage :as localstorage]
-            [day8.re-frame.trace.pretty-short :as data-previews]
+            [day8.re-frame.trace.pretty-print-condensed :as data-previews]
             [re-frame.trace :as trace :include-macros true]
             [re-frame.db :as db]
             [cljs.pprint :as pprint]
@@ -214,7 +214,7 @@
                                              :display "inline-block"}}
                                     (when-let [[_ & params] (or (get tags :query-v)
                                                                 (get tags :event))]
-                                      (->> (map data-previews/pretty-short params)
+                                      (->> (map data-previews/pretty-condensed params)
                                            (str/join ", ")
                                            (data-previews/truncate-string :middle 40)))]]]
                              [:td.trace--meta

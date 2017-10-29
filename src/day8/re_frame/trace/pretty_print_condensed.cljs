@@ -98,7 +98,6 @@
       (let [end (str "/" the-name)
             prefix (if kw? ":" "")
             ns-budget (- n (count end) (count prefix))
-            _ (prn :ns-budget ns-budget :the-ns the-ns)
             ns-string (truncate-segments the-ns ns-budget)]
         (str prefix
              ns-string
@@ -164,7 +163,8 @@
   (cond (map? coll) [\{ \}]
         (vector? coll) [\[ \]]
         (set? coll) ["#{" \}]
-        (list? coll) ["(" ")"]
+        (or (list? coll)
+            (seq? coll)) ["(" ")"]
         :else ["<" ">"]))
 
 (defn with-edges
@@ -174,8 +174,8 @@
     (str left value right)))
 
 (defn pretty-condensed
-  "Render form in abbreviated form, showing content only for keywords/strings/symbols and entering vectors to a depth of 1."
-  ([form] (pretty-condensed 0 vector? 1 form))
+  "Render form in abbreviated form, showing content only for keywords/strings/symbols and entering collections to a depth of 1."
+  ([form] (pretty-condensed 0 coll? 1 form))
   ([depth enter-pred max-depth form]
    (cond
      (satisfies? INamed form) (truncate-named 16 form)
@@ -183,6 +183,7 @@
      (fn? form) (or (some-> (.-name form)
                             (str/replace #"(^.*\$)(.*)" "$2"))
                     "ƒ")
+     (number? form) (str form)
      (and (enter-pred form)
           (< depth max-depth)) (with-edges form
                                            (str/join ", " (mapv (partial pretty-condensed (inc depth) enter-pred max-depth) form)))
