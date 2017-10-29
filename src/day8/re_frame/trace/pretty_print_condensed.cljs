@@ -1,4 +1,6 @@
-(ns day8.re-frame.trace.data-previews
+(ns ^{:doc    "Utilities for pretty-printing abbreviated Clojure forms"
+      :author "Matthew Huebert"}
+  day8.re-frame.trace.pretty-print-condensed
   (:require [clojure.string :as str]))
 
 
@@ -48,20 +50,40 @@
   (assert (= (truncate-string 7 :middle "123456789") "12...89"))
   (assert (= (truncate-string 8 :middle "123456789") "12...789")))
 
-(defn ^string segments-within [n segments]
-  (loop [segments segments
-         length 0
-         out '()]
-    (let [segment (peek segments)]
-      (cond (empty? segments) out
-            (<= (+ length (count segment))
-                n)
-            (recur (pop segments)
-                   (+ length (count segment))
-                   (cons segment out))
-            :else out))))
+(defn ^string truncate-segments
+  ([s limit] (truncate-segments s limit #"^[^.]+\." "…"))
+  ([s limit match trunc-prefix]
+    (if (<= (count s) limit)
+      s
+      (let [rep (str/replace s match trunc-prefix)]
+        (if (= rep s)
+          trunc-prefix
+          (recur (str/replace s match trunc-prefix)
+                 limit
+                 match
+                 trunc-prefix))))))
+
+
+(comment
+  (assert (= (truncate-segments "a.bcd" 1) "…"))
+  (assert (= (truncate-segments "a.bcd" 2) "…"))
+  (assert (= (truncate-segments "a.bcd" 3) "…"))
+  (assert (= (truncate-segments "a.bcd" 4) "…bcd"))
+  (assert (= (truncate-segments "a.bcd" 5) "a.bcd"))
+  (assert (= (truncate-segments "a.bcd" 6) "a.bcd"))
+
+
+  (assert (= (truncate-segments "a.b.c" 1) "…"))
+  (assert (= (truncate-segments "a.b.c" 2) "…c"))
+  (assert (= (truncate-segments "a.b.c" 3) "…c"))
+  (assert (= (truncate-segments "a.b.c" 4) "…b.c"))
+  (assert (= (truncate-segments "a.b.c" 5) "a.b.c"))
+  (assert (= (truncate-segments "a.b.c" 6) "a.b.c")))
 
 (defn ^string truncate-named
+  "Truncates `named`, which must satisfy INamed protocol, to within `n`
+   characters, cutting from beginning. Adds a `…` prefix to indicate where
+   cutting has occurred."
   [n named]
   (let [the-ns (namespace named)
         the-name (name named)
@@ -76,20 +98,16 @@
       (let [end (str "/" the-name)
             prefix (if kw? ":" "")
             ns-budget (- n (count end) (count prefix))
-            ns-string (some->> (segments-within ns-budget (str/split the-ns #"\."))
-                               (seq)
-                               (str/join "."))]
+            _ (prn :ns-budget ns-budget :the-ns the-ns)
+            ns-string (truncate-segments the-ns ns-budget)]
         (str prefix
-             (when-not (= (count ns-string) (count the-ns))
-               "…")
              ns-string
-
              end)))))
 
-(defn ^string truncate [n location param]
-  (if (satisfies? INamed param)
-    (truncate-named n param)
-    (truncate-string n location (str param))))
+
+(assert (= (truncate-named 12 :city/saskatoon)
+
+           ":…/saskatoon"))
 
 (comment
 
@@ -127,6 +145,11 @@
   (assert (= (truncate-named 14 'city/saskatoon) "city/saskatoon"))
   (assert (= (truncate-named 15 'city/saskatoon) "city/saskatoon")))
 
+(defn ^string truncate [n location param]
+  (if (satisfies? INamed param)
+    (truncate-named n param)
+    (truncate-string n location (str param))))
+
 (defn str->namespaced-sym [s]
   (if (string? s)
     (let [name (second (re-find #"\.([^.]+)$" s))]
@@ -150,17 +173,17 @@
   (let [[left right] (edges coll)]
     (str left value right)))
 
-(defn preview-param
-  "Render parameters in abbreviated form, showing content only for keywords/strings/symbols and entering vectors to a depth of 1."
-  ([param] (preview-param 0 vector? 1 param))
-  ([depth enter-pred max-depth param]
+(defn pretty-condensed
+  "Render form in abbreviated form, showing content only for keywords/strings/symbols and entering vectors to a depth of 1."
+  ([form] (pretty-condensed 0 vector? 1 form))
+  ([depth enter-pred max-depth form]
    (cond
-     (satisfies? INamed param) (truncate-named 16 param)
-     (string? param) (truncate-string 16 :middle param)
-     (fn? param) (or (some-> (.-name param)
-                             (str/replace #"(^.*\$)(.*)" "$2"))
-                     "ƒ")
-     (and (enter-pred param)
-          (< depth max-depth)) (with-edges param
-                                           (str/join ", " (mapv (partial preview-param (inc depth) enter-pred max-depth) param)))
-     :else (with-edges param "…"))))
+     (satisfies? INamed form) (truncate-named 16 form)
+     (string? form) (truncate-string 16 :middle form)
+     (fn? form) (or (some-> (.-name form)
+                            (str/replace #"(^.*\$)(.*)" "$2"))
+                    "ƒ")
+     (and (enter-pred form)
+          (< depth max-depth)) (with-edges form
+                                           (str/join ", " (mapv (partial pretty-condensed (inc depth) enter-pred max-depth) form)))
+     :else (with-edges form "…"))))
