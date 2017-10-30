@@ -21,10 +21,22 @@
 
 (def default-cljs-devtools-prefs @devtools.prefs/default-config)
 
+(defn reset-wrapping [css-string]
+  (str/replace css-string #"white-space:nowrap;" ""))
+
 (def customized-cljs-devtools-prefs
-  {:header-style ""
+  {; Override some cljs-devtools default styles.
+   ; The goal here is to make default styles more flexible and wrap at the edge of our panel (we don't want horizontal
+   ; scrolling). Technically we want to remove all 'white-space:no-wrap'.
+   ; See https://github.com/binaryage/cljs-devtools/blob/master/src/lib/devtools/defaults.cljs
+   :header-style (reset-wrapping (:header-style default-cljs-devtools-prefs))
+   :expandable-style (reset-wrapping (:expandable-style default-cljs-devtools-prefs))
+   :item-style (reset-wrapping (:item-style default-cljs-devtools-prefs))
+   ; Hide the index spans on the left hand of collections. Shows how many elements in a collection.
    :none-style   "display: none"
-   :index-tag    [:span :none-style] ;;; Hide the index spans on the left hand of collections. Shows how many elements in a collection.
+   :index-tag    [:span :none-style]
+   ; Our JSON renderer does not have hierarchy depth limit,
+   ; See https://github.com/binaryage/cljs-devtools/blob/master/src/lib/devtools/formatters/budgeting.cljs
    :initial-hierarchy-depth-budget false})
 
 (def effective-cljs-devtools-prefs (merge default-cljs-devtools-prefs customized-cljs-devtools-prefs))
