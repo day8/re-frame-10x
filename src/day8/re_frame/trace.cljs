@@ -21,27 +21,8 @@
             [devtools.formatters.core :as devtools]))
 
 
-;; from https://github.com/reagent-project/reagent/blob/3fd0f1b1d8f43dbf169d136f0f905030d7e093bd/src/reagent/impl/component.cljs#L274
-(defn fiber-component-path [fiber]
-  (let [name (some-> fiber
-                     ($ :type)
-                     ($ :displayName))
-        parent (some-> fiber
-                       ($ :return))
-        path (some-> parent
-                     fiber-component-path
-                     (str " > "))
-        res (str path name)]
-    (when-not (empty? res) res)))
-
-(defn component-path [c]
-  ;; Alternative branch for React 16
-  (if-let [fiber (some-> c ($ :_reactInternalFiber))]
-    (fiber-component-path fiber)
-    (component/component-path c)))
-
 (defn comp-name [c]
-  (let [n (or (component-path c)
+  (let [n (or (component/component-path c)
               (some-> c .-constructor util/fun-name))]
     (if-not (empty? n)
       n
@@ -52,8 +33,8 @@
    (fn render []
      (this-as c
        (trace/with-trace {:op-type   :render
-                          :tags      {:component-path (component-path c)}
-                          :operation (last (str/split (component-path c) #" > "))}
+                          :tags      {:component-path (reagent.impl.component/component-path c)}
+                          :operation (last (str/split (reagent.impl.component/component-path c) #" > "))}
                          (if util/*non-reactive*
                            (reagent.impl.component/do-render c)
                            (let [rat        ($ c :cljsRatom)
@@ -82,7 +63,7 @@
               (let [name (comp-name c)]
                 (js/console.log c)
                 (trace/with-trace {:op-type   :render
-                                   :tags      {:component-path (component-path c)}
+                                   :tags      {:component-path (reagent.impl.component/component-path c)}
                                    :operation (last (str/split name #" > "))}
                                   (real-renderer c)))))
 
@@ -97,7 +78,7 @@
               (fn [] (this-as c
                        (trace/with-trace {:op-type   key
                                           :operation (last (str/split (comp-name c) #" > "))
-                                          :tags      {:component-path (component-path c)
+                                          :tags      {:component-path (reagent.impl.component/component-path c)
                                                       :reaction       (interop/reagent-id ($ c :cljsRatom))}})
                        (.call (real-custom-wrapper key f) c c)))
 
