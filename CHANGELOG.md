@@ -3,6 +3,42 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+### Added
+
+* Preliminary support for React 16 component paths [#89](https://github.com/Day8/re-frame-trace/pull/89).
+
+### Changed
+
+* Hide index spans (the blocks next to each element counting the number of elements in a collection)
+
+## [0.1.11] - 2017-10-27
+
+### Changed
+
+* Rename app-state panel to app-db
+* Visual improvements to data viewer
+
+## [0.1.10] - 2017-10-27
+
+### Removed
+
+* Subvis panel has been commented out while it is in a broken state.
+
+## [0.1.9] - 2017-10-27
+
+### Added
+
+* Limit captured traces to a maximum of 4,000 to prevent performance slowdowns.
+
+### Changed
+
+* Speed up animations for autoscrolling to bottom of list
+* Print full keyword for operation name
+
+### Fixed
+
+* Bad merge for handling window width changing.
+
 ## [0.1.8] - 2017-10-25
 
 ### Added
