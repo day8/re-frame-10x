@@ -47,29 +47,28 @@
       n
       "")))
 
-
 (def static-fns
   {:render
    (fn render []
      (this-as c
        (let [path (component-path c)]
-         (trace/with-trace {:op-type   :render
-                            :tags      {:component-path path}
-                            :operation (last (str/split path #" > "))}
-                           (if util/*non-reactive*
-                             (reagent.impl.component/do-render c)
-                             (let [rat        ($ c :cljsRatom)
-                                   _          (batch/mark-rendered c)
-                                   res        (if (nil? rat)
-                                                (ratom/run-in-reaction #(reagent.impl.component/do-render c) c "cljsRatom"
-                                                                       batch/queue-render reagent.impl.component/rat-opts)
-                                                (._run rat false))
-                                   cljs-ratom ($ c :cljsRatom)] ;; actually a reaction
-                               (trace/merge-trace!
-                                 {:tags {:reaction      (interop/reagent-id cljs-ratom)
-                                         :input-signals (when cljs-ratom
-                                                          (map interop/reagent-id (gob/get cljs-ratom "watching" :none)))}})
-                               res))))))})
+       (trace/with-trace {:op-type   :render
+                          :tags      {:component-path path}
+                          :operation (last (str/split path #" > "))}
+                         (if util/*non-reactive*
+                           (reagent.impl.component/do-render c)
+                           (let [rat        ($ c :cljsRatom)
+                                 _          (batch/mark-rendered c)
+                                 res        (if (nil? rat)
+                                              (ratom/run-in-reaction #(reagent.impl.component/do-render c) c "cljsRatom"
+                                                                     batch/queue-render reagent.impl.component/rat-opts)
+                                              (._run rat false))
+                                 cljs-ratom ($ c :cljsRatom)] ;; actually a reaction
+                             (trace/merge-trace!
+                               {:tags {:reaction      (interop/reagent-id cljs-ratom)
+                                       :input-signals (when cljs-ratom
+                                                        (map interop/reagent-id (gob/get cljs-ratom "watching" :none)))}})
+                             res))))))})
 
 
 (defn monkey-patch-reagent []
@@ -239,7 +238,7 @@
         filter-items               (r/atom (localstorage/get "filter-items" []))
         filter-type                (r/atom :contains)
         input-error                (r/atom false)
-        categories                 (r/atom #{:event :render})
+        categories                 (r/atom #{:event :sub/run :sub/create})
         trace-detail-expansions    (r/atom {:show-all? false :overrides {}})]
     (add-watch filter-items
                :update-localstorage
