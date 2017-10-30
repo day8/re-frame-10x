@@ -73,3 +73,14 @@ We are using CSS preprocessing because in order to isolate the panel styles, we 
 - You must touch or save the `styles.cljs` file to trigger a CSS reload if you're editing `main.less`. This is because `styles.cljs` slurps `main.css` with a macro that happens before Clojurescript compilation, so figwheel isn't aware of the changes.
 - Did you run `lein less auto` or `lein less once` to compile LESS to CSS?
 - Try clearing your browser cache/hard-reloading.
+
+### Updating the internal version of re-frame used
+
+We want to use re-frame, but we don't want to use the re-frame that the host is using, or tracing will get very messy. Instead, we use [mranderson](https://github.com/benedekfazekas/mranderson) to create source dependencies of re-frame.
+
+```console
+$ lein do clean
+$ lein with-profile mranderson source-deps
+$ cp -r target/srcdeps/mranderson047 src 
+```
+
