@@ -1,15 +1,11 @@
 (ns day8.re-frame.trace.app-db
+  (:require-macros [day8.re-frame.trace.macros :refer [with-cljs-devtools-prefs]])
   (:require [reagent.core :as r]
             [clojure.string :as str]
-            [devtools.formatters.core :as cljs-devtools]
+            [devtools.prefs]
+            [devtools.formatters.core]
             [day8.re-frame.trace.localstorage :as localstorage]
             [day8.re-frame.trace.components :as components]))
-
-(devtools.prefs/set-pref! :header-style "")
-
-;; Hide the index spans on the left hand of collections. Shows how many elements in a collection.
-(devtools.prefs/set-pref! :none-style "display: none")
-(devtools.prefs/set-pref! :index-tag [:span :none-style])
 
 (defn string->css [css-string]
   "This function converts jsonml css-strings to valid css maps for hiccup.
@@ -21,9 +17,27 @@
        (reduce (fn [acc [property value]]
                  (assoc acc (keyword property) value)) {})))
 
-(def config {:initial-hierarchy-depth-budget false})
-
 (declare jsonml->hiccup)
+
+(def default-cljs-devtools-prefs @devtools.prefs/default-config)
+
+(def customized-cljs-devtools-prefs
+  {:header-style ""
+   :none-style   "display: none"
+   :index-tag    [:span :none-style] ;;; Hide the index spans on the left hand of collections. Shows how many elements in a collection.
+   :initial-hierarchy-depth-budget false})
+
+(def effective-cljs-devtools-prefs (merge default-cljs-devtools-prefs customized-cljs-devtools-prefs))
+
+(defn make-devtools-api-call [api-fn & args]
+  (with-cljs-devtools-prefs effective-cljs-devtools-prefs
+    (apply api-fn args)))
+
+(defn cljs-devtools-header [& args]
+  (apply make-devtools-api-call devtools.formatters.core/header-api-call args))
+
+(defn cljs-devtools-body [& args]
+  (apply make-devtools-api-call devtools.formatters.core/body-api-call args))
 
 (defn data-structure [jsonml]
   (let [expanded? (r/atom false)]
@@ -35,10 +49,10 @@
                :on-click #(swap! expanded? not)}
         [:button.expansion-button (if @expanded? "▼" "▶")]]
        (jsonml->hiccup (if @expanded?
-                         (cljs-devtools/body-api-call
+                         (cljs-devtools-body
                            (.-object (get jsonml 1))
                            (.-config (get jsonml 1)))
-                         (cljs-devtools/header-api-call
+                         (cljs-devtools-header
                            (.-object (get jsonml 1))
                            (.-config (get jsonml 1)))))])))
 
@@ -81,7 +95,7 @@
           (and @expanded?
                (or (string? data)
                    (number? data))) [:div {:style {:margin "10px 0"}} data]
-          @expanded? (jsonml->hiccup (cljs-devtools/header-api-call data config)))]])))
+          @expanded? (jsonml->hiccup (cljs-devtools-header data)))]])))
 
 (defn render-state [data]
   (let [subtree-input (r/atom "")
