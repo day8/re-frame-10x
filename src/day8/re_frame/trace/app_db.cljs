@@ -5,6 +5,11 @@
             [day8.re-frame.trace.localstorage :as localstorage]
             [day8.re-frame.trace.components :as components]))
 
+(devtools.prefs/set-pref! :header-style "")
+
+;; Hide the index spans on the left hand of collections. Shows how many elements in a collection.
+(devtools.prefs/set-pref! :none-style "display: none")
+(devtools.prefs/set-pref! :index-tag [:span :none-style])
 
 (defn string->css [css-string]
   "This function converts jsonml css-strings to valid css maps for hiccup.
@@ -16,17 +21,7 @@
        (reduce (fn [acc [property value]]
                  (assoc acc (keyword property) value)) {})))
 
-(def config {:well-known-types #{"cljs.core/Keyword"}
-
-             :render-bools     false
-             :render-strings   false
-             :render-numbers   false
-             :render-keywords  false
-             :render-symbols   false
-             :render-instances false
-             :render-types     false
-             :render-functions false
-             })
+(def config {:initial-hierarchy-depth-budget false})
 
 (declare jsonml->hiccup)
 
@@ -86,7 +81,7 @@
             (and @expanded?
               (or (string? data)
                   (number? data)))  [:div {:style {:margin "10px 0"}} data]
-            @expanded?              (jsonml->hiccup (cljs-devtools/header-api-call data config :extra)))]])))
+            @expanded?              (jsonml->hiccup (cljs-devtools/header-api-call data config)))]])))
 
 (defn render-state  [data]
   (let [subtree-input  (r/atom "")
