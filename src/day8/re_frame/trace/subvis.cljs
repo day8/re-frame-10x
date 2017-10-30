@@ -166,9 +166,9 @@
                                                         (attr "opacity" 0))
                                        _            (.. node-exit-t
                                                         (on "end" (fn [] (this-as this
-                                                                                       (.. js/d3
-                                                                                           (select this)
-                                                                                           (remove))))))
+                                                                           (.. js/d3
+                                                                               (select this)
+                                                                               (remove))))))
                                        _            (.. node-exit-t
                                                         (transition)
                                                         (call (fn []
