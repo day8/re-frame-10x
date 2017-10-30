@@ -26,6 +26,7 @@
   /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 
   line-height: 1.15;
+  font-size: 14px;
 
   div,
   nav {
@@ -214,6 +215,13 @@
   table {
     display: table;
   }
+  th, td {
+    display: table-cell;
+    padding: 0 5px;
+  }
+  tr {
+    display: table-row;
+  }
   thead {
     display: table-header-group;
   }
@@ -234,6 +242,17 @@
 
   background: white;
   font-family: 'courier new', monospace;
+  color: @text-color;
+
+  /* mixins */
+  .label {
+    color: @text-color-muted;
+    background: @background-gray-hint;
+    border: 1px solid @light-gray;
+    font-size: 0.9em;
+    margin: 10px 5px;
+    color: @text-color;
+  }
 
   table {
     width: 100%;
@@ -404,24 +423,27 @@
     border-radius: 0;
     padding-bottom: 1px;
   }
-  ul.filter-items {
+  ul.filter-items,
+  .subtrees {
     list-style-type: none;
     margin: 0 5px;
 
-    .filter-item {
-      color: @text-color-muted;
-      background: @background-gray-hint;
-      border: 1px solid @light-gray;
+    .filter-item,
+    .subtree-button {
+      .label;
       display: inline-block;
-      font-size: 0.9em;
-      margin: 10px 5px;
 
       .filter-item-string {
         color: @text-color;
         background: @yellow;
       }
 
-      &:hover {
+      .subtree-button-string {
+        color: @text-color;
+      }
+
+      &:hover,
+      &:focus {
         text-decoration: line-through;
       }
     }
@@ -515,5 +537,24 @@
   }
   .active {
     opacity: 1;
+  }
+
+  /* app-state data viewer
+     ========================================================================== */
+
+  .re-frame-trace--object {
+    .toggle {
+      color: @text-color-muted;
+      cursor: pointer;
+    }
+    & > span {
+      vertical-align: text-top;
+    }
+  }
+
+
+  .expansion-button {
+    font-family: sans-serif;
+    width: 16px;
   }
 }

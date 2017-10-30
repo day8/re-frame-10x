@@ -1,5 +1,6 @@
 (ns day8.re-frame.trace
-  (:require [day8.re-frame.trace.app-state :as app-state]
+  (:require [day8.re-frame.trace.subvis :as subvis]
+            [day8.re-frame.trace.app-state :as app-state]
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components :as components]
             [day8.re-frame.trace.localstorage :as localstorage]
@@ -121,7 +122,7 @@
   (let [rendering? (= (:op-type trace) :render)]
     (if-not rendering?
       true
-      (not (str/includes? (or (get-in trace [:tags :component-path]) "") "devtools outer")))
+      (not (str/includes? (get-in trace [:tags :component-path] "") "day8.re_frame.trace")))
 
 
     #_(if-let [comp-p (get-in trace [:tags :component-path])]
@@ -415,12 +416,12 @@
                                                       :on-click #(reset! selected-tab :traces)} "Traces"]
                                             [:button {:class (str "tab button " (when (= @selected-tab :app-state) "active"))
                                                       :on-click #(reset! selected-tab :app-state)} "app-state"]
-                                            #_[:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
+                                            [:button {:class (str "tab button " (when (= @selected-tab :subvis) "active"))
                                                       :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
                                         (case @selected-tab
                                           :traces [render-trace-panel]
                                           :app-state [app-state/render-state db/app-db]
-                                          #_:subvis #_[subvis/render-subvis traces
+                                          :subvis [subvis/render-subvis traces
                                                     [:div.panel-content-scrollable]])]]]))})))
 
 (defn panel-div []
