@@ -57,7 +57,7 @@
                :r     r
                :data  trace
                :fx    350}))
-       (remove #(nil? (:id %)))                            ;; remove reactions that are null (mostly from input fields???)
+       (remove #(nil? (:id %)))                             ;; remove reactions that are null (mostly from input fields???)
        (distinct-k :id)))
 
 ;; Use http://bl.ocks.org/GerHobbelt/3683278 to constrain nodes
@@ -71,9 +71,9 @@
                                   set)
 
         sub-nodes            (select-sub-nodes traces :sub/create disposed-ids 10)
-        view-nodes          nil #_ (select-view-nodes traces :render unmounted-components 5)
+        view-nodes           nil #_(select-view-nodes traces :render unmounted-components 5)
         sub-links            (select-links traces :sub/run disposed-ids 1)
-        view-links        nil #_   (select-links traces :render unmounted-components 0.5)
+        view-links           nil #_(select-links traces :render unmounted-components 0.5)
         all-nodes            (concat extra-nodes sub-nodes view-nodes)
         node-ids             (set (map :id all-nodes))
         nodes-links          (->> (mapcat (fn [{:keys [source target]}] [source target]) view-links) set)

@@ -2,7 +2,7 @@
   all: initial;
   /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
   line-height: 1.15;
-  font-size: 14px;
+  font-size: 12px;
   /* Text-level semantics
      ========================================================================== */
   /* Embedded content
@@ -452,6 +452,7 @@
 #--re-frame-trace-- .re-frame-trace--object .toggle {
   color: #8f8f8f;
   cursor: pointer;
+  line-height: 1;
 }
 #--re-frame-trace-- .re-frame-trace--object > span {
   vertical-align: text-top;
@@ -459,4 +460,6 @@
 #--re-frame-trace-- .expansion-button {
   font-family: sans-serif;
   width: 16px;
+  padding: 0 2px;
+  vertical-align: middle;
 }

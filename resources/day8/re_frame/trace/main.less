@@ -26,7 +26,7 @@
   /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 
   line-height: 1.15;
-  font-size: 14px;
+  font-size: 12px;
 
   div,
   nav {
@@ -546,6 +546,7 @@
     .toggle {
       color: @text-color-muted;
       cursor: pointer;
+      line-height: 1;
     }
     & > span {
       vertical-align: text-top;
@@ -556,5 +557,7 @@
   .expansion-button {
     font-family: sans-serif;
     width: 16px;
+    padding: 0 2px;
+    vertical-align: middle;
   }
 }
