@@ -122,7 +122,7 @@
   (let [rendering? (= (:op-type trace) :render)]
     (if-not rendering?
       true
-      (not (str/includes? (get-in trace [:tags :component-path] "") "day8.re_frame.trace")))
+      (not (str/includes? (get-in trace [:tags :component-path] "") "devtools outer")))
 
 
     #_(if-let [comp-p (get-in trace [:tags :component-path])]
