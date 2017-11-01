@@ -4,6 +4,7 @@
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components :as components]
             [day8.re-frame.trace.localstorage :as localstorage]
+            [day8.re-frame.trace.pretty-print-condensed :as data-previews]
             [re-frame.trace :as trace :include-macros true]
             [re-frame.db :as db]
             [cljs.pprint :as pprint]
@@ -206,7 +207,15 @@
                                [:span.op-string {:on-click (fn [ev]
                                                              (add-filter filter-items (name op-name) :contains)
                                                              (.stopPropagation ev))}
-                                (str op-name)]]
+                                (data-previews/truncate 20 :middle (data-previews/str->namespaced-sym op-name)) " "
+                                [:span
+                                 {:style {:opacity 0.5
+                                          :display "inline-block"}}
+                                 (when-let [[_ & params] (or (get tags :query-v)
+                                                             (get tags :event))]
+                                   (->> (map data-previews/pretty-condensed params)
+                                        (str/join ", ")
+                                        (data-previews/truncate-string :middle 40)))]]]
                               [:td.trace--meta
                                (.toFixed duration 1) " ms"]]
                              (when show-row?
