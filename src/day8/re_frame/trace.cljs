@@ -307,7 +307,7 @@
               (when (pos? (count @filter-items))
                 (str (count visible-traces) " of "))
               (str (count @traces))]
-             " events "
+             " traces "
              (when (pos? (count @traces))
                [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
             [:th {:style {:text-align "right"}} "meta"]]
