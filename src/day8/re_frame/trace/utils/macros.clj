@@ -1,4 +1,4 @@
-(ns day8.re-frame.trace.macros
+(ns day8.re-frame.trace.utils.macros
   (:require [clojure.java.io :as io]))
 
 (defmacro slurp-macro

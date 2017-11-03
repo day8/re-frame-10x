@@ -1,4 +1,4 @@
-(ns day8.re-frame.trace.localstorage
+(ns day8.re-frame.trace.utils.localstorage
   (:require [goog.storage.Storage :as Storage]
             [goog.storage.mechanism.HTML5LocalStorage :as html5localstore]
             [cljs.reader :as reader])

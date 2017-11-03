@@ -1,7 +1,7 @@
-(ns day8.re-frame.trace.subvis
+(ns day8.re-frame.trace.panels.subvis
   (:require cljsjs.d3
-            [day8.re-frame.trace.d3 :as d3t]
-            [day8.re-frame.trace.graph :as graph]
+            [day8.re-frame.trace.components.d3 :as d3t]
+            [day8.re-frame.trace.utils.graph :as graph]
             [reagent.core :as r]
             [re-frame.interop :as interop]
             [re-frame.db :as db]

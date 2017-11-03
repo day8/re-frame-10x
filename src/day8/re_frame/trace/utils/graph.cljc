@@ -1,4 +1,4 @@
-(ns day8.re-frame.trace.graph
+(ns day8.re-frame.trace.utils.graph
   (:require [clojure.set :as set]))
 
 (defn select-type [type traces]

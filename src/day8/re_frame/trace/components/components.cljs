@@ -1,4 +1,4 @@
-(ns day8.re-frame.trace.components
+(ns day8.re-frame.trace.components.components
   (:require [reagent.core :as r]
             [clojure.string :as str]
             [goog.fx.dom :as fx]))

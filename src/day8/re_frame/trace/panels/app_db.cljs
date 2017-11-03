@@ -1,4 +1,4 @@
-(ns day8.re-frame.trace.app-db
+(ns day8.re-frame.trace.panels.app-db
   (:require-macros [day8.re-frame.trace.macros :refer [with-cljs-devtools-prefs]])
   (:require [reagent.core :as r]
             [clojure.string :as str]

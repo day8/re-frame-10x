@@ -1,4 +1,4 @@
-(ns day8.re-frame.trace.d3
+(ns day8.re-frame.trace.components.d3
   (:require [reagent.core :as r]))
 
 (defn no-op [desc]
