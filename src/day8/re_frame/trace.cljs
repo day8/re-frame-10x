@@ -5,6 +5,9 @@
             [day8.re-frame.trace.components.components :as components]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [day8.re-frame.trace.panels.traces :as traces]
+            [day8.re-frame.trace.events]
+            [day8.re-frame.trace.subs]
+            [day8.re-frame.trace.db :as trace.db]
             [re-frame.trace :as trace :include-macros true]
             [re-frame.db :as db]
             [cljs.pprint :as pprint]
@@ -19,7 +22,8 @@
             [goog.object :as gob]
             [re-frame.interop :as interop]
 
-            [devtools.formatters.core :as devtools]))
+            [devtools.formatters.core :as devtools]
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
 
 
 ;; from https://github.com/reagent-project/reagent/blob/3fd0f1b1d8f43dbf169d136f0f905030d7e093bd/src/reagent/impl/component.cljs#L274
@@ -165,8 +169,8 @@
   ;; Add clear button
   ;; Filter out different trace types
   (let [position             (r/atom :right)
-        panel-width%         (r/atom (localstorage/get "panel-width-ratio" 0.35))
-        showing?             (r/atom (localstorage/get "show-panel" false))
+        panel-width%         (rf/subscribe [:settings/panel-width%])
+        showing?             (rf/subscribe [:settings/show-panel?])
         dragging?            (r/atom false)
         pin-to-bottom?       (r/atom true)
         selected-tab         (r/atom (localstorage/get "selected-tab" :traces))
@@ -182,7 +186,7 @@
                                  (when (and (not entering-input?) combo-key?)
                                    (cond
                                      (and (= key "h") (.-ctrlKey e))
-                                     (do (swap! showing? not)
+                                     (do (rf/dispatch [:settings/toggle-panel])
                                          (toggle-traces showing?)
                                          (.preventDefault e))))))
         handle-mousemove     (fn [e]
@@ -191,22 +195,9 @@
                                        y                (.-clientY e)
                                        new-window-width js/window.innerWidth]
                                    (.preventDefault e)
-                                   ;; Set a minimum width of 5% to prevent people from accidentally dragging it too small.
-                                   (reset! panel-width% (max (/ (- new-window-width x) new-window-width) 0.05))
+                                   (rf/dispatch [:settings/panel-width% (/ (- new-window-width x) new-window-width)])
                                    (reset! window-width new-window-width))))
         handle-mouse-up      (fn [e] (reset! dragging? false))]
-    (add-watch panel-width%
-               :update-panel-width-ratio
-               (fn [_ _ _ new-state]
-                 (localstorage/save! "panel-width-ratio" new-state)))
-    (add-watch showing?
-               :update-show-panel
-               (fn [_ _ _ new-state]
-                 (localstorage/save! "show-panel" new-state)))
-    (add-watch selected-tab
-               :update-selected-tab
-               (fn [_ _ _ new-state]
-                 (localstorage/save! "selected-tab" new-state)))
     (r/create-class
       {:component-will-mount   (fn []
                                  (toggle-traces showing?)
@@ -240,9 +231,9 @@
                                       [:div.panel-content-top
                                        [:div.nav
                                         [:button {:class    (str "tab button " (when (= @selected-tab :traces) "active"))
-                                                  :on-click #(reset! selected-tab :traces)} "Traces"]
+                                                  :on-click #(rf/dispatch [:settings/selected-tab :traces])} "Traces"]
                                         [:button {:class    (str "tab button " (when (= @selected-tab :app-db) "active"))
-                                                  :on-click #(reset! selected-tab :app-db)} "App DB"]
+                                                  :on-click #(rf/dispatch [:settings/selected-tab :app-db])} "App DB"]
                                         #_[:button {:class    (str "tab button " (when (= @selected-tab :subvis) "active"))
                                                     :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
                                       (case @selected-tab
@@ -283,3 +274,6 @@
 (defn inject-devtools! []
   (inject-styles)
   (r/render [devtools] (panel-div)))
+
+(defn init-db! []
+  (trace.db/init-db))
