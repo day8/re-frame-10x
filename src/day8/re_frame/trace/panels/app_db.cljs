@@ -1,11 +1,12 @@
 (ns day8.re-frame.trace.panels.app-db
-  (:require-macros [day8.re-frame.trace.macros :refer [with-cljs-devtools-prefs]])
+  (:require-macros [day8.re-frame.trace.utils.macros :refer [with-cljs-devtools-prefs]])
   (:require [reagent.core :as r]
             [clojure.string :as str]
             [devtools.prefs]
             [devtools.formatters.core]
-            [day8.re-frame.trace.localstorage :as localstorage]
-            [day8.re-frame.trace.components :as components]))
+            [day8.re-frame.trace.utils.localstorage :as localstorage]
+            [day8.re-frame.trace.components.components :as components]
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
 
 (defn string->css [css-string]
   "This function converts jsonml css-strings to valid css maps for hiccup.
@@ -115,12 +116,8 @@
 
 (defn render-state [data]
   (let [subtree-input (r/atom "")
-        subtree-paths (r/atom (localstorage/get "subtree-paths" #{}))
+        subtree-paths (rf/subscribe [:app-db/paths])
         input-error   (r/atom false)]
-    (add-watch subtree-paths
-               :update-localstorage
-               (fn [_ _ _ new-state]
-                 (localstorage/save! "subtree-paths" new-state)))
     (fn []
       [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
        [:div.panel-content-scrollable {:style {:margin 10}}
@@ -132,7 +129,8 @@
                                                     (do
                                                       ; (reset! input-error false)
                                                       ;; TODO check if input already wrapped in braces
-                                                      (swap! subtree-paths #(into #{(cljs.reader/read-string (str "[" path "]"))} %)))))
+                                                      (rf/dispatch [:app-db/paths (into #{(cljs.reader/read-string (str "[" path "]"))} @subtree-paths)])
+                                                      #_(swap! subtree-paths #(into #{(cljs.reader/read-string (str "[" path "]"))} %)))))
                                    :on-change   #(reset! subtree-input (.. % -target -value))}]]
         ; (if @input-error
         ;   [:div.input-error {:style {:color "red" :margin-top 5}}

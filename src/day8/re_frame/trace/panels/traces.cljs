@@ -5,7 +5,8 @@
             [reagent.core :as r]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [cljs.pprint :as pprint]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
 
 (defn query->fn [query]
   (if (= :contains (:filter-type query))
@@ -16,19 +17,7 @@
       (< (:query query) (:duration trace)))))
 
 (defn add-filter [filter-items filter-input filter-type]
-  ;; prevent duplicate filter strings
-  (when-not (some #(= filter-input (:query %)) @filter-items)
-    ;; if existing, remove prior filter for :slower-than
-    (when (and (= :slower-than filter-type)
-               (some #(= filter-type (:filter-type %)) @filter-items))
-      (swap! filter-items (fn [item]
-                            (remove #(= :slower-than (:filter-type %)) item))))
-    ;; add new filter
-    (swap! filter-items conj {:id          (random-uuid)
-                              :query       (if (= filter-type :contains)
-                                             (str/lower-case filter-input)
-                                             (js/parseFloat filter-input))
-                              :filter-type filter-type})))
+  (rf/dispatch [:traces/add-filter filter-input filter-type]))
 
 (defn render-traces [visible-traces filter-items filter-input trace-detail-expansions]
   (doall
@@ -85,15 +74,11 @@
 
 (defn render-trace-panel [traces]
   (let [filter-input            (r/atom "")
-        filter-items            (r/atom (localstorage/get "filter-items" []))
+        filter-items            (rf/subscribe [:traces/filter-items])
         filter-type             (r/atom :contains)
         input-error             (r/atom false)
         categories              (r/atom #{:event :sub/run :sub/create})
         trace-detail-expansions (r/atom {:show-all? false :overrides {}})]
-    (add-watch filter-items
-               :update-localstorage
-               (fn [_ _ _ new-state]
-                 (localstorage/save! "filter-items" new-state)))
     (fn []
       (let [toggle-category-fn (fn [category-keys]
                                  (swap! categories #(if (set/superset? % category-keys)
@@ -143,7 +128,7 @@
                   [:li.filter-item
                    [:button.button
                     {:style    {:margin 0}
-                     :on-click (fn [event] (swap! filter-items #(remove (comp (partial = (:query item)) :query) %)))}
+                     :on-click #(rf/dispatch [:traces/remove-filter (:id item)])}
                     (:filter-type item) ": " [:span.filter-item-string (:query item)]]])
                 @filter-items)]]
          [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
@@ -162,7 +147,7 @@
             [:th
              [:button {:class    (str/join " " ["filter-items-count"
                                                 (when (pos? (count @filter-items)) "active")])
-                       :on-click #(reset! filter-items [])}
+                       :on-click #(rf/dispatch [:traces/reset-filter-items])}
               (when (pos? (count @filter-items))
                 (str (count visible-traces) " of "))
               (str (count @traces))]

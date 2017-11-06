@@ -118,8 +118,8 @@
                 (reagent.impl.batching/do-after-render (fn [] (trace/with-trace {:op-type :raf-end})))
                 (real-schedule)))))
 
-(def total-traces (interop/ratom 0))
-(def traces (interop/ratom []))
+(defonce total-traces (interop/ratom 0))
+(defonce traces (interop/ratom []))
 
 (defn log-trace? [trace]
   (let [rendering? (= (:op-type trace) :render)]
@@ -173,7 +173,7 @@
         showing?             (rf/subscribe [:settings/show-panel?])
         dragging?            (r/atom false)
         pin-to-bottom?       (r/atom true)
-        selected-tab         (r/atom (localstorage/get "selected-tab" :traces))
+        selected-tab         (rf/subscribe [:settings/selected-tab])
         window-width         (r/atom js/window.innerWidth)
         handle-window-resize (fn [e]
                                ;; N.B. I don't think this should be a perf bottleneck.
@@ -239,8 +239,7 @@
                                       (case @selected-tab
                                         :traces [traces/render-trace-panel traces]
                                         :app-db [app-db/render-state db/app-db]
-                                        :subvis [subvis/render-subvis traces
-                                                 [:div.panel-content-scrollable]]
+                                        :subvis [subvis/render-subvis traces]
                                         [app-db/render-state db/app-db])]]]))})))
 
 (defn panel-div []
