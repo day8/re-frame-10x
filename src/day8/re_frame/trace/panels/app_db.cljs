@@ -144,7 +144,7 @@
                    [:div.subtree
                     [subtree
                      (get-in @data path)
-                     [:button.subtree-button {:on-click #(swap! subtree-paths disj path)}
+                     [:button.subtree-button {:on-click #(rf/dispatch [:app-db/remove-path path])}
                       [:span.subtree-button-string
                        (str path)]]]]])
                 @subtree-paths))]
