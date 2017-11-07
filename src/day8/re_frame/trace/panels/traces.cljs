@@ -155,4 +155,5 @@
              (when (pos? (count @traces))
                [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
             [:th {:style {:text-align "right"}} "meta"]]
-           [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]))))
+           [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]
+         ]))))

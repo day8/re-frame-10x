@@ -314,6 +314,10 @@
 #--re-frame-trace-- .icon-button {
   font-size: 10px;
 }
+#--re-frame-trace-- .popout-icon {
+  max-width: 15px;
+  cursor: pointer;
+}
 #--re-frame-trace-- .tab {
   background: transparent;
   border-radius: 0;

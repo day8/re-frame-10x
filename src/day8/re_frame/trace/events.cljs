@@ -1,8 +1,12 @@
 (ns day8.re-frame.trace.events
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.utils.utils :as utils]
+            [day8.re-frame.trace.utils.traces :as utils.traces]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [reagent.core :as r]
+            [day8.re-frame.trace.components.container :as container]
+            [day8.re-frame.trace.styles :as styles]))
 
 (rf/reg-event-db
   :settings/panel-width%
@@ -28,6 +32,46 @@
     (let [show-panel? (not (get-in db [:settings :show-panel?]))]
       (localstorage/save! "show-panel" show-panel?)
       (assoc-in db [:settings :show-panel?] show-panel?))))
+
+;; Global
+
+(defn mount [popup-window popup-document]
+  (let [app (.getElementById popup-document "--re-frame-trace--")
+        doc js/document]
+    (styles/inject-styles popup-document)
+    (aset popup-window "onunload" #(rf/dispatch [:global/external-closed]))
+    (r/render
+      [(r/create-class
+         {:display-name   "devtools outer external"
+          :reagent-render (fn []
+                            [container/devtools-inner utils.traces/traces {:panel-type :popup}
+                             ])})]
+      app)))
+
+(defn open-debugger-window
+  "Copied from re-frisk.devtool/open-debugger-window"
+  []
+  (let [{:keys [ext_height ext_width]} (:prefs {})
+        w (js/window.open "" "Debugger" (str "width=" (or ext_width 800) ",height=" (or ext_height 800)
+                                             ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
+        d (.-document w)]
+    (.open d)
+    (.write d "<head></head><body><div id=\"--re-frame-trace--\"></div></body>" #_html-doc)
+    (aset w "onload" #(mount w d))
+    (.close d)))
+
+(rf/reg-event-fx
+  :global/launch-external
+  (fn [{:keys [db]} _]
+    (open-debugger-window)
+    {:db             db
+     ;; TODO: capture the intent that the user is still interacting with devtools, to persist between reloads.
+     :dispatch-later [{:ms 200 :dispatch [:settings/show-panel? false]}]}))
+
+(rf/reg-event-fx
+  :global/external-closed
+  (fn [ctx _]
+    {:dispatch-later [{:ms 400 :dispatch [:settings/show-panel? true]}]}))
 
 ;; Traces
 

@@ -3,6 +3,7 @@
             [day8.re-frame.trace.panels.app-db :as app-db]
             [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.components.components :as components]
+            [day8.re-frame.trace.components.container :as container]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [day8.re-frame.trace.panels.traces :as traces]
             [day8.re-frame.trace.events]
@@ -23,7 +24,8 @@
             [re-frame.interop :as interop]
 
             [devtools.formatters.core :as devtools]
-            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [day8.re-frame.trace.utils.traces :as utils.traces]))
 
 
 ;; from https://github.com/reagent-project/reagent/blob/3fd0f1b1d8f43dbf169d136f0f905030d7e093bd/src/reagent/impl/component.cljs#L274
@@ -119,13 +121,14 @@
                 (real-schedule)))))
 
 (defonce total-traces (interop/ratom 0))
-(defonce traces (interop/ratom []))
+;(defonce traces (interop/ratom []))
 
 (defn log-trace? [trace]
-  (let [rendering? (= (:op-type trace) :render)]
-    (if-not rendering?
+  (let [render-operation?     (= (:op-type trace) :render)
+        component-path (get-in trace [:tags :component-path] "")]
+    (if-not render-operation?
       true
-      (not (str/includes? (get-in trace [:tags :component-path] "") "devtools outer")))
+      (not (str/includes? component-path "devtools outer")))
 
 
     #_(if-let [comp-p (get-in trace [:tags :component-path])]
@@ -138,15 +141,16 @@
   (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
                                            (when-let [new-traces (filter log-trace? new-traces)]
                                              (swap! total-traces + (count new-traces))
-                                             (swap! traces (fn [existing]
-                                                             (let [new  (reduce conj existing new-traces)
-                                                                   size (count new)]
-                                                               (if (< 4000 size)
-                                                                 (let [new2 (subvec new (- size 2000))]
-                                                                   (if (< @total-traces 20000) ;; Create a new vector to avoid structurally sharing all traces forever
-                                                                     (do (reset! total-traces 0)
-                                                                         (into [] new2))))
-                                                                 new))))))))
+                                             (swap! utils.traces/traces
+                                                    (fn [existing]
+                                                      (let [new  (reduce conj existing new-traces)
+                                                            size (count new)]
+                                                        (if (< 4000 size)
+                                                          (let [new2 (subvec new (- size 2000))]
+                                                            (if (< @total-traces 20000) ;; Create a new vector to avoid structurally sharing all traces forever
+                                                              (do (reset! total-traces 0)
+                                                                  (into [] new2))))
+                                                          new))))))))
 
 (defn init-tracing!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
@@ -165,7 +169,7 @@
     (enable-tracing!)
     (disable-tracing!)))
 
-(defn devtools []
+(defn devtools-outer [traces opts]
   ;; Add clear button
   ;; Filter out different trace types
   (let [position             (r/atom :right)
@@ -226,21 +230,8 @@
                                               :transition transition}}
                                      [:div.panel-resizer {:style         (resizer-style draggable-area)
                                                           :on-mouse-down #(reset! dragging? true)}]
-                                     [:div.panel-content
-                                      {:style {:width "100%" :height "100%" :display "flex" :flex-direction "column"}}
-                                      [:div.panel-content-top
-                                       [:div.nav
-                                        [:button {:class    (str "tab button " (when (= @selected-tab :traces) "active"))
-                                                  :on-click #(rf/dispatch [:settings/selected-tab :traces])} "Traces"]
-                                        [:button {:class    (str "tab button " (when (= @selected-tab :app-db) "active"))
-                                                  :on-click #(rf/dispatch [:settings/selected-tab :app-db])} "App DB"]
-                                        #_[:button {:class    (str "tab button " (when (= @selected-tab :subvis) "active"))
-                                                    :on-click #(reset! selected-tab :subvis)} "SubVis"]]]
-                                      (case @selected-tab
-                                        :traces [traces/render-trace-panel traces]
-                                        :app-db [app-db/render-state db/app-db]
-                                        :subvis [subvis/render-subvis traces]
-                                        [app-db/render-state db/app-db])]]]))})))
+                                     [container/devtools-inner traces opts]]]))})))
+
 
 (defn panel-div []
   (let [id    "--re-frame-trace--"
@@ -253,26 +244,9 @@
         (js/window.focus new-panel)
         new-panel))))
 
-(defn inject-styles []
-  (let [id            "--re-frame-trace-styles--"
-        styles-el     (.getElementById js/document id)
-        new-styles-el (.createElement js/document "style")
-        new-styles    styles/panel-styles]
-    (.setAttribute new-styles-el "id" id)
-    (-> new-styles-el
-        (.-innerHTML)
-        (set! new-styles))
-    (if styles-el
-      (-> styles-el
-          (.-parentNode)
-          (.replaceChild new-styles-el styles-el))
-      (let []
-        (.appendChild (.-head js/document) new-styles-el)
-        new-styles-el))))
-
 (defn inject-devtools! []
-  (inject-styles)
-  (r/render [devtools] (panel-div)))
+  (styles/inject-styles js/document)
+  (r/render [devtools-outer utils.traces/traces {:panel-type :inline}] (panel-div)))
 
 (defn init-db! []
   (trace.db/init-db))
