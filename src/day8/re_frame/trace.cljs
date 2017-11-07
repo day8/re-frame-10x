@@ -28,15 +28,15 @@
 
 ;; from https://github.com/reagent-project/reagent/blob/3fd0f1b1d8f43dbf169d136f0f905030d7e093bd/src/reagent/impl/component.cljs#L274
 (defn fiber-component-path [fiber]
-  (let [name (some-> fiber
-                     ($ :type)
-                     ($ :displayName))
+  (let [name   (some-> fiber
+                       ($ :type)
+                       ($ :displayName))
         parent (some-> fiber
                        ($ :return))
-        path (some-> parent
-                     fiber-component-path
-                     (str " > "))
-        res (str path name)]
+        path   (some-> parent
+                       fiber-component-path
+                       (str " > "))
+        res    (str path name)]
     (when-not (empty? res) res)))
 
 (defn component-path [c]
