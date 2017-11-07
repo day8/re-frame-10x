@@ -71,3 +71,7 @@ The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#pr
 ## Developing/Contributing
 
 If you want to work on re-frame-trace, see [DEVELOPERS.md](DEVELOPERS.md).
+
+## Citations
+
+[open](https://thenounproject.com/search/?q=popout&i=334227) by Bluetip Design from the Noun Project
