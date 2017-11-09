@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This change
 ### Added
 
 * Preliminary support for React 16 component paths [#89](https://github.com/Day8/re-frame-trace/pull/89).
+* External popout window. [#92](https://github.com/Day8/re-frame-trace/issues/92).
 
 ### Changed
 
