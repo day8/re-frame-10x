@@ -56,7 +56,7 @@
                                              ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
         d (.-document w)]
     (.open d)
-    (.write d "<head></head><body><div id=\"--re-frame-trace--\"></div></body>" #_html-doc)
+    (.write d "<head></head><body><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
     (aset w "onload" #(mount w d))
     (.close d)))
 

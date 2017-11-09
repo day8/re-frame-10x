@@ -411,6 +411,8 @@
   .popout-icon {
     max-width: 15px;
     cursor: pointer;
+    padding: 0 5px;
+    margin: 0 5px;
   }
 
   .tab {
@@ -498,18 +500,32 @@
       }
     }
   }
+
+  .filter-control-input {
+    display: flex;
+    flex: 1 0 auto;
+  }
   .nav {
     background: @light-gray;
     color: @text-color;
   }
+
+  &.external-window {
+    display: flex;
+    height: 100%;
+    flex: 1 1 auto;
+  }
+
   .panel-content-top {
+
   }
   .panel-content-scrollable {
-    padding-top: 10px;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
     flex: 1 1 auto;
-    height: 100%;
-    overflow: auto;
-    padding-top: 10px;
+    overflow-x: auto;
+    overflow-y: auto;
     z-index: 1000;
   }
   .tab-contents {

@@ -160,7 +160,7 @@
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0
-   :left     (str (- (/ draggable-area 2)) "px") :width "10px" :top "0px" :height "100%" :cursor "col-resize"})
+   :left     (str (- (/ draggable-area 2)) "px") :width "10px" :top "0px" :cursor "col-resize"})
 
 (def ease-transition "left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out")
 
@@ -168,6 +168,7 @@
   (if @showing?
     (enable-tracing!)
     (disable-tracing!)))
+
 
 (defn devtools-outer [traces opts]
   ;; Add clear button
@@ -226,6 +227,7 @@
                                     {:style {:position "fixed" :width "0px" :height "0px" :top "0px" :left "0px" :z-index 99999999}}
                                     [:div.panel
                                      {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px" :background "white"
+                                              :display    "flex"
                                               :left       left :top "0px" :width (str (inc (int (* 100 @panel-width%))) "%") :height "100%"
                                               :transition transition}}
                                      [:div.panel-resizer {:style         (resizer-style draggable-area)

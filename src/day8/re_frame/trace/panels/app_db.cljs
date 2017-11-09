@@ -119,8 +119,8 @@
         subtree-paths (rf/subscribe [:app-db/paths])
         input-error   (r/atom false)]
     (fn []
-      [:div {:style {:flex "1 0 auto" :width "100%" :height "100%" :display "flex" :flex-direction "column"}}
-       [:div.panel-content-scrollable {:style {:margin 10}}
+      [:div {:style {:flex "1 1 auto" :display "flex" :flex-direction "column"}}
+       [:div.panel-content-scrollable {:style {:margin-left "10px"}}
         [:div.filter-control-input
          [components/search-input {:placeholder ":path :into :app-state"
                                    :on-save     (fn [path]

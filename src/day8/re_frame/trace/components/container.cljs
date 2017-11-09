@@ -10,7 +10,7 @@
   (let [selected-tab (rf/subscribe [:settings/selected-tab])
         panel-type   (:panel-type opts)]
     [:div.panel-content
-     {:style {:width "100%" :height "100%" :display "flex" :flex-direction "column"}}
+     {:style {:width "100%" :display "flex" :flex-direction "column"}}
      [:div.panel-content-top
       [:div.nav
        [:button {:class    (str "tab button " (when (= @selected-tab :traces) "active"))
