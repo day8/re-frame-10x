@@ -7,6 +7,7 @@
   :cljs.test/are 2
   :clojure.test/are :only-indent
   :cursive.formatting/align-binding-forms true
+  :day8.re-frame.trace.utils.macros/with-cljs-devtools-prefs 1
 }</ClojureCodeStyleSettings>
       </value>
     </option>

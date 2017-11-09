@@ -37,8 +37,8 @@
    ;:item-style (reset-wrapping (:item-style default-cljs-devtools-prefs))
 
    ; Hide the index spans on the left hand of collections. Shows how many elements in a collection.
-   :none-style   "display: none"
-   :index-tag    [:span :none-style]
+   :none-style                     "display: none"
+   :index-tag                      [:span :none-style]
 
    ; Our JSON renderer does not have hierarchy depth limit,
    ; See https://github.com/binaryage/cljs-devtools/blob/master/src/lib/devtools/formatters/budgeting.cljs
@@ -148,4 +148,5 @@
                       [:span.subtree-button-string
                        (str path)]]]]])
                 @subtree-paths))]
-        [subtree @data [:span.label "app-db"]]]])))
+        [:div {:style {:margin-bottom "20px"}}
+         [subtree @data [:span.label "app-db"]]]]])))
