@@ -83,13 +83,13 @@
   :global/enable-tracing
   (fn [ctx _]
     (utils.traces/enable-tracing!)
-    ctx))
+    nil))
 
 (rf/reg-event-fx
   :global/disable-tracing
   (fn [ctx _]
     (utils.traces/disable-tracing!)
-    ctx))
+    nil))
 
 ;; Traces
 
