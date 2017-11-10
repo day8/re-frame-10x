@@ -418,7 +418,7 @@
 }
 #--re-frame-trace-- .filter-control-input {
   display: flex;
-  flex: 1 0 auto;
+  flex: 0 0 auto;
 }
 #--re-frame-trace-- .nav {
   background: #efeef1;

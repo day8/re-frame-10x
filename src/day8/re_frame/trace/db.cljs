@@ -12,4 +12,6 @@
     (rf/dispatch [:settings/show-panel? show-panel?])
     (rf/dispatch [:settings/selected-tab selected-tab])
     (rf/dispatch [:traces/filter-items filter-items])
-    (rf/dispatch [:app-db/paths app-db-paths])))
+    (rf/dispatch [:app-db/paths app-db-paths])
+    (when show-panel?
+      (rf/dispatch [:global/enable-tracing]))))

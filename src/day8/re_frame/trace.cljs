@@ -120,37 +120,6 @@
                 (reagent.impl.batching/do-after-render (fn [] (trace/with-trace {:op-type :raf-end})))
                 (real-schedule)))))
 
-(defonce total-traces (interop/ratom 0))
-;(defonce traces (interop/ratom []))
-
-(defn log-trace? [trace]
-  (let [render-operation?     (= (:op-type trace) :render)
-        component-path (get-in trace [:tags :component-path] "")]
-    (if-not render-operation?
-      true
-      (not (str/includes? component-path "devtools outer")))
-
-
-    #_(if-let [comp-p (get-in trace [:tags :component-path])]
-        (println comp-p))))
-
-(defn disable-tracing! []
-  (re-frame.trace/remove-trace-cb ::cb))
-
-(defn enable-tracing! []
-  (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
-                                           (when-let [new-traces (filter log-trace? new-traces)]
-                                             (swap! total-traces + (count new-traces))
-                                             (swap! utils.traces/traces
-                                                    (fn [existing]
-                                                      (let [new  (reduce conj existing new-traces)
-                                                            size (count new)]
-                                                        (if (< 4000 size)
-                                                          (let [new2 (subvec new (- size 2000))]
-                                                            (if (< @total-traces 20000) ;; Create a new vector to avoid structurally sharing all traces forever
-                                                              (do (reset! total-traces 0)
-                                                                  (into [] new2))))
-                                                          new))))))))
 
 (defn init-tracing!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
@@ -163,12 +132,6 @@
    :left     (str (- (/ draggable-area 2)) "px") :width "10px" :top "0px" :cursor "col-resize"})
 
 (def ease-transition "left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out")
-
-(defn toggle-traces [showing?]
-  (if @showing?
-    (enable-tracing!)
-    (disable-tracing!)))
-
 
 (defn devtools-outer [traces opts]
   ;; Add clear button
@@ -191,8 +154,7 @@
                                  (when (and (not entering-input?) combo-key?)
                                    (cond
                                      (and (= key "h") (.-ctrlKey e))
-                                     (do (rf/dispatch [:settings/toggle-panel])
-                                         (toggle-traces showing?)
+                                     (do (rf/dispatch [:settings/user-toggle-panel])
                                          (.preventDefault e))))))
         handle-mousemove     (fn [e]
                                (when @dragging?
@@ -204,8 +166,7 @@
                                    (reset! window-width new-window-width))))
         handle-mouse-up      (fn [e] (reset! dragging? false))]
     (r/create-class
-      {:component-will-mount   (fn []
-                                 (toggle-traces showing?)
+      {:component-did-mount   (fn []
                                  (js/window.addEventListener "keydown" handle-keys)
                                  (js/window.addEventListener "mousemove" handle-mousemove)
                                  (js/window.addEventListener "mouseup" handle-mouse-up)
