@@ -129,7 +129,7 @@
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0
-   :left     (str (- (/ draggable-area 2)) "px") :width "10px" :top "0px" :cursor "col-resize"})
+   :left     (str (- (/ draggable-area 2)) "px") :width "10px" :height "100%" :top "0px" :cursor "col-resize"})
 
 (def ease-transition "left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out")
 
