@@ -14,11 +14,9 @@
       (not (str/includes? component-path "devtools outer")))))
 
 (defn disable-tracing! []
-  (println "Disabling tracing")
   (re-frame.trace/remove-trace-cb ::cb))
 
 (defn enable-tracing! []
-  (println "Enabling tracing")
   (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
                                            (when-let [new-traces (filter log-trace? new-traces)]
                                              (swap! total-traces + (count new-traces))
