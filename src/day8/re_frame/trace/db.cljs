@@ -13,5 +13,6 @@
     (rf/dispatch [:settings/selected-tab selected-tab])
     (rf/dispatch [:traces/filter-items filter-items])
     (rf/dispatch [:app-db/paths app-db-paths])
+    (rf/dispatch [:global/add-unload-hook])
     (when show-panel?
       (rf/dispatch [:global/enable-tracing]))))

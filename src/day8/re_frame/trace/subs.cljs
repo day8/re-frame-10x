@@ -25,3 +25,8 @@
   :traces/filter-items
   (fn [db _]
     (get-in db [:traces :filter-items])))
+
+(rf/reg-sub
+  :global/unloading?
+  (fn [db _]
+    (get-in db [:global :unloading?])))

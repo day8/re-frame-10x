@@ -61,7 +61,7 @@
                                              ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
         d (.-document w)]
     (.open d)
-    (.write d "<head></head><body><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
+    (.write d "<head></head><body style=\"margin: 0px;\"><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
     (aset w "onload" #(mount w d))
     (.close d)))
 
@@ -90,6 +90,17 @@
   (fn [ctx _]
     (utils.traces/disable-tracing!)
     nil))
+
+(rf/reg-event-fx
+  :global/add-unload-hook
+  (fn [_ _]
+    (js/window.addEventListener "beforeunload" #(rf/dispatch-sync [:global/unloading? true]))
+    nil))
+
+(rf/reg-event-db
+  :global/unloading?
+  (fn [db [_ unloading?]]
+    (assoc-in db [:global :unloading?] unloading?)))
 
 ;; Traces
 

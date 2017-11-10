@@ -474,6 +474,10 @@
 #--re-frame-trace-- .re-frame-trace--object > span {
   vertical-align: text-top;
 }
+#--re-frame-trace-- .host-closed {
+  font-size: 4em;
+  background-color: rgba(255, 255, 0, 0.8);
+}
 #--re-frame-trace-- .expansion-button {
   font-family: sans-serif;
   width: 16px;
