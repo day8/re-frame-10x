@@ -1,5 +1,6 @@
 (ns day8.re-frame.trace.panels.traces
   (:require [day8.re-frame.trace.components.components :as components]
+            [day8.re-frame.trace.utils.pretty-print-condensed :as pp]
             [re-frame.trace :as trace]
             [clojure.string :as str]
             [reagent.core :as r]
@@ -54,7 +55,15 @@
                                [:span.op-string {:on-click (fn [ev]
                                                              (add-filter filter-items (name op-name) :contains)
                                                              (.stopPropagation ev))}
-                                (str op-name)]]
+                                (pp/truncate 20 :middle (pp/str->namespaced-sym op-name)) " "
+                                [:span
+                                 {:style {:opacity 0.5
+                                          :display "inline-block"}}
+                                 (when-let [[_ & params] (or (get tags :query-v)
+                                                             (get tags :event))]
+                                   (->> (map pp/pretty-condensed params)
+                                        (str/join ", ")
+                                        (pp/truncate-string :middle 40)))]]]
                               [:td.trace--meta
                                (.toFixed duration 1) " ms"]]
                              (when show-row?
