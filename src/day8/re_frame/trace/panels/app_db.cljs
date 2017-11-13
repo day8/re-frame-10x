@@ -122,7 +122,7 @@
       [:div {:style {:flex "1 1 auto" :display "flex" :flex-direction "column"}}
        [:div.panel-content-scrollable {:style {:margin-left "10px"}}
         [:div.filter-control-input
-         [components/search-input {:placeholder ":path :into :app-state"
+         [components/search-input {:placeholder ":path :into :app-db"
                                    :on-save     (fn [path]
                                                   (if false ;; TODO check if path exists
                                                     (reset! input-error true)

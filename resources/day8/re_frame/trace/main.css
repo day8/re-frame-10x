@@ -25,7 +25,7 @@
   font-family: 'courier new', monospace;
   color: #222222;
   /* mixins */
-  /* app-state data viewer
+  /* app-db data viewer
      ========================================================================== */
 }
 #--re-frame-trace-- * {
