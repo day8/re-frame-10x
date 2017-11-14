@@ -6,6 +6,7 @@
             [devtools.formatters.core]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [day8.re-frame.trace.components.components :as components]
+            [day8.re-frame.trace.utils.re-com :as re-com]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
 
 (defn string->css [css-string]
@@ -117,21 +118,19 @@
 (defn render-state [data]
   (let [subtree-input (r/atom "")
         subtree-paths (rf/subscribe [:app-db/paths])
+        search-string (rf/subscribe [:app-db/search-string])
         input-error   (r/atom false)]
     (fn []
       [:div {:style {:flex "1 1 auto" :display "flex" :flex-direction "column"}}
        [:div.panel-content-scrollable {:style {:margin-left "10px"}}
-        [:div.filter-control-input
-         [components/search-input {:placeholder ":path :into :app-db"
-                                   :on-save     (fn [path]
-                                                  (if false ;; TODO check if path exists
-                                                    (reset! input-error true)
-                                                    (do
-                                                      ; (reset! input-error false)
-                                                      ;; TODO check if input already wrapped in braces
-                                                      (rf/dispatch [:app-db/paths (into #{(cljs.reader/read-string (str "[" path "]"))} @subtree-paths)])
-                                                      #_(swap! subtree-paths #(into #{(cljs.reader/read-string (str "[" path "]"))} %)))))
-                                   :on-change   #(reset! subtree-input (.. % -target -value))}]]
+        [re-com/input-text
+         :model search-string
+         :on-change (fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+         :on-submit #(rf/dispatch [:app-db/add-path %])
+         :change-on-blur? false
+         :placeholder ":path :into :app-db"]
+
+        ;; TODO: check for input errors
         ; (if @input-error
         ;   [:div.input-error {:style {:color "red" :margin-top 5}}
         ;    "Please enter a valid path."])]]

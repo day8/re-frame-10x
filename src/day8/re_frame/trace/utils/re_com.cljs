@@ -153,7 +153,7 @@
   (let [external-model (reagent/atom (deref-or-value model))  ;; Holds the last known external value of model, to detect external model changes
         internal-model (reagent/atom (if (nil? @external-model) "" @external-model))] ;; Create a new atom from the model to be used internally (avoid nil)
     (fn
-      [& {:keys [model on-change status status-icon? status-tooltip placeholder width height rows change-on-blur? validation-regex disabled? class style attr]
+      [& {:keys [model on-change on-submit status status-icon? status-tooltip placeholder width height rows change-on-blur? validation-regex disabled? class style attr]
           :or   {change-on-blur? true}
           :as   args}]
       (let [latest-ext-model (deref-or-value model)
@@ -207,11 +207,16 @@
                                                 change-on-blur?
                                                 (not= @internal-model @external-model))
                                           (on-change @internal-model)))
+                         :on-key-down (handler-fn
+                                        (case (.-which event)
+                                          13 (when on-submit
+                                               (on-submit @internal-model))
+                                          true))
                          :on-key-up   (handler-fn
                                         (if disabled?
                                           (.preventDefault event)
                                           (case (.-which event)
-                                            13 (when on-change (on-change @internal-model))
+                                            #_#_13 (when on-change (on-change @internal-model))
                                             27 (reset! internal-model @external-model)
                                             true)))}
                         attr)]]]]))))

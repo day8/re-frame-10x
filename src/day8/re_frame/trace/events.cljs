@@ -29,7 +29,7 @@
 (rf/reg-event-db
   :settings/user-toggle-panel
   (fn [db _]
-    (let [show-panel? (not (get-in db [:settings :show-panel?]))
+    (let [show-panel?     (not (get-in db [:settings :show-panel?]))
           external-panel? (get-in db [:settings :external-window?])]
       (if show-panel?
         (utils.traces/enable-tracing!)
@@ -161,3 +161,23 @@
     (let [new-db (update-in db [:app-db :paths] disj path)]
       (localstorage/save! "app-db-paths" (get-in new-db [:app-db :paths]))
       new-db)))
+
+(rf/reg-event-db
+  :app-db/add-path
+  (fn [db _]
+    (let [search-string (get-in db [:app-db :search-string])
+          path          (try
+                          (when-not (str/blank? search-string)
+                            (cljs.reader/read-string (str "[" search-string "]")))
+                          (catch :default e
+                            nil))]
+      (if (some? path)
+        (-> db
+            (update-in [:app-db :paths] conj path)
+            (assoc-in [:app-db :search-string] ""))
+        db))))
+
+(rf/reg-event-db
+  :app-db/search-string
+  (fn [db [_ search-string]]
+    (assoc-in db [:app-db :search-string] search-string)))
