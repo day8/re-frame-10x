@@ -152,13 +152,14 @@
 (rf/reg-event-db
   :app-db/paths
   (fn [db [_ paths]]
-    (localstorage/save! "app-db-paths" paths)
-    (assoc-in db [:app-db :paths] paths)))
+    (let [new-paths (into [] paths)]                        ;; Don't use sets, use vectors
+      (localstorage/save! "app-db-paths" paths)
+      (assoc-in db [:app-db :paths] paths))))
 
 (rf/reg-event-db
   :app-db/remove-path
   (fn [db [_ path]]
-    (let [new-db (update-in db [:app-db :paths] disj path)]
+    (let [new-db (update-in db [:app-db :paths] #(remove (fn [p] (= p path)) %))]
       (localstorage/save! "app-db-paths" (get-in new-db [:app-db :paths]))
       new-db)))
 
@@ -172,9 +173,10 @@
                           (catch :default e
                             nil))]
       (if (some? path)
-        (-> db
-            (update-in [:app-db :paths] conj path)
-            (assoc-in [:app-db :search-string] ""))
+        (do (localstorage/save! "app-db-paths" (cons path (get-in db [:app-db :paths])))
+            (-> db
+                (update-in [:app-db :paths] #(cons path %))
+                (assoc-in [:app-db :search-string] "")))
         db))))
 
 (rf/reg-event-db

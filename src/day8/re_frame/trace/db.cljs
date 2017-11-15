@@ -7,7 +7,7 @@
         show-panel? (localstorage/get "show-panel" false)
         selected-tab (localstorage/get "selected-tab" :traces)
         filter-items (localstorage/get "filter-items" [])
-        app-db-paths (localstorage/get "app-db-paths" #{})]
+        app-db-paths (localstorage/get "app-db-paths" '())]
     (rf/dispatch [:settings/panel-width% panel-width%])
     (rf/dispatch [:settings/show-panel? show-panel?])
     (rf/dispatch [:settings/selected-tab selected-tab])
