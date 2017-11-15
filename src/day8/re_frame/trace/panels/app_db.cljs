@@ -57,6 +57,12 @@
 (defn cljs-devtools-body [& args]
   (apply make-devtools-api-call devtools.formatters.core/body-api-call args))
 
+(defn get-object [jsonml]
+  (.-object (get jsonml 1)))
+
+(defn get-config [jsonml]
+  (.-config (get jsonml 1)))
+
 (defn data-structure [jsonml]
   (let [expanded? (r/atom false)]
     (fn [jsonml]
@@ -68,11 +74,11 @@
         [:button.expansion-button (if @expanded? "▼" "▶")]]
        (jsonml->hiccup (if @expanded?
                          (cljs-devtools-body
-                           (.-object (get jsonml 1))
-                           (.-config (get jsonml 1)))
+                           (get-object jsonml)
+                           (get-config jsonml))
                          (cljs-devtools-header
-                           (.-object (get jsonml 1))
-                           (.-config (get jsonml 1)))))])))
+                           (get-object jsonml)
+                           (get-config jsonml))))])))
 
 (defn jsonml->hiccup
   "JSONML is the format used by Chrome's Custom Object Formatters.
