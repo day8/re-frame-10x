@@ -101,7 +101,6 @@
                                       (map jsonml->hiccup children)))
 
         (= head "object") [data-structure jsonml]
-        (= jsonml ", ") " "
         :else jsonml))))
 
 (defn subtree [data title]
