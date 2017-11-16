@@ -57,6 +57,9 @@
 (defn cljs-devtools-body [& args]
   (apply make-devtools-api-call devtools.formatters.core/body-api-call args))
 
+(defn cljs-devtools-has-body [& args]
+  (apply make-devtools-api-call devtools.formatters.core/has-body-api-call args))
+
 (defn get-object [jsonml]
   (.-object (get jsonml 1)))
 
@@ -72,7 +75,7 @@
        [:span {:class    "toggle"
                :on-click #(swap! expanded? not)}
         [:button.expansion-button (if @expanded? "▼" "▶")]]
-       (jsonml->hiccup (if @expanded?
+       (jsonml->hiccup (if (and @expanded? (cljs-devtools-has-body (get-object jsonml) (get-config jsonml)))
                          (cljs-devtools-body
                            (get-object jsonml)
                            (get-config jsonml))
