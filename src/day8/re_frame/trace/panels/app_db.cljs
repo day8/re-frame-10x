@@ -66,21 +66,25 @@
 (defn get-config [jsonml]
   (.-config (get jsonml 1)))
 
-(defn data-structure [jsonml]
-  (let [expanded? (r/atom false)]
-    (fn [jsonml]
+(defn data-structure [jsonml path]
+  (let [expanded? (rf/subscribe [:app-db/node-expanded? path])]
+    (fn [jsonml path]
       [:span
        {:class (str "re-frame-trace--object" (when @expanded? " expanded"))}
        [:span {:class    "toggle"
-               :on-click #(swap! expanded? not)}
+               :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
         [:button.expansion-button (if @expanded? "▼" "▶")]]
-       (jsonml->hiccup (if (and @expanded? (cljs-devtools-has-body (get-object jsonml) (get-config jsonml)))
-                         (cljs-devtools-body
-                           (get-object jsonml)
-                           (get-config jsonml))
-                         (cljs-devtools-header
-                           (get-object jsonml)
-                           (get-config jsonml))))])))
+       (if (and @expanded? (cljs-devtools-has-body (get-object jsonml) (get-config jsonml)))
+         (jsonml->hiccup
+           (cljs-devtools-body
+             (get-object jsonml)
+             (get-config jsonml))
+           (conj path :body))
+         (jsonml->hiccup
+           (cljs-devtools-header
+             (get-object jsonml)
+             (get-config jsonml))
+           (conj path :header)))])))
 
 (defn jsonml->hiccup
   "JSONML is the format used by Chrome's Custom Object Formatters.
@@ -89,7 +93,7 @@
   JSONML is pretty much Hiccup over JSON. Chrome's implementation of this can
   be found at https://cs.chromium.org/chromium/src/third_party/WebKit/Source/devtools/front_end/object_ui/CustomPreviewComponent.js
   "
-  [jsonml]
+  [jsonml path]
   (if (number? jsonml)
     jsonml
     (let [[tag-name attributes & children] jsonml
@@ -99,20 +103,20 @@
                                         [(keyword tag-name) {:style (-> (js->clj attributes)
                                                                         (get "style")
                                                                         (string->css))}]
-                                        (map jsonml->hiccup)
+                                        (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
                                         children)
 
-        (= tag-name "object") [data-structure jsonml]
+        (= tag-name "object") [data-structure jsonml path]
         :else jsonml))))
 
-(defn subtree [data title]
-  (let [expanded? (r/atom false)]
+(defn subtree [data title path]
+  (let [expanded? (rf/subscribe [:app-db/node-expanded? path])]
     (fn [data]
       [:div
        {:class (str/join " " ["re-frame-trace--object"
                               (when @expanded? "expanded")])}
        [:span {:class    "toggle"
-               :on-click #(swap! expanded? not)}
+               :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
         [:button.expansion-button (if @expanded? "▼ " "▶ ")]]
        (or title "data")
        [:div {:style {:margin-left 20}}
@@ -120,7 +124,7 @@
           (and @expanded?
                (or (string? data)
                    (number? data))) [:div {:style {:margin "10px 0"}} data]
-          @expanded? (jsonml->hiccup (cljs-devtools-header data)))]])))
+          @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]])))
 
 (defn render-state [data]
   (let [subtree-input (r/atom "")
@@ -152,7 +156,8 @@
                      (get-in @data path)
                      [:button.subtree-button {:on-click #(rf/dispatch [:app-db/remove-path path])}
                       [:span.subtree-button-string
-                       (str path)]]]]])
+                       (str path)]]
+                     [path]]]])
                 @subtree-paths))]
         [:div {:style {:margin-bottom "20px"}}
-         [subtree @data [:span.label "app-db"]]]]])))
+         [subtree @data [:span.label "app-db"] [:app-db]]]]])))

@@ -183,3 +183,16 @@
   :app-db/search-string
   (fn [db [_ search-string]]
     (assoc-in db [:app-db :search-string] search-string)))
+
+(rf/reg-event-db
+  :app-db/set-json-ml-paths
+  (fn [db [_ paths]]
+    (assoc-in db [:app-db :json-ml-paths] paths)))
+
+(rf/reg-event-db
+  :app-db/toggle-expansion
+  [(rf/path [:app-db :json-ml-paths])]
+  (fn [paths [_ path]]
+    (if (contains? paths path)
+      (disj paths path)
+      (conj paths path))))

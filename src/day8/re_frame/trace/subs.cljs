@@ -24,6 +24,8 @@
   (fn [settings _]
     (get settings :selected-tab)))
 
+;; App DB
+
 (rf/reg-sub
   :app-db/root
   (fn [db _]
@@ -40,6 +42,20 @@
   :<- [:app-db/root]
   (fn [app-db-settings _]
     (get app-db-settings :search-string)))
+
+(rf/reg-sub
+  :app-db/expansions
+  :<- [:app-db/root]
+  (fn [app-db-settings _]
+    (get app-db-settings :json-ml-paths)))
+
+(rf/reg-sub
+  :app-db/node-expanded?
+  :<- [:app-db/expansions]
+  (fn [expansions [_ path]]
+    (contains? expansions path)))
+
+;;
 
 (rf/reg-sub
   :traces/filter-items
