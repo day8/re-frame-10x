@@ -90,17 +90,17 @@
   [jsonml]
   (if (number? jsonml)
     jsonml
-    (let [[head & args] jsonml
+    (let [[tag-name attributes & children] jsonml
           tagnames #{"div" "span" "ol" "li" "table" "tr" "td"}]
       (cond
-        (contains? tagnames head) (let [[style & children] args]
-                                    (into
-                                      [(keyword head) {:style (-> (js->clj style)
-                                                                  (get "style")
-                                                                  (string->css))}]
-                                      (map jsonml->hiccup children)))
+        (contains? tagnames tag-name) (into
+                                        [(keyword tag-name) {:style (-> (js->clj attributes)
+                                                                        (get "style")
+                                                                        (string->css))}]
+                                        (map jsonml->hiccup)
+                                        children)
 
-        (= head "object") [data-structure jsonml]
+        (= tag-name "object") [data-structure jsonml]
         :else jsonml))))
 
 (defn subtree [data title]
