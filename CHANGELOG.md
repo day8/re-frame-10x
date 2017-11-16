@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+## [0.1.12] - 2017-11-16
+
 ### Added
 
 * Preliminary support for React 16 component paths. [#89](https://github.com/Day8/re-frame-trace/pull/89)
