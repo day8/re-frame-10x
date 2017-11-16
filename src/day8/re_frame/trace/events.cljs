@@ -186,13 +186,17 @@
 
 (rf/reg-event-db
   :app-db/set-json-ml-paths
+  [(rf/path [:app-db :json-ml-expansions])]
   (fn [db [_ paths]]
-    (assoc-in db [:app-db :json-ml-paths] paths)))
+    (localstorage/save! "app-db-json-ml-expansions" paths)
+    paths))
 
 (rf/reg-event-db
   :app-db/toggle-expansion
-  [(rf/path [:app-db :json-ml-paths])]
+  [(rf/path [:app-db :json-ml-expansions])]
   (fn [paths [_ path]]
-    (if (contains? paths path)
-      (disj paths path)
-      (conj paths path))))
+    (let [new-paths (if (contains? paths path)
+                      (disj paths path)
+                      (conj paths path))]
+      (localstorage/save! "app-db-json-ml-expansions" new-paths)
+      new-paths)))

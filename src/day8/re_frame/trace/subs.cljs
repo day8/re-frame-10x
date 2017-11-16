@@ -47,7 +47,7 @@
   :app-db/expansions
   :<- [:app-db/root]
   (fn [app-db-settings _]
-    (get app-db-settings :json-ml-paths)))
+    (get app-db-settings :json-ml-expansions)))
 
 (rf/reg-sub
   :app-db/node-expanded?
