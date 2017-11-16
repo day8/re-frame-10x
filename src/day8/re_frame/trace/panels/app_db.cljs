@@ -70,8 +70,7 @@
   (let [expanded? (r/atom false)]
     (fn [jsonml]
       [:span
-       {:class (str/join " " ["re-frame-trace--object"
-                              (when @expanded? "expanded")])}
+       {:class (str "re-frame-trace--object" (when @expanded? " expanded"))}
        [:span {:class    "toggle"
                :on-click #(swap! expanded? not)}
         [:button.expansion-button (if @expanded? "▼" "▶")]]
