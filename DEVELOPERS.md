@@ -84,3 +84,10 @@ $ lein with-profile mranderson source-deps
 $ cp -r target/srcdeps/mranderson047 src 
 ```
 
+### How does re-frame-trace build?? I don't see anything in the project.clj that looks like it will build.
+    
+When you add a path to the :source-paths of the test project used to develop the trace panel against, figwheel in the test project will know to watch and build it too.
+
+### I'm developing against the re-frame todomvc project. Why are changes in my local re-frame repo reflected in the example project? Shouldn't it be pulling from clojars?
+
+The re-frame todomvc depends on the source paths of the re-frame project in the same repo. It does this by adding adding `"../../src"` to `:source-paths`.
