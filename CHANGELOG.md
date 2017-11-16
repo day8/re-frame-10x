@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. This change
 * Preliminary support for React 16 component paths. [#89](https://github.com/Day8/re-frame-trace/pull/89)
 * External popout window. [#92](https://github.com/Day8/re-frame-trace/issues/92)
 * Namespace aware truncation in the traces panel. [#100](https://github.com/Day8/re-frame-trace/pull/100)
+* App DB expansions and contractions now persist across reloads. Note the [limitations](https://github.com/Day8/re-frame-trace/blob/master/docs/README.md#app-db-path-expansions) with this feature.
 
 ### Changed
 
