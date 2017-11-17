@@ -39,6 +39,7 @@
                                                             (case op-type
                                                               :sub/create "trace--sub-create"
                                                               :sub/run "trace--sub-run"
+                                                              :sub/dispose "trace--sub-run"
                                                               :event "trace--event"
                                                               :render "trace--render"
                                                               :re-frame.router/fsm-trigger "trace--fsm-trigger"
@@ -86,7 +87,7 @@
         filter-items            (rf/subscribe [:traces/filter-items])
         filter-type             (r/atom :contains)
         input-error             (r/atom false)
-        categories              (r/atom #{:event :sub/run :sub/create})
+        categories              (r/atom #{:event :sub/run :sub/create :sub/dispose})
         trace-detail-expansions (r/atom {:show-all? false :overrides {}})]
     (fn []
       (let [toggle-category-fn (fn [category-keys]
@@ -112,7 +113,7 @@
                                   :on-click #(toggle-category-fn #{:event})}
              "events"]
             [:li.filter-category {:class    (when (contains? @categories :sub/run) "active")
-                                  :on-click #(toggle-category-fn #{:sub/run :sub/create})}
+                                  :on-click #(toggle-category-fn #{:sub/run :sub/create :sub/dispose})}
              "subscriptions"]
             [:li.filter-category {:class    (when (contains? @categories :render) "active")
                                   :on-click #(toggle-category-fn #{:render})}
