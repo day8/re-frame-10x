@@ -16,7 +16,7 @@ You need both the re-frame-trace project _and_ a test project to develop it agai
   cd /your/project/folder
   ```
 
-- Add re-frame-trace into this test project using the [instructions](#getting-started) above.
+- Add re-frame-trace into this test project using the [instructions](README.md#installation) above.
 
 - Still in the test project, create a folder called `checkouts`, then enter the folder:
 
