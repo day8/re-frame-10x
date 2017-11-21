@@ -4,7 +4,13 @@
             [day8.re-frame.trace.panels.app-db :as app-db]
             [day8.re-frame.trace.panels.subvis :as subvis]
             [day8.re-frame.trace.panels.traces :as traces]
+            [day8.re-frame.trace.panels.subs :as subs]
             [reagent.core :as r]))
+
+(defn tab-button [panel-id title]
+  (let [selected-tab @(rf/subscribe [:settings/selected-tab])]
+    [:button {:class    (str "tab button " (when (= selected-tab panel-id) "active"))
+              :on-click #(rf/dispatch [:settings/selected-tab panel-id])} title]))
 
 (defn devtools-inner [traces opts]
   (let [selected-tab     (rf/subscribe [:settings/selected-tab])
@@ -17,13 +23,10 @@
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
      [:div.panel-content-top
       [:div.nav
-       [:button {:class    (str "tab button " (when (= @selected-tab :traces) "active"))
-                 :on-click #(rf/dispatch [:settings/selected-tab :traces])} "Traces"]
-       [:button {:class    (str "tab button " (when (= @selected-tab :app-db) "active"))
-                 :on-click #(rf/dispatch [:settings/selected-tab :app-db])} "App DB"]
-       #_[:button {:class    (str "tab button " (when (= @selected-tab :subvis) "active"))
-                   :on-click #(reset! selected-tab :subvis)} "SubVis"]
-
+       (tab-button :traces "Traces")
+       (tab-button :app-db "App DB")
+       (tab-button :subs "Subs")
+       #_ (tab-button :subvis "SubVis")
        (when-not external-window?
          [:img.popout-icon
           {:src      (str "data:image/svg+xml;utf8,"
@@ -33,4 +36,5 @@
        :traces [traces/render-trace-panel traces]
        :app-db [app-db/render-state db/app-db]
        :subvis [subvis/render-subvis traces]
+       :subs [subs/subs-panel]
        [app-db/render-state db/app-db])]))

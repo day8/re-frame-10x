@@ -133,7 +133,7 @@
       [:div
        {:class (str/join " " ["re-frame-trace--object"
                               (when @expanded? "expanded")])}
-       [:span {:class    "toggle"
+       #_[:span {:class    "toggle"
                :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
         [:button.expansion-button (if @expanded? "▼ " "▶ ")]]
        (or title "data")

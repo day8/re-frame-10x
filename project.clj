@@ -3,7 +3,7 @@
   :url         "https://github.com/Day8/re-frame-trace"
   :license     {:name "MIT"}
   :dependencies [[org.clojure/clojure        "1.8.0"]
-                 [org.clojure/clojurescript  "1.9.227"]
+                 [org.clojure/clojurescript "1.9.671"]
                  [reagent                    "0.6.0" :scope "provided"]
                  [re-frame "0.10.2" :scope "provided"]
                  [cljsjs/d3                  "4.3.0-5"]
