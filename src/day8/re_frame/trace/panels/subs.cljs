@@ -23,7 +23,7 @@
      (doall
        (map (fn [me]
               (let [[query-v dyn-v :as inputs] (key me)]
-                @(val me)
+                @re-frame.db/app-db
                 ^{:key query-v}
                 [:div.subtree-wrapper {:style {:margin "10px 0"}}
                  [:div.subtree
