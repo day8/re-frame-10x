@@ -161,6 +161,7 @@
   (fn [db [_ path]]
     (let [new-db (update-in db [:app-db :paths] #(remove (fn [p] (= p path)) %))]
       (localstorage/save! "app-db-paths" (get-in new-db [:app-db :paths]))
+      ;; TODO: remove from json-ml expansions too.
       new-db)))
 
 (rf/reg-event-db
@@ -174,6 +175,7 @@
                             nil))]
       (if (some? path)
         (do (localstorage/save! "app-db-paths" (cons path (get-in db [:app-db :paths])))
+            (rf/dispatch [:app-db/toggle-expansion [path]])
             (-> db
                 (update-in [:app-db :paths] #(cons path %))
                 (assoc-in [:app-db :search-string] "")))
