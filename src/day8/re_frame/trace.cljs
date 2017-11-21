@@ -208,7 +208,7 @@
         new-panel))))
 
 (defn inject-devtools! []
-  (styles/inject-styles js/document)
+  (styles/inject-trace-styles js/document)
   (r/render [devtools-outer utils.traces/traces {:panel-type :inline}] (panel-div)))
 
 (defn init-db! []

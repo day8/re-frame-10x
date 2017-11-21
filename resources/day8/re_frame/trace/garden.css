@@ -1,0 +1,925 @@
+#--re-frame-trace-- {
+  all: initial;
+  line-height: 1.15;
+  font-size: 12px;
+}
+
+#--re-frame-trace-- * {
+  all: unset;
+}
+
+#--re-frame-trace-- div,
+#--re-frame-trace-- nav {
+  display: block;
+}
+
+#--re-frame-trace-- pre {
+  font-family: monospace;
+  font-size: 1em;
+}
+
+#--re-frame-trace-- a,
+#--re-frame-trace-- a:visited {
+  color: #222;
+  border-bottom: 1px #333 dotted;
+}
+
+#--re-frame-trace-- a:hover,
+#--re-frame-trace-- a:focus {
+  border-bottom: 1px #666666 solid;
+}
+
+#--re-frame-trace-- code {
+  font-family: monospace;
+  font-size: 1em;
+}
+
+#--re-frame-trace-- small {
+  font-size: 80%;
+}
+
+#--re-frame-trace-- sub,
+#--re-frame-trace-- sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+#--re-frame-trace-- sub {
+  bottom: -0.25em;
+}
+
+#--re-frame-trace-- sup {
+  top: -0.5em;
+}
+
+#--re-frame-trace-- img {
+  border-style: none;
+}
+
+#--re-frame-trace-- option {
+  display: block;
+}
+
+#--re-frame-trace-- button,
+#--re-frame-trace-- input,
+#--re-frame-trace-- optgroup,
+#--re-frame-trace-- select,
+#--re-frame-trace-- textarea {
+  font-family: "courier new", monospace;
+  font-size: 100%;
+  padding: 3px 3px 1px 3px;
+  border: 1px solid #999;
+}
+
+#--re-frame-trace-- button,
+#--re-frame-trace-- input {
+  overflow: visible;
+}
+
+#--re-frame-trace-- button:focus,
+#--re-frame-trace-- select:focus {
+  outline: #999 dotted 1px;
+}
+
+#--re-frame-trace-- button,
+#--re-frame-trace-- html[type="button"],
+#--re-frame-trace-- [type="reset"],
+#--re-frame-trace-- [type="submit"] {
+  -webkit-appearance: button;
+}
+
+#--re-frame-trace-- button:-moz-focusring,
+#--re-frame-trace-- [type="button"] {
+  outline: 1px dotted ButtonText;
+}
+
+#--re-frame-trace-- textarea {
+  overflow: auto;
+}
+
+#--re-frame-trace-- [type="search"] {
+  -webkit-appearance: textfield;
+  outline-offset: -2px;
+}
+
+#--re-frame-trace-- li {
+  display: block;
+}
+
+#--re-frame-trace-- button {
+  overflow: visible;
+  border: 0;
+  -webkit-font-smoothing: inherit;
+  letter-spacing: inherit;
+  background: none;
+  cursor: pointer;
+}
+
+#--re-frame-trace-- img {
+  max-width: 100%;
+  height: auto;
+  border: 0;
+}
+
+#--re-frame-trace-- table,
+#--re-frame-trace-- thead,
+#--re-frame-trace-- tbody,
+#--re-frame-trace-- tfoot,
+#--re-frame-trace-- tr,
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+  width: auto;
+  border-color: inherit;
+  height: auto;
+  margin: 0;
+  border: none;
+  vertical-align: inherit;
+  padding: 0;
+  border-collapse: collapse;
+  text-align: left;
+  font-weight: inherit;
+  -webkit-border-horizontal-spacing: 0;
+  border-spacing: 0;
+  display: block;
+  -webkit-border-vertical-spacing: 0;
+}
+
+#--re-frame-trace-- table {
+  display: table;
+}
+
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+  display: table-cell;
+  padding: 0 5px;
+}
+
+#--re-frame-trace-- tr {
+  display: table-row;
+}
+
+#--re-frame-trace-- thead {
+  display: table-header-group;
+}
+
+#--re-frame-trace-- tbody {
+  display: table-row-group;
+}
+
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+  display: table-cell;
+}
+
+#--re-frame-trace-- tr {
+  display: table-row;
+}
+
+#--re-frame-trace-- {
+  background: white;
+  font-family: "courier new", monospace;
+  color: #222;
+}
+
+#--re-frame-trace-- .label {
+  color: #222;
+  background: #fafafa;
+  border: 1px solid #efeef1;
+  font-size: 0.9em;
+  margin: 10px 5px;
+}
+
+#--re-frame-trace-- table {
+  width: 100%;
+  font-size: 14px;
+}
+
+#--re-frame-trace-- tbody {
+  color: #222;
+}
+
+#--re-frame-trace-- thead {
+  font-weight: bold;
+}
+
+#--re-frame-trace-- tr th,
+#--re-frame-trace-- tr td {
+  padding: 6px;
+}
+
+#--re-frame-trace-- tr th:first-child {
+  text-align: right;
+}
+
+#--re-frame-trace-- tr.trace--trace {
+}
+
+#--re-frame-trace-- tr:nth-child(even) {
+  background: #fafafa;
+}
+
+#--re-frame-trace-- tr.trace--sub-create .trace--op {
+  color: #008766;
+}
+
+#--re-frame-trace-- tr.trace--sub-run .trace--op {
+  color: #762cff;
+}
+
+#--re-frame-trace-- tr.trace--event .trace--op {
+  color: #a66900;
+}
+
+#--re-frame-trace-- tr.trace--render .trace--op {
+  color: #007cc2;
+}
+
+#--re-frame-trace-- tr.trace--fsm-trigger .trace--op {
+  color: #284694;
+}
+
+#--re-frame-trace-- .button {
+  padding: 5px 5px 3px;
+  margin: 5px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+#--re-frame-trace-- .text-button {
+  border-bottom: 1px dotted #888;
+  font-weight: normal;
+}
+
+#--re-frame-trace-- .text-button:focus {
+  outline: #999 dotted 1px;
+}
+
+#--re-frame-trace-- .icon-button {
+  font-size: 10px;
+}
+
+#--re-frame-trace-- button.tab {
+}
+
+#--re-frame-trace-- .popout-icon {
+  max-width: 15px;
+  cursor: pointer;
+  padding: 0 5px;
+  margin: 0 5px;
+}
+
+#--re-frame-trace-- .tab {
+  background: transparent;
+  border-radius: 0;
+  text-transform: uppercase;
+  font-family: monospace;
+  letter-spacing: 2px;
+  margin-bottom: 0;
+  padding-bottom: 4px;
+  vertical-align: bottom;
+}
+
+#--re-frame-trace-- .tab.active {
+  background: transparent;
+  border-bottom: 3px solid gray;
+  border-radius: 0;
+  padding-bottom: 1px;
+}
+
+#--re-frame-trace-- ul.filter-items,
+#--re-frame-trace-- .subtrees {
+  list-style-type: none;
+  margin: 0 5px;
+}
+
+#--re-frame-trace-- ul.filter-items .subtree-button,
+#--re-frame-trace-- ul.filter-items .filter-item,
+#--re-frame-trace-- .subtrees .subtree-button,
+#--re-frame-trace-- .subtrees .filter-item {
+  display: inline-block;
+}
+
+#--re-frame-trace-- ul.filter-items .subtree-button .filter-item-string,
+#--re-frame-trace-- ul.filter-items .filter-item .filter-item-string,
+#--re-frame-trace-- .subtrees .subtree-button .filter-item-string,
+#--re-frame-trace-- .subtrees .filter-item .filter-item-string {
+  color: #222;
+  background: yellow;
+}
+
+#--re-frame-trace-- ul.filter-items .subtree-button .subtree-button-string,
+#--re-frame-trace-- ul.filter-items .filter-item .subtree-button-string,
+#--re-frame-trace-- .subtrees .subtree-button .subtree-button-string,
+#--re-frame-trace-- .subtrees .filter-item .subtree-button-string {
+  color: #222;
+}
+
+#--re-frame-trace-- ul.filter-items .subtree-button:hover,
+#--re-frame-trace-- ul.filter-items .subtree-button:focus,
+#--re-frame-trace-- ul.filter-items .filter-item:hover,
+#--re-frame-trace-- ul.filter-items .filter-item:focus,
+#--re-frame-trace-- .subtrees .subtree-button:hover,
+#--re-frame-trace-- .subtrees .subtree-button:focus,
+#--re-frame-trace-- .subtrees .filter-item:hover,
+#--re-frame-trace-- .subtrees .filter-item:focus {
+  text-decoration: line-through;
+}
+
+#--re-frame-trace-- .icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+#--re-frame-trace-- .icon-remove {
+  margin-left: 10px;
+}
+
+#--re-frame-trace-- .filter {
+  box-shadow: -7px 15px 6px -15px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+}
+
+#--re-frame-trace-- .filter .filter-control select {
+  border-bottom: 1px solid #8f8f8f;
+  appearance: menulist;
+  font-family: "courier new", monospace;
+  -moz-appearance: menulist;
+  -webkit-appearance: menulist;
+  border: none;
+  padding: 2px 0 0 0;
+  font-size: 1em;
+  display: inline-block;
+  background: white;
+}
+
+#--re-frame-trace-- .filter .filter-control .filter-control-input {
+  border-bottom: 1px solid #8f8f8f;
+  display: inline-block;
+}
+
+#--re-frame-trace-- {
+    all: initial;
+    line-height: 1.15;
+    font-size: 12px;
+}
+
+#--re-frame-trace-- * {
+    all: unset;
+}
+
+#--re-frame-trace-- div,
+#--re-frame-trace-- nav {
+    display: block;
+}
+
+#--re-frame-trace-- pre {
+    font-family: monospace;
+    font-size: 1em;
+}
+
+#--re-frame-trace-- a,
+#--re-frame-trace-- a:visited {
+    color: #222;
+    border-bottom: 1px #333 dotted;
+}
+
+#--re-frame-trace-- a:hover,
+#--re-frame-trace-- a:focus {
+    border-bottom: 1px #666666 solid;
+}
+
+#--re-frame-trace-- code {
+    font-family: monospace;
+    font-size: 1em;
+}
+
+#--re-frame-trace-- small {
+    font-size: 80%;
+}
+
+#--re-frame-trace-- sub,
+#--re-frame-trace-- sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+#--re-frame-trace-- sub {
+    bottom: -0.25em;
+}
+
+#--re-frame-trace-- sup {
+    top: -0.5em;
+}
+
+#--re-frame-trace-- img {
+    border-style: none;
+}
+
+#--re-frame-trace-- option {
+    display: block;
+}
+
+#--re-frame-trace-- button,
+#--re-frame-trace-- input,
+#--re-frame-trace-- optgroup,
+#--re-frame-trace-- select,
+#--re-frame-trace-- textarea {
+    font-family: "courier new", monospace;
+    font-size: 100%;
+    padding: 3px 3px 1px 3px;
+    border: 1px solid #999;
+}
+
+#--re-frame-trace-- button,
+#--re-frame-trace-- input {
+    overflow: visible;
+}
+
+#--re-frame-trace-- button:focus,
+#--re-frame-trace-- select:focus {
+    outline: #999 dotted 1px;
+}
+
+#--re-frame-trace-- button,
+#--re-frame-trace-- html[type="button"],
+#--re-frame-trace-- [type="reset"],
+#--re-frame-trace-- [type="submit"] {
+    -webkit-appearance: button;
+}
+
+#--re-frame-trace-- button:-moz-focusring,
+#--re-frame-trace-- [type="button"] {
+    outline: 1px dotted ButtonText;
+}
+
+#--re-frame-trace-- textarea {
+    overflow: auto;
+}
+
+#--re-frame-trace-- [type="search"] {
+    -webkit-appearance: textfield;
+    outline-offset: -2px;
+}
+
+#--re-frame-trace-- li {
+    display: block;
+}
+
+#--re-frame-trace-- button {
+    overflow: visible;
+    border: 0;
+    -webkit-font-smoothing: inherit;
+    letter-spacing: inherit;
+    background: none;
+    cursor: pointer;
+}
+
+#--re-frame-trace-- img {
+    max-width: 100%;
+    height: auto;
+    border: 0;
+}
+
+#--re-frame-trace-- table,
+#--re-frame-trace-- thead,
+#--re-frame-trace-- tbody,
+#--re-frame-trace-- tfoot,
+#--re-frame-trace-- tr,
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+    width: auto;
+    border-color: inherit;
+    height: auto;
+    margin: 0;
+    border: none;
+    vertical-align: inherit;
+    padding: 0;
+    border-collapse: collapse;
+    text-align: left;
+    font-weight: inherit;
+    -webkit-border-horizontal-spacing: 0;
+    border-spacing: 0;
+    display: block;
+    -webkit-border-vertical-spacing: 0;
+}
+
+#--re-frame-trace-- table {
+    display: table;
+}
+
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+    display: table-cell;
+    padding: 0 5px;
+}
+
+#--re-frame-trace-- tr {
+    display: table-row;
+}
+
+#--re-frame-trace-- thead {
+    display: table-header-group;
+}
+
+#--re-frame-trace-- tbody {
+    display: table-row-group;
+}
+
+#--re-frame-trace-- th,
+#--re-frame-trace-- td {
+    display: table-cell;
+}
+
+#--re-frame-trace-- tr {
+    display: table-row;
+}
+
+#--re-frame-trace-- {
+    background: white;
+    font-family: 'courier new', monospace;
+    color: #222;
+}
+
+#--re-frame-trace-- .label {
+    color: #222;
+    background: #fafafa;
+    border: 1px solid #efeef1;
+    font-size: 0.9em;
+    margin: 10px 5px;
+}
+
+#--re-frame-trace-- table {
+    width: 100%;
+    font-size: 14px;
+}
+
+#--re-frame-trace-- tbody {
+    color: #222;
+}
+
+#--re-frame-trace-- thead {
+    font-weight: bold;
+}
+
+#--re-frame-trace-- tr th,
+#--re-frame-trace-- tr td {
+    padding: 6px;
+}
+
+#--re-frame-trace-- tr th:first-child {
+    text-align: right;
+}
+
+#--re-frame-trace-- tr.trace--trace {
+
+}
+
+#--re-frame-trace-- tr:nth-child(even) {
+    background: #fafafa;
+}
+
+#--re-frame-trace-- tr.trace--sub-create .trace--op {
+    color: #008766;
+}
+
+#--re-frame-trace-- tr.trace--sub-run .trace--op {
+    color: #762cff;
+}
+
+#--re-frame-trace-- tr.trace--event .trace--op {
+    color: #A66900;
+}
+
+#--re-frame-trace-- tr.trace--render .trace--op {
+    color: #007CC2;
+}
+
+#--re-frame-trace-- tr.trace--fsm-trigger .trace--op {
+    color: #284694;
+}
+
+#--re-frame-trace-- .button {
+    padding: 5px 5px 3px;
+    margin: 5px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+#--re-frame-trace-- .text-button {
+    border-bottom: 1px dotted #888;
+    font-weight: normal;
+}
+
+#--re-frame-trace-- .text-button:focus {
+    outline: #999 dotted 1px;
+}
+
+#--re-frame-trace-- .icon-button {
+    font-size: 10px;
+}
+
+#--re-frame-trace-- button.tab {
+
+}
+
+#--re-frame-trace-- .popout-icon {
+    max-width: 15px;
+    cursor: pointer;
+    padding: 0 5px;
+    margin: 0 5px;
+}
+
+#--re-frame-trace-- .tab {
+    background: transparent;
+    border-radius: 0;
+    text-transform: uppercase;
+    font-family: monospace;
+    letter-spacing: 2px;
+    margin-bottom: 0;
+    padding-bottom: 4px;
+    vertical-align: bottom;
+}
+
+#--re-frame-trace-- .tab.active {
+    background: transparent;
+    border-bottom: 3px solid gray;
+    border-radius: 0;
+    padding-bottom: 1px;
+}
+
+#--re-frame-trace-- ul.filter-items,
+#--re-frame-trace-- .subtrees {
+    list-style-type: none;
+    margin: 0 5px;
+}
+
+#--re-frame-trace-- ul.filter-items .subtree-button,
+#--re-frame-trace-- ul.filter-items .filter-item,
+#--re-frame-trace-- .subtrees .subtree-button,
+#--re-frame-trace-- .subtrees .filter-item {
+    display: inline-block;
+}
+
+#--re-frame-trace-- ul.filter-items .subtree-button .filter-item-string,
+#--re-frame-trace-- ul.filter-items .filter-item .filter-item-string,
+#--re-frame-trace-- .subtrees .subtree-button .filter-item-string,
+#--re-frame-trace-- .subtrees .filter-item .filter-item-string {
+    color: #222;
+    background: yellow;
+}
+
+#--re-frame-trace-- ul.filter-items .subtree-button .subtree-button-string,
+#--re-frame-trace-- ul.filter-items .filter-item .subtree-button-string,
+#--re-frame-trace-- .subtrees .subtree-button .subtree-button-string,
+#--re-frame-trace-- .subtrees .filter-item .subtree-button-string {
+    color: #222;
+}
+
+#--re-frame-trace-- ul.filter-items .subtree-button:hover,
+#--re-frame-trace-- ul.filter-items .subtree-button:focus,
+#--re-frame-trace-- ul.filter-items .filter-item:hover,
+#--re-frame-trace-- ul.filter-items .filter-item:focus,
+#--re-frame-trace-- .subtrees .subtree-button:hover,
+#--re-frame-trace-- .subtrees .subtree-button:focus,
+#--re-frame-trace-- .subtrees .filter-item:hover,
+#--re-frame-trace-- .subtrees .filter-item:focus {
+    text-decoration: line-through;
+}
+
+#--re-frame-trace-- .icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    stroke-width: 0;
+    stroke: currentColor;
+    fill: currentColor;
+}
+
+#--re-frame-trace-- .icon-remove {
+    margin-left: 10px;
+}
+
+#--re-frame-trace-- .filter {
+    box-shadow: -7px 15px 6px -15px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+}
+
+#--re-frame-trace-- .filter .filter-control select {
+    border-bottom: 1px solid #8f8f8f;
+    appearance: menulist;
+    font-family: 'courier new', monospace;
+    -moz-appearance: menulist;
+    -webkit-appearance: menulist;
+    border: none;
+    padding: 2px 0 0 0;
+    font-size: 1em;
+    display: inline-block;
+    background: white;
+}
+
+#--re-frame-trace-- .filter .filter-control .filter-control-input {
+    border-bottom: 1px solid #8f8f8f;
+    display: inline-block;
+}
+
+#--re-frame-trace-- .filter .filter-control .filter-control-input:before {
+    display: inline-block;
+    color: #8f8f8f;
+    content: "⚲";
+    transform: rotate(-45deg);
+}
+
+#--re-frame-trace-- .filter .filter-control .filter-control-input input {
+    border: none;
+}
+
+#--re-frame-trace-- .filter-control-input {
+    display: flex;
+    flex: 0 0 auto;
+}
+
+#--re-frame-trace-- .nav {
+    background: #efeef1;
+    color: #222;
+}
+
+#--re-frame-trace--.external-window {
+    display: flex;
+    height: 100%;
+    flex: 1 1 auto;
+}
+
+#--re-frame-trace-- .panel-content-top {
+
+}
+
+#--re-frame-trace-- .panel-content-scrollable {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow-x: auto;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+#--re-frame-trace-- .tab-contents {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+#--re-frame-trace-- .filter-control {
+    margin: 10px 0 0 10px;
+}
+
+#--re-frame-trace-- .filter-items-count.active {
+    background: yellow;
+}
+
+#--re-frame-trace-- .filter-items-count.active:hover {
+    text-decoration: line-through;
+}
+
+#--re-frame-trace-- .filter-fields {
+    margin-top: 10px;
+}
+
+#--re-frame-trace-- .filter-category {
+    display: inline-block;
+    background: #efeef1;
+    cursor: pointer;
+    padding: 5px;
+    margin: 5px;
+    opacity: 0.3;
+}
+
+#--re-frame-trace-- .active {
+    opacity: 1;
+}
+
+#--re-frame-trace-- .re-frame-trace--object .toggle {
+    color: #8f8f8f;
+    cursor: pointer;
+    line-height: 1;
+}
+
+#--re-frame-trace-- .re-frame-trace--objectspan {
+    vertical-align: text-top;
+}
+
+#--re-frame-trace-- .host-closed {
+    font-size: 4em;
+    background-color: hsla(60, 100%, 50%, 0.8);
+}
+
+#--re-frame-trace-- .expansion-button {
+    font-family: sans-serif;
+    width: 16px;
+    padding: 0 2px;
+    vertical-align: middle;
+}
+#--re-frame-trace-- .filter .filter-control .filter-control-input:before {
+  display: inline-block;
+  color: #8f8f8f;
+  content: "⚲";
+  transform: rotate(-45deg);
+}
+
+#--re-frame-trace-- .filter .filter-control .filter-control-input input {
+  border: none;
+}
+
+#--re-frame-trace-- .filter-control-input {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+#--re-frame-trace-- .nav {
+  background: #efeef1;
+  color: #222;
+}
+
+#--re-frame-trace--.external-window {
+  display: flex;
+  height: 100%;
+  flex: 1 1 auto;
+}
+
+#--re-frame-trace-- .panel-content-top {
+}
+
+#--re-frame-trace-- .panel-content-scrollable {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow-x: auto;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+#--re-frame-trace-- .tab-contents {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+#--re-frame-trace-- .filter-control {
+  margin: 10px 0 0 10px;
+}
+
+#--re-frame-trace-- .filter-items-count.active {
+  background: yellow;
+}
+
+#--re-frame-trace-- .filter-items-count.active:hover {
+  text-decoration: line-through;
+}
+
+#--re-frame-trace-- .filter-fields {
+  margin-top: 10px;
+}
+
+#--re-frame-trace-- .filter-category {
+  display: inline-block;
+  background: #efeef1;
+  cursor: pointer;
+  padding: 5px;
+  margin: 5px;
+  opacity: 0.3;
+}
+
+#--re-frame-trace-- .active {
+  opacity: 1;
+}
+
+#--re-frame-trace-- .re-frame-trace--object .toggle {
+  color: #8f8f8f;
+  cursor: pointer;
+  line-height: 1;
+}
+
+#--re-frame-trace-- .re-frame-trace--objectspan {
+  vertical-align: text-top;
+}
+
+#--re-frame-trace-- .host-closed {
+  font-size: 4em;
+  background-color: hsla(60, 100%, 50%, 0.8);
+}
+
+#--re-frame-trace-- .expansion-button {
+  font-family: sans-serif;
+  width: 16px;
+  padding: 0 2px;
+  vertical-align: middle;
+}

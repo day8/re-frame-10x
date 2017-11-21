@@ -43,7 +43,7 @@
 (defn mount [popup-window popup-document]
   (let [app (.getElementById popup-document "--re-frame-trace--")
         doc js/document]
-    (styles/inject-styles popup-document)
+    (styles/inject-trace-styles popup-document)
     (aset popup-window "onunload" #(rf/dispatch [:global/external-closed]))
     (r/render
       [(r/create-class

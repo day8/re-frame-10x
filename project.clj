@@ -7,9 +7,10 @@
                  [reagent                    "0.6.0" :scope "provided"]
                  [re-frame "0.10.2" :scope "provided"]
                  [cljsjs/d3                  "4.3.0-5"]
-                 [binaryage/devtools         "0.9.4"]]
-  :plugins [[lein-less "1.7.5"]
-            [thomasa/mranderson "0.4.7"]]
+                 [binaryage/devtools         "0.9.4"]
+                 [garden "1.3.3"]]
+  :plugins [[thomasa/mranderson "0.4.7"]
+            [lein-less "RELEASE"]]
   :deploy-repositories {"releases" :clojars
                         "snapshots" :clojars}
 
