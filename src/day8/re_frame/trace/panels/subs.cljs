@@ -21,17 +21,20 @@
    [:div.panel-content-scrollable {:style {:margin-left "10px"}}
     [:div.subtrees {:style {:margin "20px 0"}}
      (doall
-       (map (fn [me]
-              (let [[query-v dyn-v :as inputs] (key me)]
-                @re-frame.db/app-db
-                ^{:key query-v}
-                [:div.subtree-wrapper {:style {:margin "10px 0"}}
-                 [:div.subtree
-                  [data-browser/subscription-render
-                   (rc/deref-or-value-peek (val me))
-                   [:button.subtree-button {:on-click #(rf/dispatch [:app-db/remove-path (key me)])}
-                    [:span.subtree-button-string
-                     (prn-str (first (key me)))]]
-                   (into [:subs] query-v)]]]))
-            @subs/query->reaction))]]])
+       (->> @subs/query->reaction
+            (sort)
+            (map (fn [me]
+                   (let [[query-v dyn-v :as inputs] (key me)]
+                     ^{:key query-v}
+                     [:div.subtree-wrapper {:style {:margin "10px 0"}}
+                      [:div.subtree
+                       [data-browser/subscription-render
+                        (rc/deref-or-value-peek (val me))
+                        [:button.subtree-button {:on-click #(rf/dispatch [:app-db/remove-path (key me)])}
+                         [:span.subtree-button-string
+                          (prn-str (first (key me)))]]
+                        (into [:subs] query-v)]]]))
+                 )))
+     (do @re-frame.db/app-db
+         nil)]]])
 

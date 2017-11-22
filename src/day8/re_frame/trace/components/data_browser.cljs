@@ -71,10 +71,6 @@
        [:span {:class    "toggle"
                :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
         [:button.expansion-button (if @expanded? "▼" "▶")]]
-
-
-
-
        (if (and @expanded? (cljs-devtools-has-body (get-object jsonml) (get-config jsonml)))
          (jsonml->hiccup
            (cljs-devtools-body
@@ -124,7 +120,9 @@
         (cond
           (and @expanded?
                (or (string? data)
-                   (number? data))) [:div {:style {:margin "10px 0"}} data]
+                   (number? data)
+                   (boolean? data)
+                   (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
           @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]])))
 
 (defn subscription-render [data title path]
@@ -141,5 +139,7 @@
         (cond
           (and @expanded?
                (or (string? data)
-                   (number? data))) [:div {:style {:margin "10px 0"}} data]
+                   (number? data)
+                   (boolean? data)
+                   (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
           @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]])))
