@@ -5,6 +5,7 @@
             [day8.re-frame.trace.panels.subvis :as subvis]
             [day8.re-frame.trace.panels.traces :as traces]
             [day8.re-frame.trace.panels.subs :as subs]
+            [day8.re-frame.trace.panels.save :as save]
             [re-frame.trace]
             [reagent.core :as r]))
 
@@ -29,7 +30,8 @@
        (tab-button :traces "Traces")
        (tab-button :app-db "App DB")
        (tab-button :subs "Subs")
-       #_ (tab-button :subvis "SubVis")
+       (tab-button :save "Save")
+       #_(tab-button :subvis "SubVis")
        (when-not external-window?
          [:img.popout-icon
           {:src      (str "data:image/svg+xml;utf8,"
@@ -40,4 +42,5 @@
        :app-db [app-db/render-state db/app-db]
        :subvis [subvis/render-subvis traces]
        :subs [subs/subs-panel]
+       :save [save/save-panel]
        [app-db/render-state db/app-db])]))
