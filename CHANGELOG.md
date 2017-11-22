@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This change
 ### Added
 
 * Bright yellow text when re-frame trace is preloaded, but tracing is not enabled.
+* Add preliminary subscriptions panel. Still a bit buggy and not very pretty, but it should be useful even in this state.
 
 ## [0.1.12] - 2017-11-16
 
