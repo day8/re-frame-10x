@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## [0.1.13] - 2017-11-23
 
+**N.B.** To make the best use of the new subscriptions panel, you also need to update to re-frame v0.10.3-alpha1.
+
 ### Added
 
 * Bright yellow text when re-frame trace is preloaded, but tracing is not enabled.
