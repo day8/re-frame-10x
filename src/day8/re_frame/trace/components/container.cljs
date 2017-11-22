@@ -5,6 +5,7 @@
             [day8.re-frame.trace.panels.subvis :as subvis]
             [day8.re-frame.trace.panels.traces :as traces]
             [day8.re-frame.trace.panels.subs :as subs]
+            [re-frame.trace]
             [reagent.core :as r]))
 
 (defn tab-button [panel-id title]
@@ -21,6 +22,8 @@
      {:style {:width "100%" :display "flex" :flex-direction "column"}}
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
+     (when-not (re-frame.trace/is-trace-enabled?)
+       [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set " [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
      [:div.panel-content-top
       [:div.nav
        (tab-button :traces "Traces")

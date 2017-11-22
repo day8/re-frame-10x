@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+### Added
+
+* Bright yellow text when re-frame trace is preloaded, but tracing is not enabled.
+
 ## [0.1.12] - 2017-11-16
 
 ### Added
