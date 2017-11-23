@@ -2,9 +2,11 @@
 
 A trace panel for re-frame.
 
+**Status:** Alpha.
+
 [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
-**Status:** Alpha.
+**Note** the latest version of re-frame-trace ALSO requires the latest version of re-frame `v0.10.3-alpha1`.
 
 ## Motivation
 
