@@ -144,7 +144,7 @@
   :traces/reset-filter-items
   (fn [db _]
     (let [new-db (utils/dissoc-in db [:traces :filter-items])]
-      (save-filter-items (get-in db :traces :filter-items))
+      (save-filter-items (get-in new-db [:traces :filter-items]))
       new-db)))
 
 ;; App DB

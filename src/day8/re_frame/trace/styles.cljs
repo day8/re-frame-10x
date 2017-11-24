@@ -294,7 +294,9 @@
                     :flex-direction "column"}]
    [:.filter-control {:margin "10px 0 0 10px"}]
    [:.filter-items-count
-    [(s/& ".active") {:background yellow}
+    {:cursor "auto"}
+    [(s/& ".active") {:background yellow
+                      :cursor "pointer"}
      [(s/& ":hover") {:text-decoration "line-through"}]]]
    [:.filter-fields {:margin-top "10px"}]
    [:.filter-category {:display    "inline-block"
