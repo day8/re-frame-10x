@@ -39,39 +39,15 @@ You need both the re-frame-trace project _and_ a test project to develop it agai
 
 - Now run your test project however you usually run it, and re-frame-trace should be in there. \o/
 
-- Additionally, if modifying the `.less` CSS files, compile the css by running within the re-frame-trace directory:
-
-  ```
-  lein less auto
-  ```
-
-  to watch for changes, or one time by running:
-
-  ```
-  lein less once
-  ```
-
-  And then any time you want to reload the CSS, you have to **manually save/touch `styles.cljs`**. Figwheel will not do it for you. ([See below](#problems-while-developing-css) for details).
-
 
 ### Developing CSS
 
-The styles for the trace panel are defined both inline and in a LESS file. To develop the styles, edit `resources/day8/re_frame/trace/main.less` and run
+The styles for the trace panel are defined both inline and in Garden styles in `day8.re-frame.trace.styles`.
 
-```
-lein less auto
-```
-
-to watch the LESS file and automatically recompile on changes.
-
-**Don't edit the CSS file `resources/day8/re_frame/trace/main.css` directly**, as it will be overwritten.
-
-We are using CSS preprocessing because in order to isolate the panel styles, we are namespacing the panel styles with the id `#--re-frame-trace--`.
+We are using CSS preprocessing to isolate the panel styles, by namespacing the panel styles with the id `#--re-frame-trace--`.
 
 #### Problems while developing CSS
 
-- You must touch or save the `styles.cljs` file to trigger a CSS reload if you're editing `main.less`. This is because `styles.cljs` slurps `main.css` with a macro that happens before Clojurescript compilation, so figwheel isn't aware of the changes.
-- Did you run `lein less auto` or `lein less once` to compile LESS to CSS?
 - Try clearing your browser cache/hard-reloading.
 
 ### Updating the internal version of re-frame used

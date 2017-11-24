@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+### Changed
+
+* Switched from LESS to Garden styles. Now interactive development and debugging of re-frame-trace is even faster.
+
 ## [0.1.13] - 2017-11-23
 
 **N.B.** To make the best use of the new subscriptions panel, you also need to update to re-frame v0.10.3-alpha1.

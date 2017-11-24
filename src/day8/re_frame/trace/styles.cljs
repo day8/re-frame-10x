@@ -319,8 +319,6 @@
 
 
 (def panel-styles (apply garden/css [css-reset re-frame-trace-styles]))
-(js/console.log panel-styles)
-
 ;(def panel-styles (macros/slurp-macro "day8/re_frame/trace/main.css"))
 
 
