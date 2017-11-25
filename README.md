@@ -1,6 +1,6 @@
 # re-frame-trace
 
-A trace panel for re-frame.
+A debugging dashboard for re-frame.
 
 **Status:** Alpha.
 
