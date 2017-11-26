@@ -165,15 +165,6 @@
              (when (pos? (count @traces))
                [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
             [:th {:style {:text-align "right"}} "meta"]]
-           [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]
-           [:hr {:style {:unicode-bidi          "isolate"
-                         :-webkit-margin-before "0.5em"
-                         :-webkit-margin-after  "0.5em"
-                         :-webkit-margin-start  "auto"
-                         :-webkit-margin-end   "auto"
-                         :overflow              "hidden"
-                         :border-style          "inset"
-                         :border-width          "1px"     }}]]]
-            ]))))
+           [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]))))
 
 
