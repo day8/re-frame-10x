@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This change
 ### Changed
 
 * Switched from LESS to Garden styles. Now interactive development and debugging of re-frame-trace is even faster.
+* Reopen/reattach external popup windows when reloading host application
 
 ## [0.1.13] - 2017-11-23
 

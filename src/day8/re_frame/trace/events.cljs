@@ -29,14 +29,18 @@
 (rf/reg-event-db
   :settings/user-toggle-panel
   (fn [db _]
-    (let [show-panel?     (not (get-in db [:settings :show-panel?]))
-          external-panel? (get-in db [:settings :external-window?])]
-      (if show-panel?
+    (let [now-showing?    (not (get-in db [:settings :show-panel?]))
+          external-panel? (get-in db [:settings :external-window?])
+          using-trace?    (or external-panel? now-showing?)]
+      (if now-showing?
         (utils.traces/enable-tracing!)
         (when-not external-panel?
           (utils.traces/disable-tracing!)))
-      (localstorage/save! "show-panel" show-panel?)
-      (assoc-in db [:settings :show-panel?] show-panel?))))
+      (localstorage/save! "using-trace?" using-trace?)
+      (localstorage/save! "show-panel" now-showing?)
+      (-> db
+          (assoc-in [:settings :using-trace?] using-trace?)
+          (assoc-in [:settings :show-panel?] now-showing?)))))
 
 ;; Global
 
@@ -69,6 +73,7 @@
   :global/launch-external
   (fn [ctx _]
     (open-debugger-window)
+    (localstorage/save! "external-window?" true)
     {:db             (assoc-in (:db ctx) [:settings :external-window?] true)
      ;; TODO: capture the intent that the user is still interacting with devtools, to persist between reloads.
      :dispatch-later [{:ms 200 :dispatch [:settings/show-panel? false]}]}))
@@ -76,6 +81,7 @@
 (rf/reg-event-fx
   :global/external-closed
   (fn [ctx _]
+    (localstorage/save! "external-window?" false)
     {:db             (assoc-in (:db ctx) [:settings :external-window?] false)
      :dispatch-later [{:ms 400 :dispatch [:settings/show-panel? true]}]}))
 
