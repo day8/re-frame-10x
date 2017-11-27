@@ -3,8 +3,7 @@
   (:require [garden.core :as garden]
             [garden.units :refer [em px percent]]
             [garden.color :as color]
-            [garden.selectors :as s]
-            [cljs.spec.alpha :as spec]))
+            [garden.selectors :as s]))
 
 (def background-blue "#e7f1ff")
 (def background-gray "#a8a8a8")
