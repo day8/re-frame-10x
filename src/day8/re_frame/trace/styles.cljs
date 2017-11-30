@@ -115,6 +115,7 @@
 (def label-mixin {:color      text-color
                   :background background-gray-hint
                   :border     [[(px 1) "solid" light-gray]]
+                  :flex       [[0 0 "auto"]]
                   :font-size  (em 0.9)
                   :margin     [[(px 10) (px 5)]]})
 
@@ -295,7 +296,7 @@
    [:.filter-items-count
     {:cursor "auto"}
     [(s/& ".active") {:background yellow
-                      :cursor "pointer"}
+                      :cursor     "pointer"}
      [(s/& ":hover") {:text-decoration "line-through"}]]]
    [:.filter-fields {:margin-top "10px"}]
    [:.filter-category {:display    "inline-block"

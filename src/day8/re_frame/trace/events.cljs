@@ -188,6 +188,14 @@
         db))))
 
 (rf/reg-event-db
+  :app-db/add-autocomplete
+  [(rf/path :app-db :search-string)]
+  (fn [search-string [_ k]]
+    (if (str/blank? search-string)
+      (prn-str k)
+      (str (str/trim search-string) " " (prn-str k) " "))))
+
+(rf/reg-event-db
   :app-db/search-string
   (fn [db [_ search-string]]
     (assoc-in db [:app-db :search-string] search-string)))

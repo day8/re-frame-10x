@@ -11,6 +11,7 @@
   (let [subtree-input (r/atom "")
         subtree-paths (rf/subscribe [:app-db/paths])
         search-string (rf/subscribe [:app-db/search-string])
+        autocomplete  (rf/subscribe [:app-db/autocomplete-keys])
         input-error   (r/atom false)]
     (fn []
       [:div {:style {:flex "1 1 auto" :display "flex" :flex-direction "column"}}
@@ -21,6 +22,16 @@
          :on-submit #(rf/dispatch [:app-db/add-path %])
          :change-on-blur? false
          :placeholder ":path :into :app-db"]
+
+        (js/console.log "Autocomplete" @autocomplete)
+
+
+        [re-com/h-box
+         :children (map (fn [k] [:button.label
+                                 {:key (prn-str k)
+                                  :on-click #(rf/dispatch [:app-db/add-autocomplete k])}
+                                 (prn-str k)])
+                        @autocomplete)]
 
         ;; TODO: check for input errors
         ; (if @input-error

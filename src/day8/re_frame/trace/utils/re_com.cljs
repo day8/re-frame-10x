@@ -200,7 +200,7 @@
                       :style (flex-child-style "auto")}
                      [(if (= input-type :password) :input input-type)
                       (merge
-                        {:class       (str "form-control " class)
+                        {:class       class
                          :type        (case input-type
                                         :input "text"
                                         :password "password"
