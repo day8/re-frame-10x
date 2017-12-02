@@ -1,7 +1,5 @@
 # re-frame-trace
 
-A debugging dashboard for re-frame epochs.
-
 **Status:** Alpha.
 
 [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
@@ -10,12 +8,21 @@ A debugging dashboard for re-frame epochs.
 
 ## What Is It?
 
-`re-frame` applications have a regular computational path - first an event happens,
+`re-frame` applications have a regular computational path:  first an event happens,
 and then boom, boom, boom go a series of dominos, before a final quiescent state is
 reached. Nothing happens without an event, but when one does happen, it is the same process each time thereafter.
 
 `re-frame-trace` is a programmer's dashboard 
 which renders this regular computational process, allowing it to be inspected, understood and debugged.
+
+## A Dashboard?
+
+`re-frame` generates detailed "trace data" as it runs, but most of it will be low level and uninteresting, much of the time. 
+As a "dashboard", `re-frame-trace` shows interesting, aggregated information "at a glance", while also allowing you to drill down and explore the detail as necessary.
+
+## What's An Epoch? 
+
+Each `re-frame` event and its consequent computation forms a logically discrete "epoch" which should be analysed and inspected independently of other epochs.  The dashboard design is epoch-oriented.
 
 ## Aspirational goals
 
@@ -28,15 +35,7 @@ Here's the vision for what we'd like `re-frame-trace` to deliver (eventually):
   - Debugging assitance. Particularly assitance for writing event handlers which hold most of the application logic. 
   - A method for finding performance problems and detecting where there is unnecessary computation.
 
-## A Dashboard?  
 
-`re-frame` generates detailed "trace data" as it runs, but much of it will be low level and uninteresting, much of the time. 
-As a "dashboard", `re-frame-trace` shows interesting, high level information "at a glance", while also allowing you to drill down and explore the detail as necessary.
-
-## What's An Epoch? 
-
-Each `re-frame` event and its consequent computation forms a logically discrete "epoch" which can be analysed and inspected independently. The dashboard design is epoch-oriented.
-   
 ## Sampler
 
 <img src="docs/images/trace-window.gif" height="400px">
@@ -91,9 +90,9 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ## How does it work?
 
-re-frame is instrumented - all important activity generates trace data. `re-frame-trace` is a consumer of this trace data which renders useful visualisations of the `re-frame` process. Currently, re-frame's tracing capabilities are in alpha and are subject to change at any time. We're testing the utility of the the trace by building an app on top. 
+re-frame is instrumented - all important activity generates trace data. `re-frame-trace` consumes this trace data and renders useful visualisations of the `re-frame` process. Currently, re-frame's tracing capabilities are in alpha and are subject to change at any time. We're testing the utility of the the trace by building an app on top. 
 
-By default, re-frame tracing is compiled out, so it won't impose a performance cost in production. The trade-off here is that you need to explicitly enable it in development.
+By default, re-frame tracing is "compiled out", so it won't impose a performance cost in production. The trade-off here is that you need to explicitly enable it in development.
 
 The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#preloads) option (`:preloads [day8.re-frame.trace.preload]`) has to be set in order to automatically monkeypatch Reagent to add appropriate lifecycle hooks. Yes this is gross, and yes we will try and make a PR to reagent to add proper hooks, once we know exactly what we need. The preload namespace also injects a div containing the devtools panel into the DOM.
 
