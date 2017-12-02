@@ -12,7 +12,7 @@ A debugging dashboard for re-frame epochs.
 
 `re-frame` applications have a regular computational path - first an event happens,
 and then boom, boom, boom go a series of dominos, before a final quiescent state is
-reached. Nothing happens without an event, but when one does happen, it is the same process each time.
+reached. Nothing happens without an event, but when one does happen, it is the same process each time thereafter.
 
 `re-frame-trace` is a programmer's dashboard 
 which renders this regular computational process, allowing it to be inspected, understood and debugged.
@@ -28,6 +28,16 @@ Here's the vision for what we'd like `re-frame-trace` to deliver (eventually):
   - Debugging assitance. Particularly assitance for writing event handlers which hold most of the application logic. 
   - A method for finding performance problems and detecting where there is unnecessary computation.
 
+## A Dashboard?  
+
+`re-frame` generates detailed "trace data" as it runs, but much of it will be low level and uninteresting, much of the time. 
+As a "dashboard", `re-frametrace` shows interesting, high level information, 
+in easily grokable ways, while also allowing you to drilling down into the detail as necessary.
+
+## What's An Epoch? 
+
+Each event and its consequent computation forms a discrete "epoch" which can be analysed and inspected independently. The dashboard design is epoch-oriented.
+   
 ## Sampler
 
 <img src="docs/images/trace-window.gif" height="400px">
