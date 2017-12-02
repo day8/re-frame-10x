@@ -1,40 +1,46 @@
 # re-frame-trace
 
+`re-frame-trace` is a programmer's dashboard 
+for inspecting, understanding and debugging a running `re-frame` application.
+
 **Status:** Alpha.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
 **Note** [the latest version 0.1.13](https://github.com/Day8/re-frame-trace/releases/tag/0.1.13) ALSO requires the latest version of re-frame itself - `v0.10.3-alpha1`.
 
-## What Is It?
+
+## Dashboard Overview 
 
 `re-frame` applications have a very regular computational path:  first an event happens,
-and then boom, boom, boom go a series of known dominos, in a known order, before a final quiescent state is
-reached waiting for the next event.
+and then boom, boom, boom go a series of known dominos, in a known order. At the end of
+it, a `re-frame` app lapses into a quiescent state waiting for the next event to kick 
+off the next iteration of the cycle.
 
-`re-frame-trace` is a programmer's dashboard 
-which renders this regular computational process, allowing it to be inspected, understood and debugged.
+We use the term dashboard for this tool quite deliberately. In the business world, dashboards are used to 
+show rolled up and summarised data along useful dimensions. The detailed data in not shown unless 
+it interests you and you wish to drill down into it.
 
-## A Dashboard?
+As it runs, `re-frame` generates detailed "trace data", but a lot of it will be low level and uninteresting, much of the time. 
+So, as a "dashboard", `re-frame-trace` shows useful, "rolled up" information "at a glance", while also allowing you to drill down and explore the detail as necessary. All the data you want should be available, but you shouldn't drown in it. 
 
-`re-frame` generates detailed "trace data" as it runs, but a lot of it will be low level and uninteresting, much of the time. 
-As a "dashboard", `re-frame-trace` shows interesting, aggregated information "at a glance", while also allowing you to drill down and explore the detail as necessary.
+Each `re-frame` event and its consequent computation forms a logically discrete "epoch" which can be analysed and inspected independently of other epochs.  As a result, the dashboard design is epoch-oriented.
 
-## What's An Epoch? 
+Not only is the underlying trace "just data", but so is much of the observed re-frame proecess. Much of what `re-frame` does on your behalf is the move data from one domino to another. You write the dominos (functions) and `re-frame` will flow data through them. 
 
-Each `re-frame` event and its consequent computation forms a logically discrete "epoch" which should be analysed and inspected independently of other epochs.  As a result, the dashboard design is epoch-oriented.
+So, yeah, its an epoch-oriented, interactive data dashboard for gaining insights and assisting debugging. 
 
 ## Aspirational goals
 
 Here's the vision for what we'd like `re-frame-trace` to deliver (eventually):
-  - Learning. If I'm new to re-frame, the dashboard should assist me to understand the 
-    dominoes and the data flows involved. 
-  - Codebase familialisation. It should help me to explore how an unfamiliar application is wired together. When I click 
+  - Help in learning `re-frame`.  If I'm new to `re-frame`, the dashboard should assist me to understand the 
+    dominoes and the data flows involved.
+  - Help in learning a new code base. It should help me to explore how an unfamiliar application is wired together. When I click 
     on this button "X", it shows me what event is `dispatch`-ed and in what namespace the associated event handler is registered.  And, 
     "oh look, that's interesting - four subscriptions recalculated". Etc.
-  - Debugging assitance. Particularly assitance for writing event handlers which hold most of the application logic. 
-  - A method for finding performance problems and detecting where there is unnecessary computation.
+  - Debugging assistance. Particularly assistance for writing event handlers which hold most of the application logic. 
+  - A method for finding performance problems and/or detecting where there is unnecessary computation.
 
 
-## Sampler
+## Visual Sampler
 
 <img src="docs/images/trace-window.gif" height="400px">
 
