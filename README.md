@@ -1,28 +1,26 @@
 # re-frame-trace
 
-**Status:** Alpha.
-
-[![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
+**Status:** Alpha.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
 **Note** [the latest version 0.1.13](https://github.com/Day8/re-frame-trace/releases/tag/0.1.13) ALSO requires the latest version of re-frame itself - `v0.10.3-alpha1`.
 
 ## What Is It?
 
-`re-frame` applications have a regular computational path:  first an event happens,
-and then boom, boom, boom go a series of dominos, before a final quiescent state is
-reached. Nothing happens without an event, but when one does happen, it is the same process each time thereafter.
+`re-frame` applications have a very regular computational path:  first an event happens,
+and then boom, boom, boom go a series of known dominos, in a known order, before a final quiescent state is
+reached waiting for the next event.
 
 `re-frame-trace` is a programmer's dashboard 
 which renders this regular computational process, allowing it to be inspected, understood and debugged.
 
 ## A Dashboard?
 
-`re-frame` generates detailed "trace data" as it runs, but most of it will be low level and uninteresting, much of the time. 
+`re-frame` generates detailed "trace data" as it runs, but a lot of it will be low level and uninteresting, much of the time. 
 As a "dashboard", `re-frame-trace` shows interesting, aggregated information "at a glance", while also allowing you to drill down and explore the detail as necessary.
 
 ## What's An Epoch? 
 
-Each `re-frame` event and its consequent computation forms a logically discrete "epoch" which should be analysed and inspected independently of other epochs.  The dashboard design is epoch-oriented.
+Each `re-frame` event and its consequent computation forms a logically discrete "epoch" which should be analysed and inspected independently of other epochs.  As a result, the dashboard design is epoch-oriented.
 
 ## Aspirational goals
 
