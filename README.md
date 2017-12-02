@@ -1,6 +1,6 @@
 # re-frame-trace
 
-A debugging dashboard for re-frame.
+A debugging dashboard for re-frame epochs.
 
 **Status:** Alpha.
 
@@ -8,9 +8,27 @@ A debugging dashboard for re-frame.
 
 **Note** [the latest version 0.1.13](https://github.com/Day8/re-frame-trace/releases/tag/0.1.13) ALSO requires the latest version of re-frame itself - `v0.10.3-alpha1`.
 
-## Motivation
+## What Is It?
 
-re-frame provides a data driven architecture, but we need to be able to inspect it. re-frame-trace takes inspiration from [redux-devtools](https://github.com/gaearon/redux-devtools), and provides several ways to visualise the structure and state of your re-frame application.
+`re-frame` applications have a regular computational path - first an event happens,
+and then boom, boom, boom go a series of dominos, before a final quiescent state is
+reached. Nothing happens without an event, but when one does happen, it is the same process each time.
+
+`re-frame-trace` is a programmer's dashboard 
+which renders this regular computational process, allowing it to be inspected, understood and debugged.
+
+## Aspirational goals
+
+Here's the vision for what we'd like `re-frame-trace` to deliver (eventually):
+  - Learning. If I'm new to re-frame, the dashboard should assist me to understand the 
+    dominoes and the data flows involved. 
+  - Codebase familialisation. It should help me to explore how an unfamiliar application is wired together. When I click 
+    on this button "X", it shows me what event is `dispatch`-ed and in what namespace the associated event handler is registered.  And, 
+    "oh look, that's interesting - four subscriptions recalculated". Etc.
+  - Debugging assitance. Particularly assitance for writing event handlers which hold most of the application logic. 
+  - A method for finding performance problems and detecting where there is unnecessary computation.
+
+## Sampler
 
 <img src="docs/images/trace-window.gif" height="400px">
 
@@ -64,7 +82,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ## How does it work?
 
-re-frame has instrumentation to collect traces throughout various important points in the lifecycle of a re-frame app. re-frame-trace is a consumer of these traces, and provides visualisations of the traces. These traces have a well-defined structure, and will eventually be standardised, allowing other developers to create their own tooling to work against the traces. Currently, re-frame's tracing and re-frame-trace are in alpha and are subject to change at any time.
+re-frame is instrumented - all important activity generates trace data. `re-frame-trace` is a consumer of this trace data which renders useful visualisations of the `re-frame` process. Currently, re-frame's tracing capabilities are in alpha and are subject to change at any time. We're testing the utility of the the trace by building an app on top. 
 
 By default, re-frame tracing is compiled out, so it won't impose a performance cost in production. The trade-off here is that you need to explicitly enable it in development.
 
