@@ -31,12 +31,11 @@ Here's the vision for what we'd like `re-frame-trace` to deliver (eventually):
 ## A Dashboard?  
 
 `re-frame` generates detailed "trace data" as it runs, but much of it will be low level and uninteresting, much of the time. 
-As a "dashboard", `re-frametrace` shows interesting, high level information, 
-in easily grokable ways, while also allowing you to drilling down into the detail as necessary.
+As a "dashboard", `re-frame-trace` shows interesting, high level information "at a glance", while also allowing you to drill down and explore the detail as necessary.
 
 ## What's An Epoch? 
 
-Each event and its consequent computation forms a discrete "epoch" which can be analysed and inspected independently. The dashboard design is epoch-oriented.
+Each `re-frame` event and its consequent computation forms a logically discrete "epoch" which can be analysed and inspected independently. The dashboard design is epoch-oriented.
    
 ## Sampler
 
