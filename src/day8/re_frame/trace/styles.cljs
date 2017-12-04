@@ -3,24 +3,27 @@
   (:require [garden.core :as garden]
             [garden.units :refer [em px percent]]
             [garden.color :as color]
-            [garden.selectors :as s]))
+            [garden.selectors :as s]
+            [day8.re-frame.trace.common-styles :as common]
+            [day8.re-frame.trace.utils.re-com :as rc]))
 
-(def background-blue "#e7f1ff")
-(def background-gray "#a8a8a8")
-(def background-gray-hint "#fafafa")
-(def dark-green "#008766")
-(def dark-gold "#A66900")
-(def dark-purple "#762cff")
-(def dark-blue "#284694")
-(def dark-gray "gray")
-(def dark-skyblue "#007CC2")
-(def medium-gray "#999")
-(def light-purple "#616cdb")
-(def light-blue "lightblue")
-(def light-gray "#efeef1")
-(def yellow "yellow")
-(def text-color "#222")
-(def text-color-muted "#8f8f8f")
+(def background-blue common/background-blue)
+(def background-gray common/background-gray)
+(def background-gray-hint common/background-gray-hint)
+(def dark-green common/dark-green)
+(def dark-gold common/dark-gold)
+(def dark-purple common/dark-purple)
+(def dark-blue common/dark-blue)
+(def dark-gray common/dark-gray)
+(def dark-skyblue common/dark-skyblue)
+(def medium-gray common/medium-gray)
+(def light-purple common/light-purple)
+(def light-blue common/light-blue)
+(def light-gray common/light-gray)
+(def yellow common/yellow)
+(def text-color common/text-color)
+(def text-color-muted common/text-color-muted)
+
 
 (def css-reset
   [:#--re-frame-trace--
@@ -32,7 +35,9 @@
    ;; /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
    {:line-height "1.15"
     :font-size   "12px"}
-   [:div :nav {:display "block"}]
+   [:h1 {:font-size "2em"
+         :margin    "0.67em 0"}]
+   [:div :nav :h1 :h2 :h3 :h4 :h5 :h6 {:display "block"}]
    [:pre {:font-family "monospace"
           :font-size   (em 1)}]
 
@@ -118,6 +123,15 @@
                   :font-size  (em 0.9)
                   :margin     [[(px 10) (px 5)]]})
 
+(def panel-mixin {:padding-top    (px 20)
+                  :margin         "0 10px"
+                  :display        "flex"
+                  :flex-direction "column"
+                  :flex           "1 1 auto"
+                  :overflow-x     "auto"
+                  :overflow-y     "auto"
+                  :z-index        1000})
+
 (def re-frame-trace-styles
   [:#--re-frame-trace--
    {:background  "white"
@@ -142,7 +156,7 @@
     [(s/& ".trace--sub-run")
      [".trace--op" {:color dark-purple}]]
     [(s/& ".trace--event")
-     [".trace--op" {:color dark-gold}]]
+     [".trace--op" {:color common/event-color}]]
     [(s/& ".trace--render")
      [".trace--op" {:color dark-skyblue}]]
     [(s/& ".trace--fsm-trigger")
@@ -281,13 +295,8 @@
                              :height  (percent 100)
                              :flex    "1 1 auto"}]
    [:.panel-content-top {}]
-   [:.panel-content-scrollable {:padding-top    (px 20)
-                                :display        "flex"
-                                :flex-direction "column"
-                                :flex           "1 1 auto"
-                                :overflow-x     "auto"
-                                :overflow-y     "auto"
-                                :z-index        1000}]
+   [:.panel-content-scrollable panel-mixin]
+   [:.epoch-panel panel-mixin]
    [:.tab-contents {:display        "flex"
                     :flex           "1 1 auto"
                     :flex-direction "column"}]
@@ -295,7 +304,7 @@
    [:.filter-items-count
     {:cursor "auto"}
     [(s/& ".active") {:background yellow
-                      :cursor "pointer"}
+                      :cursor     "pointer"}
      [(s/& ":hover") {:text-decoration "line-through"}]]]
    [:.filter-fields {:margin-top "10px"}]
    [:.filter-category {:display    "inline-block"
@@ -319,7 +328,7 @@
    ])
 
 
-(def panel-styles (apply garden/css [css-reset re-frame-trace-styles]))
+(def panel-styles (apply garden/css [css-reset (into [:#--re-frame-trace--] rc/re-com-css) re-frame-trace-styles]))
 ;(def panel-styles (macros/slurp-macro "day8/re_frame/trace/main.css"))
 
 
