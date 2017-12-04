@@ -5,6 +5,7 @@
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
             [reagent.core :as r]
+            [re-frame.db]
             [day8.re-frame.trace.components.container :as container]
             [day8.re-frame.trace.styles :as styles]))
 
@@ -208,3 +209,16 @@
                       (conj paths path))]
       (localstorage/save! "app-db-json-ml-expansions" new-paths)
       new-paths)))
+
+(rf/reg-event-db
+  :snapshot/save-snapshot
+  [(rf/path [:snapshot])]
+  (fn [snapshot _]
+    (assoc snapshot :current-snapshot @re-frame.db/app-db)))
+
+(rf/reg-event-db
+  :snapshot/load-snapshot
+  [(rf/path [:snapshot])]
+  (fn [snapshot _]
+    (reset! re-frame.db/app-db (:current-snapshot snapshot))
+    snapshot))

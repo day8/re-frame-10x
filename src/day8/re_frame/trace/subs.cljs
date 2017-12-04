@@ -66,3 +66,16 @@
   :global/unloading?
   (fn [db _]
     (get-in db [:global :unloading?])))
+
+;;
+
+(rf/reg-sub
+  :snapshot/snapshot-root
+  (fn [db _]
+    (:snapshot db)))
+
+(rf/reg-sub
+  :snapshot/snapshot-ready?
+  :<- [:snapshot/snapshot-root]
+  (fn [snapshot _]
+    (contains? snapshot :current-snapshot)))

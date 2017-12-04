@@ -225,11 +225,14 @@
 
    [:.icon-button {:font-size "10px"}]
    [:button.tab {}]
-   [:.popout-icon
-    {:max-width "15px"
-     :cursor    "pointer"
-     :padding   "0 5px"
-     :margin    "0 5px"}]
+   [:.nav-icon
+    {:width   "15px"
+     :height  "15px"
+     :cursor  "pointer"
+     :padding "0 5px"
+     :margin  "0 5px"}
+    ["&.inactive"
+     {:cursor "initial"}]]
    [:.tab
     {:background     "transparent"
      :border-radius  0

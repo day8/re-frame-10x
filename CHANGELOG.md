@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+### Added
+
+* New state snapshotting feature: Click the camera to snapshot app-db, and click the load button to restore to your snapshot. 
+
 ### Changed
 
 * Switched from LESS to Garden styles. Now interactive development and debugging of re-frame-trace is even faster.

@@ -106,4 +106,6 @@ If you want to work on re-frame-trace, see [DEVELOPERS.md](DEVELOPERS.md).
 
 ## Citations
 
-[open](https://thenounproject.com/search/?q=popout&i=334227) by Bluetip Design from the Noun Project
+* [open](https://thenounproject.com/search/?q=popout&i=334227) by Bluetip Design from the Noun Project
+* [reload](https://thenounproject.com/adnen.kadri/collection/arrows/?i=798299) by Adnen Kadri from the Noun Project
+* [Camera](https://thenounproject.com/search/?q=snapshot&i=200965) by Christian Shannon from the Noun Project
