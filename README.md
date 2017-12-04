@@ -26,9 +26,7 @@ Each `re-frame` event and its consequent computation forms a logically discrete 
 
 Not only is the underlying trace "just data", but so is much of the observed re-frame proecess. Much of what `re-frame` does on your behalf is the move data from one domino to another. You write the dominos (functions) and `re-frame` will flow data through them. 
 
-So, yeah, its an epoch-oriented, interactive data dashboard for gaining insights and assisting debugging. actually 
-
-> It is also a work in progress, so this descrption runs well ahead of what is delivered now.  
+So, yeah, its an epoch-oriented, interactive data dashboard for gaining insights and assisting debugging. It is also a work in progress, so this descrption runs well ahead of what is delivered now.
 
 ## More Aspirational goals
 
@@ -38,7 +36,7 @@ Here's the vision for what we'd like `re-frame-trace` to deliver (eventually):
   - Help in learning a new code base. It should help me to explore how an unfamiliar application is wired together. When I click 
     on this button "X", it shows me what event is `dispatch`-ed and in what namespace the associated event handler is registered.  And, 
     "oh look, that's interesting - four subscriptions recalculated". Etc.
-  - Debugging assistance. Particularly assistance for writing event handlers which hold most of the application logic. 
+  - Debugging assistance. Particularly assistance for writing event handlers as they hold most of the application logic. 
   - A method for finding performance problems and/or detecting where there is unnecessary computation.
 
 
