@@ -169,6 +169,55 @@
              attr)]
           children)))
 
+(defn v-box
+  "Returns hiccup which produces a vertical box.
+   It's primary role is to act as a container for components and lays it's children from top to bottom.
+   By default, it also acts as a child under it's parent"
+  [& {:keys [size width height min-width min-height max-width max-height justify align align-self margin padding gap children class style attr]
+      :or   {size "none" justify :start align :stretch}
+      :as   args}]
+  (let [s        (merge
+                   (flex-flow-style "column nowrap")
+                   (flex-child-style size)
+                   (when width {:width width})
+                   (when height {:height height})
+                   (when min-width {:min-width min-width})
+                   (when min-height {:min-height min-height})
+                   (when max-width {:max-width max-width})
+                   (when max-height {:max-height max-height})
+                   (justify-style justify)
+                   (align-style :align-items align)
+                   (when align-self (align-style :align-self align-self))
+                   (when margin {:margin margin})       ;; margin and padding: "all" OR "top&bottom right&left" OR "top right bottom left"
+                   (when padding {:padding padding})
+                   style)
+        gap-form (when gap [gap-f
+                            :size gap
+                            :height gap]) ;; TODO: required to get around a Chrome bug: https://code.google.com/p/chromium/issues/detail?id=423112. Remove once fixed.
+        children (if gap
+                   (interpose gap-form (filter identity children)) ;; filter is to remove possible nils so we don't add unwanted gaps
+                   children)]
+    (into [:div
+           (merge
+             {:class (str "rc-v-box display-flex " class) :style s}
+             attr)]
+          children)))
+
+(defn line
+  "Returns a component which produces a line between children in a v-box/h-box along the main axis.
+   Specify size in pixels and a stancard CSS color. Defaults to a 1px lightgray line"
+  [& {:keys [size color class style attr]
+      :or   {size "1px" color "lightgray"}
+      :as   args}]
+  (let [s (merge
+            (flex-child-style (str "0 0 " size))
+            {:background-color color}
+            style)]
+    [:div
+     (merge
+       {:class (str "rc-line " class) :style s}
+       attr)]))
+
 (defn- input-text-base
   "Returns markup for a basic text input label"
   [& {:keys [model input-type] :as args}]
@@ -247,3 +296,7 @@
 (defn input-text
   [& args]
   (apply input-text-base :input-type :input args))
+
+(def re-com-css
+  [[:.display-flex {:display "flex"}]
+   [:.display-inline-flex {:display "flex"}]])
