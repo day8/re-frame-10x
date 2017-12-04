@@ -189,7 +189,7 @@
                                     [:div.panel
                                      {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px" :background "white"
                                               :display    "flex"
-                                              :left       left :top "0px" :width (str (inc (int (* 100 @panel-width%))) "%") :height "100%"
+                                              :left       left :top "0px" :width (str (* 100 @panel-width%) "%") :height "100%"
                                               :transition transition}}
                                      [:div.panel-resizer {:style         (resizer-style draggable-area)
                                                           :on-mouse-down #(reset! dragging? true)}]
