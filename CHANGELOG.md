@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Added
 
-* New state snapshotting feature: Click the camera to snapshot app-db, and click the load button to restore to your snapshot. 
+* New state snapshotting feature: Click the camera to snapshot app-db, and click the load button to restore to your snapshot. Snapshots only persist for the browser session, they aren't available after reloading the browser.
 
 ### Changed
 
