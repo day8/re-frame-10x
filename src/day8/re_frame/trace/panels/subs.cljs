@@ -18,7 +18,7 @@
 (defn subs-panel []
   []
   [:div {:style {:flex "1 1 auto" :display "flex" :flex-direction "column"}}
-   [:div.panel-content-scrollable {:style {:margin-left "10px"}}
+   [:div.panel-content-scrollable
     [:div.subtrees {:style {:margin "20px 0"}}
      (doall
        (->> @subs/query->reaction
