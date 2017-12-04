@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file. This change
 * Switched from LESS to Garden styles. Now interactive development and debugging of re-frame-trace is even faster.
 * Reopen/reattach external popup windows when reloading host application
 
+### Fixed
+
+* Set panel width correctly so you can see the whole panel at all times. Previously the right edge was just off screen.
+
 ## [0.1.13] - 2017-11-23
 
 **N.B.** To make the best use of the new subscriptions panel, you also need to update to re-frame v0.10.3-alpha1.
