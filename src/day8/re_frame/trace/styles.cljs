@@ -28,7 +28,7 @@
 (def css-reset
   [:#--re-frame-trace--
    {:all "initial"}
-   [:*
+   [:* "*:before" "*:after"
     {:all "unset"}]
 
 
