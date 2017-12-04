@@ -143,3 +143,21 @@
                    (boolean? data)
                    (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
           @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]])))
+
+(defn simple-render [data]
+  (let [expanded? (r/atom true) #_(rf/subscribe [:app-db/node-expanded? path])]
+    (fn [data]
+      [:div
+       {:class (str/join " " ["re-frame-trace--object"
+                              (when @expanded? "expanded")])}
+       #_[:span {:class    "toggle"
+                 :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
+          [:button.expansion-button (if @expanded? "▼ " "▶ ")]]
+       [:div #_{:style {:margin-left 20}}
+        (cond
+          (and @expanded?
+               (or (string? data)
+                   (number? data)
+                   (boolean? data)
+                   (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
+          @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj [] 0)))]])))

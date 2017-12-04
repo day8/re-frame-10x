@@ -14,7 +14,7 @@
         input-error   (r/atom false)]
     (fn []
       [:div {:style {:flex "1 1 auto" :display "flex" :flex-direction "column"}}
-       [:div.panel-content-scrollable {:style {:margin-left "10px"}}
+       [:div.panel-content-scrollable
         [re-com/input-text
          :model search-string
          :on-change (fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
