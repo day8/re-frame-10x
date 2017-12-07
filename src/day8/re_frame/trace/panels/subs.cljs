@@ -22,7 +22,7 @@
     [:div.subtrees {:style {:margin "20px 0"}}
      (doall
        (->> @subs/query->reaction
-            (sort)
+            (sort-by (fn [me] (ffirst (key me))))
             (map (fn [me]
                    (let [[query-v dyn-v :as inputs] (key me)]
                      ^{:key query-v}
