@@ -5,6 +5,7 @@
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
             [reagent.core :as r]
+            [goog.object]
             [re-frame.db]
             [day8.re-frame.trace.components.container :as container]
             [day8.re-frame.trace.styles :as styles]))
@@ -49,7 +50,7 @@
   (let [app (.getElementById popup-document "--re-frame-trace--")
         doc js/document]
     (styles/inject-trace-styles popup-document)
-    (aset popup-window "onunload" #(rf/dispatch [:global/external-closed]))
+    (goog.object/set popup-window "onunload" #(rf/dispatch [:global/external-closed]))
     (r/render
       [(r/create-class
          {:display-name   "devtools outer external"
@@ -67,7 +68,7 @@
         d (.-document w)]
     (.open d)
     (.write d "<head></head><body style=\"margin: 0px;\"><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
-    (aset w "onload" #(mount w d))
+    (goog.object/set w "onload" #(mount w d))
     (.close d)))
 
 (rf/reg-event-fx
