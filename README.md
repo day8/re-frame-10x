@@ -1,7 +1,7 @@
 # re-frame-trace
 
 `re-frame-trace` is a programmer's dashboard 
-for inspecting, understanding and debugging a running `re-frame` application.
+for inspecting a running `re-frame` application. It should assist you to both understand and debug your application. 
 
 **Status:** Alpha.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace) [![Dependencies Status](https://versions.deps.co/Day8/re-frame-trace/status.svg)](https://versions.deps.co/Day8/re-frame-trace)
 
@@ -10,37 +10,33 @@ for inspecting, understanding and debugging a running `re-frame` application.
 
 ## Dashboard Overview 
 
-`re-frame` applications have a very regular computational path:  first an event happens,
-and then boom, boom, boom go a series of known dominos, in a known order. At the end of
-it, a `re-frame` app lapses into a quiescent state waiting for the next event to kick 
-off the next iteration of the cycle.
+`re-frame` applications are computationally regular. First an event happens,
+and then boom, boom, boom go a series of known steps (dominos), in a known order. At the end of
+it, a `re-frame` app lapses into a quiescent state waiting for another event to kick 
+off the next iteration of the same cycle.
 
-We use the term dashboard for this tool quite deliberately. In the business world, dashboards are used to 
-show rolled up and summarised data along useful dimensions. The detailed data in not shown unless 
-it interests you and you wish to drill down into it.
+Each `re-frame` event and its consequent computation forms a discrete "epoch" which can be analysed and inspected independently of other epochs.  As a result, this tool is epoch-oriented.
 
-As it runs, `re-frame` generates detailed "trace data", but a lot of it will be low level and uninteresting, much of the time. 
-So, as a "dashboard", `re-frame-trace` shows useful, "rolled up" information "at a glance", while also allowing you to drill down and explore the detail as necessary. All the data you want should be available, but you shouldn't drown in it. 
+As it runs, `re-frame` generates detailed "trace data", but much of it will be low level and uninteresting a lot of the time.
+`re-frame-trace` is a "dashboard" in the sense that it shows useful, "rolled up" information "at a glance", and allows you to drill down and explore the detail as necessary. All the data you want should ultimately be available, but you shouldn't initially drown in it. 
 
-Each `re-frame` event and its consequent computation forms a logically discrete "epoch" which can be analysed and inspected independently of other epochs.  As a result, the dashboard design is epoch-oriented.
+Not only is the underlying trace "just data", but so is much of the observed `re-frame` proecess. Much of what `re-frame` does on your behalf is the move data from one domino to another. You write the dominos (functions) and `re-frame` will flow data through them. 
 
-Not only is the underlying trace "just data", but so is much of the observed re-frame proecess. Much of what `re-frame` does on your behalf is the move data from one domino to another. You write the dominos (functions) and `re-frame` will flow data through them. 
-
-So, yeah, its an epoch-oriented, interactive data dashboard for gaining insights and assisting debugging. It is also a work in progress, so this descrption runs well ahead of what is delivered now.
+So, yeah, this tool an epoch-oriented, interactive data dashboard for gaining insights and assisting debugging. It is also a work in progress, so this grand descrption runs well ahead of what is delivered right now.
 
 ## More Aspirational goals
 
-Here's the vision for what we'd like `re-frame-trace` to deliver (eventually):
+Here's the vision for how we'd like `re-frame-trace` to help (eventually):
   - Help in learning `re-frame`.  If I'm new to `re-frame`, the dashboard should assist me to understand the 
     dominoes and the data flows involved.
   - Help in learning a new code base. It should help me to explore how an unfamiliar application is wired together. When I click 
     on this button "X", it shows me what event is `dispatch`-ed and in what namespace the associated event handler is registered.  And, 
     "oh look, that's interesting - four subscriptions recalculated". Etc.
-  - Debugging assistance. Particularly assistance for writing event handlers as they hold most of the application logic. 
-  - A method for finding performance problems and/or detecting where there is unnecessary computation.
+  - Help with debugging. Particularly assistance for writing event handlers as they hold most of the application logic. 
+  - Help with finding performance problems and/or detecting where there is unnecessary computation occuring.
 
 
-## Visual Sampler
+## A Visual Sampler
 
 <img src="docs/images/trace-window.gif" height="400px">
 
