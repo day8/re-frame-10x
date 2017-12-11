@@ -1,14 +1,56 @@
 (ns day8.re-frame.trace.events
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.utils.utils :as utils]
-            [day8.re-frame.trace.utils.traces :as utils.traces]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
             [reagent.core :as r]
             [goog.object]
             [re-frame.db]
-            [day8.re-frame.trace.components.container :as container]
+            [day8.re-frame.trace.view.container :as container]
             [day8.re-frame.trace.styles :as styles]))
+
+(defonce traces (r/atom []))
+(defonce total-traces (r/atom 0))
+
+(defn log-trace? [trace]
+  (let [render-operation? (= (:op-type trace) :render)
+        component-path    (get-in trace [:tags :component-path] "")]
+    (if-not render-operation?
+      true
+      (not (str/includes? component-path "devtools outer")))))
+
+(defn disable-tracing! []
+  (re-frame.trace/remove-trace-cb ::cb))
+
+(defn enable-tracing! []
+  (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
+                                           (when-let [new-traces (filter log-trace? new-traces)]
+                                             (swap! total-traces + (count new-traces))
+                                             (swap! traces
+                                                    (fn [existing]
+                                                      (let [new  (reduce conj existing new-traces)
+                                                            size (count new)]
+                                                        (if (< 4000 size)
+                                                          (let [new2 (subvec new (- size 2000))]
+                                                            (if (< @total-traces 20000) ;; Create a new vector to avoid structurally sharing all traces forever
+                                                              (do (reset! total-traces 0)
+                                                                  (into [] new2))))
+                                                          new))))))))
+
+(defn dissoc-in
+  "Dissociates an entry from a nested associative structure returning a new
+  nested structure. keys is a sequence of keys. Any empty maps that result
+  will not be present in the new structure."
+  [m [k & ks :as keys]]
+  (if ks
+    (if-let [nextmap (clojure.core/get m k)]
+      (let [newmap (dissoc-in nextmap ks)]
+        (if (seq newmap)
+          (assoc m k newmap)
+          (dissoc m k)))
+      m)
+    (dissoc m k)))
+
 
 (rf/reg-event-db
   :settings/panel-width%
@@ -35,9 +77,9 @@
           external-panel? (get-in db [:settings :external-window?])
           using-trace?    (or external-panel? now-showing?)]
       (if now-showing?
-        (utils.traces/enable-tracing!)
+        (enable-tracing!)
         (when-not external-panel?
-          (utils.traces/disable-tracing!)))
+          (disable-tracing!)))
       (localstorage/save! "using-trace?" using-trace?)
       (localstorage/save! "show-panel" now-showing?)
       (-> db
@@ -55,7 +97,7 @@
       [(r/create-class
          {:display-name   "devtools outer external"
           :reagent-render (fn []
-                            [container/devtools-inner utils.traces/traces {:panel-type :popup}
+                            [container/devtools-inner traces {:panel-type :popup}
                              ])})]
       app)))
 
@@ -90,13 +132,13 @@
 (rf/reg-event-fx
   :global/enable-tracing
   (fn [ctx _]
-    (utils.traces/enable-tracing!)
+    (enable-tracing!)
     nil))
 
 (rf/reg-event-fx
   :global/disable-tracing
   (fn [ctx _]
-    (utils.traces/disable-tracing!)
+    (disable-tracing!)
     nil))
 
 (rf/reg-event-fx
@@ -151,7 +193,7 @@
 (rf/reg-event-db
   :traces/reset-filter-items
   (fn [db _]
-    (let [new-db (utils/dissoc-in db [:traces :filter-items])]
+    (let [new-db (dissoc-in db [:traces :filter-items])]
       (save-filter-items (get-in new-db [:traces :filter-items]))
       new-db)))
 

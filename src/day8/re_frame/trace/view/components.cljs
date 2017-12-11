@@ -1,10 +1,67 @@
-(ns day8.re-frame.trace.components.data-browser
-  (:require-macros [day8.re-frame.trace.utils.macros :refer [with-cljs-devtools-prefs]])
-  (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [day8.re-frame.trace.utils.localstorage :as localstorage]
-            [day8.re-frame.trace.components.components :as components]
+(ns day8.re-frame.trace.view.components
+  (:require [reagent.core :as r]
             [clojure.string :as str]
-            [reagent.core :as r]))
+            [goog.fx.dom :as fx]
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [day8.re-frame.trace.utils.localstorage :as localstorage]
+            [clojure.string :as str])
+  (:require-macros [day8.re-frame.trace.utils.macros :refer [with-cljs-devtools-prefs]]))
+
+(defn search-input [{:keys [title placeholder on-save on-change on-stop]}]
+  (let [val  (r/atom title)
+        save #(let [v (-> @val str str/trim)]
+                (when (pos? (count v))
+                  (on-save v)))]
+    (fn []
+      [:input {:type        "text"
+               :value       @val
+               :auto-focus  true
+               :placeholder placeholder
+               :size        (if (> 20 (count (str @val)))
+                              25
+                              (count (str @val)))
+               :on-change   #(do (reset! val (-> % .-target .-value))
+                                 (on-change %))
+               :on-key-down #(case (.-which %)
+                               13 (do
+                                    (save)
+                                    (reset! val ""))
+                               nil)}])))
+
+(defn scroll! [el start end time]
+  (.play (fx/Scroll. el (clj->js start) (clj->js end) time)))
+
+(defn scrolled-to-end? [el tolerance]
+  ;; at-end?: element.scrollHeight - element.scrollTop === element.clientHeight
+  (> tolerance (- (.-scrollHeight el) (.-scrollTop el) (.-clientHeight el))))
+
+(defn autoscroll-list [{:keys [class scroll?]} child]
+  "Reagent component that enables scrolling for the elements of its child dom-node.
+   Scrolling is only enabled if the list is scrolled to the end.
+   Scrolling can be set as option for debugging purposes.
+   Thanks to Martin Klepsch! Original code can be found here:
+       https://gist.github.com/martinklepsch/440e6fd96714fac8c66d892e0be2aaa0"
+  (let [node          (r/atom nil)
+        should-scroll (r/atom true)]
+    (r/create-class
+      {:display-name "autoscroll-list"
+       :component-did-mount
+                     (fn [_]
+                       (scroll! @node [0 (.-scrollTop @node)] [0 (.-scrollHeight @node)] 0))
+       :component-will-update
+                     (fn [_]
+                       (reset! should-scroll (scrolled-to-end? @node 100)))
+       :component-did-update
+                     (fn [_]
+                       (when (and scroll? @should-scroll)
+                         (scroll! @node [0 (.-scrollTop @node)] [0 (.-scrollHeight @node)] 500)))
+       :reagent-render
+                     (fn [{:keys [class]} child]
+                       [:div {:class class :ref (fn [dom-node]
+                                                  (reset! node dom-node))}
+                        child])})))
+
+;; Data browser
 
 (defn string->css [css-string]
   "This function converts jsonml css-strings to valid css maps for hiccup.
@@ -46,7 +103,7 @@
 
 (defn make-devtools-api-call [api-fn & args]
   (with-cljs-devtools-prefs effective-cljs-devtools-prefs
-                            (apply api-fn args)))
+    (apply api-fn args)))
 
 (defn cljs-devtools-header [& args]
   (apply make-devtools-api-call devtools.formatters.core/header-api-call args))
@@ -132,8 +189,8 @@
        {:class (str/join " " ["re-frame-trace--object"
                               (when @expanded? "expanded")])}
        #_[:span {:class    "toggle"
-               :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
-        [:button.expansion-button (if @expanded? "▼ " "▶ ")]]
+                 :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
+          [:button.expansion-button (if @expanded? "▼ " "▶ ")]]
        (or title "data")
        [:div {:style {:margin-left 20}}
         (cond

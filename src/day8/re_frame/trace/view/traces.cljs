@@ -1,5 +1,5 @@
-(ns day8.re-frame.trace.panels.traces
-  (:require [day8.re-frame.trace.components.components :as components]
+(ns day8.re-frame.trace.view.traces
+  (:require [day8.re-frame.trace.view.components :as components]
             [day8.re-frame.trace.utils.pretty-print-condensed :as pp]
             [re-frame.trace :as trace]
             [clojure.string :as str]

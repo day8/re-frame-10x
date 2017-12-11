@@ -1,11 +1,10 @@
-(ns day8.re-frame.trace.components.container
+(ns day8.re-frame.trace.view.container
   (:require-macros [day8.re-frame.trace.utils.macros :as macros])
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [re-frame.db :as db]
-            [day8.re-frame.trace.panels.app-db :as app-db]
-            [day8.re-frame.trace.panels.subvis :as subvis]
-            [day8.re-frame.trace.panels.traces :as traces]
-            [day8.re-frame.trace.panels.subs :as subs]
+            [day8.re-frame.trace.view.app-db :as app-db]
+            [day8.re-frame.trace.view.traces :as traces]
+            [day8.re-frame.trace.view.subs :as subs]
             [re-frame.trace]
             [reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc]))
@@ -37,9 +36,7 @@
         :children
         [(tab-button :traces "Traces")
          (tab-button :app-db "App DB")
-         (tab-button :subs "Subs")
-         #_(tab-button :subvis "SubVis")
-         ]]
+         (tab-button :subs "Subs")]]
        [rc/h-box
         :align :center
         :children
@@ -71,6 +68,5 @@
      (case @selected-tab
        :traces [traces/render-trace-panel traces]
        :app-db [app-db/render-state db/app-db]
-       :subvis [subvis/render-subvis traces]
        :subs [subs/subs-panel]
        [app-db/render-state db/app-db])]))

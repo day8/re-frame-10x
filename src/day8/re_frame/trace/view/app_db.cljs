@@ -1,9 +1,9 @@
-(ns day8.re-frame.trace.panels.app-db
+(ns day8.re-frame.trace.view.app-db
   (:require [reagent.core :as r]
             [clojure.string :as str]
             [devtools.prefs]
             [devtools.formatters.core]
-            [day8.re-frame.trace.components.data-browser :as data-browser]
+            [day8.re-frame.trace.view.components :as components]
             [day8.re-frame.trace.utils.re-com :as re-com]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
 
@@ -33,7 +33,7 @@
                   ^{:key path}
                   [:div.subtree-wrapper {:style {:margin "10px 0"}}
                    [:div.subtree
-                    [data-browser/subtree
+                    [components/subtree
                      (get-in @data path)
                      [:button.subtree-button {:on-click #(rf/dispatch [:app-db/remove-path path])}
                       [:span.subtree-button-string
@@ -41,4 +41,4 @@
                      [path]]]])
                 @subtree-paths))]
         [:div {:style {:margin-bottom "20px"}}
-         [data-browser/subtree @data [:span.label "app-db"] [:app-db]]]]])))
+         [components/subtree @data [:span.label "app-db"] [:app-db]]]]])))

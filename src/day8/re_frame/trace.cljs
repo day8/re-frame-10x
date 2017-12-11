@@ -1,12 +1,10 @@
 (ns day8.re-frame.trace
-  (:require [day8.re-frame.trace.panels.subvis :as subvis]
-            [day8.re-frame.trace.panels.app-db :as app-db]
+  (:require [day8.re-frame.trace.view.app-db :as app-db]
             [day8.re-frame.trace.styles :as styles]
-            [day8.re-frame.trace.components.components :as components]
-            [day8.re-frame.trace.components.container :as container]
+            [day8.re-frame.trace.view.components :as components]
+            [day8.re-frame.trace.view.container :as container]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
-            [day8.re-frame.trace.panels.traces :as traces]
-            [day8.re-frame.trace.events]
+            [day8.re-frame.trace.events :as events]
             [day8.re-frame.trace.subs]
             [day8.re-frame.trace.db :as trace.db]
             [re-frame.trace :as trace :include-macros true]
@@ -22,10 +20,8 @@
             [reagent.ratom :as ratom]
             [goog.object :as gob]
             [re-frame.interop :as interop]
-
             [devtools.formatters.core :as devtools]
-            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [day8.re-frame.trace.utils.traces :as utils.traces]))
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
 
 
 ;; from https://github.com/reagent-project/reagent/blob/3fd0f1b1d8f43dbf169d136f0f905030d7e093bd/src/reagent/impl/component.cljs#L274
@@ -209,7 +205,7 @@
 
 (defn inject-devtools! []
   (styles/inject-trace-styles js/document)
-  (r/render [devtools-outer utils.traces/traces {:panel-type :inline}] (panel-div)))
+  (r/render [devtools-outer events/traces {:panel-type :inline}] (panel-div)))
 
 (defn init-db! []
   (trace.db/init-db))

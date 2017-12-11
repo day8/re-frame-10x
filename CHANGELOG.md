@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This change
 
 * Switched from LESS to Garden styles. Now interactive development and debugging of re-frame-trace is even faster.
 * Reopen/reattach external popup windows when reloading host application
+* Reorganise namespace layout and remove (hidden) subviz panel and D3 dependency. This may return in the future though.
 
 ### Fixed
 

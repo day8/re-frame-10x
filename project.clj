@@ -6,7 +6,6 @@
                  [org.clojure/clojurescript "1.9.671"]
                  [reagent                    "0.6.0" :scope "provided"]
                  [re-frame "0.10.2" :scope "provided"]
-                 [cljsjs/d3                  "4.3.0-5"]
                  [binaryage/devtools         "0.9.4"]
                  [garden "1.3.3"]]
   :plugins [[thomasa/mranderson "0.4.7"]
