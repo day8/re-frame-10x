@@ -50,7 +50,7 @@
                           (if @snapshot-ready?
                             reload
                             reload-disabled))
-           :on-click #(rf/dispatch-sync [:snapshot/load-snapshot])}]
+           :on-click #(when @snapshot-ready? (rf/dispatch-sync [:snapshot/load-snapshot]))}]
          [:img.nav-icon
           {:title    "Snapshot app-db"
            :class    (when @snapshot-ready? "active")
