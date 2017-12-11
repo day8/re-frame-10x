@@ -105,3 +105,4 @@ If you want to work on re-frame-trace, see [DEVELOPERS.md](DEVELOPERS.md).
 * [open](https://thenounproject.com/search/?q=popout&i=334227) by Bluetip Design from the Noun Project
 * [reload](https://thenounproject.com/adnen.kadri/collection/arrows/?i=798299) by Adnen Kadri from the Noun Project
 * [Camera](https://thenounproject.com/search/?q=snapshot&i=200965) by Christian Shannon from the Noun Project
+* [Delete](https://thenounproject.com/term/delete/926276) by logan from the Noun Project

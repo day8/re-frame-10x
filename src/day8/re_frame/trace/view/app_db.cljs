@@ -5,7 +5,11 @@
             [devtools.formatters.core]
             [day8.re-frame.trace.view.components :as components]
             [day8.re-frame.trace.utils.re-com :as re-com]
-            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [day8.re-frame.trace.utils.re-com :as rc])
+  (:require-macros [day8.re-frame.trace.utils.macros :as macros]))
+
+(def delete (macros/slurp-macro "day8/re_frame/trace/images/delete.svg"))
 
 (defn render-state [data]
   (let [subtree-input (r/atom "")
@@ -21,7 +25,6 @@
          :on-submit #(rf/dispatch [:app-db/add-path %])
          :change-on-blur? false
          :placeholder ":path :into :app-db"]
-
         ;; TODO: check for input errors
         ; (if @input-error
         ;   [:div.input-error {:style {:color "red" :margin-top 5}}
@@ -35,9 +38,17 @@
                    [:div.subtree
                     [components/subtree
                      (get-in @data path)
-                     [:button.subtree-button {:on-click #(rf/dispatch [:app-db/remove-path path])}
-                      [:span.subtree-button-string
-                       (str path)]]
+                     [rc/h-box
+                      :align :center
+                      :children
+                      [[:button.subtree-button
+                        [:span.subtree-button-string
+                         (str path)]]
+                       [:img
+                        {:src      (str "data:image/svg+xml;utf8," delete)
+                         :style {:cursor "pointer"
+                                 :height "10px"}
+                         :on-click #(rf/dispatch [:app-db/remove-path path])}]]]
                      [path]]]])
                 @subtree-paths))]
         [:div {:style {:margin-bottom "20px"}}

@@ -88,7 +88,7 @@
              :-webkit-font-smoothing "inherit"
              :letter-spacing         "inherit"
              :background             "none"
-             :cursor                 "pointer"}]
+            #_ #_  :cursor                 "pointer"}]
    [:img {:max-width (percent 100)
           :height    "auto"
           :border    "0"}]
@@ -218,7 +218,7 @@
    [:.button {:padding       "5px 5px 3px"
               :margin        "5px"
               :border-radius "2px"
-              :cursor        "pointer"}]
+            #_ #_   :cursor        "pointer"}]
    [:.text-button {:border-bottom "1px dotted #888"
                    :font-weight   "normal"}
     [(s/& s/focus) {:outline [[medium-gray "dotted" (px 1)]]}]]
@@ -257,8 +257,11 @@
             label-mixin)
      [:.filter-item-string {:color      text-color
                             :background yellow}]
-     [:.subtree-button-string {:color text-color}]
-     [(s/& s/hover) (s/& s/focus) {:text-decoration "line-through"}]]]
+     [:.subtree-button-string {:color text-color}]]
+    [:.subtree
+     [:img {:opacity "0"}]
+     [:&:hover
+      [:img {"opacity" 1}]]]]
 
    [:.icon {:display      "inline-block"
             :width        (em 1)
@@ -306,9 +309,7 @@
    [:.filter-control {:margin "10px 0 0 10px"}]
    [:.filter-items-count
     {:cursor "auto"}
-    [(s/& ".active") {:background yellow
-                      :cursor     "pointer"}
-     [(s/& ":hover") {:text-decoration "line-through"}]]]
+    [(s/& ".active") {:background yellow}]]
    [:.filter-fields {:margin-top "10px"}]
    [:.filter-category {:display    "inline-block"
                        :background "#efeef1"

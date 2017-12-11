@@ -4,7 +4,8 @@
             [goog.fx.dom :as fx]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [day8.re-frame.trace.utils.re-com :as rc])
   (:require-macros [day8.re-frame.trace.utils.macros :refer [with-cljs-devtools-prefs]]))
 
 (defn search-input [{:keys [title placeholder on-save on-change on-stop]}]
@@ -166,21 +167,26 @@
 (defn subtree [data title path]
   (let [expanded? (rf/subscribe [:app-db/node-expanded? path])]
     (fn [data]
-      [:div
-       {:class (str/join " " ["re-frame-trace--object"
-                              (when @expanded? "expanded")])}
-       [:span {:class    "toggle"
-               :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
-        [:button.expansion-button (if @expanded? "▼ " "▶ ")]]
-       (or title "data")
-       [:div {:style {:margin-left 20}}
-        (cond
-          (and @expanded?
-               (or (string? data)
-                   (number? data)
-                   (boolean? data)
-                   (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
-          @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]])))
+      [rc/v-box
+       :children
+       [[rc/h-box
+         :align :center
+         :class (str/join " " ["re-frame-trace--object"
+                               (when @expanded? "expanded")])
+         :children
+         [[:span {:class    "toggle"
+                  :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
+           [:button.expansion-button (if @expanded? "▼ " "▶ ")]]
+          (or title "data")]]
+        [rc/h-box
+         :children [[:div {:style {:margin-left 20}}
+                     (cond
+                       (and @expanded?
+                            (or (string? data)
+                                (number? data)
+                                (boolean? data)
+                                (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
+                       @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]]]]])))
 
 (defn subscription-render [data title path]
   (let [expanded? (r/atom true) #_(rf/subscribe [:app-db/node-expanded? path])]
