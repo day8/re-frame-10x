@@ -5,7 +5,7 @@ for inspecting a running `re-frame` application. It should assist you to both un
 
 **Status:** Alpha.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace) [![Dependencies Status](https://versions.deps.co/Day8/re-frame-trace/status.svg)](https://versions.deps.co/Day8/re-frame-trace)
 
-**Note** [the latest version 0.1.13](https://github.com/Day8/re-frame-trace/releases/tag/0.1.13) ALSO requires the latest version of re-frame itself - `v0.10.3-alpha1`.
+**Note** [the latest version 0.1.13](https://github.com/Day8/re-frame-trace/releases/tag/0.1.13) ALSO requires the latest version of re-frame itself - `v0.10.3-alpha2`.
 
 
 ## Dashboard Overview 
