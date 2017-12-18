@@ -5,6 +5,7 @@
             [day8.re-frame.trace.view.app-db :as app-db]
             [day8.re-frame.trace.view.traces :as traces]
             [day8.re-frame.trace.view.subs :as subs]
+            [day8.re-frame.trace.view.settings :as settings]
             [re-frame.trace]
             [reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc]))
@@ -20,6 +21,8 @@
 (def snapshot (macros/slurp-macro "day8/re_frame/trace/images/snapshot.svg"))
 (def snapshot-ready (macros/slurp-macro "day8/re_frame/trace/images/snapshot-ready.svg"))
 
+(def settings-svg (macros/slurp-macro "day8/re_frame/trace/images/settings.svg"))
+
 (defn devtools-inner [traces opts]
   (let [selected-tab     (rf/subscribe [:settings/selected-tab])
         panel-type       (:panel-type opts)
@@ -33,10 +36,18 @@
       :justify :between
       :children
       [[rc/h-box
+        :align :center
         :children
         [(tab-button :traces "Traces")
          (tab-button :app-db "App DB")
-         (tab-button :subs "Subs")]]
+         (tab-button :subs "Subs")
+         #_[:img.nav-icon
+          {:title    "Settings"
+           :src      (str "data:image/svg+xml;utf8,"
+                          settings-svg)
+           :on-click #(rf/dispatch [:settings/selected-tab :settings])}]]]
+
+
        [rc/h-box
         :align :center
         :children
@@ -69,4 +80,5 @@
        :traces [traces/render-trace-panel traces]
        :app-db [app-db/render-state db/app-db]
        :subs [subs/subs-panel]
+       :settings [settings/render]
        [app-db/render-state db/app-db])]))
