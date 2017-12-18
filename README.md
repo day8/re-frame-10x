@@ -38,7 +38,7 @@ Here's the vision for how we'd like `re-frame-trace` to help (eventually):
 
 ## A Visual Sampler
 
-<img src="docs/images/trace-window.gif" height="400px">
+<img src="docs/images/re-frame-trace-demo.gif" height="500px">
 
 ## Installation
 
