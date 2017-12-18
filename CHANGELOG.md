@@ -1,17 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [Unreleased]
+## [0.1.14] - 2017-12-19
 
 ### Added
 
 * New state snapshotting feature: Click the camera to snapshot app-db, and click the load button to restore to your snapshot. Snapshots only persist for the browser session, they aren't available after reloading the browser.
+* X button to remove app-db paths
 
 ### Changed
 
 * Switched from LESS to Garden styles. Now interactive development and debugging of re-frame-trace is even faster.
 * Reopen/reattach external popup windows when reloading host application
 * Reorganise namespace layout and remove (hidden) subviz panel and D3 dependency. This may return in the future though.
+* Only sort subscriptions by the subscription key, not the whole vector
+* Visual tweaks
 
 ### Fixed
 
