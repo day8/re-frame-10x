@@ -68,6 +68,11 @@
     (get-in db [:traces :expansions])))
 
 (rf/reg-sub
+  :traces/categories
+  (fn [db _]
+    (get-in db [:traces :categories])))
+
+(rf/reg-sub
   :global/unloading?
   (fn [db _]
     (get-in db [:global :unloading?])))

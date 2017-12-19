@@ -7,7 +7,8 @@
             [goog.object]
             [re-frame.db]
             [day8.re-frame.trace.view.container :as container]
-            [day8.re-frame.trace.styles :as styles]))
+            [day8.re-frame.trace.styles :as styles]
+            [clojure.set :as set]))
 
 (defonce traces (r/atom []))
 (defonce total-traces (r/atom 0))
@@ -212,6 +213,16 @@
   (fn [expansions [_ id]]
     (let [showing? (get-in expansions [:overrides id] (:show-all? expansions))]
       (update-in expansions [:overrides id] #(if showing? false (not %))))))
+
+(rf/reg-event-db
+  :traces/toggle-categories
+  [(rf/path [:traces :categories])]
+  (fn [categories [_ new-categories]]
+    (let [new-categories (if (set/superset? categories new-categories)
+                           (set/difference categories new-categories)
+                           (set/union categories new-categories))]
+      (localstorage/save! "categories" new-categories)
+      new-categories)))
 
 ;; App DB
 

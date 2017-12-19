@@ -10,7 +10,8 @@
         app-db-paths (localstorage/get "app-db-paths" '())
         json-ml-paths (localstorage/get "app-db-json-ml-expansions" #{})
         external-window? (localstorage/get "external-window?" false)
-        using-trace? (localstorage/get "using-trace?" true)]
+        using-trace? (localstorage/get "using-trace?" true)
+        categories (localstorage/get "categories" #{:event :sub/run :sub/create :sub/dispose})]
     (when using-trace?
       (rf/dispatch [:global/enable-tracing]))
     (rf/dispatch [:settings/panel-width% panel-width%])
@@ -19,6 +20,7 @@
     (when external-window?
       (rf/dispatch [:global/launch-external]))
     (rf/dispatch [:traces/filter-items filter-items])
+    (rf/dispatch [:traces/toggle-categories categories])
     (rf/dispatch [:app-db/paths app-db-paths])
     (rf/dispatch [:app-db/set-json-ml-paths json-ml-paths])
     (rf/dispatch [:global/add-unload-hook])))

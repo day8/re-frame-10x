@@ -85,14 +85,10 @@
         filter-items            (rf/subscribe [:traces/filter-items])
         filter-type             (r/atom :contains)
         input-error             (r/atom false)
-        categories              (r/atom #{:event :sub/run :sub/create :sub/dispose})
+        categories              (rf/subscribe [:traces/categories])
         trace-detail-expansions (rf/subscribe [:traces/expansions])]
     (fn []
-      (let [toggle-category-fn (fn [category-keys]
-                                 (swap! categories #(if (set/superset? % category-keys)
-                                                      (set/difference % category-keys)
-                                                      (set/union % category-keys))))
-
+      (let [toggle-category-fn #(rf/dispatch [:traces/toggle-categories %])
             visible-traces     (cond->> @traces
                                         ;; Remove cached subscriptions. Could add this back in as a setting later
                                         ;; but it's pretty low signal/noise 99% of the time.
@@ -112,16 +108,16 @@
           [:div.filter-control
            [:ul.filter-categories "show: "
             [:li.filter-category {:class    (when (contains? @categories :event) "active")
-                                  :on-click #(toggle-category-fn #{:event})}
+                                  :on-click #(rf/dispatch [:traces/toggle-categories #{:event}])}
              "events"]
             [:li.filter-category {:class    (when (contains? @categories :sub/run) "active")
-                                  :on-click #(toggle-category-fn #{:sub/run :sub/create :sub/dispose})}
+                                  :on-click #(rf/dispatch [:traces/toggle-categories #{:sub/run :sub/create :sub/dispose}])}
              "subscriptions"]
             [:li.filter-category {:class    (when (contains? @categories :render) "active")
-                                  :on-click #(toggle-category-fn #{:render})}
+                                  :on-click #(rf/dispatch [:traces/toggle-categories #{:render}])}
              "reagent"]
             [:li.filter-category {:class    (when (contains? @categories :re-frame.router/fsm-trigger) "active")
-                                  :on-click #(toggle-category-fn #{:re-frame.router/fsm-trigger :componentWillUnmount})}
+                                  :on-click #(rf/dispatch [:traces/toggle-categories #{:re-frame.router/fsm-trigger :componentWillUnmount}])}
              "internals"]]
            [:div.filter-fields
             [:select {:value     @filter-type
