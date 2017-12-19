@@ -170,15 +170,16 @@
     (let [new-db (when-not (some #(= filter-input (:query %)) filter-items) ;; prevent duplicate filter strings
                    ;; if existing, remove prior filter for :slower-than
                    ;; TODO: rework how time filters are used.
-                   (when (and (= :slower-than filter-type)
-                              (some #(= filter-type (:filter-type %)) filter-items))
-                     (remove #(= :slower-than (:filter-type %)) filter-items))
-                   ;; add new filter
-                   (conj filter-items {:id          (random-uuid)
-                                       :query       (if (= filter-type :contains)
-                                                      (str/lower-case filter-input)
-                                                      (js/parseFloat filter-input))
-                                       :filter-type filter-type}))]
+                   (let [filter-items (if (and (= :slower-than filter-type)
+                                                 (some #(= filter-type (:filter-type %)) filter-items))
+                                        (remove #(= :slower-than (:filter-type %)) filter-items)
+                                        filter-items)]
+                     ;; add new filter
+                     (conj filter-items {:id          (random-uuid)
+                                         :query       (if (= filter-type :contains)
+                                                        (str/lower-case filter-input)
+                                                        (js/parseFloat filter-input))
+                                         :filter-type filter-type})))]
       (save-filter-items new-db)
       new-db)))
 
