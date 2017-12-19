@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+Lots of quality of life fixes
+
+### Fixed
+
+* Lower count of items in sequence before expanding icon shows [#126](https://github.com/Day8/re-frame-trace/issues/126)
+* Only allow one time based filter at a time [#125](https://github.com/Day8/re-frame-trace/issues/125)
+* Persist trace expansions when changing tab [#105](https://github.com/Day8/re-frame-trace/issues/105)
+* Hide :sub/create traces for cached subscriptions [#93](https://github.com/Day8/re-frame-trace/issues/93)
+* Persist filter category settings to localstorage [#121](https://github.com/Day8/re-frame-trace/issues/121)
+* Highlight events in trace window [#106](https://github.com/Day8/re-frame-trace/issues/106)
+
 ## [0.1.14] - 2017-12-19
 
 ### Added
