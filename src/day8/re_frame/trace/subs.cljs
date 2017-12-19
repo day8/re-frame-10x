@@ -63,6 +63,11 @@
     (get-in db [:traces :filter-items])))
 
 (rf/reg-sub
+  :traces/expansions
+  (fn [db _]
+    (get-in db [:traces :expansions])))
+
+(rf/reg-sub
   :global/unloading?
   (fn [db _]
     (get-in db [:global :unloading?])))

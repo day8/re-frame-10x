@@ -32,9 +32,7 @@
                                        operation)
                            #_#__ (js/console.log (devtools/header-api-call tags))]
                        (list [:tr {:key      id
-                                   :on-click (fn [ev]
-                                               (swap! trace-detail-expansions update-in [:overrides id]
-                                                      #(if show-row? false (not %))))
+                                   :on-click #(rf/dispatch [:traces/toggle-trace id])
                                    :class    (str/join " " ["trace--trace"
                                                             (case op-type
                                                               :sub/create "trace--sub-create"
@@ -88,7 +86,7 @@
         filter-type             (r/atom :contains)
         input-error             (r/atom false)
         categories              (r/atom #{:event :sub/run :sub/create :sub/dispose})
-        trace-detail-expansions (r/atom {:show-all? false :overrides {}})]
+        trace-detail-expansions (rf/subscribe [:traces/expansions])]
     (fn []
       (let [toggle-category-fn (fn [category-keys]
                                  (swap! categories #(if (set/superset? % category-keys)
@@ -147,11 +145,7 @@
             [:th {:style {:padding 0}}
              [:button.text-button
               {:style    {:cursor "pointer"}
-               :on-click (fn [ev]
-                           ;; Always reset expansions
-                           (swap! trace-detail-expansions assoc :overrides {})
-                           ;; Then toggle :show-all?
-                           (swap! trace-detail-expansions update :show-all? not))}
+               :on-click #(rf/dispatch [:traces/toggle-all-expansions])}
               (if (:show-all? @trace-detail-expansions) "-" "+")]]
             [:th "operations"]
             [:th

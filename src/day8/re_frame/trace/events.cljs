@@ -198,6 +198,21 @@
       (save-filter-items (get-in new-db [:traces :filter-items]))
       new-db)))
 
+(rf/reg-event-db
+  :traces/toggle-all-expansions
+  [(rf/path [:traces :expansions])]
+  (fn [trace-detail-expansions _]
+    (-> trace-detail-expansions
+        (assoc :overrides {})
+        (update :show-all? not))))
+
+(rf/reg-event-db
+  :traces/toggle-trace
+  [(rf/path [:traces :expansions])]
+  (fn [expansions [_ id]]
+    (let [showing? (get-in expansions [:overrides id] (:show-all? expansions))]
+      (update-in expansions [:overrides id] #(if showing? false (not %))))))
+
 ;; App DB
 
 (rf/reg-event-db
