@@ -95,6 +95,8 @@
    ; Hide the index spans on the left hand of collections. Shows how many elements in a collection.
    :none-style                     "display: none"
    :index-tag                      [:span :none-style]
+   :min-expandable-sequable-count-for-well-known-types
+   3
 
    ; Our JSON renderer does not have hierarchy depth limit,
    ; See https://github.com/binaryage/cljs-devtools/blob/master/src/lib/devtools/formatters/budgeting.cljs
