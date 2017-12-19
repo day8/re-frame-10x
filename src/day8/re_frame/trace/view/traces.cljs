@@ -94,6 +94,10 @@
                                                       (set/union % category-keys))))
 
             visible-traces     (cond->> @traces
+                                        ;; Remove cached subscriptions. Could add this back in as a setting later
+                                        ;; but it's pretty low signal/noise 99% of the time.
+                                        true (remove (fn [trace] (and (= :sub/create (:op-type trace))
+                                                                      (get-in trace [:tags :cached?]))))
                                         (seq @categories) (filter (fn [trace] (when (contains? @categories (:op-type trace)) trace)))
                                         (seq @filter-items) (filter (apply every-pred (map query->fn @filter-items))))
             save-query         (fn [_]
