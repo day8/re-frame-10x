@@ -224,6 +224,12 @@
       (localstorage/save! "categories" new-categories)
       new-categories)))
 
+(rf/reg-event-db
+  :traces/set-categories
+  [(rf/path [:traces :categories])]
+  (fn [categories [_ new-categories]]
+    new-categories))
+
 ;; App DB
 
 (rf/reg-event-db
