@@ -1,4 +1,5 @@
-(ns day8.re-frame.trace.common-styles)
+(ns day8.re-frame.trace.common-styles
+  (:require [garden.units :refer [px em]]))
 
 (def background-blue "#e7f1ff")
 (def background-gray "#a8a8a8")
@@ -20,6 +21,29 @@
 (def event-color dark-gold)
 (def subs-color dark-purple)
 (def render-color dark-skyblue)
+
+;; Golden section, base 50
+(def gs-5 (px 5))
+(def gs-7 (px 7))
+(def gs-12 (px 12))
+(def gs-19 (px 19))
+(def gs-31 (px 31))
+(def gs-50 (px 50))
+(def gs-81 (px 81))
+(def gs-131 (px 131))
+
+;; TODO: figure out how to cast gs-* into strings, rather than manually making them here.
+(def gs-5s "5px")
+(def gs-7s "7px")
+(def gs-12s "12px")
+(def gs-19s "19px")
+(def gs-31s "31px")
+(def gs-50s "50px")
+(def gs-81s "81px")
+(def gs-131s "131px")
+
+
+
 
 ;; The colors defined below are (of course) available to your app without further ado
 ;;
@@ -121,7 +145,8 @@
                      :color               text-title-color
                      :-webkit-user-select "none"
                      :cursor              "default"}]
-   [:.bm-heading-text {:font-size           "16px"
+   [:.bm-heading-text {:font-size           "19px"
+                       :font-weight "600"
                        :color               default-text-color
                        :-webkit-user-select "none"
                        :cursor              "default"}]

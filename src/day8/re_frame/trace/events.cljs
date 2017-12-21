@@ -14,7 +14,8 @@
 (defonce total-traces (r/atom 0))
 
 (defn log-trace? [trace]
-  (let [render-operation? (= (:op-type trace) :render)
+  (let [render-operation? (or (= (:op-type trace) :render)
+                              (= (:op-type trace) :componentWillUnmount))
         component-path    (get-in trace [:tags :component-path] "")]
     (if-not render-operation?
       true
@@ -75,6 +76,20 @@
   (fn [db [_ show-panel?]]
     (localstorage/save! "show-panel" show-panel?)
     (assoc-in db [:settings :show-panel?] show-panel?)))
+
+(rf/reg-event-db
+  :settings/factory-reset
+  (fn [db _]
+    (localstorage/delete-all-keys!)
+    (js/location.reload)
+    db))
+
+(rf/reg-event-db
+  :settings/clear-epochs
+  (fn [db _]
+    (reset! traces [])
+    (reset! total-traces 0)
+    db))
 
 (rf/reg-event-db
   :settings/user-toggle-panel

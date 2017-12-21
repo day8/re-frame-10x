@@ -8,6 +8,8 @@
             [day8.re-frame.trace.view.views :as views]
             [day8.re-frame.trace.view.traces :as traces]
             [day8.re-frame.trace.view.settings :as settings]
+            [garden.core :refer [css style]]
+            [garden.units :refer [px]]
             [re-frame.trace]
             [reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc]
@@ -23,6 +25,8 @@
 (def settings-svg (macros/slurp-macro "day8/re_frame/trace/images/wrench.svg"))
 (def pause-svg (macros/slurp-macro "day8/re_frame/trace/images/pause.svg"))
 
+(def outer-margins {:margin (str "0px " common/gs-19s)})
+
 (defn devtools-inner [traces opts]
   (let [selected-tab     (rf/subscribe [:settings/selected-tab])
         panel-type       (:panel-type opts)
@@ -33,10 +37,12 @@
      {:style {:width "100%" :display "flex" :flex-direction "column" :background-color common/standard-background-color}}
      [rc/h-box
       :class "panel-content-top nav"
+      :style {:padding "0px 19px"}
       :justify :between
       :children
       [[rc/h-box
         :align :center
+        :gap common/gs-12s
         :children
         [[:span.arrow "◀"]
          [:span.event-header "[:some-namespace/blah 34 \"Hello\""]
@@ -48,7 +54,7 @@
           {:title    "Pause"
            :src      (str "data:image/svg+xml;utf8,"
                           pause-svg)
-           :on-click #(rf/dispatch [:settings/selected-tab :settings])}]
+           :on-click #(rf/dispatch [:settings/pause])}]
          [:img.nav-icon
           {:title    "Settings"
            :src      (str "data:image/svg+xml;utf8,"
@@ -65,6 +71,7 @@
         :justify :between
         :children
         [[rc/h-box
+          :gap "7px"
           :align :center
           :children
           [(tab-button :overview "Overview")
@@ -73,16 +80,19 @@
            (tab-button :views "Views")
            (tab-button :traces "Trace")]]
          ]])
-     [rc/line :style {:margin "0px 10px"}]
+     [rc/line :style outer-margins]
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
      (when-not (re-frame.trace/is-trace-enabled?)
        [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set " [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
-     (case @selected-tab
-       :overview [overview/render]
-       :app-db [app-db/render-state db/app-db]
-       :subs [subs/subs-panel]
-       :views [views/render]
-       :traces [traces/render-trace-panel traces]
-       :settings [settings/render]
-       [app-db/render-state db/app-db])]))
+     [rc/v-box
+      :size "auto"
+      :children
+      [(case @selected-tab
+         :overview [overview/render]
+         :app-db [app-db/render-state db/app-db]
+         :subs [subs/subs-panel]
+         :views [views/render]
+         :traces [traces/render-trace-panel traces]
+         :settings [settings/render]
+         [app-db/render-state db/app-db])]]]))

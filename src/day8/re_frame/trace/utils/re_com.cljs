@@ -203,6 +203,78 @@
              attr)]
           children)))
 
+(defn scroll-style
+  "Determines the value for the 'overflow' attribute.
+   The scroll parameter is a keyword.
+   Because we're translating scroll into overflow, the keyword doesn't appear to match the attribute value"
+  [attribute scroll]
+  {attribute (case scroll
+               :auto "auto"
+               :off "hidden"
+               :on "scroll"
+               :spill "visible")})
+
+
+(defn- box-base
+  "This should generally NOT be used as it is the basis for the box, scroller and border components"
+  [& {:keys [size scroll h-scroll v-scroll width height min-width min-height max-width max-height justify align align-self
+             margin padding border l-border r-border t-border b-border radius bk-color child class-name class style attr]}]
+  (let [s (merge
+            (flex-flow-style "inherit")
+            (flex-child-style size)
+            (when scroll (scroll-style :overflow scroll))
+            (when h-scroll (scroll-style :overflow-x h-scroll))
+            (when v-scroll (scroll-style :overflow-y v-scroll))
+            (when width {:width width})
+            (when height {:height height})
+            (when min-width {:min-width min-width})
+            (when min-height {:min-height min-height})
+            (when max-width {:max-width max-width})
+            (when max-height {:max-height max-height})
+            (when justify (justify-style justify))
+            (when align (align-style :align-items align))
+            (when align-self (align-style :align-self align-self))
+            (when margin {:margin margin})       ;; margin and padding: "all" OR "top&bottom right&left" OR "top right bottom left"
+            (when padding {:padding padding})
+            (when border {:border border})
+            (when l-border {:border-left l-border})
+            (when r-border {:border-right r-border})
+            (when t-border {:border-top t-border})
+            (when b-border {:border-bottom b-border})
+            (when radius {:border-radius radius})
+            (when bk-color
+              {:background-color bk-color})
+            style)]
+    [:div
+     (merge
+       {:class (str class-name "display-flex " class) :style s}
+       attr)
+     child]))
+
+(defn box
+  "Returns hiccup which produces a box, which is generally used as a child of a v-box or an h-box.
+   By default, it also acts as a container for further child compenents, or another h-box or v-box"
+  [& {:keys [size width height min-width min-height max-width max-height justify align align-self margin padding child class style attr]
+      :or   {size "none"}
+      :as   args}]
+  (box-base :size size
+            :width width
+            :height height
+            :min-width min-width
+            :min-height min-height
+            :max-width max-width
+            :max-height max-height
+            :justify justify
+            :align align
+            :align-self align-self
+            :margin margin
+            :padding padding
+            :child child
+            :class-name "rc-box "
+            :class class
+            :style style
+            :attr attr))
+
 (defn line
   "Returns a component which produces a line between children in a v-box/h-box along the main axis.
    Specify size in pixels and a stancard CSS color. Defaults to a 1px lightgray line"
@@ -296,6 +368,24 @@
 (defn input-text
   [& args]
   (apply input-text-base :input-type :input args))
+
+(defn label
+  "Returns markup for a basic label"
+  [& {:keys [label on-click width class style attr]
+      :as   args}]
+  [box
+   :class "rc-label-wrapper display-inline-flex"
+   :width width
+   :align :start
+   :child [:span
+           (merge
+             {:class (str "rc-label " class)
+              :style (merge (flex-child-style "none")
+                            style)}
+             (when on-click
+               {:on-click (handler-fn (on-click))})
+             attr)
+           label]])
 
 (def re-com-css
   [[:.display-flex {:display "flex"}]
