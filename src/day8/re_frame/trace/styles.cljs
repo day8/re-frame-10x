@@ -90,7 +90,7 @@
              :-webkit-font-smoothing "inherit"
              :letter-spacing         "inherit"
              :background             "none"
-            #_ #_  :cursor                 "pointer"}]
+             #_#_:cursor "pointer"}]
    [:img {:max-width (percent 100)
           :height    "auto"
           :border    "0"}]
@@ -136,9 +136,9 @@
 
 (def re-frame-trace-styles
   [:#--re-frame-trace--
-   {:background-color  common/background-gray
-    :font-family common/font-stack
-    :color       text-color}
+   {:background-color common/background-gray
+    :font-family      common/font-stack
+    :color            text-color}
 
    [:.label label-mixin]
 
@@ -221,7 +221,7 @@
    [:.button {:padding       "5px 5px 3px"
               :margin        "5px"
               :border-radius "2px"
-            #_ #_   :cursor        "pointer"}]
+              #_#_:cursor "pointer"}]
    [:.text-button {:border-bottom "1px dotted #888"
                    :font-weight   "normal"}]
 
@@ -238,14 +238,15 @@
    [:.tab
     {:background     "transparent"
      :border-radius  0
-     :margin "10px 0 0 0"
+     :margin         "10px 0 0 0"
      :font-family    common/font-stack
      :padding-bottom "4px"
-     :vertical-align "bottom"}]
+     :vertical-align "bottom"
+     :cursor         "pointer"}]
 
    [:.tab.active
     {:background     "transparent"
-     :color common/blue-modern-color
+     :color          common/blue-modern-color
      :border-bottom  [[(px 3) "solid" common/blue-modern-color]]
      :border-radius  0
      :padding-bottom (px 1)}]
@@ -297,15 +298,17 @@
     {:display "flex"
      :flex    "0 0 auto"}]
    [:.nav {:background common/sidebar-background-color
-           :height (px 50)
+           :height     (px 50)
            :color      "white"}
-    [:span.arrow {:color common/blue-modern-color
+    [:span.arrow {:color            common/blue-modern-color ;; Should this be a button instead of a span?
                   :background-color common/standard-background-color
-                  :padding (px 5)}]
-    [:span.event-header {:color common/text-color
+                  :padding          (px 5)
+                  :cursor           "pointer"
+                  :user-select      "none"}]
+    [:span.event-header {:color            common/text-color
                          :background-color common/standard-background-color
-                         :padding (px 5)
-                         :font-weight "600"}]
+                         :padding          (px 5)
+                         :font-weight      "600"}]
     ]
    [(s/& :.external-window) {:display "flex"
                              :height  (percent 100)
