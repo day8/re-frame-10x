@@ -68,11 +68,9 @@
     (s/attr= "type" "reset")
     (s/attr= "type" "submit")
     {:-webkit-appearance "button"}]
-"input[type=\"checkbox\" i] {\n    -webkit-appearance: checkbox;\n    box-sizing: border-box;\n}"
-   [:input
-    (s/attr= "type" "checkbox")
+   [(s/input (s/attr= "type" "checkbox"))
     {:-webkit-appearance "checkbox"
-     :box-sizing "border-box"}]
+     :box-sizing         "border-box"}]
 
    [:button:-moz-focusring
     (s/attr= "type" "button")
