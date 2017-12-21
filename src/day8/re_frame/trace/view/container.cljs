@@ -8,29 +8,27 @@
             [day8.re-frame.trace.view.settings :as settings]
             [re-frame.trace]
             [reagent.core :as r]
-            [day8.re-frame.trace.utils.re-com :as rc]))
+            [day8.re-frame.trace.utils.re-com :as rc]
+            [day8.re-frame.trace.common-styles :as common]))
 
 (defn tab-button [panel-id title]
   (let [selected-tab @(rf/subscribe [:settings/selected-tab])]
-    [:button {:class    (str "tab button " (when (= selected-tab panel-id) "active"))
+    [:button {:class    (str "tab button bm-heading-text " (when (= selected-tab panel-id) "active"))
               :on-click #(rf/dispatch [:settings/selected-tab panel-id])} title]))
 
-(def reload (macros/slurp-macro "day8/re_frame/trace/images/reload.svg"))
-(def reload-disabled (macros/slurp-macro "day8/re_frame/trace/images/reload-disabled.svg"))
 (def open-external (macros/slurp-macro "day8/re_frame/trace/images/open-external.svg"))
-(def snapshot (macros/slurp-macro "day8/re_frame/trace/images/snapshot.svg"))
-(def snapshot-ready (macros/slurp-macro "day8/re_frame/trace/images/snapshot-ready.svg"))
 
-(def settings-svg (macros/slurp-macro "day8/re_frame/trace/images/settings.svg"))
+(def settings-svg (macros/slurp-macro "day8/re_frame/trace/images/wrench.svg"))
+(def pause-svg (macros/slurp-macro "day8/re_frame/trace/images/pause.svg"))
 
 (defn devtools-inner [traces opts]
   (let [selected-tab     (rf/subscribe [:settings/selected-tab])
         panel-type       (:panel-type opts)
         external-window? (= panel-type :popup)
         unloading?       (rf/subscribe [:global/unloading?])
-        snapshot-ready?  (rf/subscribe [:snapshot/snapshot-ready?])]
+        show-tabs?       (not= @selected-tab :settings)]
     [:div.panel-content
-     {:style {:width "100%" :display "flex" :flex-direction "column"}}
+     {:style {:width "100%" :display "flex" :flex-direction "column" :background-color common/standard-background-color}}
      [rc/h-box
       :class "panel-content-top nav"
       :justify :between
@@ -38,40 +36,42 @@
       [[rc/h-box
         :align :center
         :children
-        [(tab-button :traces "Traces")
-         (tab-button :app-db "App DB")
-         (tab-button :subs "Subs")
-         #_[:img.nav-icon
-          {:title    "Settings"
-           :src      (str "data:image/svg+xml;utf8,"
-                          settings-svg)
-           :on-click #(rf/dispatch [:settings/selected-tab :settings])}]]]
-
-
+        [[:span.arrow "◀"]
+         [:span.event-header "[:some-namespace/blah 34 \"Hello\""]
+         [:span.arrow "▶"]]]
        [rc/h-box
         :align :center
         :children
         [[:img.nav-icon
-          {:title    "Load app-db snapshot"
-           :class    (when-not @snapshot-ready? "inactive")
+          {:title    "Pause"
            :src      (str "data:image/svg+xml;utf8,"
-                          (if @snapshot-ready?
-                            reload
-                            reload-disabled))
-           :on-click #(when @snapshot-ready? (rf/dispatch-sync [:snapshot/load-snapshot]))}]
+                          pause-svg)
+           :on-click #(rf/dispatch [:settings/selected-tab :settings])}]
          [:img.nav-icon
-          {:title    "Snapshot app-db"
-           :class    (when @snapshot-ready? "active")
+          {:title    "Settings"
            :src      (str "data:image/svg+xml;utf8,"
-                          (if @snapshot-ready?
-                            snapshot-ready
-                            snapshot))
-           :on-click #(rf/dispatch-sync [:snapshot/save-snapshot])}]
+                          settings-svg)
+           :on-click #(rf/dispatch [:settings/toggle-settings])}]
          (when-not external-window?
            [:img.nav-icon.active
             {:src      (str "data:image/svg+xml;utf8,"
                             open-external)
              :on-click #(rf/dispatch-sync [:global/launch-external])}])]]]]
+     (when show-tabs?
+       [rc/h-box
+        :class "panel-content-tabs"
+        :justify :between
+        :children
+        [[rc/h-box
+          :align :center
+          :children
+          [(tab-button :overview "Overview")
+           (tab-button :app-db "app-db")
+           (tab-button :subs "Subs")
+           (tab-button :views "Views")
+           (tab-button :traces "Trace")]]
+         ]])
+     [rc/line :style {:margin "0px 10px"}]
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
      (when-not (re-frame.trace/is-trace-enabled?)

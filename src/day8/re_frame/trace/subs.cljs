@@ -22,7 +22,9 @@
   :settings/selected-tab
   :<- [:settings/root]
   (fn [settings _]
-    (get settings :selected-tab)))
+    (if (:showing-settings? settings)
+      :settings
+      (get settings :selected-tab))))
 
 ;; App DB
 

@@ -7,7 +7,6 @@
             [day8.re-frame.trace.common-styles :as common]
             [day8.re-frame.trace.utils.re-com :as rc]))
 
-(def background-blue common/background-blue)
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
 (def dark-green common/dark-green)
@@ -58,12 +57,12 @@
    [:img {:border-style "none"}]
    [:option {:display "block"}]
    [:button :input :optgroup :select :textarea
-    {:font-family ["\"courier new\"" "monospace"]
+    {:font-family common/font-stack
      :font-size   (percent 100)
      :padding     [[(px 3) (px 3) (px 1) (px 3)]]
      :border      [[(px 1) "solid" medium-gray]]}]
    [:button :input {:overflow "visible"}]
-   [:button :select [(s/& s/focus) {:outline [[medium-gray "dotted" (px 1)]]}]]
+   #_[:button :select [(s/& s/focus) {:outline [[medium-gray "dotted" (px 1)]]}]]
    [:button
     (s/html (s/attr= "type" "button"))
     (s/attr= "type" "reset")
@@ -134,8 +133,8 @@
 
 (def re-frame-trace-styles
   [:#--re-frame-trace--
-   {:background  "white"
-    :font-family ["'courier new'" "monospace"]
+   {:background-color  common/background-gray
+    :font-family common/font-stack
     :color       text-color}
 
    [:.label label-mixin]
@@ -221,8 +220,7 @@
               :border-radius "2px"
             #_ #_   :cursor        "pointer"}]
    [:.text-button {:border-bottom "1px dotted #888"
-                   :font-weight   "normal"}
-    [(s/& s/focus) {:outline [[medium-gray "dotted" (px 1)]]}]]
+                   :font-weight   "normal"}]
 
    [:.icon-button {:font-size "10px"}]
    [:button.tab {}]
@@ -237,18 +235,14 @@
    [:.tab
     {:background     "transparent"
      :border-radius  0
-     :text-transform "uppercase"
-     :font-family    "monospace"
-     :letter-spacing "2px"
+     :font-family    common/font-stack
      :margin-bottom  0
      :padding-bottom "4px"
      :vertical-align "bottom"}]
 
    [:.tab.active
     {:background     "transparent"
-     :border-bottom  [[(px 3) "solid" dark-gray]]
-     :border-radius  0
-     :padding-bottom (px 1)}]
+     :color common/blue-modern-color}]
 
    [:ul.filter-items :.subtrees
     {:list-style-type "none"
@@ -278,7 +272,7 @@
                :border-bottom      [[(px 1) "solid" text-color-muted]]
                :background         "white"
                :display            "inline-block"
-               :font-family        "'courier new', monospace"
+               :font-family        common/font-stack
                :font-size          (em 1)
                :padding            "2px 0 0 0"
                :-moz-appearance    "menulist"
@@ -296,8 +290,19 @@
    [:.filter-control-input
     {:display "flex"
      :flex    "0 0 auto"}]
-   [:.nav {:background light-gray
-           :color      text-color}]
+   [:.nav {:background common/sidebar-background-color
+           :height (px 50)
+           :color      "white"}
+    [:span.arrow {:color common/blue-modern-color
+                  :background-color common/standard-background-color
+                  :padding (px 5)
+                  :margin (px 5)}]
+    [:span.event-header {:color common/text-color
+                         :background-color common/standard-background-color
+                         :padding (px 5)
+                         :margin (px 5)
+                         :font-weight "600"}]
+    ]
    [(s/& :.external-window) {:display "flex"
                              :height  (percent 100)
                              :flex    "1 1 auto"}]
@@ -333,7 +338,7 @@
    ])
 
 
-(def panel-styles (apply garden/css [css-reset (into [:#--re-frame-trace--] rc/re-com-css) re-frame-trace-styles]))
+(def panel-styles (apply garden/css [css-reset (into [:#--re-frame-trace--] rc/re-com-css) common/blue-modern re-frame-trace-styles]))
 ;(def panel-styles (macros/slurp-macro "day8/re_frame/trace/main.css"))
 
 

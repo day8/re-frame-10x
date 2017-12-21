@@ -107,3 +107,5 @@ If you want to work on re-frame-trace, see [DEVELOPERS.md](DEVELOPERS.md).
 * [Camera](https://thenounproject.com/search/?q=snapshot&i=200965) by Christian Shannon from the Noun Project
 * [Delete](https://thenounproject.com/term/delete/926276) by logan from the Noun Project
 * [Settings](https://thenounproject.com/search/?q=settings&i=1169241) by arjuazka from the Noun Project
+* [Wrench](https://thenounproject.com/icon/1013218/) by Aleksandr Vector from the Noun Project
+* [pause](https://thenounproject.com/icon/1376662/) by Bhuvan from the Noun Project
