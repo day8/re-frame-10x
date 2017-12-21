@@ -2,9 +2,11 @@
   (:require-macros [day8.re-frame.trace.utils.macros :as macros])
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [re-frame.db :as db]
+            [day8.re-frame.trace.view.overview :as overview]
             [day8.re-frame.trace.view.app-db :as app-db]
-            [day8.re-frame.trace.view.traces :as traces]
             [day8.re-frame.trace.view.subs :as subs]
+            [day8.re-frame.trace.view.views :as views]
+            [day8.re-frame.trace.view.traces :as traces]
             [day8.re-frame.trace.view.settings :as settings]
             [re-frame.trace]
             [reagent.core :as r]
@@ -77,8 +79,10 @@
      (when-not (re-frame.trace/is-trace-enabled?)
        [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set " [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
      (case @selected-tab
-       :traces [traces/render-trace-panel traces]
+       :overview [overview/render]
        :app-db [app-db/render-state db/app-db]
        :subs [subs/subs-panel]
+       :views [views/render]
+       :traces [traces/render-trace-panel traces]
        :settings [settings/render]
        [app-db/render-state db/app-db])]))
