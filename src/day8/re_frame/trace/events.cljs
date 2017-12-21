@@ -66,6 +66,11 @@
     (assoc-in db [:settings :selected-tab] selected-tab)))
 
 (rf/reg-event-db
+  :settings/toggle-settings
+  (fn [db _]
+    (update-in db [:settings :showing-settings?] not)))
+
+(rf/reg-event-db
   :settings/show-panel?
   (fn [db [_ show-panel?]]
     (localstorage/save! "show-panel" show-panel?)

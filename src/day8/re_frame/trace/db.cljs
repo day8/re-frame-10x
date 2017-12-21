@@ -5,7 +5,7 @@
 (defn init-db []
   (let [panel-width% (localstorage/get "panel-width-ratio" 0.35)
         show-panel? (localstorage/get "show-panel" false)
-        selected-tab (localstorage/get "selected-tab" :traces)
+        selected-tab (localstorage/get "selected-tab" :overview)
         filter-items (localstorage/get "filter-items" [])
         app-db-paths (localstorage/get "app-db-paths" '())
         json-ml-paths (localstorage/get "app-db-json-ml-expansions" #{})
