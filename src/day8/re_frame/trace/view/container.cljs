@@ -20,8 +20,7 @@
     [:button {:class    (str "tab button bm-heading-text " (when (= selected-tab panel-id) "active"))
               :on-click #(rf/dispatch [:settings/selected-tab panel-id])} title]))
 
-(def open-external (macros/slurp-macro "day8/re_frame/trace/images/open-external.svg"))
-
+(def open-external (macros/slurp-macro "day8/re_frame/trace/images/logout.svg"))
 (def settings-svg (macros/slurp-macro "day8/re_frame/trace/images/wrench.svg"))
 (def pause-svg (macros/slurp-macro "day8/re_frame/trace/images/pause.svg"))
 
@@ -87,6 +86,7 @@
        [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set " [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
      [rc/v-box
       :size "auto"
+      :style {:margin-left common/gs-19s}
       :children
       [(case @selected-tab
          :overview [overview/render]

@@ -18,6 +18,19 @@
 (defn subs-panel []
   []
   [:div {:style {:flex "1 1 auto" :display "flex" :flex-direction "column"}}
+   [rc/label
+    :label "Created"
+    :class "bm-heading-text"]
+   [rc/label
+    :label "Run"
+    :class "bm-heading-text"]
+   [rc/label
+    :label "Destroyed"
+    :class "bm-heading-text"]
+   [rc/label
+    :label "Not Run"
+    :class "bm-heading-text"]
+
    [:div.panel-content-scrollable
     [:div.subtrees {:style {:margin "20px 0"}}
      (doall

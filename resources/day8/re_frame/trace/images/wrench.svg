@@ -1,1 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 164 205" enable-background="new 0 0 164 164" xml:space="preserve"><path fill="white" fill-rule="evenodd" clip-rule="evenodd" d="M81.84,164c-15.38,0-29.768-4.246-42.059-11.625L77.6,114.557  c34.776,10.805,55.768-19.881,43.504-49.777L99.648,86.235C85.9,100.154,65.377,79.619,79.119,65.877l21.541-21.542  c-25.989-15.371-63.361,9.68-50.728,44.244l-37.29,37.289C4.638,113.223,0,98.233,0,82.16C0,36.961,36.641,0.32,81.84,0.32  c45.199,0,81.839,36.641,81.839,81.84S127.039,164,81.84,164z"/></svg>
+<svg width="31" height="32" viewBox="0 0 31 32" version="1.1" xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+<title>Vector</title>
+<desc>Created using Figma</desc>
+<g id="Canvas" transform="translate(-3725 368)">
+    <g id="Vector">
+        <use xlink:href="#path0_fill" transform="translate(3725 -367.837)" fill="#F3F6F7"/>
+    </g>
+</g>
+<defs>
+    <path id="path0_fill" fill-rule="evenodd"
+          d="M 15.5001 31C 12.5872 31 9.86218 30.1958 7.53433 28.7983L 14.6971 21.6358C 21.2835 23.6822 25.2592 17.8705 22.9365 12.2083L 18.8728 16.2718C 16.269 18.908 12.3821 15.0188 14.9848 12.4161L 19.0645 8.33617C 14.1423 5.425 7.06425 10.1695 9.45688 16.7157L 2.39433 23.778C 0.878415 21.3831 0 18.5441 0 15.5C 0 6.93958 6.93962 -1.35465e-09 15.5001 -1.35465e-09C 24.0606 -1.35465e-09 31 6.93958 31 15.5C 31 24.0604 24.0606 31 15.5001 31Z"/>
+</defs>
+</svg>

@@ -28,6 +28,9 @@
      :label "Low Level Trace Filters"
      :class "bm-heading-text"]
 
+    [rc/checkbox :model false :on-change #(rf/dispatch [:settings/low-level-trace :reagent %]) :label "reagent internals"]
+    [rc/checkbox :model false :on-change #(rf/dispatch [:settings/low-level-trace :re-frame %]) :label "re-frame internals"]
+
     [rc/label
      :label "Reset"
      :class "bm-heading-text"]

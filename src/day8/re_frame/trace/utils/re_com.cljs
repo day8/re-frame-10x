@@ -387,6 +387,39 @@
              attr)
            label]])
 
+(defn checkbox
+  "I return the markup for a checkbox, with an optional RHS label"
+  [& {:keys [model on-change label disabled? label-class label-style class style attr]
+      :as   args}]
+  (let [cursor      "default"
+        model       (deref-or-value model)
+        disabled?   (deref-or-value disabled?)
+        callback-fn #(when (and on-change (not disabled?))
+                       (on-change (not model)))]  ;; call on-change with either true or false
+    [h-box
+     :class "rc-checkbox-wrapper noselect"
+     :align :start
+     :children [[:input
+                 (merge
+                   {:class     (str "rc-checkbox " class)
+                    :type      "checkbox"
+                    :style     (merge (flex-child-style "none")
+                                      {:cursor cursor}
+                                      style)
+                    :disabled  disabled?
+                    :checked   (boolean model)
+                    :on-change (handler-fn (callback-fn))}
+                   attr)]
+                (when label
+                  [:span
+                   {:class    label-class
+                    :style    (merge (flex-child-style "none")
+                                     {:padding-left "8px"
+                                      :cursor       cursor}
+                                     label-style)
+                    :on-click (handler-fn (callback-fn))}
+                   label])]]))
+
 (def re-com-css
   [[:.display-flex {:display "flex"}]
    [:.display-inline-flex {:display "flex"}]])

@@ -68,6 +68,11 @@
     (s/attr= "type" "reset")
     (s/attr= "type" "submit")
     {:-webkit-appearance "button"}]
+"input[type=\"checkbox\" i] {\n    -webkit-appearance: checkbox;\n    box-sizing: border-box;\n}"
+   [:input
+    (s/attr= "type" "checkbox")
+    {:-webkit-appearance "checkbox"
+     :box-sizing "border-box"}]
 
    [:button:-moz-focusring
     (s/attr= "type" "button")
@@ -225,8 +230,8 @@
    [:.icon-button {:font-size "10px"}]
    [:button.tab {}]
    [:.nav-icon
-    {:width   "15px"
-     :height  "15px"
+    {:width   "30px"
+     :height  "30px"
      :cursor  "pointer"
      :padding "0 5px"
      :margin  "0 5px"}
