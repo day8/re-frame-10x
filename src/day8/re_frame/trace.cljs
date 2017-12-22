@@ -106,6 +106,7 @@
 
               (real-custom-wrapper key f))))
 
+    ;; When this is enabled, the rendering of the trace panel causes an infinite loop.
     #_(set! reagent.impl.batching/next-tick (fn [f]
                                               (real-next-tick (fn []
                                                                 (trace/with-trace {:op-type :raf}

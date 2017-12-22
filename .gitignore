@@ -19,3 +19,4 @@ misc/
 .flooignore
 node_modules/
 examples/todomvc/.idea/
+test-resources/*.edn

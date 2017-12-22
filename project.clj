@@ -2,11 +2,12 @@
   :description "Tracing and developer tools for re-frame apps"
   :url         "https://github.com/Day8/re-frame-trace"
   :license     {:name "MIT"}
-  :dependencies [[org.clojure/clojure        "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.671"]
                  [reagent                    "0.6.0" :scope "provided"]
                  [re-frame "0.10.3-alpha2" :scope "provided"]
                  [binaryage/devtools         "0.9.4"]
+                 [io.pyroclast/metamorphic "0.1.0-alpha1"]
                  [garden "1.3.3"]]
   :plugins [[thomasa/mranderson "0.4.7"]
             [lein-less "RELEASE"]]
