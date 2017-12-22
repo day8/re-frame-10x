@@ -12,7 +12,7 @@
             [cljs.pprint :as pprint]
             [clojure.string :as str]
             [clojure.set :as set]
-            [reagent.core :as r]
+            [reagent.core :as real-reagent]
             [reagent.interop :refer-macros [$ $!]]
             [reagent.impl.util :as util]
             [reagent.impl.component :as component]
@@ -21,7 +21,8 @@
             [goog.object :as gob]
             [re-frame.interop :as interop]
             [devtools.formatters.core :as devtools]
-            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [mranderson047.reagent.v0v6v0.reagent.core :as r]))
 
 
 ;; from https://github.com/reagent-project/reagent/blob/3fd0f1b1d8f43dbf169d136f0f905030d7e093bd/src/reagent/impl/component.cljs#L274
@@ -73,11 +74,14 @@
                              res)))))})
 
 
+(defonce real-custom-wrapper reagent.impl.component/custom-wrapper)
+(defonce real-next-tick reagent.impl.batching/next-tick)
+(defonce real-schedule reagent.impl.batching/schedule)
+(defonce schedule-fn-scheduled? (atom false))
+
 (defn monkey-patch-reagent []
   (let [#_#_real-renderer reagent.impl.component/do-render
-        real-custom-wrapper reagent.impl.component/custom-wrapper
-        real-next-tick      reagent.impl.batching/next-tick
-        real-schedule       reagent.impl.batching/schedule]
+        ]
 
 
     #_(set! reagent.impl.component/do-render
@@ -106,16 +110,21 @@
 
               (real-custom-wrapper key f))))
 
-    ;; When this is enabled, the rendering of the trace panel causes an infinite loop.
-    #_(set! reagent.impl.batching/next-tick (fn [f]
-                                              (real-next-tick (fn []
-                                                                (trace/with-trace {:op-type :raf}
-                                                                                  (f))))))
+    (set! reagent.impl.batching/next-tick
+          (fn [f]
+            (real-next-tick (fn []
+                              (trace/with-trace {:op-type :raf}
+                                                (f)
+                                                (trace/with-trace {:op-type :raf-end}))))))
 
-    #_(set! reagent.impl.batching/schedule schedule
-            #_(fn []
-                (reagent.impl.batching/do-after-render (fn [] (trace/with-trace {:op-type :raf-end})))
-                (real-schedule)))))
+    #_(set! reagent.impl.batching/schedule
+          (fn []
+            (reagent.impl.batching/do-after-render
+              (fn []
+                (when @schedule-fn-scheduled?
+                  (trace/with-trace {:op-type :do-after-render})
+                  (reset! schedule-fn-scheduled? false))))
+            (real-schedule)))))
 
 
 (defn init-tracing!

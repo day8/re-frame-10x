@@ -1,11 +1,11 @@
 (ns day8.re-frame.trace.view.app-db
-  (:require [reagent.core :as r]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [devtools.prefs]
             [devtools.formatters.core]
             [day8.re-frame.trace.view.components :as components]
             [day8.re-frame.trace.utils.re-com :as re-com]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc])
   (:require-macros [day8.re-frame.trace.utils.macros :as macros]))
 

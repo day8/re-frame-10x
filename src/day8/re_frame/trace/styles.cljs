@@ -158,7 +158,7 @@
     [(s/& ".trace--sub-run")
      [".trace--op" {:color dark-purple}]]
     [(s/& ".trace--event")
-     {:border-top [["1px" light-gray "solid"]]}
+     {:border-top [["2px" common/border-line-color "solid"]]}
      [".trace--op" {:color common/event-color}]]
     [(s/& ".trace--render")
      [".trace--op" {:color dark-skyblue}]]

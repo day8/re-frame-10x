@@ -3,10 +3,10 @@
             [day8.re-frame.trace.utils.pretty-print-condensed :as pp]
             [re-frame.trace :as trace]
             [clojure.string :as str]
-            [reagent.core :as r]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [cljs.pprint :as pprint]
             [clojure.set :as set]
+            [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
 
 (defn query->fn [query]
@@ -95,7 +95,8 @@
                                         true (remove (fn [trace] (and (= :sub/create (:op-type trace))
                                                                       (get-in trace [:tags :cached?]))))
                                         (seq @categories) (filter (fn [trace] (when (contains? @categories (:op-type trace)) trace)))
-                                        (seq @filter-items) (filter (apply every-pred (map query->fn @filter-items))))
+                                        (seq @filter-items) (filter (apply every-pred (map query->fn @filter-items)))
+                                        true (sort-by :id))
             save-query         (fn [_]
                                  (if (and (= @filter-type :slower-than)
                                           (js/isNaN (js/parseFloat @filter-input)))
@@ -103,6 +104,7 @@
                                    (do
                                      (reset! input-error false)
                                      (add-filter filter-items @filter-input @filter-type))))]
+
         [:div.tab-contents
          [:div.filter
           [:div.filter-control

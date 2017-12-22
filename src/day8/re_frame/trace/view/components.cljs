@@ -1,11 +1,11 @@
 (ns day8.re-frame.trace.view.components
-  (:require [reagent.core :as r]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [goog.fx.dom :as fx]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
-            [day8.re-frame.trace.utils.re-com :as rc])
+            [day8.re-frame.trace.utils.re-com :as rc]
+            [mranderson047.reagent.v0v6v0.reagent.core :as r])
   (:require-macros [day8.re-frame.trace.utils.macros :refer [with-cljs-devtools-prefs]]))
 
 (defn search-input [{:keys [title placeholder on-save on-change on-stop]}]

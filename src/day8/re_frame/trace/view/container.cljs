@@ -11,7 +11,6 @@
             [garden.core :refer [css style]]
             [garden.units :refer [px]]
             [re-frame.trace]
-            [reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc]
             [day8.re-frame.trace.common-styles :as common]))
 

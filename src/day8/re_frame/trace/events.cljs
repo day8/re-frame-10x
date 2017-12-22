@@ -1,9 +1,9 @@
 (ns day8.re-frame.trace.events
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [day8.re-frame.trace.utils.utils :as utils]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
-            [reagent.core :as r]
             [goog.object]
             [re-frame.db]
             [day8.re-frame.trace.view.container :as container]
