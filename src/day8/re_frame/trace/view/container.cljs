@@ -21,16 +21,17 @@
 
 (def open-external (macros/slurp-macro "day8/re_frame/trace/images/logout.svg"))
 (def settings-svg (macros/slurp-macro "day8/re_frame/trace/images/wrench.svg"))
+(def orange-settings-svg (macros/slurp-macro "day8/re_frame/trace/images/orange-wrench.svg"))
 (def pause-svg (macros/slurp-macro "day8/re_frame/trace/images/pause.svg"))
 
 (def outer-margins {:margin (str "0px " common/gs-19s)})
 
 (defn devtools-inner [traces opts]
-  (let [selected-tab     (rf/subscribe [:settings/selected-tab])
-        panel-type       (:panel-type opts)
-        external-window? (= panel-type :popup)
-        unloading?       (rf/subscribe [:global/unloading?])
-        show-tabs?       (not= @selected-tab :settings)]
+  (let [selected-tab      (rf/subscribe [:settings/selected-tab])
+        panel-type        (:panel-type opts)
+        external-window?  (= panel-type :popup)
+        unloading?        (rf/subscribe [:global/unloading?])
+        showing-settings? (= @selected-tab :settings)]
     [:div.panel-content
      {:style {:width "100%" :display "flex" :flex-direction "column" :background-color common/standard-background-color}}
      [rc/h-box
@@ -56,14 +57,16 @@
          [:img.nav-icon
           {:title    "Settings"
            :src      (str "data:image/svg+xml;utf8,"
-                          settings-svg)
+                          (if showing-settings?
+                            orange-settings-svg
+                            settings-svg))
            :on-click #(rf/dispatch [:settings/toggle-settings])}]
          (when-not external-window?
            [:img.nav-icon.active
             {:src      (str "data:image/svg+xml;utf8,"
                             open-external)
              :on-click #(rf/dispatch-sync [:global/launch-external])}])]]]]
-     (when show-tabs?
+     (when-not showing-settings?
        [rc/h-box
         :class "panel-content-tabs"
         :justify :between
