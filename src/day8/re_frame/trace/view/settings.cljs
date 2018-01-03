@@ -8,10 +8,6 @@
    :gap common/gs-19s
    :children
    [[rc/label
-     :label "Settings"
-     :class "bm-title-text"]
-
-    [rc/label
      :label "Limits"
      :class "bm-heading-text"]
 

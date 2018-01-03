@@ -99,6 +99,9 @@
 (def strong-button-background-color blue-modern-color)
 (def strong-button-border-color "#589AB8")      ;; A darker version of the standard blue
 
+(def active-button-text-color "white")
+(def active-button-background-color "#F2994A")
+
 (def muted-button-text-color strong-button-background-color)
 (def muted-button-background-color "white")
 (def muted-button-border-color white-background-border-color)
@@ -112,6 +115,7 @@
 (def sidebar-item-selected-color "#3C3C45")      ;; Slightly lighter dark black
 (def sidebar-item-check-color strong-button-background-color)
 (def sidebar-text-color "white")
+(def navbar-text-color "white")
 
 (def wizard-panel-background-color "#636A6F")      ;; Very dark grey
 (def wizard-panel-text-color "white")
@@ -159,6 +163,9 @@
    [:.bm-strong-button {:color            strong-button-text-color
                         :background-color strong-button-background-color
                         :border           (str "1px solid " strong-button-border-color)}]
+   [:.bm-active-button {:color active-button-text-color
+                        :background-color active-button-background-color
+                        :border (str "1px solid " active-button-background-color)}]
    [:.bm-muted-button {:color            muted-button-text-color
                        :background-color muted-button-background-color
                        :border           (str "1px solid " strong-button-border-color)}]
@@ -190,7 +197,8 @@
    [:.raptor-editable-block {:color default-text-color}]
 
    ;; button components - to 26px high
-   [:button {:height "26px"}]
+   [:button {:height "26px"
+             :border-radius "3px"}]
    [:.btn {:padding "0px 12px"}]
 
    ;; input-text - set to 26px high

@@ -313,7 +313,16 @@
    [(s/& :.external-window) {:display "flex"
                              :height  (percent 100)
                              :flex    "1 1 auto"}]
-   [:.panel-content-top {}]
+   [:.panel-content-top {}
+    [:.bm-title-text {:color common/navbar-text-color}]
+    [:button {:width "81px"
+              :height "31px"
+              :font-weight 700
+              :font-size "14px"
+              :cursor "pointer"
+              :text-align "center"
+              :padding "0 5px"
+              :margin "0 5px"}]]
    [:.panel-content-tabs {:margin-left common/gs-19}]
    [:.panel-content-scrollable panel-mixin]
    [:.epoch-panel panel-mixin]

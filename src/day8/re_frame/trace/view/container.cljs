@@ -43,13 +43,18 @@
         :align :center
         :gap common/gs-12s
         :children
-        [[:span.arrow "◀"]
-         [:span.event-header "[:some-namespace/blah 34 \"Hello\""]
-         [:span.arrow "▶"]]]
+        (if showing-settings?
+          [[rc/label :class "bm-title-text" :label "Settings"]]
+          [[:span.arrow "◀"]
+           [:span.event-header "[:some-namespace/blah 34 \"Hello\""]
+           [:span.arrow "▶"]])]
        [rc/h-box
         :align :center
         :children
-        [[:img.nav-icon
+        [(when showing-settings?
+           [:button {:class "bm-active-button"
+                     :on-click #(rf/dispatch [:settings/toggle-settings])} "Done"])
+         [:img.nav-icon
           {:title    "Pause"
            :src      (str "data:image/svg+xml;utf8,"
                           pause-svg)
