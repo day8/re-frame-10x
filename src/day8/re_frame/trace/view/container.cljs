@@ -26,6 +26,61 @@
 
 (def outer-margins {:margin (str "0px " common/gs-19s)})
 
+(defn right-hand-buttons [external-window?]
+  (let [selected-tab      (rf/subscribe [:settings/selected-tab])
+        showing-settings? (= @selected-tab :settings)]
+    [rc/h-box
+     :align :center
+     :children
+     [(when showing-settings?
+        [:button {:class    "bm-active-button"
+                  :on-click #(rf/dispatch [:settings/toggle-settings])} "Done"])
+      [:img.nav-icon
+       {:title    "Pause"
+        :src      (str "data:image/svg+xml;utf8,"
+                       pause-svg)
+        :on-click #(rf/dispatch [:settings/pause])}]
+      [:img.nav-icon
+       {:title    "Settings"
+        :src      (str "data:image/svg+xml;utf8,"
+                       (if showing-settings? orange-settings-svg settings-svg))
+        :on-click #(rf/dispatch [:settings/toggle-settings])}]
+      (when-not external-window?
+        [:img.nav-icon.active
+         {:src      (str "data:image/svg+xml;utf8,"
+                         open-external)
+          :on-click #(rf/dispatch-sync [:global/launch-external])}])]])
+  )
+
+(defn settings-header [external-window?]
+  [[rc/h-box
+    :align :center
+    :size "auto"
+    :gap common/gs-12s
+    :children
+    [[rc/label :class "bm-title-text" :label "Settings"]]]
+   ;; TODO: this line needs to be between Done and other buttons
+   [rc/gap-f :size common/gs-12s]
+   [rc/line :size "2px" :color common/sidebar-heading-divider-color]
+   [rc/gap-f :size common/gs-12s]
+   [right-hand-buttons external-window?]])
+
+(defn standard-header [external-window?]
+  [[rc/h-box
+    :align :center
+    :size "auto"
+    :gap common/gs-12s
+    :children
+    [[:span.arrow "◀"]
+     [rc/v-box
+      :size "auto"
+      :children [[:span.event-header "[:some-namespace/blah 34 \"Hello\""]]]
+     [:span.arrow "▶"]]]
+   [rc/gap-f :size common/gs-12s]
+   [rc/line :size "2px" :color common/sidebar-heading-divider-color]
+   [right-hand-buttons external-window?]]
+  )
+
 (defn devtools-inner [traces opts]
   (let [selected-tab      (rf/subscribe [:settings/selected-tab])
         panel-type        (:panel-type opts)
@@ -34,43 +89,17 @@
         showing-settings? (= @selected-tab :settings)]
     [:div.panel-content
      {:style {:width "100%" :display "flex" :flex-direction "column" :background-color common/standard-background-color}}
-     [rc/h-box
-      :class "panel-content-top nav"
-      :style {:padding "0px 19px"}
-      :justify :between
-      :children
-      [[rc/h-box
-        :align :center
-        :gap common/gs-12s
-        :children
-        (if showing-settings?
-          [[rc/label :class "bm-title-text" :label "Settings"]]
-          [[:span.arrow "◀"]
-           [:span.event-header "[:some-namespace/blah 34 \"Hello\""]
-           [:span.arrow "▶"]])]
+     (if showing-settings?
        [rc/h-box
-        :align :center
+        :class "panel-content-top nav"
+        :style {:padding "0px 19px"}
         :children
-        [(when showing-settings?
-           [:button {:class "bm-active-button"
-                     :on-click #(rf/dispatch [:settings/toggle-settings])} "Done"])
-         [:img.nav-icon
-          {:title    "Pause"
-           :src      (str "data:image/svg+xml;utf8,"
-                          pause-svg)
-           :on-click #(rf/dispatch [:settings/pause])}]
-         [:img.nav-icon
-          {:title    "Settings"
-           :src      (str "data:image/svg+xml;utf8,"
-                          (if showing-settings?
-                            orange-settings-svg
-                            settings-svg))
-           :on-click #(rf/dispatch [:settings/toggle-settings])}]
-         (when-not external-window?
-           [:img.nav-icon.active
-            {:src      (str "data:image/svg+xml;utf8,"
-                            open-external)
-             :on-click #(rf/dispatch-sync [:global/launch-external])}])]]]]
+        (settings-header external-window?)]
+       [rc/h-box
+        :class "panel-content-top nav"
+        :style {:padding "0px 19px"}
+        :children
+        (standard-header external-window?)])
      (when-not showing-settings?
        [rc/h-box
         :class "panel-content-tabs"
