@@ -226,7 +226,7 @@
                    :font-weight   "normal"}]
 
    [:.icon-button {:font-size "10px"}]
-   [:button.tab {}]
+   [:button.tab {:font-weight 300}]
    [:.nav-icon
     {:width   "30px"
      :height  "30px"
