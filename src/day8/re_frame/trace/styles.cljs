@@ -315,15 +315,15 @@
                              :flex    "1 1 auto"}]
    [:.panel-content-top {}
     [:.bm-title-text {:color common/navbar-text-color}]
-    [:button {:width "81px"
-              :height "31px"
+    [:button {:width       "81px"
+              :height      "31px"
               :font-weight 700
-              :font-size "14px"
-              :cursor "pointer"
-              :text-align "center"
-              :padding "0 5px"
-              :margin "0 5px"}]]
-   [:.panel-content-tabs {:margin-left common/gs-19}]
+              :font-size   "14px"
+              :cursor      "pointer"
+              :text-align  "center"
+              :padding     "0 5px"
+              :margin      "0 5px"}]]
+   [:.panel-content-tabs {:background-color common/white-background-color :padding-left common/gs-19}]
    [:.panel-content-scrollable panel-mixin]
    [:.epoch-panel panel-mixin]
    [:.tab-contents {:display        "flex"
@@ -341,6 +341,27 @@
                        :margin     "5px"
                        :opacity    "0.3"}]
    [:.active {:opacity 1}]
+
+   [:.app-db-path
+    {:border           [[(px 1) "solid" common/white-background-border-color]]
+     :background-color common/white-background-color}]
+   [:.app-db-path--header
+    {:background-color "#48494A"                            ; Name this navbar tint-lighter
+     :color            "white"
+     :height           common/gs-31}]
+   [:.app-db-path--label
+    {:color          "#2D9CDB"
+     :font-variant   "small-caps"
+     :text-transform "lowercase"
+     :height         common/gs-19}]
+   [:.app-db-path--path-header
+    {:background-color common/white-background-color
+     :color            "#48494A"
+     :margin           "3px"}]
+   [:.app-db-path--path-text__empty
+    {:font-style "italic"}]
+
+
    [:.re-frame-trace--object
     [:.toggle {:color       text-color-muted
                :cursor      "pointer"

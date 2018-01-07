@@ -115,7 +115,7 @@
            (tab-button :views "Views")
            (tab-button :traces "Trace")]]
          ]])
-     [rc/line :style outer-margins]
+     [rc/line :color "#EEEEEE"]
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
      (when-not (re-frame.trace/is-trace-enabled?)

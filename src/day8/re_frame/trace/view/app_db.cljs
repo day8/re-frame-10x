@@ -6,7 +6,8 @@
             [day8.re-frame.trace.utils.re-com :as re-com]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
-            [day8.re-frame.trace.utils.re-com :as rc])
+            [day8.re-frame.trace.utils.re-com :as rc]
+            [day8.re-frame.trace.common-styles :as common])
   (:require-macros [day8.re-frame.trace.utils.macros :as macros]))
 
 (def delete (macros/slurp-macro "day8/re_frame/trace/images/delete.svg"))
@@ -15,8 +16,72 @@
 (def snapshot (macros/slurp-macro "day8/re_frame/trace/images/snapshot.svg"))
 (def snapshot-ready (macros/slurp-macro "day8/re_frame/trace/images/snapshot-ready.svg"))
 
+(defn top-buttons []
+  [rc/h-box
+   :justify :between
+   :children [[:button "+ path viewer"]
+              [rc/h-box
+               :align :center
+               :children
+               [[rc/label :label "reset app-db to:"]
+                [:button "initial state"]
+                [rc/v-box
+                 :width common/gs-81s
+                 :align :center
+                 :children [[rc/label :label "event"]
+                            ;; TODO: arrow doesn't show up when there is an alignment
+                            [rc/line]
+                            [rc/label :label "processing"]]]
+                [:button "end state"]]]]])
+
+(defn path-header [p]
+  [rc/h-box
+   :class "app-db-path--header"
+   :align :center
+   :gap common/gs-12s
+   :children [">"
+              [rc/h-box
+               :size "auto"
+               :class "app-db-path--path-header"
+               :children
+               [[rc/label
+                 :class (str "app-db-path--path-text " (when (nil? p) "app-db-path--path-text__empty"))
+                 :label (if (some? p)
+                          (prn-str p)
+                          "Showing all of app-db. Try entering a path like [:todos 1]")]]]
+              [:button "diff"]
+              [:button "trash"]]])
+
+(defn app-db-path [p]
+  ^{:key (str p)}
+  [rc/v-box
+   :class "app-db-path"
+   :children
+   [[path-header p]
+    [rc/label :label "Main data"]
+    ;; TODO: Make these into hyperlinks
+    [rc/label :class "app-db-path--label" :label "Only Before:"]
+    [rc/label :label "Before diff"]
+    [rc/label :class "app-db-path--label" :label "Only After"]
+    [rc/label :label "After diff"]]])
+
+(defn paths []
+  [rc/v-box
+   :gap common/gs-31s
+   :children
+   (doall (for [p [["x" "y"] [:abc 123] nil]]
+              [app-db-path p]))])
+
 
 (defn render-state [data]
+  [rc/v-box
+   :gap common/gs-31s
+   :children
+   [[top-buttons]
+    [paths]]])
+
+
+(defn old-render-state [data]
   (let [subtree-input   (r/atom "")
         subtree-paths   (rf/subscribe [:app-db/paths])
         search-string   (rf/subscribe [:app-db/search-string])
