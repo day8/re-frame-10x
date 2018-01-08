@@ -1,7 +1,8 @@
 (ns day8.re-frame.trace.view.overview
-  (:require [day8.re-frame.trace.utils.re-com :as rc]))
+  (:require [day8.re-frame.trace.utils.re-com :as rc]
+            [day8.re-frame.trace.metamorphic :as metam]))
 
-(defn render []
+(defn render [traces]
   [rc/v-box
    :children
    [[rc/label :label "Event"]

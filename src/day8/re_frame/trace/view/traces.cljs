@@ -64,7 +64,8 @@
                                         (str/join ", ")
                                         (pp/truncate-string :middle 40)))]]]
                               [:td.trace--meta
-                               (.toFixed duration 1) " ms"]]
+                               id
+                               #_ #_(.toFixed duration 1) " ms"]]
                              (when show-row?
                                [:tr.trace--details {:key       (str id "-details")
                                                     :tab-index 0}
@@ -86,7 +87,10 @@
         filter-type             (r/atom :contains)
         input-error             (r/atom false)
         categories              (rf/subscribe [:traces/categories])
-        trace-detail-expansions (rf/subscribe [:traces/expansions])]
+        trace-detail-expansions (rf/subscribe [:traces/expansions])
+        beginning (rf/subscribe [:epochs/beginning-trace-id])
+        end (rf/subscribe [:epochs/ending-trace-id])
+        traces (rf/subscribe [:traces/current-event-traces])]
     (fn []
       (let [toggle-category-fn #(rf/dispatch [:traces/toggle-categories %])
             visible-traces     (cond->> @traces
@@ -141,6 +145,7 @@
                      :on-click #(rf/dispatch [:traces/remove-filter (:id item)])}
                     (:filter-type item) ": " [:span.filter-item-string (:query item)]]])
                 @filter-items)]]
+         [:pre @beginning " to " @end]
          [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
           [:table
            [:thead>tr

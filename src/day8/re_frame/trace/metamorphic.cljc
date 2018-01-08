@@ -1,7 +1,8 @@
 (ns day8.re-frame.trace.metamorphic
   (:require [metamorphic.api :as m]
             [metamorphic.runtime :as rt]
-            [metamorphic.viz :as v]))
+            #?(:clj
+            [metamorphic.viz :as v])))
 
 ;; Next, we define predicate functions that take exactly 4 arguments.
 ;; These predicates are obviously incredibly boring, but they help
@@ -65,12 +66,17 @@
        (= :running (get-in event [:tags :current-state]))
        (= :idle (get-in event [:tags :new-state]))))
 
+(defn request-animation-frame? [event history pattern-sequence pattern]
+  (= :raf (:op-type event)))
 
-(defn trace-events [] (->> (slurp "test-resources/events2.edn")
-                       (clojure.edn/read-string {:readers {'utc    identity
-                                                           'object (fn [x] "<object>")}})
-                       (sort-by :id))
-  )
+(defn request-animation-frame-end? [event history pattern-sequence pattern]
+  (= :raf-end (:op-type event)))
+
+
+#?(:clj (defn trace-events [] (->> (slurp "test-resources/events2.edn")
+                                   (clojure.edn/read-string {:readers {'utc    identity
+                                                                       'object (fn [x] "<object>")}})
+                                   (sort-by :id))))
 
 
 (defn summarise-event [ev]
@@ -79,17 +85,37 @@
 (defn summarise-match [match]
   (map summarise-event match))
 
-(defn parse-events []
+#?(:clj
+   (defn parse-events []
+    #_      (let [runtime (-> (m/new-pattern-sequence "simple traces")
+                            (m/begin "new-epoch-started" new-epoch-started?)
+                            #_(m/followed-by "redispatched-event" redispatched-event? {:optional? true})
+                            #_(m/followed-by "router-scheduled" router-scheduled? {:optional? true})
+                            (m/followed-by "event-run" event-run?)
+                            (m/followed-by "router-finished" router-finished?)
+                            (m/followed-by "raf" request-animation-frame?)
+                            (m/followed-by "raf-end" request-animation-frame-end?)
+                            (rt/initialize-runtime))
+                events  (trace-events)
+                rt      (reduce rt/evaluate-event runtime events)]
+            #_(println "Count"
+                       (count (:matches rt))
+                       (map count (:matches rt)))
+            (map summarise-match (:matches rt)))))
+
+(defn parse-traces
+  "Returns a metamorphic runtime"
+  [traces]
   (let [runtime (-> (m/new-pattern-sequence "simple traces")
                     (m/begin "new-epoch-started" new-epoch-started?)
-                    #_(m/followed-by "redispatched-event" redispatched-event? {:optional? true})
-                #_   (m/followed-by "router-scheduled" router-scheduled? {:optional? true})
                     (m/followed-by "event-run" event-run?)
                     (m/followed-by "router-finished" router-finished?)
+                    (m/followed-by "raf" request-animation-frame?)
+                    (m/followed-by "raf-end" request-animation-frame-end?)
                     (rt/initialize-runtime))
-        events  (trace-events)
-        rt      (reduce rt/evaluate-event runtime events)]
+        rt      (reduce rt/evaluate-event runtime traces)]
     #_(println "Count"
-             (count (:matches rt))
-             (map count (:matches rt)))
-    (map summarise-match (:matches rt))))
+               (count (:matches rt))
+               (map count (:matches rt)))
+    #_(map summarise-match (:matches rt))
+    rt))

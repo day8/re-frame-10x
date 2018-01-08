@@ -66,19 +66,20 @@
    [right-hand-buttons external-window?]])
 
 (defn standard-header [external-window?]
-  [[rc/h-box
-    :align :center
-    :size "auto"
-    :gap common/gs-12s
-    :children
-    [[:span.arrow "◀"]
-     [rc/v-box
+  (let [current-event @(rf/subscribe [:epochs/current-event])]
+    [[rc/h-box
+      :align :center
       :size "auto"
-      :children [[:span.event-header "[:some-namespace/blah 34 \"Hello\""]]]
-     [:span.arrow "▶"]]]
-   [rc/gap-f :size common/gs-12s]
-   [rc/line :size "2px" :color common/sidebar-heading-divider-color]
-   [right-hand-buttons external-window?]]
+      :gap common/gs-12s
+      :children
+      [[:span.arrow {:on-click #(rf/dispatch [:epochs/previous-epoch])} "◀"]
+       [rc/v-box
+        :size "auto"
+        :children [[:span.event-header (prn-str current-event)]]]
+       [:span.arrow {:on-click #(rf/dispatch [:epochs/next-epoch])} "▶"]]]
+     [rc/gap-f :size common/gs-12s]
+     [rc/line :size "2px" :color common/sidebar-heading-divider-color]
+     [right-hand-buttons external-window?]])
   )
 
 (defn devtools-inner [traces opts]
@@ -125,7 +126,7 @@
       :style {:margin-left common/gs-19s}
       :children
       [(case @selected-tab
-         :overview [overview/render]
+         :overview [overview/render traces]
          :app-db [app-db/render-state db/app-db]
          :subs [subs/subs-panel]
          :views [views/render]

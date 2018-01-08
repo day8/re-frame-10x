@@ -23,10 +23,12 @@
    :style {:padding-top common/gs-31s}
    :gap common/gs-19s
    :children
-   [[settings-box
-     [[rc/label :label "Retain last 10 epochs"]
-      [:button "Clear All Epochs"]]
-     [[:p "8 epochs currently retained, involving 10,425 traces."]]]
+   [(let [num-epochs @(rf/subscribe [:epochs/number-of-matches])
+          num-traces @(rf/subscribe [:traces/number-of-traces])]
+      [settings-box
+       [[rc/label :label "Retain last 10 epochs"]
+        [:button "Clear All Epochs"]]
+       [[:p num-epochs " epochs currently retained, involving " num-traces " traces."]]])
 
     [rc/line]
 

@@ -60,6 +60,11 @@
 ;;
 
 (rf/reg-sub
+  :traces/trace-root
+  (fn [db _]
+    (:traces db)))
+
+(rf/reg-sub
   :traces/filter-items
   (fn [db _]
     (get-in db [:traces :filter-items])))
@@ -73,6 +78,29 @@
   :traces/categories
   (fn [db _]
     (get-in db [:traces :categories])))
+
+(rf/reg-sub
+  :traces/all-traces
+  :<- [:traces/trace-root]
+  (fn [traces _]
+    (:all-traces traces)))
+
+(rf/reg-sub
+  :traces/number-of-traces
+  :<- [:traces/trace-root]
+  (fn [traces _]
+    (count traces)))
+
+(rf/reg-sub
+  :traces/current-event-traces
+  :<- [:traces/all-traces]
+  :<- [:epochs/beginning-trace-id]
+  :<- [:epochs/ending-trace-id]
+  (fn [[traces beginning ending] _]
+    (filter #(<= beginning (:id %) ending) traces)
+    #_traces))
+
+;;
 
 (rf/reg-sub
   :global/unloading?
@@ -91,3 +119,56 @@
   :<- [:snapshot/snapshot-root]
   (fn [snapshot _]
     (contains? snapshot :current-snapshot)))
+
+;;
+
+(rf/reg-sub
+  :epochs/epoch-root
+  (fn [db _]
+    (:epochs db)))
+
+(rf/reg-sub
+  :epochs/current-event
+  :<- [:epochs/epoch-root]
+  (fn [epochs _]
+    (let [matches (:matches epochs)
+          current-index (:current-epoch-index epochs)
+          match (nth matches (+ (count matches) (or current-index 0)) (last matches))
+          event (get-in (second match) [:tags :event])]
+      event)))
+
+(rf/reg-sub
+  :epochs/number-of-matches
+  :<- [:epochs/epoch-root]
+  (fn [epochs _]
+    (count (get epochs :matches))))
+
+(rf/reg-sub
+  :epochs/current-event-index
+  :<- [:epochs/epoch-root]
+  (fn [epochs _]
+    (:current-epoch-index epochs)))
+
+(rf/reg-sub
+  :epochs/event-position
+  :<- [:epochs/current-event-index]
+  :<- [:epochs/number-of-matches]
+  (fn [[current total]]
+    (str current " of " total)))
+
+(rf/reg-sub
+  :epochs/beginning-trace-id
+  :<- [:epochs/epoch-root]
+  (fn [epochs]
+    ;; TODO: make it use the real match
+    (let [match (last (:matches epochs))]
+      (:id (first match)))))
+
+(rf/reg-sub
+  :epochs/ending-trace-id
+  :<- [:epochs/epoch-root]
+  (fn [epochs]
+    ;; TODO: make it use the real match
+    (let [match (last (:matches epochs))]
+      (:id (last match)))))
+

@@ -8,7 +8,8 @@
             [re-frame.db]
             [day8.re-frame.trace.view.container :as container]
             [day8.re-frame.trace.styles :as styles]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [day8.re-frame.trace.metamorphic :as metam]))
 
 (defonce traces (r/atom []))
 (defonce total-traces (r/atom 0))
@@ -26,18 +27,21 @@
 
 (defn enable-tracing! []
   (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
-                                           (when-let [new-traces (filter log-trace? new-traces)]
+                                           (when-let [new-traces (->> (filter log-trace? new-traces)
+                                                                      (sort-by :id))]
                                              (swap! total-traces + (count new-traces))
                                              (swap! traces
                                                     (fn [existing]
                                                       (let [new  (reduce conj existing new-traces)
                                                             size (count new)]
-                                                        (if (< 4000 size)
-                                                          (let [new2 (subvec new (- size 2000))]
-                                                            (if (< @total-traces 20000) ;; Create a new vector to avoid structurally sharing all traces forever
+                                                        (if (< 8000 size)
+                                                          (let [new2 (subvec new (- size 4000))]
+                                                            (if (< @total-traces 40000) ;; Create a new vector to avoid structurally sharing all traces forever
                                                               (do (reset! total-traces 0)
                                                                   (into [] new2))))
-                                                          new))))))))
+                                                          new))))
+                                             (rf/dispatch [:traces/update-traces @traces])
+                                             (rf/dispatch [:epochs/update-epochs (metam/parse-traces @traces)])))))
 
 (defn dissoc-in
   "Dissociates an entry from a nested associative structure returning a new
@@ -318,3 +322,29 @@
   (fn [snapshot _]
     (reset! re-frame.db/app-db (:current-snapshot snapshot))
     snapshot))
+
+;;;
+
+(rf/reg-event-db
+  :epochs/update-epochs
+  [(rf/path [:epochs :matches])]
+  (fn [matches [_ rt]]
+    (:matches rt)))
+
+(rf/reg-event-db
+  :epochs/previous-epoch
+  [(rf/path [:epochs :current-epoch-index])]
+  (fn [index _]
+    ((fnil dec 0) index)))
+
+(rf/reg-event-db
+  :epochs/next-epoch
+  [(rf/path [:epochs :current-epoch-index])]
+  (fn [index _]
+    ((fnil inc 0) index)))
+
+(rf/reg-event-db
+  :traces/update-traces
+  [(rf/path [:traces :all-traces])]
+  (fn [_ [_ traces]]
+    traces))
