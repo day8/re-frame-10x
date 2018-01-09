@@ -351,9 +351,13 @@
      :height           common/gs-31}]
    [:.app-db-path--label
     {:color          "#2D9CDB"
-     :font-variant   "small-caps"
-     :text-transform "lowercase"
-     :height         common/gs-19}]
+     ;:font-variant   "small-caps"
+     ;:text-transform "lowercase"
+     :text-decoration "underline"
+     :font-size       "11px"
+     :margin-bottom   "2px"
+     ;:height         common/gs-19
+     }]
    [:.app-db-path--path-header
     {:background-color common/white-background-color
      :color            "#48494A"
@@ -373,6 +377,9 @@
                         :width          (px 16)
                         :padding        "0 2px"
                         :vertical-align "middle"}]
+   [:.bm-muted-button {:font-size "14px"
+                       :height    "23px"
+                       :padding   "0px 7px"}]
    ])
 
 

@@ -9,6 +9,9 @@
   :cursive.formatting/align-binding-forms true
   :day8.re-frame.trace.utils.macros/with-cljs-devtools-prefs 1
 }</ClojureCodeStyleSettings>
+        <MarkdownNavigatorCodeStyleSettings>
+          <option name="RIGHT_MARGIN" value="72" />
+        </MarkdownNavigatorCodeStyleSettings>
       </value>
     </option>
     <option name="USE_PER_PROJECT_SETTINGS" value="true" />

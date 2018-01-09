@@ -387,6 +387,34 @@
              attr)
            label]])
 
+(defn button
+  "Returns the markup for a basic button"
+  []
+  (let [showing? (reagent/atom false)]
+    (fn
+      [& {:keys [label on-click disabled? class style attr]
+          :or   {class "btn-default"}
+          :as   args}]
+      (let [disabled?  (deref-or-value disabled?)
+            the-button [:button
+                        (merge
+                          {:class    (str "rc-button btn " class)
+                           :style    (merge
+                                       (flex-child-style "none")
+                                       style)
+                           :disabled disabled?
+                           :on-click (handler-fn
+                                       (when (and on-click (not disabled?))
+                                         (on-click event)))}
+                          attr)
+                        label]]
+        (when disabled?
+          (reset! showing? false))
+        [box ;; Wrapper box is unnecessary but keeps the same structure as the re-com button
+         :class "rc-button-wrapper display-inline-flex"
+         :align :start
+         :child the-button]))))
+
 (defn checkbox
   "I return the markup for a checkbox, with an optional RHS label"
   [& {:keys [model on-change label disabled? label-class label-style class style attr]
