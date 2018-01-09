@@ -7,6 +7,7 @@
             [day8.re-frame.trace.view.subs :as subs]
             [day8.re-frame.trace.view.views :as views]
             [day8.re-frame.trace.view.traces :as traces]
+            [day8.re-frame.trace.view.debug :as debug]
             [day8.re-frame.trace.view.settings :as settings]
             [garden.core :refer [css style]]
             [garden.units :refer [px]]
@@ -114,7 +115,8 @@
            (tab-button :app-db "app-db")
            (tab-button :subs "Subs")
            (tab-button :views "Views")
-           (tab-button :traces "Trace")]]
+           (tab-button :traces "Trace")
+           (tab-button :debug "Debug")]]
          ]])
      [rc/line :color "#EEEEEE"]
      (when (and external-window? @unloading?)
@@ -122,14 +124,15 @@
      (when-not (re-frame.trace/is-trace-enabled?)
        [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set " [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
      [rc/v-box
-      :size     "auto"
-      :style    {:margin-left common/gs-19s
-                 :overflow "auto"}
-      :children [(case @selected-tab
+      :size "auto"
+      :style {:margin-left common/gs-19s :overflow "auto"}
+      :children
+      [(case @selected-tab
                    :overview [overview/render traces]
                    :app-db [app-db/render-state db/app-db]
                    :subs [subs/subs-panel]
                    :views [views/render]
                    :traces [traces/render-trace-panel traces]
+         :debug [debug/render-debug]
                    :settings [settings/render]
                    [app-db/render-state db/app-db])]]]))
