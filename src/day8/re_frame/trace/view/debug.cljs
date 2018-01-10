@@ -3,7 +3,7 @@
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.metamorphic :as metam]))
 
-(defn render-debug []
+(defn render []
   [rc/v-box
    :gap "5px"
    :children

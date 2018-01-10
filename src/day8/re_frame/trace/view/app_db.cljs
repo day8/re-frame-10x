@@ -22,7 +22,7 @@
 (def cljs-dev-tools-background "#e8ffe8")
 (def pod-gap common/gs-19s)
 
-(defn top-buttons []
+(defn panel-header []
   [rc/h-box
    :justify  :between
    :margin   "19px 0px"
@@ -41,7 +41,7 @@
                :height  "48px"
                :padding "0px 12px"
                :style {:background-color "#fafbfc"
-                       :border "1px solid #e8edf1"         ;; TODO: Need to get proper color from Figma
+                       :border "1px solid #e3e9ed"
                        :border-radius "3px"}
                :children [[rc/label :label "reset app-db to:"]
                           [rc/button
@@ -203,7 +203,7 @@
                        :margin-top "22px"}
                :label "add inspectors to show what happened to app-db"]]])
 
-(defn paths []
+(defn pod-section []
   (let [
         pods [["x" "y"] [:abc 123] nil]
         ;pods nil
@@ -216,11 +216,11 @@
                    (doall (for [p pods] [app-db-path p])))])))
 
 
-(defn render-state [data]
+(defn render [app-db]
   [rc/v-box
    :style    {:margin-right common/gs-19s}
-   :children [[top-buttons]
-              [paths]
+   :children [[panel-header]
+              [pod-section]
               [rc/gap-f :size pod-gap]]])
 
 

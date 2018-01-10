@@ -119,15 +119,16 @@
      (when-not (re-frame.trace/is-trace-enabled?)
        [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set " [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
      [rc/v-box
-      :size "auto"
-      :style {:margin-left common/gs-19s :overflow "auto"}
+      :size     "auto"
+      :style    {:margin-left common/gs-19s
+                 :overflow    "auto"}
       :children [(case @selected-tab
                    :event    [event/render traces]
-                   :app-db   [app-db/render-state db/app-db]
-                   :subs     [subs/subs-panel]
+                   :app-db   [app-db/render db/app-db]
+                   :subs     [subs/render]
                    :views    [views/render]
-                   :traces   [traces/render-trace-panel traces]
+                   :traces   [traces/render traces]
                    :timing   [timing/render]
-                   :debug    [debug/render-debug]
+                   :debug    [debug/render]
                    :settings [settings/render]
-                   [app-db/render-state db/app-db])]]]))
+                   [app-db/render db/app-db])]]]))
