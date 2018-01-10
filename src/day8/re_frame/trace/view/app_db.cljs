@@ -87,7 +87,7 @@
                    :height "31px"
                    :class  "noselect"
                    :style  {:cursor "pointer"}
-                   :attr   {:title    (str (if @*pod-open "close" "open") " this pod")
+                   :attr   {:title    (str (if @*pod-open "Close" "Open") " the pod bay doors, HAL")
                             :on-click (rc/handler-fn
                                         (swap! *pod-open not)
                                         (println "Clicked [arrow]"))}
