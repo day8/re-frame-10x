@@ -73,7 +73,7 @@
                            :on-click #(println "Clicked [end state]")]]]]])
 
 (defn path-header [p]
-  (let [search-string (rf/subscribe [:app-db/search-string])
+  (let [search-string (r/atom (when (some? p) (prn-str p))) ;;(rf/subscribe [:app-db/search-string])
         *pod-open     (r/atom true)]
     (fn [p]
       [rc/h-box
@@ -190,25 +190,30 @@
                :children  ["---after-diff---"]]
               [rc/gap-f :size "12px"]]])
 
+(defn no-pods
+  []
+  [rc/h-box
+   :margin "0px 0px 0px 19px"
+   :gap common/gs-7s
+   :align :start
+   :align-self :start
+   :children [[:img {:src (str "data:image/svg+xml;utf8," round-arrow)}]
+              [rc/label
+               :style {:width      "150px"
+                       :margin-top "22px"}
+               :label "add inspectors to show what happened to app-db"]]])
+
 (defn paths []
   (let [
         pods [["x" "y"] [:abc 123] nil]
         ;pods nil
         ]
-    [rc/v-box
-     :gap      pod-gap
-     :children (if (empty? pods)
-                 [[rc/h-box
-                   :margin     "0px 0px 0px 19px"
-                   :gap        common/gs-7s
-                   :align      :start
-                   :align-self :start
-                   :children   [[:img {:src (str "data:image/svg+xml;utf8," round-arrow)}]
-                                [rc/label
-                                 :style {:width "150px"
-                                         :margin-top "22px"}
-                                 :label "add inspectors to show what happened to app-db"]]]]
-                 (doall (for [p pods] [app-db-path p])))]))
+    (fn []
+      [rc/v-box
+       :gap pod-gap
+       :children (if (empty? pods)
+                   [[no-pods]]
+                   (doall (for [p pods] [app-db-path p])))])))
 
 
 (defn render-state [data]
