@@ -398,7 +398,7 @@
       (let [disabled?  (deref-or-value disabled?)
             the-button [:button
                         (merge
-                          {:class    (str "rc-button btn " class)
+                          {:class    (str "rc-button btn noselect " class)
                            :style    (merge
                                        (flex-child-style "none")
                                        style)
@@ -412,6 +412,36 @@
           (reset! showing? false))
         [box ;; Wrapper box is unnecessary but keeps the same structure as the re-com button
          :class "rc-button-wrapper display-inline-flex"
+         :align :start
+         :child the-button]))))
+
+(defn hyperlink
+  "Renders an underlined text hyperlink component.
+   This is very similar to the button component above but styled to looks like a hyperlink.
+   Useful for providing button functionality for less important functions, e.g. Cancel"
+  []
+  (let [showing? (reagent/atom false)]
+    (fn
+      [& {:keys [label on-click disabled? class style attr] :as args}]
+      (let [label      (deref-or-value label)
+            disabled?  (deref-or-value disabled?)
+            the-button [box
+                        :align :start
+                        :child [:a
+                                (merge
+                                  {:class    (str "rc-hyperlink noselect " class)
+                                   :style    (merge
+                                               (flex-child-style "none")
+                                               {:cursor (if disabled? "not-allowed" "pointer")
+                                                :color  (when disabled? "grey")}
+                                               style)
+                                   :on-click (handler-fn
+                                               (when (and on-click (not disabled?))
+                                                 (on-click event)))}
+                                  attr)
+                                label]]]
+        [box
+         :class "rc-hyperlink-wrapper display-inline-flex"
          :align :start
          :child the-button]))))
 

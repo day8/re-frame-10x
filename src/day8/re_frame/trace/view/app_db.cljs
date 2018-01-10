@@ -14,8 +14,13 @@
 (def reload-disabled (macros/slurp-macro "day8/re_frame/trace/images/reload-disabled.svg"))
 (def snapshot (macros/slurp-macro "day8/re_frame/trace/images/snapshot.svg"))
 (def snapshot-ready (macros/slurp-macro "day8/re_frame/trace/images/snapshot-ready.svg"))
+(def round-arrow (macros/slurp-macro "day8/re_frame/trace/images/round-arrow.svg"))
+(def arrow-right (macros/slurp-macro "day8/re_frame/trace/images/arrow-right.svg"))
+(def copy (macros/slurp-macro "day8/re_frame/trace/images/copy.svg"))
+(def trash (macros/slurp-macro "day8/re_frame/trace/images/trash.svg"))
 
 (def cljs-dev-tools-background "#e8ffe8")
+(def pod-gap common/gs-19s)
 
 (defn top-buttons []
   [rc/h-box
@@ -29,7 +34,7 @@
                :label    [rc/v-box
                           :align    :center
                           :children ["+ path inspector"]]
-               :on-click #()]
+               :on-click #(println "Clicked [+ path inspector]")]
               [rc/h-box
                :align :center
                :gap "7px"
@@ -46,13 +51,18 @@
                            :label    [rc/v-box
                                       :align    :center
                                       :children ["initial state"]]
-                           :on-click #()]
+                           :on-click #(println "Clicked [initial state]")]
                           [rc/v-box
                            :width common/gs-81s
                            :align :center
-                           :children [[rc/label :label "event"]
-                                      [rc/line :style {:align-self "stretch"}] ;; TODO: Add arrow head
-                                      [rc/label :label "processing"]]]
+                           :children [[rc/label
+                                       :style {:font-size  "9px"}
+                                       :label "EVENT"]
+                                      [:img {:src (str "data:image/svg+xml;utf8," arrow-right)}]
+                                      [rc/label
+                                       :style {:font-size  "9px"
+                                               :margin-top "-1px"}
+                                       :label "PROCESSING"]]]
                           [rc/button
                            :class    "bm-muted-button"
                            :style    {:width   "79px"
@@ -60,63 +70,77 @@
                            :label    [rc/v-box
                                       :align    :center
                                       :children ["end state"]]
-                           :on-click #()]]]]])
+                           :on-click #(println "Clicked [end state]")]]]]])
 
 (defn path-header [p]
-  (let [search-string (rf/subscribe [:app-db/search-string])]
-    [rc/h-box
-     :class "app-db-path--header"
-     :style {:border-top-left-radius "3px"
-             :border-top-right-radius "3px"}
-     :align :center
-     :height common/gs-31s
-     :children [[rc/box
-                 :width "36px"
-                 :height "31px"
-                 :child  [rc/box :margin "auto" :child [:span.arrow "▶"]]]
-                [rc/h-box
-                 :size "auto"
-                 :class "app-db-path--path-header"
-                 ;:style {:background-color "yellow"}
-                 :children [[rc/input-text
-                             ;:class           (str "app-db-path--path-text " (when (nil? p) "app-db-path--path-text__empty"))
-                             :style           {:height           "25px"
-                                               :padding          "0px 7px"
-                                               ;:background-color "lightgreen"
-                                               :width            "-webkit-fill-available"} ;; This took a bit of finding!
-                             :width           "100%"
-                             :model           search-string
-                             :on-change       (fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
-                             :on-submit       #(rf/dispatch [:app-db/add-path %])
-                             :change-on-blur? false
-                             :placeholder     "Showing all of app-db. Try entering a path like [:todos 1]"]]]
-                [rc/gap-f :size common/gs-12s]
-                [rc/button
-                 :class "bm-muted-button"
-                 :style {:width "25px"
-                         :height "25px"
-                         :padding "0px"}
-                 :label [:img
-                         {:src      (str "data:image/svg+xml;utf8," snapshot-ready)
-                          :style    {:cursor "pointer"
-                                     :height "19px"
-                                     :margin "3px"}
-                          :on-click #() #_#(rf/dispatch [:app-db/remove-path path])}]
-                 :on-click #()]
-                [rc/gap-f :size common/gs-12s]
-                [rc/button
-                 :class "bm-muted-button"
-                 :style {:width "25px"
-                         :height "25px"
-                         :padding "0px"}
-                 :label [:img
-                         {:src      (str "data:image/svg+xml;utf8," delete)
-                          :style    {:cursor "pointer"
-                                     :height "19px"
-                                     :margin "3px"}
-                          :on-click #() #_#(rf/dispatch [:app-db/remove-path path])}]
-                 :on-click #()]
-                [rc/gap-f :size common/gs-12s]]]))
+  (let [search-string (rf/subscribe [:app-db/search-string])
+        *pod-open     (r/atom true)]
+    (fn [p]
+      [rc/h-box
+       :class "app-db-path--header"
+       :style {:border-top-left-radius  "3px"
+               :border-top-right-radius "3px"}
+       :align :center
+       :height common/gs-31s
+       :children [[rc/box
+                   :width  "36px"
+                   :height "31px"
+                   :class  "noselect"
+                   :style  {:cursor "pointer"}
+                   :attr   {:title    (str (if @*pod-open "close" "open") " this pod")
+                            :on-click (rc/handler-fn
+                                        (swap! *pod-open not)
+                                        (println "Clicked [arrow]"))}
+                   :child  [rc/box
+                            :margin "auto"
+                            :child  [:span.arrow (if @*pod-open "▼" "▶")]]]
+                  [rc/h-box
+                   :size "auto"
+                   :class "app-db-path--path-header"
+                   ;:style {:background-color "yellow"}
+                   :children [[rc/input-text
+                               ;:class           (str "app-db-path--path-text " (when (nil? p) "app-db-path--path-text__empty"))
+                               :style {:height  "25px"
+                                       :padding "0px 7px"
+                                       ;:background-color "lightgreen"
+                                       :width   "-webkit-fill-available"} ;; This took a bit of finding!
+                               :width "100%"
+                               :model search-string
+                               :on-change (fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+                               :on-submit #(rf/dispatch [:app-db/add-path %])
+                               :change-on-blur? false
+                               :placeholder "Showing all of app-db. Try entering a path like [:todos 1]"]]]
+                  [rc/gap-f :size common/gs-12s]
+                  [rc/box
+                   :class "bm-muted-button noselect"
+                   :style {:width         "25px"
+                           :height        "25px"
+                           :padding       "0px"
+                           :border-radius "3px"
+                           :cursor        "pointer"}
+                   :attr  {:title    "Show diff"
+                           :on-click (rc/handler-fn (println "Clicked [copy]"))}
+                   :child [:img
+                           {:src   (str "data:image/svg+xml;utf8," copy)
+                            :style {:width  "21px"
+                                    :margin "6px 2px"}}]]
+                  [rc/gap-f :size common/gs-12s]
+                  [rc/box
+                   :class "bm-muted-button noselect"
+                   :style {:width         "25px"
+                           :height        "25px"
+                           :padding       "0px"
+                           :border-radius "3px"
+                           :cursor        "pointer"}
+                   :attr  {:title    "Remove this pod"
+                           :on-click (rc/handler-fn
+                                       ;(rf/dispatch [:app-db/remove-path %])
+                                       (println "Clicked [delete]"))}
+                   :child [:img
+                           {:src   (str "data:image/svg+xml;utf8," trash)
+                            :style {:width  "16px"
+                                    :margin "3px 4px"}}]]
+                  [rc/gap-f :size common/gs-12s]]])))
 
 (defn app-db-path [p]
   ^{:key (str p)}
@@ -126,42 +150,65 @@
            :border-bottom-right-radius "3px"}
    :children [[path-header p]
               [rc/v-box
-               :height "90px"
-               :style {:background-color cljs-dev-tools-background
-                       :padding  "7px"
-                       :margin "12px 12px 0px 12px"}
-               :children ["---main-section---"]]
+               :height    "90px"
+               :min-width "100px"
+               :style     {:background-color cljs-dev-tools-background
+                           :padding  "7px"
+                           :margin "12px 12px 0px 12px"}
+               :children  ["---main-section---"]]
 
               [rc/v-box
                :height  "19px"
                :justify  :end
                :style    {:margin "0px 12px"}
-               :children [[rc/label :class "app-db-path--label" :label "ONLY BEFORE"]]]
+               :children [[rc/hyperlink
+                           ;:class "app-db-path--label"
+                           :label "ONLY BEFORE"
+                           :on-click #(println "Clicked [ONLY BEFORE]")]]]
               [rc/v-box
-               :height "60px"
-               :style {:background-color cljs-dev-tools-background
-                       :padding  "7px"
-                       :margin "0px 12px"}
-               :children ["---before-diff---"]]
+               :height    "60px"
+               :min-width "100px"
+               :style     {:background-color cljs-dev-tools-background
+                           :padding  "7px"
+                           :margin "0px 12px"}
+               :children  ["---before-diff---"]]
 
               [rc/v-box
                :height   "19px"
                :justify  :end
                :style    {:margin "0px 12px"}
-               :children [[rc/label :class "app-db-path--label" :label "ONLY AFTER"]]]
+               :children [[rc/hyperlink
+                           ;:class "app-db-path--label"
+                           :label "ONLY AFTER"
+                           :on-click #(println "Clicked [ONLY AFTER]")]]]
               [rc/v-box
-               :height "60px"
-               :style {:background-color cljs-dev-tools-background
-                       :padding  "7px"
-                       :margin "0px 12px"}
-               :children ["---after-diff---"]]
+               :height    "60px"
+               :min-width "100px"
+               :style     {:background-color cljs-dev-tools-background
+                           :padding  "7px"
+                           :margin "0px 12px"}
+               :children  ["---after-diff---"]]
               [rc/gap-f :size "12px"]]])
 
 (defn paths []
-  [rc/v-box
-   :gap common/gs-31s
-   :children (doall (for [p [["x" "y"] [:abc 123] nil]]
-                      [app-db-path p]))])
+  (let [
+        pods [["x" "y"] [:abc 123] nil]
+        ;pods nil
+        ]
+    [rc/v-box
+     :gap      pod-gap
+     :children (if (empty? pods)
+                 [[rc/h-box
+                   :margin     "0px 0px 0px 19px"
+                   :gap        common/gs-7s
+                   :align      :start
+                   :align-self :start
+                   :children   [[:img {:src (str "data:image/svg+xml;utf8," round-arrow)}]
+                                [rc/label
+                                 :style {:width "150px"
+                                         :margin-top "22px"}
+                                 :label "add inspectors to show what happened to app-db"]]]]
+                 (doall (for [p pods] [app-db-path p])))]))
 
 
 (defn render-state [data]
@@ -169,7 +216,7 @@
    :style    {:margin-right common/gs-19s}
    :children [[top-buttons]
               [paths]
-              [rc/gap-f :size common/gs-19s]]])
+              [rc/gap-f :size pod-gap]]])
 
 
 (comment

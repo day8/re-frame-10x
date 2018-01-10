@@ -36,19 +36,20 @@
      [(when showing-settings?
         [:button {:class    "bm-active-button"
                   :on-click #(rf/dispatch [:settings/toggle-settings])} "Done"])
-      [:img.nav-icon
+      [:img.nav-icon.noselect
        {:title    "Pause"
         :src      (str "data:image/svg+xml;utf8,"
                        pause-svg)
         :on-click #(rf/dispatch [:settings/pause])}]
-      [:img.nav-icon
+      [:img.nav-icon.noselect
        {:title    "Settings"
         :src      (str "data:image/svg+xml;utf8,"
                        (if showing-settings? orange-settings-svg settings-svg))
         :on-click #(rf/dispatch [:settings/toggle-settings])}]
       (when-not external-window?
-        [:img.nav-icon.active
-         {:src      (str "data:image/svg+xml;utf8,"
+        [:img.nav-icon.active.noselect
+         {:title    "Pop out"
+          :src      (str "data:image/svg+xml;utf8,"
                          open-external)
           :on-click #(rf/dispatch-sync [:global/launch-external])}])]])
   )
