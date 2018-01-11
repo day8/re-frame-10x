@@ -1,6 +1,5 @@
 (ns day8.re-frame.trace.view.app-db
-  (:require [clojure.string :as str]
-            [devtools.prefs]
+  (:require [devtools.prefs]
             [devtools.formatters.core]
             [day8.re-frame.trace.view.components :as components]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
@@ -20,7 +19,7 @@
 (def trash (macros/slurp-macro "day8/re_frame/trace/images/trash.svg"))
 
 (def cljs-dev-tools-background "#e8ffe8")
-(def pod-gap common/gs-19s) ;; or 31?
+(def pod-gap common/gs-19s)
 (def pad-padding common/gs-7s)
 
 ;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
@@ -28,16 +27,15 @@
 (def *pods (r/atom [{:id (gensym) :path "[\"x\" \"y\"]" :open? true  :diff? true}
                     {:id (gensym) :path "[:abc 123]"    :open? true  :diff? false}
                     {:id (gensym) :path "[:a :b :c]"    :open? false :diff? true}
-                    {:id (gensym) :path "[\"hello\"]"   :open? false :diff? false}]
-                   #_[]))
+                    {:id (gensym) :path "[\"hello\"]"   :open? false :diff? false}]))
 
 (defn add-pod []
   (let [id (gensym)]
-    (println "Added pod" id)
+    ;(println "Added pod" id)
     (swap! *pods concat [{:id id :path "" :open? true :diff? false}])))
 
 (defn delete-pod [id]
-  (println "Deleted pod" id)
+  ;(println "Deleted pod" id)
   (reset! *pods (filterv #(not= id (:id %)) @*pods)))
 
 (defn update-pod-field

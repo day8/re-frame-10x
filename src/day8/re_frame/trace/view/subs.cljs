@@ -1,8 +1,5 @@
 (ns day8.re-frame.trace.view.subs
-  (:require [re-frame.subs :as subs]
-            ;[cljs.spec.alpha :as s]
-            [day8.re-frame.trace.view.components :as components]
-            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+  (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame.trace.common-styles :as common])
@@ -18,17 +15,16 @@
 (def copy (macros/slurp-macro "day8/re_frame/trace/images/copy.svg"))
 
 (def cljs-dev-tools-background "#e8ffe8")
-(def pod-gap common/gs-19s) ;; or 31?
+(def pod-gap common/gs-19s)
 (def pad-padding common/gs-7s)
 
 ;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
-(def *pods (r/atom [{:id (gensym) :type :destroyed :layer "3" :path "[:todo/blah]"      :open? true :diff? true}
+(def *pods (r/atom [{:id (gensym) :type :destroyed :layer "3" :path "[:todo/blah]"      :open? true :diff? false}
                     {:id (gensym) :type :created   :layer "3" :path "[:todo/completed]" :open? true :diff? true}
-                    {:id (gensym) :type :re-run    :layer "3" :path "[:todo/completed]" :open? true :diff? true}
-                    {:id (gensym) :type :re-run    :layer "2" :path "[:todo/blah]"      :open? true :diff? true}
-                    {:id (gensym) :type :not-run   :layer "3" :path "[:todo/blah]"      :open? true :diff? true}]
-                   #_[]))
+                    {:id (gensym) :type :re-run    :layer "3" :path "[:todo/completed]" :open? true :diff? false}
+                    {:id (gensym) :type :re-run    :layer "2" :path "[:todo/blah]"      :open? true :diff? false}
+                    {:id (gensym) :type :not-run   :layer "3" :path "[:todo/blah]"      :open? true :diff? false}]))
 
 (defn update-pod-field
   [id field new-val]
@@ -58,6 +54,7 @@
 
 (defn tag [type label]
   [rc/box
+   :class "noselect"
    :style {:color            "white"
            :background-color (tag-color type)
            :width            common/gs-50s
@@ -69,6 +66,7 @@
 
 (defn title-tag [type title label]
   [rc/v-box
+   :class    "noselect"
    :align    :center
    :gap      "2px"
    :children [[:span {:style {:font-size "9px"}} title]
@@ -111,11 +109,14 @@
 
 (defn pod-header [{:keys [id type layer path open? diff?]}]
   [rc/h-box
-   :class "app-db-path--header"
-   :style {:border-top-left-radius  "3px"
-           :border-top-right-radius "3px"}
-   :align :center
-   :height common/gs-31s
+   :class    "app-db-path--header"
+   :style    (merge {:border-top-left-radius  "3px"
+                     :border-top-right-radius "3px"}
+                    (when-not open?
+                      {:border-bottom-left-radius  "3px"
+                       :border-bottom-right-radius "3px"}))
+   :align    :center
+   :height   common/gs-31s
    :children [[rc/box
                :width  "36px"
                :height common/gs-31s
