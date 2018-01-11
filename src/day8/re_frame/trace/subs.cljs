@@ -1,6 +1,7 @@
 (ns day8.re-frame.trace.subs
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [day8.re-frame.trace.metamorphic :as metam]))
+            [day8.re-frame.trace.metamorphic :as metam]
+            [day8.re-frame.trace.utils.utils :as utils]))
 
 (rf/reg-sub
   :settings/root
@@ -104,8 +105,7 @@
   :<- [:epochs/beginning-trace-id]
   :<- [:epochs/ending-trace-id]
   (fn [[traces beginning ending] _]
-    (filter #(<= beginning (:id %) ending) traces)
-    #_traces))
+    (into [] (filter #(<= beginning (:id %) ending)) traces)))
 
 (rf/reg-sub
   :traces/show-epoch-traces?
@@ -200,3 +200,36 @@
   (fn [[current total]]
     (and (not (zero? current))
          (some? current))))
+
+;;
+
+(rf/reg-sub
+  :timing/total-epoch-time
+  :<- [:traces/current-event-traces]
+  (fn [traces]
+    (let [start-of-epoch (nth traces 0)
+          end-of-epoch   (utils/last-in-vec traces)]
+      (metam/elapsed-time start-of-epoch end-of-epoch))))
+
+(rf/reg-sub
+  :timing/animation-frame-count
+  :<- [:traces/current-event-traces]
+  (fn [traces]
+    (count (filter metam/request-animation-frame? traces))))
+
+(rf/reg-sub
+  :timing/event-processing-time
+  :<- [:traces/current-event-traces]
+  (fn [traces]
+    (let [start-of-epoch (nth traces 0)
+          finish-run     (first (filter metam/finish-run? traces))]
+      (js/console.log "Start" start-of-epoch "fin" finish-run)
+      (metam/elapsed-time start-of-epoch finish-run))))
+
+(rf/reg-sub
+  :timing/render-time
+  :<- [:traces/current-event-traces]
+  (fn [traces]
+    (let [start-of-render (first (filter metam/request-animation-frame? traces))
+          end-of-epoch (utils/last-in-vec traces)]
+      (metam/elapsed-time start-of-render end-of-epoch))))

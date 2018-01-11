@@ -1,4 +1,5 @@
-(ns day8.re-frame.trace.metamorphic)
+(ns day8.re-frame.trace.metamorphic
+  (:require [mranderson047.re-frame.v0v10v2.re-frame.utils :as utils]))
 
 ;; What starts an epoch?
 
@@ -62,19 +63,31 @@
 ;  (or (quiescent? event history pattern-sequence pattern)
 ;      (epoch-started? event history pattern-sequence pattern)))
 ;
+
+(defn elapsed-time [ev1 ev2]
+  (let [start-of-epoch (:start ev1)
+        end-of-epoch   (:end ev2)]
+    (when (and (some? start-of-epoch) (some? end-of-epoch))
+      #?(:cljs (js/Math.round (- end-of-epoch start-of-epoch))
+         :clj (Math/round ^double (- end-of-epoch start-of-epoch))))))
+
 (defn run-queue? [event]
   (and (fsm-trigger? event)
        (= (:operation event)
           [:scheduled :run-queue])))
 ;
-;(defn request-animation-frame? [event history pattern-sequence pattern]
-;  (= :raf (:op-type event)))
+(defn request-animation-frame? [event]
+  (= :raf (:op-type event)))
 ;
 ;(defn request-animation-frame-end? [event history pattern-sequence pattern]
 ;  (= :raf-end (:op-type event)))
 ;
 (defn summarise-event [ev]
-  (dissoc ev :start :duration :end :child-of))
+  (-> ev
+      (dissoc :start :duration :end :child-of)
+      (utils/dissoc-in [:tags :app-db-before])
+      (utils/dissoc-in [:tags :app-db-after])))
+
 
 (defn summarise-match [match]
   (map summarise-event match))
@@ -111,6 +124,11 @@
   (and (= :re-frame.router/fsm-trigger (:op-type event))
        (= (:operation event)
           [:idle :add-event])))
+
+(defn finish-run? [event]
+  (and (fsm-trigger? event)
+       (= (:operation event)
+          [:running :finish-run])))
 
 (defn event-run? [event]
   (= :event (:op-type event)))
