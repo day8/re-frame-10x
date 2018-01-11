@@ -109,4 +109,5 @@ If you want to work on re-frame-trace, see [DEVELOPERS.md](DEVELOPERS.md).
 * [Settings](https://thenounproject.com/search/?q=settings&i=1169241) by arjuazka from the Noun Project
 * [Wrench](https://thenounproject.com/icon/1013218/) by Aleksandr Vector from the Noun Project
 * [pause](https://thenounproject.com/icon/1376662/) by Bhuvan from the Noun Project
+* [play]() by Bhuvan from the Noun Project
 * [Log Out](https://thenounproject.com/icon/54484/) by Arthur Shlain from the Noun Project

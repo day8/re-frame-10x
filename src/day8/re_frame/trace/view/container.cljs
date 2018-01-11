@@ -25,22 +25,32 @@
 (def settings-svg (macros/slurp-macro "day8/re_frame/trace/images/wrench.svg"))
 (def orange-settings-svg (macros/slurp-macro "day8/re_frame/trace/images/orange-wrench.svg"))
 (def pause-svg (macros/slurp-macro "day8/re_frame/trace/images/pause.svg"))
+(def play-svg (macros/slurp-macro "day8/re_frame/trace/images/play.svg"))
 
 (def outer-margins {:margin (str "0px " common/gs-19s)})
 
+
+
 (defn right-hand-buttons [external-window?]
   (let [selected-tab      (rf/subscribe [:settings/selected-tab])
+        paused?           (rf/subscribe [:settings/paused?])
         showing-settings? (= @selected-tab :settings)]
     [rc/h-box
      :align    :center
      :children [(when showing-settings?
                   [:button {:class    "bm-active-button"
                             :on-click #(rf/dispatch [:settings/toggle-settings])} "Done"])
-                [:img.nav-icon.noselect
-                 {:title    "Pause"
-                  :src      (str "data:image/svg+xml;utf8,"
-                                 pause-svg)
-                  :on-click #(rf/dispatch [:settings/pause])}]
+                (if @paused?
+                  [:img.nav-icon.noselect
+                   {:title    "Play"
+                    :src      (str "data:image/svg+xml;utf8,"
+                                   play-svg)
+                    :on-click #(rf/dispatch [:settings/play])}]
+                  [:img.nav-icon.noselect
+                   {:title    "Pause"
+                    :src      (str "data:image/svg+xml;utf8,"
+                                   pause-svg)
+                    :on-click #(rf/dispatch [:settings/pause])}])
                 [:img.nav-icon.noselect
                  {:title    "Settings"
                   :src      (str "data:image/svg+xml;utf8,"

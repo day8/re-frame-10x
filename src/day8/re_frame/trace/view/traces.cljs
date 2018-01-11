@@ -7,7 +7,8 @@
             [cljs.pprint :as pprint]
             [clojure.set :as set]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
-            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [day8.re-frame.trace.utils.re-com :as rc]))
 
 (defn query->fn [query]
   (if (= :contains (:filter-type query))
@@ -90,10 +91,14 @@
         trace-detail-expansions (rf/subscribe [:traces/expansions])
         beginning               (rf/subscribe [:epochs/beginning-trace-id])
         end                     (rf/subscribe [:epochs/ending-trace-id])
-        current-traces          (rf/subscribe [:traces/current-event-traces])]
+        current-traces          (rf/subscribe [:traces/current-event-traces])
+        show-epoch-traces?      (rf/subscribe [:traces/show-epoch-traces?])]
     (fn []
       (let [toggle-category-fn #(rf/dispatch [:traces/toggle-categories %])
-            visible-traces     (cond->> #_@current-traces  @traces
+            traces-to-filter   (if @show-epoch-traces?
+                                 @current-traces
+                                 @traces)
+            visible-traces     (cond->> traces-to-filter
                                         ;; Remove cached subscriptions. Could add this back in as a setting later
                                         ;; but it's pretty low signal/noise 99% of the time.
                                         true (remove (fn [trace] (and (= :sub/create (:op-type trace))
@@ -125,6 +130,10 @@
             [:li.filter-category {:class    (when (contains? @categories :re-frame.router/fsm-trigger) "active")
                                   :on-click #(rf/dispatch [:traces/toggle-categories #{:re-frame.router/fsm-trigger :componentWillUnmount}])}
              "internals"]]
+           [rc/checkbox
+            :model show-epoch-traces?
+            :on-change #(rf/dispatch [:traces/update-show-epoch-traces? %])
+            :label "Show only traces for this epoch?"]
            [:div.filter-fields
             [:select {:value     @filter-type
                       :on-change #(reset! filter-type (keyword (.. % -target -value)))}

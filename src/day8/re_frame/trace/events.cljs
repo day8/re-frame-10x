@@ -111,6 +111,16 @@
           (assoc-in [:settings :using-trace?] using-trace?)
           (assoc-in [:settings :show-panel?] now-showing?)))))
 
+(rf/reg-event-db
+  :settings/pause
+  (fn [db _]
+    (assoc-in db [:settings :paused?] true)))
+
+(rf/reg-event-db
+  :settings/play
+  (fn [db _]
+    (assoc-in db [:settings :paused?] false)))
+
 ;; Global
 
 (defn mount [popup-window popup-document]
@@ -253,6 +263,12 @@
   [(rf/path [:traces :categories])]
   (fn [categories [_ new-categories]]
     new-categories))
+
+(rf/reg-event-db
+  :traces/update-show-epoch-traces?
+  [(rf/path [:traces :show-epoch-traces?])]
+  (fn [_ [_ show-epoch-traces?]]
+    show-epoch-traces?))
 
 ;; App DB
 

@@ -26,6 +26,12 @@
       :settings
       (get settings :selected-tab))))
 
+(rf/reg-sub
+  :settings/paused?
+  :<- [:settings/root]
+  (fn [settings _]
+    (:paused? settings)))
+
 ;; App DB
 
 (rf/reg-sub
@@ -99,6 +105,12 @@
   (fn [[traces beginning ending] _]
     (filter #(<= beginning (:id %) ending) traces)
     #_traces))
+
+(rf/reg-sub
+  :traces/show-epoch-traces?
+  :<- [:traces/trace-root]
+  (fn [trace-root]
+    (:show-epoch-traces? trace-root)))
 
 ;;
 
