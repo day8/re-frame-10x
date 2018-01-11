@@ -20,8 +20,8 @@
 (def trash (macros/slurp-macro "day8/re_frame/trace/images/trash.svg"))
 
 (def cljs-dev-tools-background "#e8ffe8")
-(def pod-gap common/gs-19s)     ;; or 31
-(def pad-padding common/gs-12s) ;; or 7?
+(def pod-gap common/gs-19s) ;; or 31?
+(def pad-padding common/gs-7s)
 
 (defn panel-header []
   [rc/h-box
@@ -73,10 +73,10 @@
                                       :children ["end state"]]
                            :on-click #(println "Clicked [end state]")]]]]])
 
-(defn path-header [p]
-  (let [search-string (r/atom (when (some? p) (prn-str p))) ;;(rf/subscribe [:app-db/search-string])
+(defn path-header [path]
+  (let [search-string (r/atom (when (some? path) (prn-str path))) ;;(rf/subscribe [:app-db/search-string])
         *pod-open     (r/atom true)]
-    (fn [p]
+    (fn [path]
       [rc/h-box
        :class "app-db-path--header"
        :style {:border-top-left-radius  "3px"
@@ -99,16 +99,16 @@
                    :size "auto"
                    :class "app-db-path--path-header"
                    :children [[rc/input-text
-                               ;:class           (str "app-db-path--path-text " (when (nil? p) "app-db-path--path-text__empty"))
-                               :style {:height  "25px"
-                                       :padding (css-join "0px" common/gs-7s)
-                                       :width   "-webkit-fill-available"} ;; This took a bit of finding!
-                               :width "100%"
-                               :model search-string
-                               :on-change (fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
-                               :on-submit #(rf/dispatch [:app-db/add-path %])
+                               ;:class           (str "app-db-path--path-text " (when (nil? path) "app-db-path--path-text__empty"))
+                               :style           {:height  "25px"
+                                                 :padding (css-join "0px" common/gs-7s)
+                                                 :width   "-webkit-fill-available"} ;; This took a bit of finding!
+                               :width           "100%"
+                               :model           search-string
+                               :on-change       (fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+                               :on-submit       #(rf/dispatch [:app-db/add-path %])
                                :change-on-blur? false
-                               :placeholder "Showing all of app-db. Try entering a path like [:todos 1]"]]]
+                               :placeholder     "Showing all of app-db. Try entering a path like [:todos 1]"]]]
                   [rc/gap-f :size common/gs-12s]
                   [rc/box
                    :class "bm-muted-button noselect"
@@ -141,13 +141,12 @@
                                     :margin "0px 6px"}}]]
                   [rc/gap-f :size common/gs-12s]]])))
 
-(defn app-db-path [p]
-  ^{:key (str p)}
+(defn pod [path]
   [rc/v-box
    :class "app-db-path"
    :style {:border-bottom-left-radius "3px"
            :border-bottom-right-radius "3px"}
-   :children [[path-header p]
+   :children [[path-header path]
               [rc/v-box
                :height    "90px"
                :min-width "100px"
@@ -189,8 +188,7 @@
                :children  ["---after-diff---"]]
               [rc/gap-f :size pad-padding]]])
 
-(defn no-pods
-  []
+(defn no-pods []
   [rc/h-box
    :margin (css-join "0px 0px 0px" common/gs-19s)
    :gap common/gs-7s
@@ -212,9 +210,11 @@
        :gap pod-gap
        :children (if (empty? pods)
                    [[no-pods]]
-                   (doall (for [p pods] [app-db-path p])))])))
+                   (doall (for [p pods]
+                            ^{:key (str p)}
+                            [pod p])))])))
 
-
+;; TODO: OLD UI - REMOVE
 (defn original-render [app-db]
   (let [subtree-input   (r/atom "")
         subtree-paths   (rf/subscribe [:app-db/paths])
