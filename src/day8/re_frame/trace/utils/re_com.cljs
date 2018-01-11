@@ -478,6 +478,12 @@
                     :on-click (handler-fn (callback-fn))}
                    label])]]))
 
+(defn css-join [& args]
+  "Creates a single string from all passed args, separated by spaces (all args are coerced to strings)
+  Very simple, but handy
+  e.g. {:padding (css-join common/gs-12s (px 25))}"
+  (clojure.string/join " " args))
+
 (def re-com-css
   [[:.display-flex {:display "flex"}]
    [:.display-inline-flex {:display "flex"}]])

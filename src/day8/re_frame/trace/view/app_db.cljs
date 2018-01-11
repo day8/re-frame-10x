@@ -5,7 +5,7 @@
             [day8.re-frame.trace.view.components :as components]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
-            [day8.re-frame.trace.utils.re-com :as rc]
+            [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame.trace.common-styles :as common])
   (:require-macros [day8.re-frame.trace.utils.macros :as macros]))
 
@@ -20,13 +20,14 @@
 (def trash (macros/slurp-macro "day8/re_frame/trace/images/trash.svg"))
 
 (def cljs-dev-tools-background "#e8ffe8")
-(def pod-gap common/gs-19s)
+(def pod-gap common/gs-19s)     ;; or 31
+(def pad-padding common/gs-12s) ;; or 7?
 
 (defn panel-header []
   [rc/h-box
    :justify  :between
-   :margin   "19px 0px"
    :align    :center
+   :margin   (css-join common/gs-19s "0px")
    :children [[rc/button
                :class    "bm-muted-button"
                :style    {:width   "129px"
@@ -37,9 +38,9 @@
                :on-click #(println "Clicked [+ path inspector]")]
               [rc/h-box
                :align :center
-               :gap "7px"
+               :gap common/gs-7s
                :height  "48px"
-               :padding "0px 12px"
+               :padding (css-join "0px" common/gs-12s)
                :style {:background-color "#fafbfc"
                        :border "1px solid #e3e9ed"
                        :border-radius "3px"}
@@ -84,7 +85,7 @@
        :height common/gs-31s
        :children [[rc/box
                    :width  "36px"
-                   :height "31px"
+                   :height common/gs-31s
                    :class  "noselect"
                    :style  {:cursor "pointer"}
                    :attr   {:title    (str (if @*pod-open "Close" "Open") " the pod bay doors, HAL")
@@ -97,12 +98,10 @@
                   [rc/h-box
                    :size "auto"
                    :class "app-db-path--path-header"
-                   ;:style {:background-color "yellow"}
                    :children [[rc/input-text
                                ;:class           (str "app-db-path--path-text " (when (nil? p) "app-db-path--path-text__empty"))
                                :style {:height  "25px"
-                                       :padding "0px 7px"
-                                       ;:background-color "lightgreen"
+                                       :padding (css-join "0px" common/gs-7s)
                                        :width   "-webkit-fill-available"} ;; This took a bit of finding!
                                :width "100%"
                                :model search-string
@@ -122,8 +121,8 @@
                            :on-click (rc/handler-fn (println "Clicked [copy]"))}
                    :child [:img
                            {:src   (str "data:image/svg+xml;utf8," copy)
-                            :style {:width  "21px"
-                                    :margin "6px 2px"}}]]
+                            :style {:width  "19px"
+                                    :margin "0px 3px"}}]]
                   [rc/gap-f :size common/gs-12s]
                   [rc/box
                    :class "bm-muted-button noselect"
@@ -138,8 +137,8 @@
                                        (println "Clicked [delete]"))}
                    :child [:img
                            {:src   (str "data:image/svg+xml;utf8," trash)
-                            :style {:width  "16px"
-                                    :margin "3px 4px"}}]]
+                            :style {:width  "13px"
+                                    :margin "0px 6px"}}]]
                   [rc/gap-f :size common/gs-12s]]])))
 
 (defn app-db-path [p]
@@ -153,14 +152,14 @@
                :height    "90px"
                :min-width "100px"
                :style     {:background-color cljs-dev-tools-background
-                           :padding  "7px"
-                           :margin "12px 12px 0px 12px"}
+                           :padding  common/gs-7s
+                           :margin (css-join pad-padding pad-padding "0px" pad-padding)}
                :children  ["---main-section---"]]
 
               [rc/v-box
-               :height  "19px"
+               :height  common/gs-19s
                :justify  :end
-               :style    {:margin "0px 12px"}
+               :style    {:margin (css-join "0px" pad-padding)}
                :children [[rc/hyperlink
                            ;:class "app-db-path--label"
                            :label "ONLY BEFORE"
@@ -169,14 +168,14 @@
                :height    "60px"
                :min-width "100px"
                :style     {:background-color cljs-dev-tools-background
-                           :padding  "7px"
-                           :margin "0px 12px"}
+                           :padding  common/gs-7s
+                           :margin (css-join "0px" pad-padding)}
                :children  ["---before-diff---"]]
 
               [rc/v-box
-               :height   "19px"
+               :height   common/gs-19s
                :justify  :end
-               :style    {:margin "0px 12px"}
+               :style    {:margin (css-join "0px" pad-padding)}
                :children [[rc/hyperlink
                            ;:class "app-db-path--label"
                            :label "ONLY AFTER"
@@ -185,15 +184,15 @@
                :height    "60px"
                :min-width "100px"
                :style     {:background-color cljs-dev-tools-background
-                           :padding  "7px"
-                           :margin "0px 12px"}
+                           :padding  common/gs-7s
+                           :margin (css-join "0px" pad-padding)}
                :children  ["---after-diff---"]]
-              [rc/gap-f :size "12px"]]])
+              [rc/gap-f :size pad-padding]]])
 
 (defn no-pods
   []
   [rc/h-box
-   :margin "0px 0px 0px 19px"
+   :margin (css-join "0px 0px 0px" common/gs-19s)
    :gap common/gs-7s
    :align :start
    :align-self :start
@@ -216,72 +215,74 @@
                    (doall (for [p pods] [app-db-path p])))])))
 
 
+(defn original-render [app-db]
+  (let [subtree-input   (r/atom "")
+        subtree-paths   (rf/subscribe [:app-db/paths])
+        search-string   (rf/subscribe [:app-db/search-string])
+        input-error     (r/atom false)
+        snapshot-ready? (rf/subscribe [:snapshot/snapshot-ready?])]
+    (fn []
+      [:div {:style {:flex "1 1 auto" :display "flex" :flex-direction "column" :border "1px solid lightgrey"}}
+       [:div.panel-content-scrollable
+        [rc/input-text
+         :model search-string
+         :on-change (fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+         :on-submit #(rf/dispatch [:app-db/add-path %])
+         :change-on-blur? false
+         :placeholder ":path :into :app-db"]
+        ;; TODO: check for input errors
+        ; (if @input-error
+        ;   [:div.input-error {:style {:color "red" :margin-top 5}}
+        ;    "Please enter a valid path."])]]
+
+        [rc/h-box
+         :children [[:img.nav-icon
+                     {:title    "Load app-db snapshot"
+                      :class    (when-not @snapshot-ready? "inactive")
+                      :src      (str "data:image/svg+xml;utf8,"
+                                     (if @snapshot-ready?
+                                       reload
+                                       reload-disabled))
+                      :on-click #(when @snapshot-ready? (rf/dispatch-sync [:snapshot/load-snapshot]))}]
+                    [:img.nav-icon
+                     {:title    "Snapshot app-db"
+                      :class    (when @snapshot-ready? "active")
+                      :src      (str "data:image/svg+xml;utf8,"
+                                     (if @snapshot-ready?
+                                       snapshot-ready
+                                       snapshot))
+                      :on-click #(rf/dispatch-sync [:snapshot/save-snapshot])}]]]
+
+        [:div.subtrees {:style {:margin "20px 0"}}
+         (doall
+           (map (fn [path]
+                  ^{:key path}
+                  [:div.subtree-wrapper {:style {:margin "10px 0"}}
+                   [:div.subtree
+                    [components/subtree
+                     (get-in @app-db path)
+                     [rc/h-box
+                      :align :center
+                      :children [[:button.subtree-button
+                                  [:span.subtree-button-string
+                                   (str path)]]
+                                 [:img
+                                  {:src      (str "data:image/svg+xml;utf8," delete)
+                                   :style    {:cursor "pointer"
+                                              :height "10px"}
+                                   :on-click #(rf/dispatch [:app-db/remove-path path])}]]]
+                     [path]]]])
+                @subtree-paths))]
+        [:div {:style {:margin-bottom "20px"}}
+         [components/subtree @app-db [:span.label "app-db"] [:app-db]]]]])))
+
 (defn render [app-db]
   [rc/v-box
    :style    {:margin-right common/gs-19s}
    :children [[panel-header]
               [pod-section]
-              [rc/gap-f :size pod-gap]]])
+              [rc/gap-f :size pod-gap]
+              [original-render app-db]]])
 
 
-(comment
-  (defn old-render-state [data]
-    (let [subtree-input   (r/atom "")
-          subtree-paths   (rf/subscribe [:app-db/paths])
-          search-string   (rf/subscribe [:app-db/search-string])
-          input-error     (r/atom false)
-          snapshot-ready? (rf/subscribe [:snapshot/snapshot-ready?])]
-      (fn []
-        [:div {:style {:flex "1 1 auto" :display "flex" :flex-direction "column"}}
-         [:div.panel-content-scrollable
-          [rc/input-text
-           :model search-string
-           :on-change (fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
-           :on-submit #(rf/dispatch [:app-db/add-path %])
-           :change-on-blur? false
-           :placeholder ":path :into :app-db"]
-          ;; TODO: check for input errors
-          ; (if @input-error
-          ;   [:div.input-error {:style {:color "red" :margin-top 5}}
-          ;    "Please enter a valid path."])]]
 
-          [rc/h-box
-           :children [[:img.nav-icon
-                       {:title    "Load app-db snapshot"
-                        :class    (when-not @snapshot-ready? "inactive")
-                        :src      (str "data:image/svg+xml;utf8,"
-                                       (if @snapshot-ready?
-                                         reload
-                                         reload-disabled))
-                        :on-click #(when @snapshot-ready? (rf/dispatch-sync [:snapshot/load-snapshot]))}]
-                      [:img.nav-icon
-                       {:title    "Snapshot app-db"
-                        :class    (when @snapshot-ready? "active")
-                        :src      (str "data:image/svg+xml;utf8,"
-                                       (if @snapshot-ready?
-                                         snapshot-ready
-                                         snapshot))
-                        :on-click #(rf/dispatch-sync [:snapshot/save-snapshot])}]]]
-
-          [:div.subtrees {:style {:margin "20px 0"}}
-           (doall
-             (map (fn [path]
-                    ^{:key path}
-                    [:div.subtree-wrapper {:style {:margin "10px 0"}}
-                     [:div.subtree
-                      [components/subtree
-                       (get-in @data path)
-                       [rc/h-box
-                        :align :center
-                        :children [[:button.subtree-button
-                                    [:span.subtree-button-string
-                                     (str path)]]
-                                   [:img
-                                    {:src      (str "data:image/svg+xml;utf8," delete)
-                                     :style    {:cursor "pointer"
-                                                :height "10px"}
-                                     :on-click #(rf/dispatch [:app-db/remove-path path])}]]]
-                       [path]]]])
-                  @subtree-paths))]
-          [:div {:style {:margin-bottom "20px"}}
-           [components/subtree @data [:span.label "app-db"] [:app-db]]]]]))))
