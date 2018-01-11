@@ -119,7 +119,9 @@
 (rf/reg-event-db
   :settings/play
   (fn [db _]
-    (assoc-in db [:settings :paused?] false)))
+    (-> db
+        (assoc-in [:settings :paused?] false)
+        (assoc-in [:epochs :current-epoch-index] nil))))
 
 ;; Global
 
@@ -347,17 +349,19 @@
   (fn [matches [_ rt]]
     (:matches rt)))
 
-(rf/reg-event-db
+(rf/reg-event-fx
   :epochs/previous-epoch
   [(rf/path [:epochs :current-epoch-index])]
-  (fn [index _]
-    ((fnil dec 0) index)))
+  (fn [ctx _]
+    {:db ((fnil dec 0) (:db ctx))
+     :dispatch [:settings/pause]}))
 
-(rf/reg-event-db
+(rf/reg-event-fx
   :epochs/next-epoch
   [(rf/path [:epochs :current-epoch-index])]
-  (fn [index _]
-    ((fnil inc 0) index)))
+  (fn [ctx _]
+    {:db ((fnil inc 0) (:db ctx))
+     :dispatch [:settings/pause]}))
 
 (rf/reg-event-db
   :traces/update-traces

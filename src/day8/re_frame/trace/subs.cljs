@@ -141,14 +141,19 @@
     (:epochs db)))
 
 (rf/reg-sub
-  :epochs/current-event
+  :epochs/current-match
   :<- [:epochs/epoch-root]
   (fn [epochs _]
-    (let [matches (:matches epochs)
+    (let [matches       (:matches epochs)
           current-index (:current-epoch-index epochs)
-          match (nth matches (+ (count matches) (or current-index 0)) (last matches))
-          event (get-in (metam/matched-event match) [:tags :event])]
-      event)))
+          match         (nth matches (+ (count matches) (or current-index 0)) (last matches))]
+      match)))
+
+(rf/reg-sub
+  :epochs/current-event
+  :<- [:epochs/current-match]
+  (fn [match _]
+    (get-in (metam/matched-event match) [:tags :event])))
 
 (rf/reg-sub
   :epochs/number-of-matches
@@ -171,17 +176,27 @@
 
 (rf/reg-sub
   :epochs/beginning-trace-id
-  :<- [:epochs/epoch-root]
-  (fn [epochs]
-    ;; TODO: make it use the real match
-    (let [match (last (:matches epochs))]
-      (:id (first match)))))
+  :<- [:epochs/current-match]
+  (fn [match]
+    (:id (first match))))
 
 (rf/reg-sub
   :epochs/ending-trace-id
-  :<- [:epochs/epoch-root]
-  (fn [epochs]
-    ;; TODO: make it use the real match
-    (let [match (last (:matches epochs))]
-      (:id (last match)))))
+  :<- [:epochs/current-match]
+  (fn [match]
+    (:id (last match))))
 
+(rf/reg-sub
+  :epochs/older-epochs-available?
+  :<- [:epochs/current-event-index]
+  :<- [:epochs/number-of-matches]
+  (fn [[current total]]
+    (pos? (+ current total -1))))
+
+(rf/reg-sub
+  :epochs/newer-epochs-available?
+  :<- [:epochs/current-event-index]
+  :<- [:epochs/number-of-matches]
+  (fn [[current total]]
+    (and (not (zero? current))
+         (some? current))))

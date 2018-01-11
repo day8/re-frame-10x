@@ -77,16 +77,23 @@
    [right-hand-buttons external-window?]])
 
 (defn standard-header [external-window?]
-  (let [current-event @(rf/subscribe [:epochs/current-event])]
+  (let [current-event @(rf/subscribe [:epochs/current-event])
+        older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])
+        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])]
     [[rc/h-box
       :align    :center
       :size     "auto"
       :gap      common/gs-12s
-      :children [[:span.arrow {:on-click #(rf/dispatch [:epochs/previous-epoch])} "◀"]
+      :children [[:span.arrow (if older-epochs-available?
+                                {:on-click #(rf/dispatch [:epochs/previous-epoch])}
+                                {:class "arrow__disabled"}) "◀"]
                  [rc/v-box
                   :size "auto"
                   :children [[:span.event-header (prn-str current-event)]]]
-                 [:span.arrow {:on-click #(rf/dispatch [:epochs/next-epoch])} "▶"]]]
+                 [:span.arrow (if newer-epochs-available?
+                                {:on-click #(rf/dispatch [:epochs/next-epoch])}
+                                {:class "arrow__disabled"})
+                  "▶"]]]
      [rc/gap-f :size common/gs-12s]
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]])
