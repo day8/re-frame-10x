@@ -23,11 +23,11 @@
 
 ;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
-(def *pods (r/atom [{:id (gensym) :type :destroyed :layer "3" :path [:todo/blah]      :open? true :diff? true}
-                    {:id (gensym) :type :created   :layer "3" :path [:todo/completed] :open? true :diff? true}
-                    {:id (gensym) :type :re-run    :layer "3" :path [:todo/completed] :open? true :diff? true}
-                    {:id (gensym) :type :re-run    :layer "2" :path [:todo/blah]      :open? true :diff? true}
-                    {:id (gensym) :type :not-run   :layer "3" :path [:todo/blah]      :open? true :diff? true}]
+(def *pods (r/atom [{:id (gensym) :type :destroyed :layer "3" :path "[:todo/blah]"      :open? true :diff? true}
+                    {:id (gensym) :type :created   :layer "3" :path "[:todo/completed]" :open? true :diff? true}
+                    {:id (gensym) :type :re-run    :layer "3" :path "[:todo/completed]" :open? true :diff? true}
+                    {:id (gensym) :type :re-run    :layer "2" :path "[:todo/blah]"      :open? true :diff? true}
+                    {:id (gensym) :type :not-run   :layer "3" :path "[:todo/blah]"      :open? true :diff? true}]
                    #_[]))
 
 (defn update-pod-field
@@ -35,7 +35,7 @@
   (let [f (fn [pod]
             (if (= id (:id pod))
               (do
-                (println "Updated" field "in" (:id pod) "from" (get pod field) "to" new-val)
+                ;(println "Updated" field "in" (:id pod) "from" (get pod field) "to" new-val)
                 (assoc pod field new-val))
               pod))]
     (reset! *pods (mapv f @*pods))))
