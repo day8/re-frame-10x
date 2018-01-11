@@ -1,5 +1,6 @@
 (ns day8.re-frame.trace.subs
-  (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
+  (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [day8.re-frame.trace.metamorphic :as metam]))
 
 (rf/reg-sub
   :settings/root
@@ -146,7 +147,7 @@
     (let [matches (:matches epochs)
           current-index (:current-epoch-index epochs)
           match (nth matches (+ (count matches) (or current-index 0)) (last matches))
-          event (get-in (second match) [:tags :event])]
+          event (get-in (metam/matched-event match) [:tags :event])]
       event)))
 
 (rf/reg-sub
