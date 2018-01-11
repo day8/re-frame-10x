@@ -308,7 +308,9 @@
     [:span.event-header {:color            common/text-color
                          :background-color common/standard-background-color
                          :padding          (px 5)
-                         :font-weight      "600"}]
+                         :font-weight      "600"
+                         ;; TODO: figure out how to hide long events
+                         :text-overflow    "ellipsis"}]
     ]
    [(s/& :.external-window) {:display "flex"
                              :height  (percent 100)

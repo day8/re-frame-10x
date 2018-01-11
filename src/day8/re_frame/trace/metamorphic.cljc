@@ -1,121 +1,194 @@
 (ns day8.re-frame.trace.metamorphic
   (:require [metamorphic.api :as m]
             [metamorphic.runtime :as rt]
-            #?(:clj
+    #?(:clj
             [metamorphic.viz :as v])))
 
-;; Next, we define predicate functions that take exactly 4 arguments.
-;; These predicates are obviously incredibly boring, but they help
-;; save your brain power for the real concepts.
+;; What starts an epoch?
 
-;; Each predicate will receive each event as it arrives, a history (which we'll discuss later),
-;; the entire pattern sequence, and the particular pattern that this predicate
-;; is being used in. This is helpful for parameterizing a predicate.
+;;; idle -> dispatch -> running
+;;; running -> dispatch -> handling new event
 
-(defn a? [event history pattern-sequence pattern]
-  (= event "a"))
+;; What ends an epoch?
 
-(defn b? [event history pattern-sequence pattern]
-  (= event "b"))
+;;; the start of a new epoch
+;;; a Reagent animation frame ending AND nothing else being scheduled
 
-(defn c? [event history pattern-sequence pattern]
-  (= event "c"))
+;; Slight wrinkles
 
-;; Now let's create a pattern sequence. We're looking for "a", "b", then "c".
-;; This pattern says: find "a", then immediately look for "b". After you find "b",
-;; look for "c", but if there's something that doesn't match in the middle, that's
-;; okay. The relaxation of looking for "c" is called a contiguity constraint, denoted
-;; by "followed-by" instead of "next".
-
-(defn run-test []
-  (let [runtime (-> (m/new-pattern-sequence "a b c")
-                    (m/begin "a" a?)
-                    (m/next "b" b?)
-                    (m/followed-by "c" c?)
-                    (rt/initialize-runtime))
-        events  ["a" "b" "q" "c" "z" "a" "b" "d" "x" "c"]]
-    (:matches (reduce rt/evaluate-event runtime events))))
-
+;;; Any renders that run between epochs deserve their own epoch really.
+;;; Dispatch-sync's
 
 ;;;
 
-(defn new-epoch-started? [event history pattern-sequence pattern]
-  (and (= :re-frame.router/fsm-trigger (:op-type event))
+;
+;(defn add-event-from-idle? [event history pattern-sequence pattern]
+;  #_(println @history event)
+;
+;  (and (= :re-frame.router/fsm-trigger (:op-type event))
+;       (= (:operation event)
+;          [:idle :add-event])))
+;
+;(defn event-run? [event history pattern-sequence pattern]
+;  (= :event (:op-type event)))
+;
+;(defn epoch-started? [event history pattern-sequence pattern]
+;  (or (add-event-from-idle? event history pattern-sequence pattern)
+;      (and (event-run? event history pattern-sequence pattern)
+;           (empty? @history))))
+;
+(defn fsm-trigger? [event]
+  (= :re-frame.router/fsm-trigger (:op-type event)))
+;
+;(defn redispatched-event? [event history pattern-sequence pattern]
+;  (and (fsm-trigger? event)
+;       (= (:operation event)
+;          [:running :add-event])))
+;
+;(defn router-scheduled? [event history pattern-sequence pattern]
+;  (and (fsm-trigger? event)
+;       (= (:operation event)
+;          [:running :finish-run])
+;       (= :running (get-in event [:tags :current-state]))
+;       (= :scheduled (get-in event [:tags :new-state]))))
+;
+;(defn router-finished? [event history pattern-sequence pattern]
+;  (and (fsm-trigger? event)
+;       (= (:operation event)
+;          [:running :finish-run])
+;       (= :running (get-in event [:tags :current-state]))
+;       (= :idle (get-in event [:tags :new-state]))))
+;
+;(defn quiescent? [event _ _ _]
+;  (= :reagent/quiescent (:op-type event)))
+;
+;(defn epoch-ended? [event history pattern-sequence pattern]
+;  (or (quiescent? event history pattern-sequence pattern)
+;      (epoch-started? event history pattern-sequence pattern)))
+;
+(defn run-queue? [event]
+  (and (fsm-trigger? event)
        (= (:operation event)
-          [:idle :add-event])))
-
-(defn event-run? [event history pattern-sequence pattern]
-  (= :event (:op-type event)))
-
-(defn redispatched-event? [event history pattern-sequence pattern]
-  (and (= :re-frame.router/fsm-trigger (:op-type event))
-       (= (:operation event)
-          [:running :add-event])))
-
-(defn router-scheduled? [event history pattern-sequence pattern]
-  (and (= :re-frame.router/fsm-trigger (:op-type event))
-       (= (:operation event)
-          [:running :finish-run])
-       (= :running (get-in event [:tags :current-state]))
-       (= :scheduled (get-in event [:tags :new-state]))))
-
-(defn router-finished? [event history pattern-sequence pattern]
-  (and (= :re-frame.router/fsm-trigger (:op-type event))
-       (= (:operation event)
-          [:running :finish-run])
-       (= :running (get-in event [:tags :current-state]))
-       (= :idle (get-in event [:tags :new-state]))))
-
-(defn request-animation-frame? [event history pattern-sequence pattern]
-  (= :raf (:op-type event)))
-
-(defn request-animation-frame-end? [event history pattern-sequence pattern]
-  (= :raf-end (:op-type event)))
-
-
-#?(:clj (defn trace-events [] (->> (slurp "test-resources/events2.edn")
-                                   (clojure.edn/read-string {:readers {'utc    identity
-                                                                       'object (fn [x] "<object>")}})
-                                   (sort-by :id))))
-
-
+          [:scheduled :run-queue])))
+;
+;(defn request-animation-frame? [event history pattern-sequence pattern]
+;  (= :raf (:op-type event)))
+;
+;(defn request-animation-frame-end? [event history pattern-sequence pattern]
+;  (= :raf-end (:op-type event)))
+;
 (defn summarise-event [ev]
   (dissoc ev :start :duration :end :child-of))
 
 (defn summarise-match [match]
   (map summarise-event match))
+;
+(defn beginning-id [match]
+  (:id (first match)))
 
-#?(:clj
-   (defn parse-events []
-    #_      (let [runtime (-> (m/new-pattern-sequence "simple traces")
-                            (m/begin "new-epoch-started" new-epoch-started?)
-                            #_(m/followed-by "redispatched-event" redispatched-event? {:optional? true})
-                            #_(m/followed-by "router-scheduled" router-scheduled? {:optional? true})
-                            (m/followed-by "event-run" event-run?)
-                            (m/followed-by "router-finished" router-finished?)
-                            (m/followed-by "raf" request-animation-frame?)
-                            (m/followed-by "raf-end" request-animation-frame-end?)
-                            (rt/initialize-runtime))
-                events  (trace-events)
-                rt      (reduce rt/evaluate-event runtime events)]
-            #_(println "Count"
-                       (count (:matches rt))
-                       (map count (:matches rt)))
-            (map summarise-match (:matches rt)))))
+(defn ending-id [match]
+  (:id (last match)))
+;
+;(defn parse-traces-metam
+;  "Returns a metamorphic runtime"
+;  [traces]
+;  (let [runtime (-> (m/new-pattern-sequence "simple traces")
+;                    (m/begin "new-epoch-started" epoch-started?)
+;                    #_(m/followed-by "run-queue" run-queue? {:optional? true})
+;                    ;(m/followed-by "event-run" event-run?)
+;                    #_(m/followed-by "router-finished" router-finished?)
+;                    ;(m/followed-by "raf" request-animation-frame?)
+;                    ;(m/followed-by "raf-end" request-animation-frame-end?)
+;                    (m/followed-by "epoch-ended" epoch-ended?)
+;                    (rt/initialize-runtime))
+;        rt      (reduce rt/evaluate-event runtime traces)]
+;    #_(println "Count"
+;               (count (:matches rt))
+;               (map count (:matches rt)))
+;    #_(map summarise-match (:matches rt))
+;    rt))
 
-(defn parse-traces
-  "Returns a metamorphic runtime"
-  [traces]
-  (let [runtime (-> (m/new-pattern-sequence "simple traces")
-                    (m/begin "new-epoch-started" new-epoch-started?)
-                    (m/followed-by "event-run" event-run?)
-                    (m/followed-by "router-finished" router-finished?)
-                    (m/followed-by "raf" request-animation-frame?)
-                    (m/followed-by "raf-end" request-animation-frame-end?)
-                    (rt/initialize-runtime))
-        rt      (reduce rt/evaluate-event runtime traces)]
-    #_(println "Count"
-               (count (:matches rt))
-               (map count (:matches rt)))
-    #_(map summarise-match (:matches rt))
-    rt))
+;;;;;;
+
+;; TODO: this needs to be included too as a starting point.
+(defn add-event-from-idle? [event]
+  (and (= :re-frame.router/fsm-trigger (:op-type event))
+       (= (:operation event)
+          [:idle :add-event])))
+
+(defn event-run? [event]
+  (= :event (:op-type event)))
+
+(defn start-of-epoch?
+  "Detects the start of a re-frame epoch
+
+  Normally an epoch would always start with the queue being run, but with a dispatch-sync, the event is run directly."
+  [event]
+  (or (run-queue? event)
+      (event-run? event)))
+
+(defn start-of-epoch-and-prev-end?
+  "Detects that a new epoch has started and that the previous one ended on the previous event.
+
+  If multiple events are dispatched while processing the first event, each one is considered its
+  own epoch."
+  [event state]
+  (or (run-queue? event)
+      ;; An event ran, and the previous event was not
+      ;; a run-queue.
+      (and (event-run? event)
+           (not (run-queue? (:previous-event state))))))
+
+(defn quiescent? [event]
+  (= :reagent/quiescent (:op-type event)))
+
+(defn parse-traces [traces]
+  (let [partitions (reduce
+                     (fn [state event]
+                       (let [current-match  (:current-match state)
+                             previous-event (:previous-event state)
+                             no-match?      (nil? current-match)]
+                         (-> (cond
+
+                               ;; No current match yet, check if this is the start of an epoch
+                               no-match?
+                               (if (start-of-epoch? event)
+                                 (assoc state :current-match [event])
+                                 state)
+
+                               ;; We are in an epoch match, and reagent has gone to a quiescent state
+                               (quiescent? event)
+                               (-> state
+                                   (update :partitions conj (conj current-match event))
+                                   (assoc :current-match nil))
+
+                               ;; We are in an epoch match, and we have started a new epoch
+                               ;; The previously seen event was the last event of the old epoch,
+                               ;; and we need to start a new one from this event.
+                               (start-of-epoch-and-prev-end? event state)
+                               (-> state
+                                   (update :partitions conj (conj current-match previous-event))
+                                   (assoc :current-match [event]))
+
+                               (event-run? event)
+                               (update state :current-match conj event)
+
+
+                               :else
+                               state
+                               ;; Add a timeout/warning if a match goes on for more than a second?
+
+                               )
+                             (assoc :previous-event event))))
+                     {:current-match  nil
+                      :previous-event nil
+                      :partitions     []}
+                     traces)
+        matches    (:partitions partitions)]
+    #?(:cljs (js/console.log "Partitions:" partitions))
+    {:matches matches}))
+
+(defn matched-event [match]
+  (->> match
+       (filter event-run?)
+       (first)))

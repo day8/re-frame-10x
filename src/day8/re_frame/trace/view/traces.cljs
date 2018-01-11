@@ -88,12 +88,12 @@
         input-error             (r/atom false)
         categories              (rf/subscribe [:traces/categories])
         trace-detail-expansions (rf/subscribe [:traces/expansions])
-        beginning (rf/subscribe [:epochs/beginning-trace-id])
-        end (rf/subscribe [:epochs/ending-trace-id])
-        traces (rf/subscribe [:traces/current-event-traces])]
+        beginning               (rf/subscribe [:epochs/beginning-trace-id])
+        end                     (rf/subscribe [:epochs/ending-trace-id])
+        current-traces          (rf/subscribe [:traces/current-event-traces])]
     (fn []
       (let [toggle-category-fn #(rf/dispatch [:traces/toggle-categories %])
-            visible-traces     (cond->> @traces
+            visible-traces     (cond->> #_@current-traces  @traces
                                         ;; Remove cached subscriptions. Could add this back in as a setting later
                                         ;; but it's pretty low signal/noise 99% of the time.
                                         true (remove (fn [trace] (and (= :sub/create (:op-type trace))
@@ -161,10 +161,10 @@
                        :on-click #(rf/dispatch [:traces/reset-filter-items])}
               (when (pos? (count @filter-items))
                 (str (count visible-traces) " of "))
-              (str (count @traces))]
+              (str (count @current-traces))]
              " traces "
-             (when (pos? (count @traces))
-               [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
+             (when (pos? (count @current-traces))
+               [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! current-traces []))} "clear"] ")"])]
             [:th {:style {:text-align "right"}} "meta"]]
            [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]))))
 

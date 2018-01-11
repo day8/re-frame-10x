@@ -77,7 +77,7 @@
 (defonce real-custom-wrapper reagent.impl.component/custom-wrapper)
 (defonce real-next-tick reagent.impl.batching/next-tick)
 (defonce real-schedule reagent.impl.batching/schedule)
-(defonce schedule-fn-scheduled? (atom false))
+(defonce do-after-render-trace-scheduled? (atom false))
 
 (defn monkey-patch-reagent []
   (let [#_#_real-renderer reagent.impl.component/do-render
@@ -112,18 +112,39 @@
 
     (set! reagent.impl.batching/next-tick
           (fn [f]
+            ;; Schedule a trace to be emitted after a render if there is nothing else scheduled after that render.
+            ;; This signals the end of the epoch.
+
+           #_ (swap! do-after-render-trace-scheduled?
+                   (fn [scheduled?]
+                     (js/console.log "Setting up scheduled after" scheduled?)
+                     (if scheduled?
+                       scheduled?
+                       (do (reagent.impl.batching/do-after-render ;; a do-after-flush would probably be a better spot to put this if it existed.
+                             (fn []
+                               (js/console.log "Do after render" reagent.impl.batching/render-queue)
+                               (reset! do-after-render-trace-scheduled? false)
+                               (when (false? (.-scheduled? reagent.impl.batching/render-queue))
+                                 (trace/with-trace {:op-type :reagent/quiescent}))))
+                           true))))
             (real-next-tick (fn []
                               (trace/with-trace {:op-type :raf}
                                                 (f)
-                                                (trace/with-trace {:op-type :raf-end}))))))
+                                                (trace/with-trace {:op-type :raf-end})
+                                                (js/console.log "Do after render" reagent.impl.batching/render-queue)
+                                                (js/console.log "Component queue" (.-componentQueue reagent.impl.batching/render-queue) "after render" (.-afterRender reagent.impl.batching/render-queue))
+                                                (when (false? (.-scheduled? reagent.impl.batching/render-queue))
+                                                  (trace/with-trace {:op-type :reagent/quiescent}))
+
+                                                )))))
 
     #_(set! reagent.impl.batching/schedule
           (fn []
             (reagent.impl.batching/do-after-render
               (fn []
-                (when @schedule-fn-scheduled?
+                (when @do-after-render-trace-scheduled?
                   (trace/with-trace {:op-type :do-after-render})
-                  (reset! schedule-fn-scheduled? false))))
+                  (reset! do-after-render-trace-scheduled? false))))
             (real-schedule)))))
 
 

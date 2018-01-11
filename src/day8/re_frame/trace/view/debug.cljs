@@ -14,6 +14,7 @@
 
     [rc/label :label "Matches"]
     (for [match (:matches @(rf/subscribe [:epochs/epoch-root]))]
+      ^{:key (:id (first match))}
       [rc/v-box
        :style {:border "1px solid black"}
        :children (doall (map (fn [event] [rc/label :label (prn-str event)]) (metam/summarise-match match)))
