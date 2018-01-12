@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="15 15 70 70" x="0px" y="0px"><title>13</title><g fill="#F2994A" data-name="Group"><path data-name="Compound Path" d="M40.78,67.37,67.55,50,40.78,32.63Zm4-27.38L60.2,50,44.78,60Z"/><path data-name="Compound Path" d="M50,18.44A31.56,31.56,0,1,0,81.56,50,31.6,31.6,0,0,0,50,18.44Zm0,59.12A27.56,27.56,0,1,1,77.56,50,27.59,27.59,0,0,1,50,77.56Z"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="15 15 70 70" x="0px" y="0px">
+    <title>13</title>
+    <g fill="#F2994A" data-name="Group">
+        <path data-name="Compound Path" d="M40.78,67.37,67.55,50,40.78,32.63Zm4-27.38L60.2,50,44.78,60Z"/>
+        <path data-name="Compound Path"
+              d="M50,18.44A31.56,31.56,0,1,0,81.56,50,31.6,31.6,0,0,0,50,18.44Zm0,59.12A27.56,27.56,0,1,1,77.56,50,27.59,27.59,0,0,1,50,77.56Z"/>
+    </g>
+</svg>
