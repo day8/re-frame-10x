@@ -117,7 +117,28 @@
    [:thead {:display "table-header-group"}]
    [:tbody {:display "table-row-group"}]
    [:th :td {:display "table-cell"}]
-   [:tr {:display "table-row"}]])
+   [:tr {:display "table-row"}]
+
+   ;; SVG Reset
+   ;; From https://chromium.googlesource.com/chromium/blink/+/master/Source/core/css/svg.css
+   ["svg:not(:root), symbol, image, marker, pattern, foreignObject"
+    {:overflow "hidden"}]
+   ["svg:root"
+    {:width "100%"
+     :height "100%"}]
+   ["text, foreignObject"
+    {:display "block"}]
+   ["text"
+    {:white-space "nowrap"}]
+   ["tspan, textPath"
+    {:white-space "inherit"}]
+   ;; No :focus
+   ["*"
+    {:transform-origin "0px 0px 0px"}]
+   ["html|* > svg"
+    {:transform-origin "50% 50%"}]
+
+   ])
 
 (def label-mixin {:color      text-color
                   :background background-gray-hint
