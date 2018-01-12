@@ -154,7 +154,6 @@
                      :on-click #(rf/dispatch [:traces/remove-filter (:id item)])}
                     (:filter-type item) ": " [:span.filter-item-string (:query item)]]])
                 @filter-items)]]
-         [:pre @beginning " to " @end]
          [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
           [:table
            [:thead>tr
