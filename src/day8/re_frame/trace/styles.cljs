@@ -41,9 +41,9 @@
           :font-size   (em 1)}]
 
    ;; Text-level semantics
-   [(s/a) (s/a s/visited) {:color         text-color
-                           :border-bottom [[(px 1) "#333" "dotted"]]}]
-   [(s/a s/hover) (s/a s/focus) {:border-bottom [[(px 1) "#666666" "solid"]]}]
+   [(s/a) (s/a s/visited) {:color           text-color
+                           :cursor          "pointer"
+                           :text-decoration "underline"}]
 
    [:code {:font-family "monospace"
            :font-size   (em 1)}]
@@ -124,7 +124,7 @@
    ["svg:not(:root), symbol, image, marker, pattern, foreignObject"
     {:overflow "hidden"}]
    ["svg:root"
-    {:width "100%"
+    {:width  "100%"
      :height "100%"}]
    ["text, foreignObject"
     {:display "block"}]
@@ -326,7 +326,7 @@
                   :padding          (px 5)
                   :cursor           "pointer"
                   :user-select      "none"}]
-    [:span.arrow__disabled {:color common/disabled-background-color
+    [:span.arrow__disabled {:color  common/disabled-background-color
                             :cursor "auto"}]
     [:span.event-header {:color            common/text-color
                          :background-color common/standard-background-color
@@ -375,7 +375,7 @@
      :color            "white"
      :height           common/gs-31}]
    [:.app-db-path--label
-    {:color          "#2D9CDB"
+    {:color           "#2D9CDB"
      ;:font-variant   "small-caps"
      ;:text-transform "lowercase"
      :text-decoration "underline"

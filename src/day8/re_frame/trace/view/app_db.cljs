@@ -182,9 +182,7 @@
                    :style {:background-color cljs-dev-tools-background
                            :padding          common/gs-7s
                            :margin           (css-join pad-padding pad-padding "0px" pad-padding)}
-                   :children [
-
-                              [components/simple-render
+                   :children [[components/simple-render
                                @app-db-after
 
                                #_{:todos [1 2 3]}
@@ -207,10 +205,10 @@
                    :height common/gs-19s
                    :justify :end
                    :style {:margin (css-join "0px" pad-padding)}
-                   :children [[rc/hyperlink
+                   :children [[rc/hyperlink-href
                                ;:class "app-db-path--label"
                                :label "ONLY BEFORE"
-                               :on-click #(println "Clicked [ONLY BEFORE]")]]])
+                               :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
                 (when render-diff?
                   [rc/v-box
                    :height "60px"
@@ -225,10 +223,10 @@
                    :height common/gs-19s
                    :justify :end
                    :style {:margin (css-join "0px" pad-padding)}
-                   :children [[rc/hyperlink
+                   :children [[rc/hyperlink-href
                                ;:class "app-db-path--label"
                                :label "ONLY AFTER"
-                               :on-click #(println "Clicked [ONLY AFTER]")]]])
+                               :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
                 (when render-diff?
                   [rc/v-box
                    :height "60px"

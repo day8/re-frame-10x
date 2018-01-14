@@ -445,6 +445,35 @@
          :align :start
          :child the-button]))))
 
+(defn hyperlink-href
+  "Renders an underlined text hyperlink component.
+   This is very similar to the button component above but styled to looks like a hyperlink.
+   Useful for providing button functionality for less important functions, e.g. Cancel"
+  []
+  (let [showing? (reagent/atom false)]
+    (fn
+      [& {:keys [label href target tooltip tooltip-position class style attr] :as args}]
+      (when-not tooltip (reset! showing? false)) ;; To prevent tooltip from still showing after button drag/drop
+      (let [label      (deref-or-value label)
+            href       (deref-or-value href)
+            target     (deref-or-value target)
+            the-button [:a
+                        (merge {:class  (str "rc-hyperlink-href noselect " class)
+                                :style  (merge (flex-child-style "none")
+                                               style)
+                                :href   href
+                                :target target}
+                               (when tooltip
+                                 {:on-mouse-over (handler-fn (reset! showing? true))
+                                  :on-mouse-out  (handler-fn (reset! showing? false))})
+                               attr)
+                        label]]
+
+        [box
+         :class "rc-hyperlink-href-wrapper display-inline-flex"
+         :align :start
+         :child the-button]))))
+
 (defn checkbox
   "I return the markup for a checkbox, with an optional RHS label"
   [& {:keys [model on-change label disabled? label-class label-style class style attr]
