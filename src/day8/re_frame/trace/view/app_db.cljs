@@ -201,41 +201,46 @@
 
                               #_"---main-section---"]])
                 (when render-diff?
-                  [rc/v-box
-                   :height common/gs-19s
-                   :justify :end
-                   :style {:margin (css-join "0px" pad-padding)}
-                   :children [[rc/hyperlink-href
-                               ;:class "app-db-path--label"
-                               :label "ONLY BEFORE"
-                               :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
-                (when render-diff?
-                  [rc/v-box
-                   :height "60px"
-                   :min-width "100px"
-                   :style {:background-color cljs-dev-tools-background
-                           :padding          common/gs-7s
-                           :margin           (css-join "0px" pad-padding)}
-                   :children [[components/simple-render
-                               diff-before]]])
-                (when render-diff?
-                  [rc/v-box
-                   :height common/gs-19s
-                   :justify :end
-                   :style {:margin (css-join "0px" pad-padding)}
-                   :children [[rc/hyperlink-href
-                               ;:class "app-db-path--label"
-                               :label "ONLY AFTER"
-                               :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
-                (when render-diff?
-                  [rc/v-box
-                   :height "60px"
-                   :min-width "100px"
-                   :style {:background-color cljs-dev-tools-background
-                           :padding          common/gs-7s
-                           :margin           (css-join "0px" pad-padding)}
-                   :children [[components/simple-render
-                               diff-before]]])
+                  (list
+                    ^{:key "only-before"}
+                    [rc/v-box
+                     :height common/gs-19s
+                     :justify :end
+                     :style {:margin (css-join "0px" pad-padding)}
+                     :children [[rc/hyperlink-href
+                                 ;:class "app-db-path--label"
+                                 :label "ONLY BEFORE"
+                                 :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]]
+
+                    ^{:key "only-before-diff"}
+                    [rc/v-box
+                     :height "60px"
+                     :min-width "100px"
+                     :style {:background-color cljs-dev-tools-background
+                             :padding          common/gs-7s
+                             :margin           (css-join "0px" pad-padding)}
+                     :children [[components/simple-render
+                                 diff-before]]]
+
+                    ^{:key "only-after"}
+                    [rc/v-box
+                     :height common/gs-19s
+                     :justify :end
+                     :style {:margin (css-join "0px" pad-padding)}
+                     :children [[rc/hyperlink-href
+                                 ;:class "app-db-path--label"
+                                 :label "ONLY AFTER"
+                                 :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]]
+
+                    ^{:key "only-after-diff"}
+                    [rc/v-box
+                     :height "60px"
+                     :min-width "100px"
+                     :style {:background-color cljs-dev-tools-background
+                             :padding          common/gs-7s
+                             :margin           (css-join "0px" pad-padding)}
+                     :children [[components/simple-render
+                                 diff-before]]]))
                 (when open?
                   [rc/gap-f :size pad-padding])]]))
 
