@@ -131,8 +131,6 @@
                               (trace/with-trace {:op-type :raf}
                                                 (f)
                                                 (trace/with-trace {:op-type :raf-end})
-                                                (js/console.log "Do after render" reagent.impl.batching/render-queue)
-                                                (js/console.log "Component queue" (.-componentQueue reagent.impl.batching/render-queue) "after render" (.-afterRender reagent.impl.batching/render-queue))
                                                 (when (false? (.-scheduled? reagent.impl.batching/render-queue))
                                                   (trace/with-trace {:op-type :reagent/quiescent}))
 

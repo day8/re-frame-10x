@@ -199,7 +199,6 @@
                       :partitions     []}
                      traces)
         matches    (:partitions partitions)]
-    #?(:cljs (js/console.log "Partitions:" partitions))
     {:matches matches}))
 
 (defn matched-event [match]

@@ -42,6 +42,18 @@
     (get db :app-db)))
 
 (rf/reg-sub
+  :app-db/current-epoch-app-db-after
+  :<- [:epochs/current-event-trace]
+  (fn [trace _]
+    (get-in trace [:tags :app-db-after])))
+
+(rf/reg-sub
+  :app-db/current-epoch-app-db-before
+  :<- [:epochs/current-event-trace]
+  (fn [trace _]
+    (get-in trace [:tags :app-db-before])))
+
+(rf/reg-sub
   :app-db/paths
   :<- [:app-db/root]
   (fn [app-db-settings _]
@@ -150,10 +162,16 @@
       match)))
 
 (rf/reg-sub
-  :epochs/current-event
+  :epochs/current-event-trace
   :<- [:epochs/current-match]
   (fn [match _]
-    (get-in (metam/matched-event match) [:tags :event])))
+    (metam/matched-event match)))
+
+(rf/reg-sub
+  :epochs/current-event
+  :<- [:epochs/current-event-trace]
+  (fn [trace _]
+    (get-in trace [:tags :event])))
 
 (rf/reg-sub
   :epochs/number-of-matches
@@ -223,7 +241,6 @@
   (fn [traces]
     (let [start-of-epoch (nth traces 0)
           finish-run     (first (filter metam/finish-run? traces))]
-      (js/console.log "Start" start-of-epoch "fin" finish-run)
       (metam/elapsed-time start-of-epoch finish-run))))
 
 (rf/reg-sub

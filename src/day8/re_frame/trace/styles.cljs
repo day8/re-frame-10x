@@ -132,7 +132,7 @@
     {:white-space "nowrap"}]
    ["tspan, textPath"
     {:white-space "inherit"}]
-   ;; No :focus
+   ;; No :focus rule
    ["*"
     {:transform-origin "0px 0px 0px"}]
    ["html|* > svg"

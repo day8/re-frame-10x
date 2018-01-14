@@ -5,7 +5,8 @@
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
-            [day8.re-frame.trace.common-styles :as common])
+            [day8.re-frame.trace.common-styles :as common]
+            [clojure.data])
   (:require-macros [day8.re-frame.trace.utils.macros :as macros]))
 
 (def delete (macros/slurp-macro "day8/re_frame/trace/images/delete.svg"))
@@ -24,10 +25,10 @@
 
 ;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
-(def *pods (r/atom [{:id (gensym) :path "[\"x\" \"y\"]" :open? true  :diff? true}
-                    {:id (gensym) :path "[:abc 123]"    :open? true  :diff? false}
-                    {:id (gensym) :path "[:a :b :c]"    :open? false :diff? true}
-                    {:id (gensym) :path "[\"hello\"]"   :open? false :diff? false}]))
+(def *pods (r/atom [{:id (gensym) :path "[\"x\" \"y\"]" :open? true :diff? true}
+                    {:id (gensym) :path "[:abc 123]" :open? true :diff? false}
+                    {:id (gensym) :path "[:a :b :c]" :open? false :diff? true}
+                    {:id (gensym) :path "[\"hello\"]" :open? false :diff? false}]))
 
 (defn add-pod []
   (let [id (gensym)]
@@ -52,39 +53,39 @@
 
 (defn panel-header []
   [rc/h-box
-   :justify  :between
-   :align    :center
-   :margin   (css-join common/gs-19s "0px")
+   :justify :between
+   :align :center
+   :margin (css-join common/gs-19s "0px")
    :children [[rc/button
-               :class    "bm-muted-button"
-               :style    {:width   "129px"
-                          :padding "0px"}
-               :label    [rc/v-box
-                          :align    :center
-                          :children ["+ path inspector"]]
+               :class "bm-muted-button"
+               :style {:width   "129px"
+                       :padding "0px"}
+               :label [rc/v-box
+                       :align :center
+                       :children ["+ path inspector"]]
                :on-click #(add-pod)]
               [rc/h-box
                :align :center
                :gap common/gs-7s
-               :height  "48px"
+               :height "48px"
                :padding (css-join "0px" common/gs-12s)
                :style {:background-color "#fafbfc"
-                       :border "1px solid #e3e9ed"
-                       :border-radius "3px"}
+                       :border           "1px solid #e3e9ed"
+                       :border-radius    "3px"}
                :children [[rc/label :label "reset app-db to:"]
                           [rc/button
-                           :class    "bm-muted-button"
-                           :style    {:width   "129px"
-                                      :padding "0px"}
-                           :label    [rc/v-box
-                                      :align    :center
-                                      :children ["initial epoch state"]]
+                           :class "bm-muted-button"
+                           :style {:width   "129px"
+                                   :padding "0px"}
+                           :label [rc/v-box
+                                   :align :center
+                                   :children ["initial epoch state"]]
                            :on-click #(println "Clicked [initial state]")]
                           [rc/v-box
                            :width common/gs-81s
                            :align :center
                            :children [[rc/label
-                                       :style {:font-size  "9px"}
+                                       :style {:font-size "9px"}
                                        :label "EVENT"]
                                       [:img {:src (str "data:image/svg+xml;utf8," arrow-right)}]
                                       [rc/label
@@ -92,12 +93,12 @@
                                                :margin-top "-1px"}
                                        :label "PROCESSING"]]]
                           [rc/button
-                           :class    "bm-muted-button"
-                           :style    {:width   "129px"
-                                      :padding "0px"}
-                           :label    [rc/v-box
-                                      :align    :center
-                                      :children ["end epoch state"]]
+                           :class "bm-muted-button"
+                           :style {:width   "129px"
+                                   :padding "0px"}
+                           :label [rc/v-box
+                                   :align :center
+                                   :children ["end epoch state"]]
                            :on-click #(println "Clicked [end state]")]]]]])
 
 (defn pod-header [{:keys [id path open? diff?]}]
@@ -111,28 +112,28 @@
    :align :center
    :height common/gs-31s
    :children [[rc/box
-               :width  "36px"
+               :width "36px"
                :height common/gs-31s
-               :class  "noselect"
-               :style  {:cursor "pointer"}
-               :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                        :on-click (rc/handler-fn (update-pod-field id :open? (not open?)))}
+               :class "noselect"
+               :style {:cursor "pointer"}
+               :attr {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
+                      :on-click (rc/handler-fn (update-pod-field id :open? (not open?)))}
                :child [rc/box
                        :margin "auto"
-                       :child  [:span.arrow (if open? "▼" "▶")]]]
+                       :child [:span.arrow (if open? "▼" "▶")]]]
               [rc/h-box
                :size "auto"
                :class "app-db-path--path-header"
                :children [[rc/input-text
-                           :style           {:height  "25px"
-                                             :padding (css-join "0px" common/gs-7s)
-                                             :width   "-webkit-fill-available"} ;; This took a bit of finding!
-                           :width           "100%"
-                           :model           path
-                           :on-change       #(update-pod-field id :path %)  ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
-                           :on-submit       #()                             ;; #(rf/dispatch [:app-db/add-path %])
+                           :style {:height  "25px"
+                                   :padding (css-join "0px" common/gs-7s)
+                                   :width   "-webkit-fill-available"} ;; This took a bit of finding!
+                           :width "100%"
+                           :model path
+                           :on-change #(update-pod-field id :path %) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+                           :on-submit #()                   ;; #(rf/dispatch [:app-db/add-path %])
                            :change-on-blur? false
-                           :placeholder     "Showing all of app-db. Try entering a path like [:todos 1]"]]]
+                           :placeholder "Showing all of app-db. Try entering a path like [:todos 1]"]]]
               [rc/gap-f :size common/gs-12s]
               [rc/box
                :class "bm-muted-button noselect"
@@ -141,8 +142,8 @@
                        :padding       "0px"
                        :border-radius "3px"
                        :cursor        "pointer"}
-               :attr  {:title    "Show diff"
-                       :on-click (rc/handler-fn (update-pod-field id :diff? (not diff?)))}
+               :attr {:title    "Show diff"
+                      :on-click (rc/handler-fn (update-pod-field id :diff? (not diff?)))}
                :child [:img
                        {:src   (str "data:image/svg+xml;utf8," copy)
                         :style {:width  "19px"
@@ -155,8 +156,8 @@
                        :padding       "0px"
                        :border-radius "3px"
                        :cursor        "pointer"}
-               :attr  {:title    "Remove this pod"
-                       :on-click (rc/handler-fn (delete-pod id))}
+               :attr {:title    "Remove this pod"
+                      :on-click (rc/handler-fn (delete-pod id))}
                :child [:img
                        {:src   (str "data:image/svg+xml;utf8," trash)
                         :style {:width  "13px"
@@ -164,55 +165,81 @@
               [rc/gap-f :size common/gs-12s]]])
 
 (defn pod [{:keys [id path open? diff?] :as pod-info}]
-  [rc/v-box
-   :class "app-db-path"
-   :style {:border-bottom-left-radius  "3px"
-           :border-bottom-right-radius "3px"}
-   :children [[pod-header pod-info]
-              (when open?
-                [rc/v-box
-                 :height "90px"
-                 :min-width "100px"
-                 :style {:background-color cljs-dev-tools-background
-                         :padding          common/gs-7s
-                         :margin           (css-join pad-padding pad-padding "0px" pad-padding)}
-                 :children ["---main-section---"]])
-              (when (and open? diff?)
-                [rc/v-box
-                 :height common/gs-19s
-                 :justify :end
-                 :style {:margin (css-join "0px" pad-padding)}
-                 :children [[rc/hyperlink
-                             ;:class "app-db-path--label"
-                             :label "ONLY BEFORE"
-                             :on-click #(println "Clicked [ONLY BEFORE]")]]])
-              (when (and open? diff?)
-                [rc/v-box
-                 :height "60px"
-                 :min-width "100px"
-                 :style {:background-color cljs-dev-tools-background
-                         :padding          common/gs-7s
-                         :margin           (css-join "0px" pad-padding)}
-                 :children ["---before-diff---"]])
-              (when (and open? diff?)
-                [rc/v-box
-                 :height common/gs-19s
-                 :justify :end
-                 :style {:margin (css-join "0px" pad-padding)}
-                 :children [[rc/hyperlink
-                             ;:class "app-db-path--label"
-                             :label "ONLY AFTER"
-                             :on-click #(println "Clicked [ONLY AFTER]")]]])
-              (when (and open? diff?)
-                [rc/v-box
-                 :height "60px"
-                 :min-width "100px"
-                 :style {:background-color cljs-dev-tools-background
-                         :padding          common/gs-7s
-                         :margin           (css-join "0px" pad-padding)}
-                 :children ["---after-diff---"]])
-              (when open?
-                [rc/gap-f :size pad-padding])]])
+  (let [render-diff?  (and open? diff?)
+        app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
+        app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
+        [diff-before diff-after _] (when render-diff?
+                                     (clojure.data/diff @app-db-before @app-db-after))]
+    [rc/v-box
+     :class "app-db-path"
+     :style {:border-bottom-left-radius  "3px"
+             :border-bottom-right-radius "3px"}
+     :children [[pod-header pod-info]
+                (when open?
+                  [rc/v-box
+                   :height "90px"
+                   :min-width "100px"
+                   :style {:background-color cljs-dev-tools-background
+                           :padding          common/gs-7s
+                           :margin           (css-join pad-padding pad-padding "0px" pad-padding)}
+                   :children [
+
+                              [components/simple-render
+                               @app-db-after
+
+                               #_{:todos [1 2 3]}
+                               #_(get-in @app-db path)
+                               #_[rc/h-box
+                                  :align :center
+                                  :children [[:button.subtree-button
+                                              [:span.subtree-button-string
+                                               (str path)]]
+                                             [:img
+                                              {:src      (str "data:image/svg+xml;utf8," delete)
+                                               :style    {:cursor "pointer"
+                                                          :height "10px"}
+                                               :on-click #(rf/dispatch [:app-db/remove-path path])}]]]
+                               #_[path]]
+
+                              #_"---main-section---"]])
+                (when render-diff?
+                  [rc/v-box
+                   :height common/gs-19s
+                   :justify :end
+                   :style {:margin (css-join "0px" pad-padding)}
+                   :children [[rc/hyperlink
+                               ;:class "app-db-path--label"
+                               :label "ONLY BEFORE"
+                               :on-click #(println "Clicked [ONLY BEFORE]")]]])
+                (when render-diff?
+                  [rc/v-box
+                   :height "60px"
+                   :min-width "100px"
+                   :style {:background-color cljs-dev-tools-background
+                           :padding          common/gs-7s
+                           :margin           (css-join "0px" pad-padding)}
+                   :children [[components/simple-render
+                               diff-before]]])
+                (when render-diff?
+                  [rc/v-box
+                   :height common/gs-19s
+                   :justify :end
+                   :style {:margin (css-join "0px" pad-padding)}
+                   :children [[rc/hyperlink
+                               ;:class "app-db-path--label"
+                               :label "ONLY AFTER"
+                               :on-click #(println "Clicked [ONLY AFTER]")]]])
+                (when render-diff?
+                  [rc/v-box
+                   :height "60px"
+                   :min-width "100px"
+                   :style {:background-color cljs-dev-tools-background
+                           :padding          common/gs-7s
+                           :margin           (css-join "0px" pad-padding)}
+                   :children [[components/simple-render
+                               diff-before]]])
+                (when open?
+                  [rc/gap-f :size pad-padding])]]))
 
 (defn no-pods []
   [rc/h-box
@@ -228,7 +255,7 @@
 
 (defn pod-section []
   [rc/v-box
-   :gap      pod-gap
+   :gap pod-gap
    :children (if (empty? @*pods)
                [[no-pods]]
                (doall (for [p @*pods]
@@ -303,7 +330,7 @@
 
 (defn render [app-db]
   [rc/v-box
-   :style    {:margin-right common/gs-19s}
+   :style {:margin-right common/gs-19s}
    :children [[panel-header]
               [pod-section]
               [rc/gap-f :size pod-gap]
