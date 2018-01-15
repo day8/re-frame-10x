@@ -391,7 +391,7 @@
    ])
 
 
-(def panel-styles (apply garden/css [css-reset (into [:#--re-frame-trace--] rc/re-com-css) common/blue-modern re-frame-trace-styles app-db/app-db-styles]))
+(def panel-styles (apply garden/css [css-reset [:#--re-frame-trace-- rc/re-com-css] common/blue-modern re-frame-trace-styles app-db/app-db-styles]))
 ;(def panel-styles (macros/slurp-macro "day8/re_frame/trace/main.css"))
 
 
