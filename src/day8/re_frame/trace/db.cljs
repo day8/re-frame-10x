@@ -7,7 +7,7 @@
         show-panel? (localstorage/get "show-panel" false)
         selected-tab (localstorage/get "selected-tab" :event)
         filter-items (localstorage/get "filter-items" [])
-        app-db-paths (localstorage/get "app-db-paths" '())
+        app-db-paths (into (sorted-map) (localstorage/get "app-db-paths" {}))
         json-ml-paths (localstorage/get "app-db-json-ml-expansions" #{})
         external-window? (localstorage/get "external-window?" false)
         using-trace? (localstorage/get "using-trace?" true)

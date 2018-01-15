@@ -57,7 +57,8 @@
   :app-db/paths
   :<- [:app-db/root]
   (fn [app-db-settings _]
-    (get app-db-settings :paths)))
+    (map #(assoc (val %) :id (key %))
+         (get app-db-settings :paths))))
 
 (rf/reg-sub
   :app-db/search-string

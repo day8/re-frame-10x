@@ -274,14 +274,63 @@
 
 ;; App DB
 
-(rf/reg-event-db
-  :app-db/paths
-  (fn [db [_ paths]]
-    (let [new-paths (into [] paths)]                        ;; Don't use sets, use vectors
-      (localstorage/save! "app-db-paths" paths)
-      (assoc-in db [:app-db :paths] paths))))
+(def app-db-path-mw
+  [(rf/path [:app-db :paths]) (rf/after #(localstorage/save! "app-db-paths" %))])
 
 (rf/reg-event-db
+  :app-db/create-path
+  app-db-path-mw
+  (fn [paths _]
+    (assoc paths (js/Date.now) {:diff? false :open? true :path []})))
+
+(rf/reg-event-db
+  :app-db/update-path
+  app-db-path-mw
+  (fn [paths [_ path-id path-str]]
+    (try
+      (let [cleaned-path path-str
+            trimmed-path (str/trim path-str)
+            cleaned-path (if (str/starts-with? trimmed-path "[")
+                           cleaned-path
+                           (str "[" cleaned-path))
+            cleaned-path (if (str/ends-with? trimmed-path "]")
+                           cleaned-path
+                           (str "]" cleaned-path))]
+        (assoc-in paths [path-id :path] (cljs.tools.reader.edn/read-string cleaned-path)))
+      (catch :default e
+        paths))))
+
+(rf/reg-event-db
+  :app-db/set-path-visibility
+  app-db-path-mw
+  (fn [paths [_ path-id open?]]
+    (assoc-in paths [path-id :open?] open?)))
+
+(rf/reg-event-db
+  :app-db/set-diff-visibility
+  app-db-path-mw
+  (fn [paths [_ path-id diff?]]
+    (let [open? (if diff?
+                  true
+                  (get-in paths [path-id :open?]))]
+      (-> paths
+          (assoc-in [path-id :diff?] diff?)
+          ;; If we turn on diffing then we want to also expand the path
+          (assoc-in [path-id :open?] open?)))))
+
+(rf/reg-event-db
+  :app-db/remove-path
+  app-db-path-mw
+  (fn [paths [_ path-id]]
+    (dissoc paths path-id)))
+
+(rf/reg-event-db
+  :app-db/paths
+  app-db-path-mw
+  (fn [db [_ paths]]
+    paths))
+
+#_(rf/reg-event-db
   :app-db/remove-path
   (fn [db [_ path]]
     (let [new-db (update-in db [:app-db :paths] #(remove (fn [p] (= p path)) %))]
@@ -289,7 +338,7 @@
       ;; TODO: remove from json-ml expansions too.
       new-db)))
 
-(rf/reg-event-db
+#_(rf/reg-event-db
   :app-db/add-path
   (fn [db _]
     (let [search-string (get-in db [:app-db :search-string])

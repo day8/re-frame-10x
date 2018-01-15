@@ -123,7 +123,7 @@
                  :label [rc/v-box
                          :align :center
                          :children ["+ path inspector"]]
-                 :on-click #(add-pod)]
+                 :on-click #(rf/dispatch [:app-db/create-path])]
                 [rc/h-box
                  :align :center
                  :gap common/gs-7s
@@ -168,7 +168,7 @@
                :class "noselect"
                :style {:cursor "pointer"}
                :attr {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                      :on-click (rc/handler-fn (update-pod-field id :open? (not open?)))}
+                      :on-click #(rf/dispatch [:app-db/set-path-visibility id (not open?)])}
                :child [rc/box
                        :margin "auto"
                        :child [:span.arrow (if open? "▼" "▶")]]]
@@ -181,7 +181,7 @@
                                    :width   "-webkit-fill-available"} ;; This took a bit of finding!
                            :width "100%"
                            :model (pr-str path)
-                           :on-change #(update-pod-field id :path %) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+                           :on-change #(rf/dispatch [:app-db/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
                            :on-submit #()                   ;; #(rf/dispatch [:app-db/add-path %])
                            :change-on-blur? false
                            :placeholder "Showing all of app-db. Try entering a path like [:todos 1]"]]]
@@ -189,7 +189,7 @@
               [rc/box
                :class "app-db-path--button bm-muted-button noselect"
                :attr {:title    "Show diff"
-                      :on-click (rc/handler-fn (update-pod-field id :diff? (not diff?)))}
+                      :on-click #(rf/dispatch [:app-db/set-diff-visibility id (not diff?)])}
                :child [:img
                        {:src   (str "data:image/svg+xml;utf8," copy)
                         :style {:width  "19px"
@@ -198,7 +198,7 @@
               [rc/box
                :class "app-db-path--button bm-muted-button noselect"
                :attr {:title    "Remove this pod"
-                      :on-click (rc/handler-fn (delete-pod id))}
+                      :on-click #(rf/dispatch [:app-db/remove-path id])}
                :child [:img
                        {:src   (str "data:image/svg+xml;utf8," trash)
                         :style {:width  "13px"
@@ -284,13 +284,14 @@
                :label "add inspectors to show what happened to app-db"]]])
 
 (defn pod-section []
-  [rc/v-box
-   :gap pod-gap
-   :children (if (empty? @*pods)
-               [[no-pods]]
-               (doall (for [p @*pods]
-                        ^{:key (:id @*pods)}
-                        [pod p])))])
+  (let [pods @(rf/subscribe [:app-db/paths])]
+    [rc/v-box
+     :gap pod-gap
+     :children (if (empty? pods)
+                 [[no-pods]]
+                 (doall (for [p pods]
+                          ^{:key (:id pods)}
+                          [pod p])))]))
 
 ;; TODO: OLD UI - REMOVE
 (defn original-render [app-db]
@@ -317,23 +318,7 @@
         ;   [:div.input-error {:style {:color "red" :margin-top 5}}
         ;    "Please enter a valid path."])]]
 
-        [rc/h-box
-         :children [[:img.nav-icon
-                     {:title    "Load app-db snapshot"
-                      :class    (when-not @snapshot-ready? "inactive")
-                      :src      (str "data:image/svg+xml;utf8,"
-                                     (if @snapshot-ready?
-                                       reload
-                                       reload-disabled))
-                      :on-click #(when @snapshot-ready? (rf/dispatch-sync [:snapshot/load-snapshot]))}]
-                    [:img.nav-icon
-                     {:title    "Snapshot app-db"
-                      :class    (when @snapshot-ready? "active")
-                      :src      (str "data:image/svg+xml;utf8,"
-                                     (if @snapshot-ready?
-                                       snapshot-ready
-                                       snapshot))
-                      :on-click #(rf/dispatch-sync [:snapshot/save-snapshot])}]]]
+
 
         [:div.subtrees {:style {:margin "20px 0"}}
          (doall
@@ -363,7 +348,4 @@
    :style {:margin-right common/gs-19s}
    :children [[panel-header]
               [pod-section]
-              [rc/gap-f :size pod-gap]
-
-              ;; TODO: OLD UI - REMOVE
-              #_[original-render app-db]]])
+              [rc/gap-f :size pod-gap]]])
