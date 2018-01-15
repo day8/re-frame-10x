@@ -22,13 +22,72 @@
 (def cljs-dev-tools-background "#e8ffe8")
 (def pod-gap common/gs-19s)
 (def pad-padding common/gs-7s)
+(def border-radius "3px")
+
+(def app-db-styles
+  [:#--re-frame-trace--
+   [:.app-db-path
+    {:background-color           common/white-background-color
+     :border-bottom-left-radius  border-radius
+     :border-bottom-right-radius border-radius}]
+
+   [:.app-db-path--header
+    {:background-color        "#48494A"                     ; Name this navbar tint-lighter
+     :color                   "white"
+     :height                  common/gs-31
+     :border-top-left-radius  border-radius
+     :border-top-right-radius border-radius}]
+   [:.app-db-path--header__closed
+    {:border-bottom-left-radius  border-radius
+     :border-bottom-right-radius border-radius}]
+
+   [:.app-db-path--button
+    {:width         "25px"
+     :height        "25px"
+     :padding       "0px"
+     :border-radius border-radius
+     :cursor        "pointer"}]
+
+
+   [:.app-db-path--label
+    {:color           "#2D9CDB"
+     ;:font-variant   "small-caps"
+     ;:text-transform "lowercase"
+     :text-decoration "underline"
+     :font-size       "11px"
+     :margin-bottom   "2px"
+     ;:height         common/gs-19
+     }]
+   [:.app-db-path--path-header
+    {:background-color common/white-background-color
+     :color            "#48494A"
+     :margin           "3px"}]
+   [:.app-db-path--path-text__empty
+    {:font-style "italic"}]
+
+   [:.app-db-path--link
+    {:margin (css-join "0px" pad-padding)
+     :height common/gs-19s}]
+
+   [:.app-db-panel-button
+    {:width   "129px"
+     :padding "0px"}]
+
+   [:.data-viewer
+    {:background-color cljs-dev-tools-background
+     :padding          common/gs-7s
+     :margin           (css-join "0px" pad-padding)
+     :min-width        "100px"
+     }]
+
+   ])
 
 ;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
 (def *pods (r/atom [{:id (gensym) :path "[\"x\" \"y\"]" :open? true :diff? true}
                     {:id (gensym) :path "[:abc 123]" :open? true :diff? false}
                     {:id (gensym) :path "[:a :b :c]" :open? false :diff? true}
-                    {:id (gensym) :path "[\"hello\"]" :open? false :diff? false}
+                    {:id (gensym) :path nil :open? false :diff? false}
                     {:id (gensym) :path [:boot-state] :open? true :diff? true}]))
 
 (defn add-pod []
@@ -54,15 +113,13 @@
 
 (defn panel-header []
   (let [app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
-        app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before]) ]
+        app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])]
     [rc/h-box
      :justify :between
      :align :center
      :margin (css-join common/gs-19s "0px")
      :children [[rc/button
-                 :class "bm-muted-button"
-                 :style {:width   "129px"
-                         :padding "0px"}
+                 :class "app-db-panel-button bm-muted-button"
                  :label [rc/v-box
                          :align :center
                          :children ["+ path inspector"]]
@@ -74,12 +131,10 @@
                  :padding (css-join "0px" common/gs-12s)
                  :style {:background-color "#fafbfc"
                          :border           "1px solid #e3e9ed"
-                         :border-radius    "3px"}
+                         :border-radius    border-radius}
                  :children [[rc/label :label "reset app-db to:"]
                             [rc/button
-                             :class "bm-muted-button"
-                             :style {:width   "129px"
-                                     :padding "0px"}
+                             :class "app-db-panel-button bm-muted-button"
                              :label [rc/v-box
                                      :align :center
                                      :children ["initial epoch state"]]
@@ -96,9 +151,7 @@
                                                  :margin-top "-1px"}
                                          :label "PROCESSING"]]]
                             [rc/button
-                             :class "bm-muted-button"
-                             :style {:width   "129px"
-                                     :padding "0px"}
+                             :class "app-db-panel-button bm-muted-button"
                              :label [rc/v-box
                                      :align :center
                                      :children ["end epoch state"]]
@@ -106,12 +159,7 @@
 
 (defn pod-header [{:keys [id path open? diff?]}]
   [rc/h-box
-   :class "app-db-path--header"
-   :style (merge {:border-top-left-radius  "3px"
-                  :border-top-right-radius "3px"}
-                 (when-not open?
-                   {:border-bottom-left-radius  "3px"
-                    :border-bottom-right-radius "3px"}))
+   :class (str "app-db-path--header " (when-not open? "app-db-path--header__closed"))
    :align :center
    :height common/gs-31s
    :children [[rc/box
@@ -125,8 +173,8 @@
                        :margin "auto"
                        :child [:span.arrow (if open? "▼" "▶")]]]
               [rc/h-box
-               :size "auto"
                :class "app-db-path--path-header"
+               :size "auto"
                :children [[rc/input-text
                            :style {:height  "25px"
                                    :padding (css-join "0px" common/gs-7s)
@@ -139,12 +187,7 @@
                            :placeholder "Showing all of app-db. Try entering a path like [:todos 1]"]]]
               [rc/gap-f :size common/gs-12s]
               [rc/box
-               :class "bm-muted-button noselect"
-               :style {:width         "25px"
-                       :height        "25px"
-                       :padding       "0px"
-                       :border-radius "3px"
-                       :cursor        "pointer"}
+               :class "app-db-path--button bm-muted-button noselect"
                :attr {:title    "Show diff"
                       :on-click (rc/handler-fn (update-pod-field id :diff? (not diff?)))}
                :child [:img
@@ -153,12 +196,7 @@
                                 :margin "0px 3px"}}]]
               [rc/gap-f :size common/gs-12s]
               [rc/box
-               :class "bm-muted-button noselect"
-               :style {:width         "25px"
-                       :height        "25px"
-                       :padding       "0px"
-                       :border-radius "3px"
-                       :cursor        "pointer"}
+               :class "app-db-path--button bm-muted-button noselect"
                :attr {:title    "Remove this pod"
                       :on-click (rc/handler-fn (delete-pod id))}
                :child [:img
@@ -176,16 +214,11 @@
                                                         (get-in @app-db-after path)))]
     [rc/v-box
      :class "app-db-path"
-     :style {:border-bottom-left-radius  "3px"
-             :border-bottom-right-radius "3px"}
      :children [[pod-header pod-info]
                 (when open?
                   [rc/v-box
-                   :height "90px"
-                   :min-width "100px"
-                   :style {:background-color cljs-dev-tools-background
-                           :padding          common/gs-7s
-                           :margin           (css-join pad-padding pad-padding "0px" pad-padding)}
+                   :class "data-viewer"
+                   :style {:margin (css-join pad-padding pad-padding "0px" pad-padding)}
                    :children [[components/simple-render
                                (get-in @app-db-after path)
 
@@ -208,9 +241,8 @@
                   (list
                     ^{:key "only-before"}
                     [rc/v-box
-                     :height common/gs-19s
+                     :class "app-db-path--link"
                      :justify :end
-                     :style {:margin (css-join "0px" pad-padding)}
                      :children [[rc/hyperlink-href
                                  ;:class "app-db-path--label"
                                  :label "ONLY BEFORE"
@@ -218,19 +250,14 @@
 
                     ^{:key "only-before-diff"}
                     [rc/v-box
-                     :height "60px"
-                     :min-width "100px"
-                     :style {:background-color cljs-dev-tools-background
-                             :padding          common/gs-7s
-                             :margin           (css-join "0px" pad-padding)}
+                     :class "data-viewer"
                      :children [[components/simple-render
                                  diff-before]]]
 
                     ^{:key "only-after"}
                     [rc/v-box
-                     :height common/gs-19s
+                     :class "app-db-path--link"
                      :justify :end
-                     :style {:margin (css-join "0px" pad-padding)}
                      :children [[rc/hyperlink-href
                                  ;:class "app-db-path--label"
                                  :label "ONLY AFTER"
@@ -238,11 +265,7 @@
 
                     ^{:key "only-after-diff"}
                     [rc/v-box
-                     :height "60px"
-                     :min-width "100px"
-                     :style {:background-color cljs-dev-tools-background
-                             :padding          common/gs-7s
-                             :margin           (css-join "0px" pad-padding)}
+                     :class "data-viewer"
                      :children [[components/simple-render
                                  diff-after]]]))
                 (when open?

@@ -5,7 +5,8 @@
             [garden.color :as color]
             [garden.selectors :as s]
             [day8.re-frame.trace.common-styles :as common]
-            [day8.re-frame.trace.utils.re-com :as rc]))
+            [day8.re-frame.trace.utils.re-com :as rc]
+            [day8.re-frame.trace.view.app-db :as app-db]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -367,30 +368,6 @@
                        :opacity    "0.3"}]
    [:.active {:opacity 1}]
 
-   [:.app-db-path
-    {:border           [[(px 1) "solid" common/white-background-border-color]]
-     :background-color common/white-background-color}]
-   [:.app-db-path--header
-    {:background-color "#48494A"                            ; Name this navbar tint-lighter
-     :color            "white"
-     :height           common/gs-31}]
-   [:.app-db-path--label
-    {:color           "#2D9CDB"
-     ;:font-variant   "small-caps"
-     ;:text-transform "lowercase"
-     :text-decoration "underline"
-     :font-size       "11px"
-     :margin-bottom   "2px"
-     ;:height         common/gs-19
-     }]
-   [:.app-db-path--path-header
-    {:background-color common/white-background-color
-     :color            "#48494A"
-     :margin           "3px"}]
-   [:.app-db-path--path-text__empty
-    {:font-style "italic"}]
-
-
    [:.re-frame-trace--object
     [:.toggle {:color       text-color-muted
                :cursor      "pointer"
@@ -414,7 +391,7 @@
    ])
 
 
-(def panel-styles (apply garden/css [css-reset (into [:#--re-frame-trace--] rc/re-com-css) common/blue-modern re-frame-trace-styles]))
+(def panel-styles (apply garden/css [css-reset (into [:#--re-frame-trace--] rc/re-com-css) common/blue-modern re-frame-trace-styles app-db/app-db-styles]))
 ;(def panel-styles (macros/slurp-macro "day8/re_frame/trace/main.css"))
 
 
