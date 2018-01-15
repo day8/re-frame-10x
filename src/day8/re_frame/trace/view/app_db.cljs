@@ -28,7 +28,8 @@
 (def *pods (r/atom [{:id (gensym) :path "[\"x\" \"y\"]" :open? true :diff? true}
                     {:id (gensym) :path "[:abc 123]" :open? true :diff? false}
                     {:id (gensym) :path "[:a :b :c]" :open? false :diff? true}
-                    {:id (gensym) :path "[\"hello\"]" :open? false :diff? false}]))
+                    {:id (gensym) :path "[\"hello\"]" :open? false :diff? false}
+                    {:id (gensym) :path [:boot-state] :open? true :diff? true}]))
 
 (defn add-pod []
   (let [id (gensym)]
@@ -52,54 +53,56 @@
 ;; TODO: END ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
 (defn panel-header []
-  [rc/h-box
-   :justify :between
-   :align :center
-   :margin (css-join common/gs-19s "0px")
-   :children [[rc/button
-               :class "bm-muted-button"
-               :style {:width   "129px"
-                       :padding "0px"}
-               :label [rc/v-box
-                       :align :center
-                       :children ["+ path inspector"]]
-               :on-click #(add-pod)]
-              [rc/h-box
-               :align :center
-               :gap common/gs-7s
-               :height "48px"
-               :padding (css-join "0px" common/gs-12s)
-               :style {:background-color "#fafbfc"
-                       :border           "1px solid #e3e9ed"
-                       :border-radius    "3px"}
-               :children [[rc/label :label "reset app-db to:"]
-                          [rc/button
-                           :class "bm-muted-button"
-                           :style {:width   "129px"
-                                   :padding "0px"}
-                           :label [rc/v-box
-                                   :align :center
-                                   :children ["initial epoch state"]]
-                           :on-click #(println "Clicked [initial state]")]
-                          [rc/v-box
-                           :width common/gs-81s
-                           :align :center
-                           :children [[rc/label
-                                       :style {:font-size "9px"}
-                                       :label "EVENT"]
-                                      [:img {:src (str "data:image/svg+xml;utf8," arrow-right)}]
-                                      [rc/label
-                                       :style {:font-size  "9px"
-                                               :margin-top "-1px"}
-                                       :label "PROCESSING"]]]
-                          [rc/button
-                           :class "bm-muted-button"
-                           :style {:width   "129px"
-                                   :padding "0px"}
-                           :label [rc/v-box
-                                   :align :center
-                                   :children ["end epoch state"]]
-                           :on-click #(println "Clicked [end state]")]]]]])
+  (let [app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
+        app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before]) ]
+    [rc/h-box
+     :justify :between
+     :align :center
+     :margin (css-join common/gs-19s "0px")
+     :children [[rc/button
+                 :class "bm-muted-button"
+                 :style {:width   "129px"
+                         :padding "0px"}
+                 :label [rc/v-box
+                         :align :center
+                         :children ["+ path inspector"]]
+                 :on-click #(add-pod)]
+                [rc/h-box
+                 :align :center
+                 :gap common/gs-7s
+                 :height "48px"
+                 :padding (css-join "0px" common/gs-12s)
+                 :style {:background-color "#fafbfc"
+                         :border           "1px solid #e3e9ed"
+                         :border-radius    "3px"}
+                 :children [[rc/label :label "reset app-db to:"]
+                            [rc/button
+                             :class "bm-muted-button"
+                             :style {:width   "129px"
+                                     :padding "0px"}
+                             :label [rc/v-box
+                                     :align :center
+                                     :children ["initial epoch state"]]
+                             :on-click #(rf/dispatch [:snapshot/load-snapshot @app-db-before])]
+                            [rc/v-box
+                             :width common/gs-81s
+                             :align :center
+                             :children [[rc/label
+                                         :style {:font-size "9px"}
+                                         :label "EVENT"]
+                                        [:img {:src (str "data:image/svg+xml;utf8," arrow-right)}]
+                                        [rc/label
+                                         :style {:font-size  "9px"
+                                                 :margin-top "-1px"}
+                                         :label "PROCESSING"]]]
+                            [rc/button
+                             :class "bm-muted-button"
+                             :style {:width   "129px"
+                                     :padding "0px"}
+                             :label [rc/v-box
+                                     :align :center
+                                     :children ["end epoch state"]]
+                             :on-click #(rf/dispatch [:snapshot/load-snapshot @app-db-after])]]]]]))
 
 (defn pod-header [{:keys [id path open? diff?]}]
   [rc/h-box
@@ -129,7 +132,7 @@
                                    :padding (css-join "0px" common/gs-7s)
                                    :width   "-webkit-fill-available"} ;; This took a bit of finding!
                            :width "100%"
-                           :model path
+                           :model (pr-str path)
                            :on-change #(update-pod-field id :path %) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
                            :on-submit #()                   ;; #(rf/dispatch [:app-db/add-path %])
                            :change-on-blur? false
@@ -169,7 +172,8 @@
         app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
         app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
         [diff-before diff-after _] (when render-diff?
-                                     (clojure.data/diff @app-db-before @app-db-after))]
+                                     (clojure.data/diff (get-in @app-db-before path)
+                                                        (get-in @app-db-after path)))]
     [rc/v-box
      :class "app-db-path"
      :style {:border-bottom-left-radius  "3px"
@@ -183,7 +187,7 @@
                            :padding          common/gs-7s
                            :margin           (css-join pad-padding pad-padding "0px" pad-padding)}
                    :children [[components/simple-render
-                               @app-db-after
+                               (get-in @app-db-after path)
 
                                #_{:todos [1 2 3]}
                                #_(get-in @app-db path)
@@ -240,7 +244,7 @@
                              :padding          common/gs-7s
                              :margin           (css-join "0px" pad-padding)}
                      :children [[components/simple-render
-                                 diff-before]]]))
+                                 diff-after]]]))
                 (when open?
                   [rc/gap-f :size pad-padding])]]))
 

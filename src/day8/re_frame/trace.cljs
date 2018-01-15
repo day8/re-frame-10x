@@ -93,8 +93,6 @@
                                    :operation (last (str/split name #" > "))}
                                   (real-renderer c)))))
 
-
-
     (set! reagent.impl.component/static-fns static-fns)
 
     (set! reagent.impl.component/custom-wrapper

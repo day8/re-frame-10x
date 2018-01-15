@@ -329,17 +329,10 @@
       new-paths)))
 
 (rf/reg-event-db
-  :snapshot/save-snapshot
-  [(rf/path [:snapshot])]
-  (fn [snapshot _]
-    (assoc snapshot :current-snapshot @re-frame.db/app-db)))
-
-(rf/reg-event-db
   :snapshot/load-snapshot
-  [(rf/path [:snapshot])]
-  (fn [snapshot _]
-    (reset! re-frame.db/app-db (:current-snapshot snapshot))
-    snapshot))
+  (fn [db [_ new-db]]
+    (reset! re-frame.db/app-db new-db)
+    db))
 
 ;;;
 

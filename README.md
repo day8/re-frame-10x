@@ -83,6 +83,19 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 - When the panel is closed, tracing is disabled.
 
+## Use Cases
+
+### app-db
+
+* Inspect a portion of app-db's state with the path inspector, allowing you to focus on just the parts you care about.
+* Reset app-db to before an event was run to run it again, instead of resetting the whole application
+* Toggle app-db before and after states for running an event, to inspect UI changes. 
+
+### Timing
+
+* Answer the question "Why is my app slow when it runs this event?"
+* See whether time is spent in processing an event, or rendering the changes 
+
 ## Troubleshooting
 
 * Try a `lein clean`
