@@ -16,10 +16,16 @@
             [day8.re-frame.trace.utils.re-com :as rc]
             [day8.re-frame.trace.common-styles :as common]))
 
+(def triangle-down (macros/slurp-macro "day8/re_frame/trace/images/triangle-down.svg"))
 (defn tab-button [panel-id title]
   (let [selected-tab @(rf/subscribe [:settings/selected-tab])]
-    [:button {:class    (str "tab button bm-heading-text " (when (= selected-tab panel-id) "active"))
-              :on-click #(rf/dispatch [:settings/selected-tab panel-id])} title]))
+    [rc/v-box
+     :style    {:margin-bottom "-8px"
+                :z-index       1}
+     :children [[:button {:class    (str "tab button bm-heading-text " (when (= selected-tab panel-id) "active"))
+                          :on-click #(rf/dispatch [:settings/selected-tab panel-id])} title]
+                [:img {:src   (str "data:image/svg+xml;utf8," triangle-down)
+                       :style {:opacity (if (= selected-tab panel-id) "1" "0")}}]]]))
 
 (def open-external (macros/slurp-macro "day8/re_frame/trace/images/logout.svg"))
 (def settings-svg (macros/slurp-macro "day8/re_frame/trace/images/wrench.svg"))
@@ -122,7 +128,8 @@
         :justify  :between
         :children [[rc/h-box
                     :gap      "7px"
-                    :align    :center
+                    :align    :end
+                    :height   "50px"
                     :children [(tab-button :event "Event")
                                (tab-button :app-db "app-db")
                                (tab-button :subs "Subs")
