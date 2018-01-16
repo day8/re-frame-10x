@@ -61,10 +61,11 @@
    :class "noselect"
    :style {:color            "white"
            :background-color (tag-color type)
-           :width            common/gs-50s
-           :height           common/gs-19s
+           :width            "48px" ;common/gs-50s
+           :height           "17px" ;common/gs-19s
            :font-size        "10px"
            :font-weight      "bold"
+           :border           "1px solid #bdbdbd"
            :border-radius    "3px"}
    :child  [:span {:style {:margin "auto"}} label]])
 
