@@ -346,7 +346,8 @@
 
 (defn render [app-db]
   [rc/v-box
-   :style {:margin-right common/gs-19s}
+   :style {:margin-right common/gs-19s
+           :overflow     "hidden"}
    :children [[panel-header]
               [pod-section]
               [rc/gap-f :size pod-gap]]])
