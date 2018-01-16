@@ -257,3 +257,86 @@
   :<- [:traces/current-event-traces]
   (fn [traces]
     (not (empty? traces))))
+
+;;
+
+(rf/reg-sub
+  :subs/all-sub-traces
+  :<- [:traces/current-event-traces]
+  (fn [traces]
+    (filter metam/subscription? traces)))
+
+(defn sub-sort-val
+  [sub]
+  (case (:type sub)
+    :created 1
+    :re-run 2
+    :destroyed 3
+    :not-run 4))
+
+(def subscription-comparator
+  (fn [x y]
+    (compare (sub-sort-val x) (sub-sort-val y))))
+
+(defn sub-op-type->type [t]
+  (case (:op-type t)
+    :sub/create :created
+    :sub/run :re-run
+    :sub/dispose :destroyed
+
+    :not-run))
+
+(rf/reg-sub
+  :subs/all-subs
+  :<- [:subs/all-sub-traces]
+  (fn [traces]
+    (let [raw [{:id (gensym) :type :destroyed :layer "3" :path "[:todo/blah]" :open? false :diff? false}
+               {:id (gensym) :type :re-run :layer "2" :path "[:todo/blah]" :open? false :diff? false}
+               {:id (gensym) :type :created :layer "3" :path "[:todo/completed]" :open? false :diff? true}
+               {:id (gensym) :type :re-run :layer "3" :path "[:todo/completed]" :open? false :diff? false}
+               {:id (gensym) :type :not-run :layer "3" :path "[:todo/blah]" :open? false :diff? false}]
+
+          raw (map (fn [trace] (let [pod-type (sub-op-type->type trace)
+                                     path-str    (pr-str (get-in trace [:tags :query-v]))]
+                                 {:id (str pod-type path-str)
+                                  :type  pod-type
+                                  :layer "2"
+                                  :path  path-str
+
+                                  ;; TODO: data for sub
+                                  ;; TODO: get layer level
+                                  ;; TODO: Get not run subscriptions
+
+                                  :open? false
+                                  :diff  false}))
+                   traces)
+
+          run-multiple? (frequencies (map :path raw))]
+      (js/console.log "Run Multiple" run-multiple?)
+      (js/console.log "Traces" traces)
+      (js/console.log "Raw" raw)
+      (sort-by identity subscription-comparator raw))))
+
+(rf/reg-sub
+  :subs/created-count
+  :<- [:subs/all-sub-traces]
+  (fn [traces]
+    (count (filter metam/subscription-created? traces))))
+
+(rf/reg-sub
+  :subs/re-run-count
+  :<- [:subs/all-sub-traces]
+  (fn [traces]
+    (count (filter metam/subscription-re-run? traces))))
+
+(rf/reg-sub
+  :subs/destroyed-count
+  :<- [:subs/all-sub-traces]
+  (fn [traces]
+    (count (filter metam/subscription-destroyed? traces))))
+
+(rf/reg-sub
+  :subs/not-run-count
+  :<- [:subs/all-sub-traces]
+  (fn [traces]
+    (count (filter metam/subscription-not-run? traces))))

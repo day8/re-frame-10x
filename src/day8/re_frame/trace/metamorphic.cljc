@@ -125,6 +125,21 @@
        (= (:operation event)
           [:idle :add-event])))
 
+(defn subscription? [trace]
+  (= "sub" (namespace (:op-type trace))))
+
+(defn subscription-created? [trace]
+  (= :sub/create (:op-type trace)))
+
+(defn subscription-re-run? [trace]
+  (= :sub/run (:op-type trace)))
+
+(defn subscription-destroyed? [trace]
+  (= :sub/dispose (:op-type trace)))
+
+(defn subscription-not-run? [trace]
+  false)
+
 (defn finish-run? [event]
   (and (fsm-trigger? event)
        (= (:operation event)

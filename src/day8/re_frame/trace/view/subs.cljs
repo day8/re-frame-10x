@@ -45,12 +45,16 @@
                :not-run   "#bdbdbd"}]
     (get types type "black")))
 
-(defn tag-desc [type]
-  (let [types {:created   {:long "CREATED"   :short "CREATED"}
-               :destroyed {:long "DESTROYED" :short "DESTROY"}
-               :re-run    {:long "RE-RUN"    :short "RE-RUN" }
-               :not-run   {:long "NOT-RUN"   :short "NOT-RUN"}}]
-    (get types type "???")))
+(def tag-types {:created   {:long "CREATED" :short "CREATED"}
+                :destroyed {:long "DESTROYED" :short "DESTROY"}
+                :re-run    {:long "RE-RUN" :short "RE-RUN"}
+                :not-run   {:long "NOT-RUN" :short "NOT-RUN"}})
+
+(defn long-tag-desc [type]
+  (get-in tag-types [type :long] "???"))
+
+(defn short-tag-desc [type]
+  (get-in tag-types [type :short] "???"))
 
 (defn tag [type label]
   [rc/box
@@ -73,39 +77,43 @@
               [tag type label]]])
 
 (defn panel-header []
-  [rc/h-box
-   :justify  :between
-   :align    :center
-   :margin   (css-join common/gs-19s "0px")
-   :children [[rc/h-box
-               :align    :center
-               :gap      common/gs-19s
-               :height   "48px"
-               :padding  (css-join "0px" common/gs-19s)
-               :style    {:background-color "#fafbfc"
-                          :border "1px solid #e3e9ed"
-                          :border-radius "3px"}
-               :children [[:span {:style {:color       "#828282"
-                                          :font-size   "18px"
-                                          :font-weight "lighter"}}
-                           "Summary:"]
-                          [title-tag :created   (-> :created   tag-desc :long) 2]
-                          [title-tag :re-run    (-> :re-run    tag-desc :long) 44]
-                          [title-tag :destroyed (-> :destroyed tag-desc :long) 1]
-                          [title-tag :not-run   (-> :not-run   tag-desc :long) 12]]]
-              [rc/h-box
-               :align    :center
-               :gap      common/gs-19s
-               :height   "48px"
-               :padding  (css-join "0px" common/gs-19s)
-               :style    {:background-color "#fafbfc"
-                          :border "1px solid #e3e9ed"
-                          :border-radius "3px"}
-               :children [[rc/checkbox
-                           :model     true
-                           :label     [:span "Ignore unchanged" [:br] "layer 2 subs"]
-                           :style     {:margin-top "6px"}
-                           :on-change #()]]]]])
+  (let [created-count (rf/subscribe [:subs/created-count])
+        re-run-count (rf/subscribe [:subs/re-run-count])
+        destroyed-count (rf/subscribe [:subs/destroyed-count])
+        not-run-count (rf/subscribe [:subs/not-run-count])]
+    [rc/h-box
+     :justify :between
+     :align :center
+     :margin (css-join common/gs-19s "0px")
+     :children [[rc/h-box
+                 :align :center
+                 :gap common/gs-19s
+                 :height "48px"
+                 :padding (css-join "0px" common/gs-19s)
+                 :style {:background-color "#fafbfc"
+                         :border           "1px solid #e3e9ed"
+                         :border-radius    "3px"}
+                 :children [[:span {:style {:color       "#828282"
+                                            :font-size   "18px"
+                                            :font-weight "lighter"}}
+                             "Summary:"]
+                            [title-tag :created (long-tag-desc :created) @created-count]
+                            [title-tag :re-run (long-tag-desc :re-run) @re-run-count]
+                            [title-tag :destroyed (long-tag-desc :destroyed) @destroyed-count]
+                            [title-tag :not-run (long-tag-desc :not-run) @not-run-count]]]
+                [rc/h-box
+                 :align :center
+                 :gap common/gs-19s
+                 :height "48px"
+                 :padding (css-join "0px" common/gs-19s)
+                 :style {:background-color "#fafbfc"
+                         :border           "1px solid #e3e9ed"
+                         :border-radius    "3px"}
+                 :children [[rc/checkbox
+                             :model true
+                             :label [:span "Ignore unchanged" [:br] "layer 2 subs"]
+                             :style {:margin-top "6px"}
+                             :on-change #()]]]]]))
 
 (defn pod-header [{:keys [id type layer path open? diff?]}]
   [rc/h-box
@@ -129,7 +137,7 @@
                         :child  [:span.arrow (if open? "▼" "▶")]]]
               [rc/box
                :width "64px" ;; (100-36)px from box above
-               :child [tag type (-> type tag-desc :short)]]
+               :child [tag type (short-tag-desc type)]]
               [rc/h-box
                :size "auto"
                :class "app-db-path--path-header"
@@ -222,13 +230,14 @@
    :children [[rc/label :label "There are no subscriptions to show"]]])
 
 (defn pod-section []
-  [rc/v-box
-   :gap      pod-gap
-   :children (if (empty? @*pods)
-               [[no-pods]]
-               (doall (for [p @*pods]
-                        ^{:key (str p)}
-                        [pod p])))])
+  (let [all-subs @(rf/subscribe [:subs/all-subs])]
+    [rc/v-box
+     :gap pod-gap
+     :children (if (empty? all-subs)
+                 [[no-pods]]
+                 (doall (for [p all-subs]
+                          ^{:key (:id p)}
+                          [pod p])))]))
 
 (defn render []
   []
