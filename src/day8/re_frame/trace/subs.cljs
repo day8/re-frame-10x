@@ -251,3 +251,9 @@
     (let [start-of-render (first (filter metam/request-animation-frame? traces))
           end-of-epoch (utils/last-in-vec traces)]
       (metam/elapsed-time start-of-render end-of-epoch))))
+
+(rf/reg-sub
+  :timing/data-available?
+  :<- [:traces/current-event-traces]
+  (fn [traces]
+    (not (empty? traces))))
