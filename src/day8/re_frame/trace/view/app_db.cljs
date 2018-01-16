@@ -157,7 +157,7 @@
                                      :children ["end epoch state"]]
                              :on-click #(rf/dispatch [:snapshot/load-snapshot @app-db-after])]]]]]))
 
-(defn pod-header [{:keys [id path open? diff?]}]
+(defn pod-header [{:keys [id path path-str open? diff?]}]
   [rc/h-box
    :class (str "app-db-path--header " (when-not open? "app-db-path--header__closed"))
    :align :center
@@ -176,11 +176,12 @@
                :class "app-db-path--path-header"
                :size "auto"
                :children [[rc/input-text
+                           :attr {:on-blur (fn [e] (rf/dispatch [:app-db/update-path-blur id]))}
                            :style {:height  "25px"
                                    :padding (css-join "0px" common/gs-7s)
                                    :width   "-webkit-fill-available"} ;; This took a bit of finding!
                            :width "100%"
-                           :model (pr-str path)
+                           :model path-str
                            :on-change #(rf/dispatch [:app-db/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
                            :on-submit #()                   ;; #(rf/dispatch [:app-db/add-path %])
                            :change-on-blur? false

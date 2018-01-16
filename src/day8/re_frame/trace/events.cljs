@@ -281,24 +281,46 @@
   :app-db/create-path
   app-db-path-mw
   (fn [paths _]
-    (assoc paths (js/Date.now) {:diff? false :open? true :path []})))
+    (assoc paths (js/Date.now) {:diff? false :open? true :path nil :path-str "[]" :valid-path? true})))
+
+(defn read-string-maybe [s]
+  (try (cljs.tools.reader.edn/read-string s)
+       (catch :default e
+         nil)))
+
+;; The core idea with :app-db/update-path and :app-db/update-path-blur
+;; is that we need to separate the users text input (`path-str`) with the
+;; parsing of that string (`path`). We let the user type any string that
+;; they like, and check it for validity on each change. If it is valid
+;; then we update `path` and mark the pod as valid. If it isn't valid then
+;; we don't update `path` and mark the pod as invalid.
+;;
+;; On blur of the input, we reset path-str to the last valid path, if
+;; the pod isn't currently valid.
 
 (rf/reg-event-db
   :app-db/update-path
   app-db-path-mw
   (fn [paths [_ path-id path-str]]
-    (try
-      (let [cleaned-path path-str
-            trimmed-path (str/trim path-str)
-            cleaned-path (if (str/starts-with? trimmed-path "[")
-                           cleaned-path
-                           (str "[" cleaned-path))
-            cleaned-path (if (str/ends-with? trimmed-path "]")
-                           cleaned-path
-                           (str "]" cleaned-path))]
-        (assoc-in paths [path-id :path] (cljs.tools.reader.edn/read-string cleaned-path)))
-      (catch :default e
-        paths))))
+    (let [path  (read-string-maybe path-str)
+          paths (assoc-in paths [path-id :path-str] path-str)]
+      (if (or (and (some? path)
+                   (sequential? path))
+              (str/blank? path-str))
+        (-> paths
+            (assoc-in [path-id :path] path)
+            (assoc-in [path-id :valid-path?] true))
+        (assoc-in paths [path-id :valid-path?] false)))))
+
+(rf/reg-event-db
+  :app-db/update-path-blur
+  app-db-path-mw
+  (fn [paths [_ path-id]]
+    (let [{:keys [valid-path? path]} (get paths path-id)]
+      (if valid-path?
+        paths
+        (-> (assoc-in paths [path-id :path-str] (pr-str path))
+            (assoc-in [path-id :valid-path?] true))))))
 
 (rf/reg-event-db
   :app-db/set-path-visibility
