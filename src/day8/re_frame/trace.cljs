@@ -53,7 +53,7 @@
 
 (def static-fns
   {:render
-   (fn render []
+   (fn mp-render []                                         ;; Monkeypatched render
      (this-as c
        (trace/with-trace {:op-type   :render
                           :tags      {:component-path (component-path c)}
