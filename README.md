@@ -1,39 +1,69 @@
 # re-frame-trace
 
-`re-frame-trace` is a programmer's dashboard 
-for inspecting a running `re-frame` application. It should assist you to both understand and debug your application. 
+`re-frame-trace` is a programmer's dashboard. It allows you to see inside a running `re-frame` 
+application, helping you to understand it and debug it. 
+ 
 
-**Status:** Alpha.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace) [![Dependencies Status](https://versions.deps.co/Day8/re-frame-trace/status.svg)](https://versions.deps.co/Day8/re-frame-trace)
+**Status:** Alpha.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
 **Note** [the latest version 0.1.14](https://github.com/Day8/re-frame-trace/releases/tag/0.1.14) ALSO requires the latest version of re-frame itself - `v0.10.3-alpha2`.
 
 
-## Dashboard Overview 
+## How It Might Help You
+
+What it can do for you:  
+  - Help you to learn `re-frame`.  If you are new to `re-frame`, it will assist you to 
+    understand the data flows involved (the dominoes). 
+  - Help you to explore and learn an unfamiliar `re-frame` codebase.
+    When I click on this "X" button, it shows me what event is `dispatch`-ed 
+    and in what namespace the associated event handler is registered.  And, 
+    "oh look, that's interesting - four subscriptions recalculated". Etc.
+  - Help you with debugging. In particular, it will assist you to write and debug 
+    event handlers, which is useful because they hold most of the logic in your `re-frame` apps. 
+  - Help you to find performance problems and/or detect where there is 
+    unnecessary computation occurring.
+
+(Okay, so this list is slightly aspirational. `re-frame-trace` is 
+ absolutely useful, and you should use it, but delivery against the ideal above is uneven)
+
+## Epoch Oriented 
 
 `re-frame` applications are computationally regular. First an event happens,
-and then boom, boom, boom go a series of known steps (dominos), in a known order. At the end of
-it, a `re-frame` app lapses into a quiescent state waiting for another event to kick 
-off the next iteration of the same cycle.
+and then boom, boom, boom go a series of known computational steps (dominoes), 
+in a known order. 
+At the end of it, a `re-frame` app lapses into a quiescent state waiting for another 
+event to kick off the next iteration of the same cycle.
 
-Each `re-frame` event and its consequent computation forms a discrete "epoch" which can be analysed and inspected independently of other epochs.  As a result, this tool is epoch-oriented.
+Each `re-frame` event and its consequent computation forms a discrete "epoch" 
+which can be inspected, analysed and understood independently of other epochs. This 
+tool is epoch-oriented.
 
-As it runs, `re-frame` generates detailed "trace data", but much of it will be low level and uninteresting a lot of the time.
-`re-frame-trace` is a "dashboard" in the sense that it shows useful, "rolled up" information "at a glance", and allows you to drill down and explore the detail as necessary. All the data you want should ultimately be available, but you shouldn't initially drown in it. 
+And, yes, there's the ability to do time travel debugging - you can go backwards
+and forwards through epochs - but that's really not the most interesting aspect
+of what you get. 
 
-Not only is the underlying trace "just data", but so is much of the observed `re-frame` proecess. Much of what `re-frame` does on your behalf is the move data from one domino to another. You write the dominos (functions) and `re-frame` will flow data through them. 
+## It is about Data
 
-So, yeah, this tool an epoch-oriented, interactive data dashboard for gaining insights and assisting debugging. It is also a work in progress, so this grand descrption runs well ahead of what is delivered right now.
+As it runs, `re-frame` generates detailed "trace" which is captured as data (not strings).
+This trace is like an x-ray of the app's functioning.
 
-## More Aspirational goals
+In addition, re-frame is as much "data oriented" as it is functional in design.
+It "flows" data, in a loop, through the functions you provide.
 
-Here's the vision for how we'd like `re-frame-trace` to help (eventually):
-  - Help in learning `re-frame`.  If I'm new to `re-frame`, the dashboard should assist me to understand the 
-    dominoes and the data flows involved.
-  - Help in learning a new code base. It should help me to explore how an unfamiliar application is wired together. When I click 
-    on this button "X", it shows me what event is `dispatch`-ed and in what namespace the associated event handler is registered.  And, 
-    "oh look, that's interesting - four subscriptions recalculated". Etc.
-  - Help with debugging. Particularly assistance for writing event handlers as they hold most of the application logic. 
-  - Help with finding performance problems and/or detecting where there is unnecessary computation occuring.
+So, data is at the center of `re-frame-trace`. 
+
+## Data Dashboard 
+
+There's often too much data - too much detail.
+
+So, `re-frame-trace` tries to be something of a  "dashboard" in the sense that
+it tries to turn "raw data" into "information" through curated analysis, and "roll ups"
+which deliver insight "at a glance". Then allowing you to "drill into the detail".
+
+Right. So, this tool an epoch-oriented, interactive data dashboard for 
+gaining insights and assisting debugging. It is also a work in progress, 
+so this grand description runs well ahead of what is delivered right now.
+But we're getting there.
 
 
 ## A Visual Sampler
