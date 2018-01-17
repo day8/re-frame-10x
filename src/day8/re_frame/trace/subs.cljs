@@ -317,9 +317,7 @@
                                   ;; TODO: data for sub
                                   ;; TODO: get layer level
                                   ;; TODO: Get not run subscriptions
-
-                                  :open? false
-                                  :diff  false}))
+                                  }))
                    traces)
 
           ;; Filter out run if it was created
@@ -375,3 +373,9 @@
   :<- [:subs/root]
   (fn [subs _]
     (:ignore-unchanged-subs? subs true)))
+
+(rf/reg-sub
+  :subs/sub-expansions
+  :<- [:subs/root]
+  (fn [subs _]
+    (:expansions subs)))

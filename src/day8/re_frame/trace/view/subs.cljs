@@ -2,7 +2,8 @@
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
-            [day8.re-frame.trace.common-styles :as common])
+            [day8.re-frame.trace.common-styles :as common]
+            [day8.re-frame.trace.view.components :as components])
   (:require-macros [day8.re-frame.trace.utils.macros :as macros]))
 
 ;(s/def ::query-v any?)
@@ -134,7 +135,7 @@
                :class  "noselect"
                :style  {:cursor "pointer"}
                :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                        :on-click (rc/handler-fn (update-pod-field id :open? (not open?)))}
+                        :on-click #(rf/dispatch [:subs/open-pod? id (not open?)])}
                :child  [rc/box
                         :margin "auto"
                         :child  [:span.arrow (if open? "▼" "▶")]]]
@@ -166,7 +167,7 @@
                        :border-radius "3px"
                        :cursor        "pointer"}
                :attr  {:title    "Show diff"
-                       :on-click (rc/handler-fn (update-pod-field id :diff? (not diff?)))}
+                       :on-click #(rf/dispatch [:subs/diff-pod? id (not diff?)])}
                :child [:img
                        {:src   (str "data:image/svg+xml;utf8," copy)
                         :style {:width  "19px"
@@ -181,12 +182,12 @@
    :children [[pod-header pod-info]
               (when open?
                 [rc/v-box
-                 :height "90px"
                  :min-width "100px"
                  :style {:background-color cljs-dev-tools-background
                          :padding          common/gs-7s
                          :margin           (css-join pad-padding pad-padding "0px" pad-padding)}
-                 :children ["---main-section---"]])
+                 :children [[components/simple-render
+                             (:value pod-info)]]])
               (when (and open? diff?)
                 [rc/v-box
                  :height common/gs-19s
@@ -233,14 +234,16 @@
    :children [[rc/label :label "There are no subscriptions to show"]]])
 
 (defn pod-section []
-  (let [all-subs @(rf/subscribe [:subs/visible-subs])]
+  (let [all-subs       @(rf/subscribe [:subs/visible-subs])
+        sub-expansions @(rf/subscribe [:subs/sub-expansions])]
+    (js/console.log sub-expansions)
     [rc/v-box
      :gap pod-gap
      :children (if (empty? all-subs)
                  [[no-pods]]
                  (doall (for [p all-subs]
                           ^{:key (:id p)}
-                          [pod p])))]))
+                          [pod (merge p (get sub-expansions (:id p)))])))]))
 
 (defn render []
   []

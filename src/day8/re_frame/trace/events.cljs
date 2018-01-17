@@ -447,3 +447,15 @@
   [(rf/path [:subs :ignore-unchanged-subs?])]
   (fn [_ [_ ignore?]]
     ignore?))
+
+(rf/reg-event-db
+  :subs/open-pod?
+  [(rf/path [:subs :expansions])]
+  (fn [expansions [_ id open?]]
+    (assoc-in expansions [id :open?] open?)))
+
+(rf/reg-event-db
+  :subs/diff-pod?
+  [(rf/path [:subs :expansions])]
+  (fn [expansions [_ id diff?]]
+    (assoc-in expansions [id :diff?] diff?)))
