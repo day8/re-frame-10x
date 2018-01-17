@@ -81,7 +81,9 @@
   (let [created-count (rf/subscribe [:subs/created-count])
         re-run-count (rf/subscribe [:subs/re-run-count])
         destroyed-count (rf/subscribe [:subs/destroyed-count])
-        not-run-count (rf/subscribe [:subs/not-run-count])]
+        not-run-count (rf/subscribe [:subs/not-run-count])
+        ignore-unchanged? (rf/subscribe [:subs/ignore-unchanged-subs?])
+        ignore-unchanged-l2-count (rf/subscribe [:subs/unchanged-l2-subs-count])]
     [rc/h-box
      :justify :between
      :align :center
@@ -111,10 +113,10 @@
                          :border           "1px solid #e3e9ed"
                          :border-radius    "3px"}
                  :children [[rc/checkbox
-                             :model true
-                             :label [:span "Ignore unchanged" [:br] "layer 2 subs"]
+                             :model ignore-unchanged?
+                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br] "layer 2 subs"]
                              :style {:margin-top "6px"}
-                             :on-change #()]]]]]))
+                             :on-change #(rf/dispatch [:subs/ignore-unchanged-subs? %])]]]]]))
 
 (defn pod-header [{:keys [id type layer path open? diff?]}]
   [rc/h-box
@@ -231,7 +233,7 @@
    :children [[rc/label :label "There are no subscriptions to show"]]])
 
 (defn pod-section []
-  (let [all-subs @(rf/subscribe [:subs/all-subs])]
+  (let [all-subs @(rf/subscribe [:subs/visible-subs])]
     [rc/v-box
      :gap pod-gap
      :children (if (empty? all-subs)

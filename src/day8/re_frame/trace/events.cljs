@@ -6,6 +6,7 @@
             [clojure.string :as str]
             [goog.object]
             [re-frame.db]
+            [re-frame.interop]
             [day8.re-frame.trace.view.container :as container]
             [day8.re-frame.trace.styles :as styles]
             [clojure.set :as set]
@@ -400,6 +401,12 @@
       new-paths)))
 
 (rf/reg-event-db
+  :app-db/reagent-id
+  [(rf/path [:app-db :reagent-id])]
+  (fn [paths _]
+    (re-frame.interop/reagent-id re-frame.db/app-db)))
+
+(rf/reg-event-db
   :snapshot/load-snapshot
   (fn [db [_ new-db]]
     (reset! re-frame.db/app-db new-db)
@@ -432,3 +439,11 @@
   [(rf/path [:traces :all-traces])]
   (fn [_ [_ traces]]
     traces))
+
+;;
+
+(rf/reg-event-db
+  :subs/ignore-unchanged-subs?
+  [(rf/path [:subs :ignore-unchanged-subs?])]
+  (fn [_ [_ ignore?]]
+    ignore?))

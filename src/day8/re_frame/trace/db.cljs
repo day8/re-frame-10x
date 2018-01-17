@@ -24,4 +24,5 @@
     (rf/dispatch [:traces/update-show-epoch-traces? true])  ;; TODO: source this from LS.
     (rf/dispatch [:app-db/paths app-db-paths])
     (rf/dispatch [:app-db/set-json-ml-paths json-ml-paths])
-    (rf/dispatch [:global/add-unload-hook])))
+    (rf/dispatch [:global/add-unload-hook])
+    (rf/dispatch [:app-db/reagent-id])))

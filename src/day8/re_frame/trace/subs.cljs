@@ -78,6 +78,12 @@
   (fn [expansions [_ path]]
     (contains? expansions path)))
 
+(rf/reg-sub
+  :app-db/reagent-id
+  :<- [:app-db/root]
+  (fn [root _]
+    (:reagent-id root)))
+
 ;;
 
 (rf/reg-sub
@@ -261,6 +267,11 @@
 ;;
 
 (rf/reg-sub
+  :subs/root
+  (fn [db _]
+    (:subs db)))
+
+(rf/reg-sub
   :subs/all-sub-traces
   :<- [:traces/current-event-traces]
   (fn [traces]
@@ -289,19 +300,19 @@
 (rf/reg-sub
   :subs/all-subs
   :<- [:subs/all-sub-traces]
-  (fn [traces]
-    (let [raw [{:id (gensym) :type :destroyed :layer "3" :path "[:todo/blah]" :open? false :diff? false}
-               {:id (gensym) :type :re-run :layer "2" :path "[:todo/blah]" :open? false :diff? false}
-               {:id (gensym) :type :created :layer "3" :path "[:todo/completed]" :open? false :diff? true}
-               {:id (gensym) :type :re-run :layer "3" :path "[:todo/completed]" :open? false :diff? false}
-               {:id (gensym) :type :not-run :layer "3" :path "[:todo/blah]" :open? false :diff? false}]
-
-          raw (map (fn [trace] (let [pod-type (sub-op-type->type trace)
-                                     path-str    (pr-str (get-in trace [:tags :query-v]))]
-                                 {:id (str pod-type path-str)
+  :<- [:app-db/reagent-id]
+  (fn [[traces app-db-id]]
+    (js/console.log "appdb id" app-db-id)
+    (let [raw (map (fn [trace] (let [pod-type (sub-op-type->type trace)
+                                     path-str    (pr-str (get-in trace [:tags :query-v]))
+                                     layer (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
+                                             2
+                                             3)]
+                                 {:id    (str pod-type (get-in trace [:tags :reaction]))
                                   :type  pod-type
-                                  :layer "2"
+                                  :layer layer
                                   :path  path-str
+                                  :value (get-in trace [:tags :value])
 
                                   ;; TODO: data for sub
                                   ;; TODO: get layer level
@@ -311,11 +322,23 @@
                                   :diff  false}))
                    traces)
 
-          run-multiple? (frequencies (map :path raw))]
+          ;; Filter out run if it was created
+          ;; Group together run time
+
+          run-multiple? (frequencies (map :id raw))]
       (js/console.log "Run Multiple" run-multiple?)
       (js/console.log "Traces" traces)
       (js/console.log "Raw" raw)
       (sort-by identity subscription-comparator raw))))
+
+(rf/reg-sub
+  :subs/visible-subs
+  :<- [:subs/all-subs]
+  :<- [:subs/ignore-unchanged-subs?]
+  (fn [[all-subs ignore-unchanged-l2?]]
+    (if ignore-unchanged-l2?
+      (remove metam/unchanged-l2-subscription? all-subs)
+      all-subs)))
 
 (rf/reg-sub
   :subs/created-count
@@ -340,3 +363,15 @@
   :<- [:subs/all-sub-traces]
   (fn [traces]
     (count (filter metam/subscription-not-run? traces))))
+
+(rf/reg-sub
+  :subs/unchanged-l2-subs-count
+  :<- [:subs/all-subs]
+  (fn [subs]
+    (count (filter metam/unchanged-l2-subscription? subs))))
+
+(rf/reg-sub
+  :subs/ignore-unchanged-subs?
+  :<- [:subs/root]
+  (fn [subs _]
+    (:ignore-unchanged-subs? subs true)))

@@ -126,10 +126,12 @@
           [:idle :add-event])))
 
 (defn subscription? [trace]
-  (= "sub" (namespace (:op-type trace))))
+  (and (= "sub" (namespace (:op-type trace)))
+       (not (get-in trace [:tags :cached?]))))
 
 (defn subscription-created? [trace]
-  (= :sub/create (:op-type trace)))
+  (and (= :sub/create (:op-type trace))
+       (not (get-in trace [:tags :cached?]))))
 
 (defn subscription-re-run? [trace]
   (= :sub/run (:op-type trace)))
@@ -139,6 +141,13 @@
 
 (defn subscription-not-run? [trace]
   false)
+
+(defn unchanged-l2-subscription? [sub]
+  ;; TODO: check if value changed
+  (and
+    (= :re-run (:type sub))
+    (= 2 (:layer sub))))
+
 
 (defn finish-run? [event]
   (and (fsm-trigger? event)
