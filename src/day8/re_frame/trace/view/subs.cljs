@@ -119,7 +119,7 @@
                              :style {:margin-top "6px"}
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-subs? %])]]]]]))
 
-(defn pod-header [{:keys [id type layer path open? diff?]}]
+(defn pod-header [{:keys [id type layer path open? diff? run-times]}]
   [rc/h-box
    :class    "app-db-path--header"
    :style    (merge {:border-top-left-radius  "3px"
@@ -142,6 +142,8 @@
               [rc/box
                :width "64px" ;; (100-36)px from box above
                :child [tag type (short-tag-desc type)]]
+              (when run-times
+                [:span "Warning: run " run-times " times"])
               [rc/h-box
                :size "auto"
                :class "app-db-path--path-header"

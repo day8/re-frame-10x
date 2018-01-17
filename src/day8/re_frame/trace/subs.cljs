@@ -255,7 +255,7 @@
   :<- [:traces/current-event-traces]
   (fn [traces]
     (let [start-of-render (first (filter metam/request-animation-frame? traces))
-          end-of-epoch (utils/last-in-vec traces)]
+          end-of-epoch    (utils/last-in-vec traces)]
       (metam/elapsed-time start-of-render end-of-epoch))))
 
 (rf/reg-sub
@@ -302,31 +302,29 @@
   :<- [:subs/all-sub-traces]
   :<- [:app-db/reagent-id]
   (fn [[traces app-db-id]]
-    (js/console.log "appdb id" app-db-id)
-    (let [raw (map (fn [trace] (let [pod-type (sub-op-type->type trace)
-                                     path-str    (pr-str (get-in trace [:tags :query-v]))
-                                     layer (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
-                                             2
-                                             3)]
-                                 {:id    (str pod-type (get-in trace [:tags :reaction]))
-                                  :type  pod-type
-                                  :layer layer
-                                  :path  path-str
-                                  :value (get-in trace [:tags :value])
+    (let [raw           (map (fn [trace] (let [pod-type (sub-op-type->type trace)
+                                               path-str (pr-str (get-in trace [:tags :query-v]))
+                                               layer    (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
+                                                          2
+                                                          3)]
+                                           {:id    (str pod-type (get-in trace [:tags :reaction]))
+                                            :type  pod-type
+                                            :layer layer
+                                            :path  path-str
+                                            :value (get-in trace [:tags :value])
 
-                                  ;; TODO: data for sub
-                                  ;; TODO: get layer level
-                                  ;; TODO: Get not run subscriptions
-                                  }))
-                   traces)
+                                            ;; TODO: Get not run subscriptions
+                                            }))
+                             traces)
 
           ;; Filter out run if it was created
           ;; Group together run time
+          run-multiple? (into {}
+                              (filter (fn [[k v]] (< 1 v)))
+                              (frequencies (map :id raw)))
 
-          run-multiple? (frequencies (map :id raw))]
-      (js/console.log "Run Multiple" run-multiple?)
-      (js/console.log "Traces" traces)
-      (js/console.log "Raw" raw)
+          raw           (map (fn [sub] (assoc sub :run-times (get run-multiple? (:id sub)))) raw)]
+      (js/console.log raw)
       (sort-by identity subscription-comparator raw))))
 
 (rf/reg-sub
