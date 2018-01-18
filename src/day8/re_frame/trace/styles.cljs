@@ -5,9 +5,9 @@
             [garden.color :as color]
             [garden.selectors :as s]
             [day8.re-frame.trace.common-styles :as common]
-            [day8.re-frame.trace.utils.re-com :as rc]))
+            [day8.re-frame.trace.utils.re-com :as rc]
+            [day8.re-frame.trace.view.app-db :as app-db]))
 
-(def background-blue common/background-blue)
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
 (def dark-green common/dark-green)
@@ -42,9 +42,9 @@
           :font-size   (em 1)}]
 
    ;; Text-level semantics
-   [(s/a) (s/a s/visited) {:color         text-color
-                           :border-bottom [[(px 1) "#333" "dotted"]]}]
-   [(s/a s/hover) (s/a s/focus) {:border-bottom [[(px 1) "#666666" "solid"]]}]
+   [(s/a) (s/a s/visited) {:color           text-color
+                           :cursor          "pointer"
+                           :text-decoration "underline"}]
 
    [:code {:font-family "monospace"
            :font-size   (em 1)}]
@@ -58,17 +58,20 @@
    [:img {:border-style "none"}]
    [:option {:display "block"}]
    [:button :input :optgroup :select :textarea
-    {:font-family ["\"courier new\"" "monospace"]
+    {:font-family common/font-stack
      :font-size   (percent 100)
      :padding     [[(px 3) (px 3) (px 1) (px 3)]]
      :border      [[(px 1) "solid" medium-gray]]}]
    [:button :input {:overflow "visible"}]
-   [:button :select [(s/& s/focus) {:outline [[medium-gray "dotted" (px 1)]]}]]
+   #_[:button :select [(s/& s/focus) {:outline [[medium-gray "dotted" (px 1)]]}]]
    [:button
     (s/html (s/attr= "type" "button"))
     (s/attr= "type" "reset")
     (s/attr= "type" "submit")
     {:-webkit-appearance "button"}]
+   [(s/input (s/attr= "type" "checkbox"))
+    {:-webkit-appearance "checkbox"
+     :box-sizing         "border-box"}]
 
    [:button:-moz-focusring
     (s/attr= "type" "button")
@@ -88,7 +91,7 @@
              :-webkit-font-smoothing "inherit"
              :letter-spacing         "inherit"
              :background             "none"
-            #_ #_  :cursor                 "pointer"}]
+             #_#_:cursor "pointer"}]
    [:img {:max-width (percent 100)
           :height    "auto"
           :border    "0"}]
@@ -115,7 +118,28 @@
    [:thead {:display "table-header-group"}]
    [:tbody {:display "table-row-group"}]
    [:th :td {:display "table-cell"}]
-   [:tr {:display "table-row"}]])
+   [:tr {:display "table-row"}]
+
+   ;; SVG Reset
+   ;; From https://chromium.googlesource.com/chromium/blink/+/master/Source/core/css/svg.css
+   ["svg:not(:root), symbol, image, marker, pattern, foreignObject"
+    {:overflow "hidden"}]
+   ["svg:root"
+    {:width  "100%"
+     :height "100%"}]
+   ["text, foreignObject"
+    {:display "block"}]
+   ["text"
+    {:white-space "nowrap"}]
+   ["tspan, textPath"
+    {:white-space "inherit"}]
+   ;; No :focus rule
+   ["*"
+    {:transform-origin "0px 0px 0px"}]
+   ["html|* > svg"
+    {:transform-origin "50% 50%"}]
+
+   ])
 
 (def label-mixin {:color      text-color
                   :background background-gray-hint
@@ -134,9 +158,9 @@
 
 (def re-frame-trace-styles
   [:#--re-frame-trace--
-   {:background  "white"
-    :font-family ["'courier new'" "monospace"]
-    :color       text-color}
+   {:background-color common/background-gray
+    :font-family      common/font-stack
+    :color            text-color}
 
    [:.label label-mixin]
 
@@ -156,7 +180,7 @@
     [(s/& ".trace--sub-run")
      [".trace--op" {:color dark-purple}]]
     [(s/& ".trace--event")
-     {:border-top [["1px" light-gray "solid"]]}
+     {:border-top [["2px" common/border-line-color "solid"]]}
      [".trace--op" {:color common/event-color}]]
     [(s/& ".trace--render")
      [".trace--op" {:color dark-skyblue}]]
@@ -219,16 +243,15 @@
    [:.button {:padding       "5px 5px 3px"
               :margin        "5px"
               :border-radius "2px"
-            #_ #_   :cursor        "pointer"}]
+              #_#_:cursor "pointer"}]
    [:.text-button {:border-bottom "1px dotted #888"
-                   :font-weight   "normal"}
-    [(s/& s/focus) {:outline [[medium-gray "dotted" (px 1)]]}]]
+                   :font-weight   "normal"}]
 
    [:.icon-button {:font-size "10px"}]
-   [:button.tab {}]
+   [:button.tab {:font-weight 300}]
    [:.nav-icon
-    {:width   "15px"
-     :height  "15px"
+    {:width   "30px"
+     :height  "30px"
      :cursor  "pointer"
      :padding "0 5px"
      :margin  "0 5px"}
@@ -237,16 +260,16 @@
    [:.tab
     {:background     "transparent"
      :border-radius  0
-     :text-transform "uppercase"
-     :font-family    "monospace"
-     :letter-spacing "2px"
-     :margin-bottom  0
+     :margin         "10px 0 0 0"
+     :font-family    common/font-stack
      :padding-bottom "4px"
-     :vertical-align "bottom"}]
+     :vertical-align "bottom"
+     :cursor         "pointer"}]
 
    [:.tab.active
     {:background     "transparent"
-     :border-bottom  [[(px 3) "solid" dark-gray]]
+     :color          common/blue-modern-color
+     :border-bottom  [[(px 3) "solid" common/blue-modern-color]]
      :border-radius  0
      :padding-bottom (px 1)}]
 
@@ -278,7 +301,7 @@
                :border-bottom      [[(px 1) "solid" text-color-muted]]
                :background         "white"
                :display            "inline-block"
-               :font-family        "'courier new', monospace"
+               :font-family        common/font-stack
                :font-size          (em 1)
                :padding            "2px 0 0 0"
                :-moz-appearance    "menulist"
@@ -296,12 +319,37 @@
    [:.filter-control-input
     {:display "flex"
      :flex    "0 0 auto"}]
-   [:.nav {:background light-gray
-           :color      text-color}]
+   [:.nav {:background common/sidebar-background-color
+           :height     (px 50)
+           :color      "white"}
+    [:span.arrow {:color            common/blue-modern-color ;; Should this be a button instead of a span?
+                  :background-color common/standard-background-color
+                  :padding          (px 5)
+                  :cursor           "pointer"
+                  :user-select      "none"}]
+    [:span.arrow__disabled {:color  common/disabled-background-color
+                            :cursor "auto"}]
+    [:span.event-header {:color            common/text-color
+                         :background-color common/standard-background-color
+                         :padding          (px 5)
+                         :font-weight      "600"
+                         ;; TODO: figure out how to hide long events
+                         :text-overflow    "ellipsis"}]
+    ]
    [(s/& :.external-window) {:display "flex"
                              :height  (percent 100)
                              :flex    "1 1 auto"}]
-   [:.panel-content-top {}]
+   [:.panel-content-top {}
+    [:.bm-title-text {:color common/navbar-text-color}]
+    [:button {:width       "81px"
+              :height      "31px"
+              :font-weight 700
+              :font-size   "14px"
+              :cursor      "pointer"
+              :text-align  "center"
+              :padding     "0 5px"
+              :margin      "0 5px"}]]
+   [:.panel-content-tabs {:background-color common/white-background-color :padding-left common/gs-19}]
    [:.panel-content-scrollable panel-mixin]
    [:.epoch-panel panel-mixin]
    [:.tab-contents {:display        "flex"
@@ -319,6 +367,7 @@
                        :margin     "5px"
                        :opacity    "0.3"}]
    [:.active {:opacity 1}]
+
    [:.re-frame-trace--object
     [:.toggle {:color       text-color-muted
                :cursor      "pointer"
@@ -330,10 +379,19 @@
                         :width          (px 16)
                         :padding        "0 2px"
                         :vertical-align "middle"}]
+   [:.bm-muted-button {:font-size "14px"
+                       :height    "23px"
+                       :padding   "0px 7px"}]
+   [:.noselect {:-webkit-touch-callout "none"
+                :-webkit-user-select   "none"
+                :-khtml-user-select    "none"
+                :-moz-user-select      "none"
+                :-ms-user-select       "none"
+                :user-select           "none"}]
    ])
 
 
-(def panel-styles (apply garden/css [css-reset (into [:#--re-frame-trace--] rc/re-com-css) re-frame-trace-styles]))
+(def panel-styles (apply garden/css [css-reset [:#--re-frame-trace-- rc/re-com-css] common/blue-modern re-frame-trace-styles app-db/app-db-styles]))
 ;(def panel-styles (macros/slurp-macro "day8/re_frame/trace/main.css"))
 
 

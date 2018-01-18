@@ -5,9 +5,9 @@
 (defn init-db []
   (let [panel-width% (localstorage/get "panel-width-ratio" 0.35)
         show-panel? (localstorage/get "show-panel" false)
-        selected-tab (localstorage/get "selected-tab" :traces)
+        selected-tab (localstorage/get "selected-tab" :event)
         filter-items (localstorage/get "filter-items" [])
-        app-db-paths (localstorage/get "app-db-paths" '())
+        app-db-paths (into (sorted-map) (localstorage/get "app-db-paths" {}))
         json-ml-paths (localstorage/get "app-db-json-ml-expansions" #{})
         external-window? (localstorage/get "external-window?" false)
         using-trace? (localstorage/get "using-trace?" true)
@@ -21,6 +21,8 @@
       (rf/dispatch [:global/launch-external]))
     (rf/dispatch [:traces/filter-items filter-items])
     (rf/dispatch [:traces/set-categories categories])
+    (rf/dispatch [:traces/update-show-epoch-traces? true])  ;; TODO: source this from LS.
     (rf/dispatch [:app-db/paths app-db-paths])
     (rf/dispatch [:app-db/set-json-ml-paths json-ml-paths])
-    (rf/dispatch [:global/add-unload-hook])))
+    (rf/dispatch [:global/add-unload-hook])
+    (rf/dispatch [:app-db/reagent-id])))

@@ -1,16 +1,16 @@
 (defproject day8.re-frame/trace "0.1.15-SNAPSHOT"
   :description "Tracing and developer tools for re-frame apps"
-  :url         "https://github.com/Day8/re-frame-trace"
-  :license     {:name "MIT"}
-  :dependencies [[org.clojure/clojure        "1.8.0"]
+  :url "https://github.com/Day8/re-frame-trace"
+  :license {:name "MIT"}
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.671"]
-                 [reagent                    "0.6.0" :scope "provided"]
+                 [reagent "0.6.0" :scope "provided"]
                  [re-frame "0.10.3-alpha2" :scope "provided"]
-                 [binaryage/devtools         "0.9.4"]
+                 [binaryage/devtools "0.9.4"]
                  [garden "1.3.3"]]
   :plugins [[thomasa/mranderson "0.4.7"]
             [lein-less "RELEASE"]]
-  :deploy-repositories {"releases" :clojars
+  :deploy-repositories {"releases"  :clojars
                         "snapshots" :clojars}
 
   ;:source-paths ["target/srcdeps"]
@@ -30,11 +30,17 @@
          :target-path  "resources/day8/re_frame/trace"}
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
-             :mranderson {:dependencies [^:source-dep [re-frame "0.10.2" :scope "provided"
-                                                       :exclusions [org.clojure/clojurescript
-                                                                    reagent
-                                                                    cljsjs/react
-                                                                    cljsjs/react-dom
-                                                                    cljsjs/react-dom-server
-                                                                    org.clojure/tools.logging
-                                                                    net.cgrand/macrovich]]]}})
+             :mranderson {:dependencies ^:replace [^:source-dep [re-frame "0.10.2"
+                                                                 :exclusions [org.clojure/clojurescript
+                                                                              cljsjs/react
+                                                                              cljsjs/react-dom
+                                                                              cljsjs/react-dom-server
+                                                                              org.clojure/tools.logging
+                                                                              net.cgrand/macrovich]]
+                                                   ^:source-dep [reagent "0.6.0"
+                                                                 :exclusions [org.clojure/clojurescript
+                                                                              cljsjs/react
+                                                                              cljsjs/react-dom
+                                                                              cljsjs/react-dom-server
+                                                                              org.clojure/tools.logging
+                                                                              net.cgrand/macrovich]]]}})

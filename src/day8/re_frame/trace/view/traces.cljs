@@ -3,11 +3,12 @@
             [day8.re-frame.trace.utils.pretty-print-condensed :as pp]
             [re-frame.trace :as trace]
             [clojure.string :as str]
-            [reagent.core :as r]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [cljs.pprint :as pprint]
             [clojure.set :as set]
-            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
+            [mranderson047.reagent.v0v6v0.reagent.core :as r]
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [day8.re-frame.trace.utils.re-com :as rc]))
 
 (defn query->fn [query]
   (if (= :contains (:filter-type query))
@@ -64,7 +65,8 @@
                                         (str/join ", ")
                                         (pp/truncate-string :middle 40)))]]]
                               [:td.trace--meta
-                               (.toFixed duration 1) " ms"]]
+                               id
+                               #_ #_(.toFixed duration 1) " ms"]]
                              (when show-row?
                                [:tr.trace--details {:key       (str id "-details")
                                                     :tab-index 0}
@@ -80,22 +82,30 @@
                                 [:td.trace--meta.trace--details-icon
                                  {:on-click #(.log js/console tags)}]]))))))))
 
-(defn render-trace-panel [traces]
+(defn render [traces]
   (let [filter-input            (r/atom "")
         filter-items            (rf/subscribe [:traces/filter-items])
         filter-type             (r/atom :contains)
         input-error             (r/atom false)
         categories              (rf/subscribe [:traces/categories])
-        trace-detail-expansions (rf/subscribe [:traces/expansions])]
+        trace-detail-expansions (rf/subscribe [:traces/expansions])
+        beginning               (rf/subscribe [:epochs/beginning-trace-id])
+        end                     (rf/subscribe [:epochs/ending-trace-id])
+        current-traces          (rf/subscribe [:traces/current-event-traces])
+        show-epoch-traces?      (rf/subscribe [:traces/show-epoch-traces?])]
     (fn []
       (let [toggle-category-fn #(rf/dispatch [:traces/toggle-categories %])
-            visible-traces     (cond->> @traces
+            traces-to-filter   (if @show-epoch-traces?
+                                 @current-traces
+                                 @traces)
+            visible-traces     (cond->> traces-to-filter
                                         ;; Remove cached subscriptions. Could add this back in as a setting later
                                         ;; but it's pretty low signal/noise 99% of the time.
                                         true (remove (fn [trace] (and (= :sub/create (:op-type trace))
                                                                       (get-in trace [:tags :cached?]))))
                                         (seq @categories) (filter (fn [trace] (when (contains? @categories (:op-type trace)) trace)))
-                                        (seq @filter-items) (filter (apply every-pred (map query->fn @filter-items))))
+                                        (seq @filter-items) (filter (apply every-pred (map query->fn @filter-items)))
+                                        true (sort-by :id))
             save-query         (fn [_]
                                  (if (and (= @filter-type :slower-than)
                                           (js/isNaN (js/parseFloat @filter-input)))
@@ -103,6 +113,7 @@
                                    (do
                                      (reset! input-error false)
                                      (add-filter filter-items @filter-input @filter-type))))]
+
         [:div.tab-contents
          [:div.filter
           [:div.filter-control
@@ -119,6 +130,10 @@
             [:li.filter-category {:class    (when (contains? @categories :re-frame.router/fsm-trigger) "active")
                                   :on-click #(rf/dispatch [:traces/toggle-categories #{:re-frame.router/fsm-trigger :componentWillUnmount}])}
              "internals"]]
+           [rc/checkbox
+            :model show-epoch-traces?
+            :on-change #(rf/dispatch [:traces/update-show-epoch-traces? %])
+            :label "Show only traces for this epoch?"]
            [:div.filter-fields
             [:select {:value     @filter-type
                       :on-change #(reset! filter-type (keyword (.. % -target -value)))}
@@ -154,10 +169,10 @@
                        :on-click #(rf/dispatch [:traces/reset-filter-items])}
               (when (pos? (count @filter-items))
                 (str (count visible-traces) " of "))
-              (str (count @traces))]
+              (str (count @current-traces))]
              " traces "
-             (when (pos? (count @traces))
-               [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! traces []))} "clear"] ")"])]
+             (when (pos? (count @current-traces))
+               [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! current-traces []))} "clear"] ")"])]
             [:th {:style {:text-align "right"}} "meta"]]
            [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]))))
 

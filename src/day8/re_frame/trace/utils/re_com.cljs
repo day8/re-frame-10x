@@ -203,6 +203,78 @@
              attr)]
           children)))
 
+(defn scroll-style
+  "Determines the value for the 'overflow' attribute.
+   The scroll parameter is a keyword.
+   Because we're translating scroll into overflow, the keyword doesn't appear to match the attribute value"
+  [attribute scroll]
+  {attribute (case scroll
+               :auto "auto"
+               :off "hidden"
+               :on "scroll"
+               :spill "visible")})
+
+
+(defn- box-base
+  "This should generally NOT be used as it is the basis for the box, scroller and border components"
+  [& {:keys [size scroll h-scroll v-scroll width height min-width min-height max-width max-height justify align align-self
+             margin padding border l-border r-border t-border b-border radius bk-color child class-name class style attr]}]
+  (let [s (merge
+            (flex-flow-style "inherit")
+            (flex-child-style size)
+            (when scroll (scroll-style :overflow scroll))
+            (when h-scroll (scroll-style :overflow-x h-scroll))
+            (when v-scroll (scroll-style :overflow-y v-scroll))
+            (when width {:width width})
+            (when height {:height height})
+            (when min-width {:min-width min-width})
+            (when min-height {:min-height min-height})
+            (when max-width {:max-width max-width})
+            (when max-height {:max-height max-height})
+            (when justify (justify-style justify))
+            (when align (align-style :align-items align))
+            (when align-self (align-style :align-self align-self))
+            (when margin {:margin margin})       ;; margin and padding: "all" OR "top&bottom right&left" OR "top right bottom left"
+            (when padding {:padding padding})
+            (when border {:border border})
+            (when l-border {:border-left l-border})
+            (when r-border {:border-right r-border})
+            (when t-border {:border-top t-border})
+            (when b-border {:border-bottom b-border})
+            (when radius {:border-radius radius})
+            (when bk-color
+              {:background-color bk-color})
+            style)]
+    [:div
+     (merge
+       {:class (str class-name "display-flex " class) :style s}
+       attr)
+     child]))
+
+(defn box
+  "Returns hiccup which produces a box, which is generally used as a child of a v-box or an h-box.
+   By default, it also acts as a container for further child compenents, or another h-box or v-box"
+  [& {:keys [size width height min-width min-height max-width max-height justify align align-self margin padding child class style attr]
+      :or   {size "none"}
+      :as   args}]
+  (box-base :size size
+            :width width
+            :height height
+            :min-width min-width
+            :min-height min-height
+            :max-width max-width
+            :max-height max-height
+            :justify justify
+            :align align
+            :align-self align-self
+            :margin margin
+            :padding padding
+            :child child
+            :class-name "rc-box "
+            :class class
+            :style style
+            :attr attr))
+
 (defn line
   "Returns a component which produces a line between children in a v-box/h-box along the main axis.
    Specify size in pixels and a stancard CSS color. Defaults to a 1px lightgray line"
@@ -296,6 +368,150 @@
 (defn input-text
   [& args]
   (apply input-text-base :input-type :input args))
+
+(defn label
+  "Returns markup for a basic label"
+  [& {:keys [label on-click width class style attr]
+      :as   args}]
+  [box
+   :class "rc-label-wrapper display-inline-flex"
+   :width width
+   :align :start
+   :child [:span
+           (merge
+             {:class (str "rc-label " class)
+              :style (merge (flex-child-style "none")
+                            style)}
+             (when on-click
+               {:on-click (handler-fn (on-click))})
+             attr)
+           label]])
+
+(defn button
+  "Returns the markup for a basic button"
+  []
+  (let [showing? (reagent/atom false)]
+    (fn
+      [& {:keys [label on-click disabled? class style attr]
+          :or   {class "btn-default"}
+          :as   args}]
+      (let [disabled?  (deref-or-value disabled?)
+            the-button [:button
+                        (merge
+                          {:class    (str "rc-button btn noselect " class)
+                           :style    (merge
+                                       (flex-child-style "none")
+                                       style)
+                           :disabled disabled?
+                           :on-click (handler-fn
+                                       (when (and on-click (not disabled?))
+                                         (on-click event)))}
+                          attr)
+                        label]]
+        (when disabled?
+          (reset! showing? false))
+        [box ;; Wrapper box is unnecessary but keeps the same structure as the re-com button
+         :class "rc-button-wrapper display-inline-flex"
+         :align :start
+         :child the-button]))))
+
+(defn hyperlink
+  "Renders an underlined text hyperlink component.
+   This is very similar to the button component above but styled to looks like a hyperlink.
+   Useful for providing button functionality for less important functions, e.g. Cancel"
+  []
+  (let [showing? (reagent/atom false)]
+    (fn
+      [& {:keys [label on-click disabled? class style attr] :as args}]
+      (let [label      (deref-or-value label)
+            disabled?  (deref-or-value disabled?)
+            the-button [box
+                        :align :start
+                        :child [:a
+                                (merge
+                                  {:class    (str "rc-hyperlink noselect " class)
+                                   :style    (merge
+                                               (flex-child-style "none")
+                                               {:cursor (if disabled? "not-allowed" "pointer")
+                                                :color  (when disabled? "grey")}
+                                               style)
+                                   :on-click (handler-fn
+                                               (when (and on-click (not disabled?))
+                                                 (on-click event)))}
+                                  attr)
+                                label]]]
+        [box
+         :class "rc-hyperlink-wrapper display-inline-flex"
+         :align :start
+         :child the-button]))))
+
+(defn hyperlink-href
+  "Renders an underlined text hyperlink component.
+   This is very similar to the button component above but styled to looks like a hyperlink.
+   Useful for providing button functionality for less important functions, e.g. Cancel"
+  []
+  (let [showing? (reagent/atom false)]
+    (fn
+      [& {:keys [label href target tooltip tooltip-position class style attr] :as args}]
+      (when-not tooltip (reset! showing? false)) ;; To prevent tooltip from still showing after button drag/drop
+      (let [label      (deref-or-value label)
+            href       (deref-or-value href)
+            target     (deref-or-value target)
+            the-button [:a
+                        (merge {:class  (str "rc-hyperlink-href noselect " class)
+                                :style  (merge (flex-child-style "none")
+                                               style)
+                                :href   href
+                                :target target}
+                               (when tooltip
+                                 {:on-mouse-over (handler-fn (reset! showing? true))
+                                  :on-mouse-out  (handler-fn (reset! showing? false))})
+                               attr)
+                        label]]
+
+        [box
+         :class "rc-hyperlink-href-wrapper display-inline-flex"
+         :align :start
+         :child the-button]))))
+
+(defn checkbox
+  "I return the markup for a checkbox, with an optional RHS label"
+  [& {:keys [model on-change label disabled? label-class label-style class style attr]
+      :as   args}]
+  (let [cursor      "default"
+        model       (deref-or-value model)
+        disabled?   (deref-or-value disabled?)
+        callback-fn #(when (and on-change (not disabled?))
+                       (on-change (not model)))]  ;; call on-change with either true or false
+    [h-box
+     :class "rc-checkbox-wrapper noselect"
+     :align :start
+     :children [[:input
+                 (merge
+                   {:class     (str "rc-checkbox " class)
+                    :type      "checkbox"
+                    :style     (merge (flex-child-style "none")
+                                      {:cursor cursor}
+                                      style)
+                    :disabled  disabled?
+                    :checked   (boolean model)
+                    :on-change (handler-fn (callback-fn))}
+                   attr)]
+                (when label
+                  [:span
+                   {:class    label-class
+                    :style    (merge (flex-child-style "none")
+                                     {:padding-left "8px"
+                                      :cursor       cursor}
+                                     label-style)
+                    :on-click (handler-fn (callback-fn))}
+                   label])]]))
+
+(defn css-join [& args]
+  "Creates a single string from all passed args, separated by spaces (all args are coerced to strings)
+  Very simple, but handy
+  e.g. {:padding (css-join common/gs-12s (px 25))}"
+  (clojure.string/join " " args))
 
 (def re-com-css
   [[:.display-flex {:display "flex"}]

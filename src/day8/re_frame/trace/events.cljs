@@ -1,20 +1,23 @@
 (ns day8.re-frame.trace.events
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [day8.re-frame.trace.utils.utils :as utils]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
-            [reagent.core :as r]
             [goog.object]
             [re-frame.db]
+            [re-frame.interop]
             [day8.re-frame.trace.view.container :as container]
             [day8.re-frame.trace.styles :as styles]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [day8.re-frame.trace.metamorphic :as metam]))
 
 (defonce traces (r/atom []))
 (defonce total-traces (r/atom 0))
 
 (defn log-trace? [trace]
-  (let [render-operation? (= (:op-type trace) :render)
+  (let [render-operation? (or (= (:op-type trace) :render)
+                              (= (:op-type trace) :componentWillUnmount))
         component-path    (get-in trace [:tags :component-path] "")]
     (if-not render-operation?
       true
@@ -25,18 +28,21 @@
 
 (defn enable-tracing! []
   (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
-                                           (when-let [new-traces (filter log-trace? new-traces)]
+                                           (when-let [new-traces (->> (filter log-trace? new-traces)
+                                                                      (sort-by :id))]
                                              (swap! total-traces + (count new-traces))
                                              (swap! traces
                                                     (fn [existing]
                                                       (let [new  (reduce conj existing new-traces)
                                                             size (count new)]
-                                                        (if (< 4000 size)
-                                                          (let [new2 (subvec new (- size 2000))]
-                                                            (if (< @total-traces 20000) ;; Create a new vector to avoid structurally sharing all traces forever
+                                                        (if (< 8000 size)
+                                                          (let [new2 (subvec new (- size 4000))]
+                                                            (if (< @total-traces 40000) ;; Create a new vector to avoid structurally sharing all traces forever
                                                               (do (reset! total-traces 0)
                                                                   (into [] new2))))
-                                                          new))))))))
+                                                          new))))
+                                             (rf/dispatch [:traces/update-traces @traces])
+                                             (rf/dispatch [:epochs/update-epochs (metam/parse-traces @traces)])))))
 
 (defn dissoc-in
   "Dissociates an entry from a nested associative structure returning a new
@@ -66,10 +72,29 @@
     (assoc-in db [:settings :selected-tab] selected-tab)))
 
 (rf/reg-event-db
+  :settings/toggle-settings
+  (fn [db _]
+    (update-in db [:settings :showing-settings?] not)))
+
+(rf/reg-event-db
   :settings/show-panel?
   (fn [db [_ show-panel?]]
     (localstorage/save! "show-panel" show-panel?)
     (assoc-in db [:settings :show-panel?] show-panel?)))
+
+(rf/reg-event-db
+  :settings/factory-reset
+  (fn [db _]
+    (localstorage/delete-all-keys!)
+    (js/location.reload)
+    db))
+
+(rf/reg-event-db
+  :settings/clear-epochs
+  (fn [db _]
+    (reset! traces [])
+    (reset! total-traces 0)
+    db))
 
 (rf/reg-event-db
   :settings/user-toggle-panel
@@ -86,6 +111,18 @@
       (-> db
           (assoc-in [:settings :using-trace?] using-trace?)
           (assoc-in [:settings :show-panel?] now-showing?)))))
+
+(rf/reg-event-db
+  :settings/pause
+  (fn [db _]
+    (assoc-in db [:settings :paused?] true)))
+
+(rf/reg-event-db
+  :settings/play
+  (fn [db _]
+    (-> db
+        (assoc-in [:settings :paused?] false)
+        (assoc-in [:epochs :current-epoch-index] nil))))
 
 ;; Global
 
@@ -230,16 +267,93 @@
   (fn [categories [_ new-categories]]
     new-categories))
 
+(rf/reg-event-db
+  :traces/update-show-epoch-traces?
+  [(rf/path [:traces :show-epoch-traces?])]
+  (fn [_ [_ show-epoch-traces?]]
+    show-epoch-traces?))
+
 ;; App DB
+
+(def app-db-path-mw
+  [(rf/path [:app-db :paths]) (rf/after #(localstorage/save! "app-db-paths" %))])
+
+(rf/reg-event-db
+  :app-db/create-path
+  app-db-path-mw
+  (fn [paths _]
+    (assoc paths (js/Date.now) {:diff? false :open? true :path nil :path-str "[]" :valid-path? true})))
+
+(defn read-string-maybe [s]
+  (try (cljs.tools.reader.edn/read-string s)
+       (catch :default e
+         nil)))
+
+;; The core idea with :app-db/update-path and :app-db/update-path-blur
+;; is that we need to separate the users text input (`path-str`) with the
+;; parsing of that string (`path`). We let the user type any string that
+;; they like, and check it for validity on each change. If it is valid
+;; then we update `path` and mark the pod as valid. If it isn't valid then
+;; we don't update `path` and mark the pod as invalid.
+;;
+;; On blur of the input, we reset path-str to the last valid path, if
+;; the pod isn't currently valid.
+
+(rf/reg-event-db
+  :app-db/update-path
+  app-db-path-mw
+  (fn [paths [_ path-id path-str]]
+    (let [path  (read-string-maybe path-str)
+          paths (assoc-in paths [path-id :path-str] path-str)]
+      (if (or (and (some? path)
+                   (sequential? path))
+              (str/blank? path-str))
+        (-> paths
+            (assoc-in [path-id :path] path)
+            (assoc-in [path-id :valid-path?] true))
+        (assoc-in paths [path-id :valid-path?] false)))))
+
+(rf/reg-event-db
+  :app-db/update-path-blur
+  app-db-path-mw
+  (fn [paths [_ path-id]]
+    (let [{:keys [valid-path? path]} (get paths path-id)]
+      (if valid-path?
+        paths
+        (-> (assoc-in paths [path-id :path-str] (pr-str path))
+            (assoc-in [path-id :valid-path?] true))))))
+
+(rf/reg-event-db
+  :app-db/set-path-visibility
+  app-db-path-mw
+  (fn [paths [_ path-id open?]]
+    (assoc-in paths [path-id :open?] open?)))
+
+(rf/reg-event-db
+  :app-db/set-diff-visibility
+  app-db-path-mw
+  (fn [paths [_ path-id diff?]]
+    (let [open? (if diff?
+                  true
+                  (get-in paths [path-id :open?]))]
+      (-> paths
+          (assoc-in [path-id :diff?] diff?)
+          ;; If we turn on diffing then we want to also expand the path
+          (assoc-in [path-id :open?] open?)))))
+
+(rf/reg-event-db
+  :app-db/remove-path
+  app-db-path-mw
+  (fn [paths [_ path-id]]
+    (dissoc paths path-id)))
 
 (rf/reg-event-db
   :app-db/paths
+  app-db-path-mw
   (fn [db [_ paths]]
-    (let [new-paths (into [] paths)]                        ;; Don't use sets, use vectors
-      (localstorage/save! "app-db-paths" paths)
-      (assoc-in db [:app-db :paths] paths))))
+    paths))
 
-(rf/reg-event-db
+#_(rf/reg-event-db
   :app-db/remove-path
   (fn [db [_ path]]
     (let [new-db (update-in db [:app-db :paths] #(remove (fn [p] (= p path)) %))]
@@ -247,7 +361,7 @@
       ;; TODO: remove from json-ml expansions too.
       new-db)))
 
-(rf/reg-event-db
+#_(rf/reg-event-db
   :app-db/add-path
   (fn [db _]
     (let [search-string (get-in db [:app-db :search-string])
@@ -287,14 +401,61 @@
       new-paths)))
 
 (rf/reg-event-db
-  :snapshot/save-snapshot
-  [(rf/path [:snapshot])]
-  (fn [snapshot _]
-    (assoc snapshot :current-snapshot @re-frame.db/app-db)))
+  :app-db/reagent-id
+  [(rf/path [:app-db :reagent-id])]
+  (fn [paths _]
+    (re-frame.interop/reagent-id re-frame.db/app-db)))
 
 (rf/reg-event-db
   :snapshot/load-snapshot
-  [(rf/path [:snapshot])]
-  (fn [snapshot _]
-    (reset! re-frame.db/app-db (:current-snapshot snapshot))
-    snapshot))
+  (fn [db [_ new-db]]
+    (reset! re-frame.db/app-db new-db)
+    db))
+
+;;;
+
+(rf/reg-event-db
+  :epochs/update-epochs
+  [(rf/path [:epochs :matches])]
+  (fn [matches [_ rt]]
+    (:matches rt)))
+
+(rf/reg-event-fx
+  :epochs/previous-epoch
+  [(rf/path [:epochs :current-epoch-index])]
+  (fn [ctx _]
+    {:db ((fnil dec 0) (:db ctx))
+     :dispatch [:settings/pause]}))
+
+(rf/reg-event-fx
+  :epochs/next-epoch
+  [(rf/path [:epochs :current-epoch-index])]
+  (fn [ctx _]
+    {:db ((fnil inc 0) (:db ctx))
+     :dispatch [:settings/pause]}))
+
+(rf/reg-event-db
+  :traces/update-traces
+  [(rf/path [:traces :all-traces])]
+  (fn [_ [_ traces]]
+    traces))
+
+;;
+
+(rf/reg-event-db
+  :subs/ignore-unchanged-subs?
+  [(rf/path [:subs :ignore-unchanged-subs?])]
+  (fn [_ [_ ignore?]]
+    ignore?))
+
+(rf/reg-event-db
+  :subs/open-pod?
+  [(rf/path [:subs :expansions])]
+  (fn [expansions [_ id open?]]
+    (assoc-in expansions [id :open?] open?)))
+
+(rf/reg-event-db
+  :subs/diff-pod?
+  [(rf/path [:subs :expansions])]
+  (fn [expansions [_ id diff?]]
+    (assoc-in expansions [id :diff?] diff?)))

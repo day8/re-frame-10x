@@ -12,7 +12,7 @@
             [cljs.pprint :as pprint]
             [clojure.string :as str]
             [clojure.set :as set]
-            [reagent.core :as r]
+            [reagent.core :as real-reagent]
             [reagent.interop :refer-macros [$ $!]]
             [reagent.impl.util :as util]
             [reagent.impl.component :as component]
@@ -21,8 +21,10 @@
             [goog.object :as gob]
             [re-frame.interop :as interop]
             [devtools.formatters.core :as devtools]
-            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [mranderson047.reagent.v0v6v0.reagent.core :as r]))
 
+(goog-define debug? false)
 
 ;; from https://github.com/reagent-project/reagent/blob/3fd0f1b1d8f43dbf169d136f0f905030d7e093bd/src/reagent/impl/component.cljs#L274
 (defn fiber-component-path [fiber]
@@ -52,7 +54,7 @@
 
 (def static-fns
   {:render
-   (fn render []
+   (fn mp-render []                                         ;; Monkeypatched render
      (this-as c
        (trace/with-trace {:op-type   :render
                           :tags      {:component-path (component-path c)}
@@ -73,11 +75,14 @@
                              res)))))})
 
 
+(defonce real-custom-wrapper reagent.impl.component/custom-wrapper)
+(defonce real-next-tick reagent.impl.batching/next-tick)
+(defonce real-schedule reagent.impl.batching/schedule)
+(defonce do-after-render-trace-scheduled? (atom false))
+
 (defn monkey-patch-reagent []
   (let [#_#_real-renderer reagent.impl.component/do-render
-        real-custom-wrapper reagent.impl.component/custom-wrapper
-        real-next-tick      reagent.impl.batching/next-tick
-        real-schedule       reagent.impl.batching/schedule]
+        ]
 
 
     #_(set! reagent.impl.component/do-render
@@ -88,8 +93,6 @@
                                    :tags      {:component-path (component-path c)}
                                    :operation (last (str/split name #" > "))}
                                   (real-renderer c)))))
-
-
 
     (set! reagent.impl.component/static-fns static-fns)
 
@@ -106,15 +109,40 @@
 
               (real-custom-wrapper key f))))
 
-    #_(set! reagent.impl.batching/next-tick (fn [f]
-                                              (real-next-tick (fn []
-                                                                (trace/with-trace {:op-type :raf}
-                                                                                  (f))))))
+    (set! reagent.impl.batching/next-tick
+          (fn [f]
+            ;; Schedule a trace to be emitted after a render if there is nothing else scheduled after that render.
+            ;; This signals the end of the epoch.
 
-    #_(set! reagent.impl.batching/schedule schedule
-            #_(fn []
-                (reagent.impl.batching/do-after-render (fn [] (trace/with-trace {:op-type :raf-end})))
-                (real-schedule)))))
+           #_ (swap! do-after-render-trace-scheduled?
+                   (fn [scheduled?]
+                     (js/console.log "Setting up scheduled after" scheduled?)
+                     (if scheduled?
+                       scheduled?
+                       (do (reagent.impl.batching/do-after-render ;; a do-after-flush would probably be a better spot to put this if it existed.
+                             (fn []
+                               (js/console.log "Do after render" reagent.impl.batching/render-queue)
+                               (reset! do-after-render-trace-scheduled? false)
+                               (when (false? (.-scheduled? reagent.impl.batching/render-queue))
+                                 (trace/with-trace {:op-type :reagent/quiescent}))))
+                           true))))
+            (real-next-tick (fn []
+                              (trace/with-trace {:op-type :raf}
+                                                (f)
+                                                (trace/with-trace {:op-type :raf-end})
+                                                (when (false? (.-scheduled? reagent.impl.batching/render-queue))
+                                                  (trace/with-trace {:op-type :reagent/quiescent}))
+
+                                                )))))
+
+    #_(set! reagent.impl.batching/schedule
+          (fn []
+            (reagent.impl.batching/do-after-render
+              (fn []
+                (when @do-after-render-trace-scheduled?
+                  (trace/with-trace {:op-type :do-after-render})
+                  (reset! do-after-render-trace-scheduled? false))))
+            (real-schedule)))))
 
 
 (defn init-tracing!
@@ -205,7 +233,8 @@
 
 (defn inject-devtools! []
   (styles/inject-trace-styles js/document)
-  (r/render [devtools-outer events/traces {:panel-type :inline}] (panel-div)))
+  (r/render [devtools-outer events/traces {:panel-type :inline
+                                           :debug? debug?}] (panel-div)))
 
 (defn init-db! []
   (trace.db/init-db))

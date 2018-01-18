@@ -37,6 +37,8 @@ You need both the re-frame-trace project _and_ a test project to develop it agai
   :cljsbuild {:builds {:client {:source-paths ["checkouts/re-frame-trace/src"]}}}
   ```
 
+- re-frame-trace has a debug panel useful when developing it. You can enable it by adding the :closure-define `"day8.re_frame.trace.debug_QMARK_" true` to your compiler settings.
+
 - Now run your test project however you usually run it, and re-frame-trace should be in there. \o/
 
 
@@ -52,12 +54,13 @@ We are using CSS preprocessing to isolate the panel styles, by namespacing the p
 
 ### Updating the internal version of re-frame used
 
-We want to use re-frame, but we don't want to use the re-frame that the host is using, or tracing will get very messy. Instead, we use [mranderson](https://github.com/benedekfazekas/mranderson) to create source dependencies of re-frame.
+We want to use re-frame, but we don't want to use the re-frame that the host is using, or tracing will get very messy. Instead, we use [mranderson](https://github.com/benedekfazekas/mranderson) to create source dependencies of re-frame and reagent.
 
 ```console
 $ lein do clean
 $ lein with-profile mranderson source-deps
-$ cp -r target/srcdeps/mranderson047 src 
+$ cp -r target/srcdeps/mranderson047 src
+# Then delete the META-INF directories 
 ```
 
 ### How does re-frame-trace build?? I don't see anything in the project.clj that looks like it will build.
