@@ -195,10 +195,11 @@
                  :height common/gs-19s
                  :justify :end
                  :style {:margin (css-join "0px" pad-padding)}
-                 :children [[rc/hyperlink
+                 :children [[rc/hyperlink-href
                              ;:class "app-db-path--label"
                              :label "ONLY BEFORE"
-                             :on-click #(println "Clicked [ONLY BEFORE]")]]])
+                             :target "_blank"
+                             :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
               (when (and open? diff?)
                 [rc/v-box
                  :height "60px"
@@ -212,10 +213,11 @@
                  :height common/gs-19s
                  :justify :end
                  :style {:margin (css-join "0px" pad-padding)}
-                 :children [[rc/hyperlink
+                 :children [[rc/hyperlink-href
                              ;:class "app-db-path--label"
                              :label "ONLY AFTER"
-                             :on-click #(println "Clicked [ONLY AFTER]")]]])
+                             :target "_blank"
+                             :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
               (when (and open? diff?)
                 [rc/v-box
                  :height "60px"

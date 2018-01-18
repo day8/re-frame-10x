@@ -247,6 +247,7 @@
                      :children [[rc/hyperlink-href
                                  ;:class "app-db-path--label"
                                  :label "ONLY BEFORE"
+                                 :target "_blank"
                                  :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]]
 
                     ^{:key "only-before-diff"}
@@ -262,6 +263,7 @@
                      :children [[rc/hyperlink-href
                                  ;:class "app-db-path--label"
                                  :label "ONLY AFTER"
+                                 :target "_blank"
                                  :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]]
 
                     ^{:key "only-after-diff"}
