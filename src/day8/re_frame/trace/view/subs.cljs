@@ -190,7 +190,8 @@
                          :padding          common/gs-7s
                          :margin           (css-join pad-padding pad-padding "0px" pad-padding)}
                  :children [[components/simple-render
-                             (:value pod-info)]]])
+                             (:value pod-info)
+                             ["sub-path" path]]]])
               (when (and open? diff?)
                 [rc/v-box
                  :height common/gs-19s

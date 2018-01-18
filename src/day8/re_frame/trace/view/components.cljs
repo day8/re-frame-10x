@@ -209,7 +209,7 @@
                    (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
           @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]])))
 
-(defn simple-render [data]
+(defn simple-render [data path]
   (let [expanded? (r/atom true) #_(rf/subscribe [:app-db/node-expanded? path])]
     (fn [data]
       [:div

@@ -223,6 +223,7 @@
                    :style {:margin (css-join pad-padding pad-padding "0px" pad-padding)}
                    :children [[components/simple-render
                                (get-in @app-db-after path)
+                               ["app-db-path" path]
 
                                #_{:todos [1 2 3]}
                                #_(get-in @app-db path)
@@ -256,7 +257,8 @@
                     [rc/v-box
                      :class "data-viewer"
                      :children [[components/simple-render
-                                 diff-before]]]
+                                 diff-before
+                                 ["app-db-diff" path]]]]
 
                     ^{:key "only-after"}
                     [rc/v-box
@@ -273,7 +275,8 @@
                     [rc/v-box
                      :class "data-viewer"
                      :children [[components/simple-render
-                                 diff-after]]]))
+                                 diff-after
+                                 ["app-db-diff" path]]]]))
                 (when open?
                   [rc/gap-f :size pad-padding])]]))
 
