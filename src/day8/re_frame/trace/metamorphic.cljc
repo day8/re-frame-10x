@@ -146,7 +146,9 @@
   ;; TODO: check if value changed
   (and
     (= :re-run (:type sub))
-    (= 2 (:layer sub))))
+    (= 2 (:layer sub))
+    ;; Show any subs that ran multiple times
+    (nil? (:run-times sub))))
 
 
 (defn finish-run? [event]

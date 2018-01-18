@@ -303,19 +303,41 @@
   :<- [:app-db/reagent-id]
   (fn [[traces app-db-id]]
     (let [raw           (map (fn [trace] (let [pod-type (sub-op-type->type trace)
-                                               path-str (pr-str (get-in trace [:tags :query-v]))
+                                               path-data    (get-in trace [:tags :query-v])
+                                               ;; TODO: detect layer 2/3 for sub/create and sub/destroy
+                                               ;; This information needs to be accumulated.
                                                layer    (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
                                                           2
                                                           3)]
-                                           {:id    (str pod-type (get-in trace [:tags :reaction]))
-                                            :type  pod-type
-                                            :layer layer
-                                            :path  path-str
-                                            :value (get-in trace [:tags :value])
+                                           {:id        (str pod-type (get-in trace [:tags :reaction]))
+                                            :type      pod-type
+                                            :layer     layer
+                                            :path-data path-data
+                                            :path      (pr-str path-data)
+                                            :value     (get-in trace [:tags :value])
 
                                             ;; TODO: Get not run subscriptions
                                             }))
                              traces)
+          re-run        (->> raw
+                             (filter #(= :re-run (:type %)))
+                             (map (juxt :path-data identity))
+                             (into {}))
+          created       (->> raw
+                             (filter #(= :created (:type %)))
+                             (map (juxt :path-data identity))
+                             (into {}))
+          raw (keep (fn [sub]
+                      (case (:type sub)
+                        :created (if-some [re-run-sub (get re-run (:path-data sub))]
+                                   (assoc sub :value (:value re-run-sub))
+                                   sub)
+
+                        :re-run (when-not (contains? created (:path-data sub))
+                                  sub)
+
+                        sub))
+                    raw)
 
           ;; Filter out run if it was created
           ;; Group together run time
@@ -323,9 +345,11 @@
                               (filter (fn [[k v]] (< 1 v)))
                               (frequencies (map :id raw)))
 
-          raw           (map (fn [sub] (assoc sub :run-times (get run-multiple? (:id sub)))) raw)]
-      (js/console.log raw)
-      (sort-by identity subscription-comparator raw))))
+          output           (map (fn [sub] (assoc sub :run-times (get run-multiple? (:id sub)))) raw)]
+      (js/console.log "Output" output)
+      (js/console.log "Traces" traces)
+      (js/console.log "rerun" re-run)
+      (sort-by identity subscription-comparator output))))
 
 (rf/reg-sub
   :subs/visible-subs
@@ -345,6 +369,7 @@
 (rf/reg-sub
   :subs/re-run-count
   :<- [:subs/all-sub-traces]
+  ;; TODO: remove created subs that were re-run, they count as created only
   (fn [traces]
     (count (filter metam/subscription-re-run? traces))))
 
