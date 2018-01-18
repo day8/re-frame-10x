@@ -1,7 +1,7 @@
 # re-frame-trace
 
-`re-frame-trace` is a programmer's dashboard. It allows you to see inside a running `re-frame` 
-application, helping you to understand it and debug it. 
+`re-frame-trace` is a programmer's dashboard. It helps you to see inside a running `re-frame` 
+application, allowing you to better understand it and debug it. 
  
 
 **Status:** Alpha.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
@@ -9,24 +9,23 @@ application, helping you to understand it and debug it.
 **Note** [the latest version 0.1.14](https://github.com/Day8/re-frame-trace/releases/tag/0.1.14) ALSO requires the latest version of re-frame itself - `v0.10.3-alpha2`.
 
 
-## How It Might Help You
+### What It Can Do For You
 
-What it can do for you:  
-  - Help you to learn `re-frame`.  If you are new to `re-frame`, it will assist you to 
-    understand the data flows involved (the dominoes). 
-  - Help you to explore and learn an unfamiliar `re-frame` codebase.
+> The following list is aspirational. `re-frame-trace` remains a WIP. We're getting there. 
+
+  1. Helps you to learn `re-frame`.  If you are new to `re-frame`, it will assist you to 
+     understand the data flows involved (the dominoes). 
+  2. Helps you to explore and learn an unfamiliar `re-frame` codebase.
     When I click on this "X" button, it shows me what event is `dispatch`-ed 
     and in what namespace the associated event handler is registered.  And, 
     "oh look, that's interesting - four subscriptions recalculated". Etc.
-  - Help you with debugging. In particular, it will assist you to write and debug 
-    event handlers, which is useful because they hold most of the logic in your `re-frame` apps. 
-  - Help you to find performance problems and/or detect where there is 
+  3. Helps you with debugging. In particular, it will assist you to write and debug 
+    event handlers, which is useful because they hold most of the logic in your `re-frame` apps.
+     
+  4. Helps you to find performance problems and/or detect where there is 
     unnecessary computation occurring.
 
-(Okay, so this list is slightly aspirational. `re-frame-trace` is 
- absolutely useful, and you should use it, but delivery against the ideal above is uneven)
-
-## Epoch Oriented 
+### Epoch Oriented 
 
 `re-frame` applications are computationally regular. First an event happens,
 and then boom, boom, boom go a series of known computational steps (dominoes), 
@@ -38,31 +37,31 @@ Each `re-frame` event and its consequent computation forms a discrete "epoch"
 which can be inspected, analysed and understood independently of other epochs. This 
 tool is epoch-oriented.
 
-And, yes, there's the ability to do time travel debugging - you can go backwards
-and forwards through epochs - but that's really not the most interesting aspect
-of what you get. 
+And, yes, it is something of a "time travel debugger" - you can go backwards
+and forwards through epochs - but that's really not the most interesting or powerful 
+aspect of what `re-frame-trace` delivers.
 
-## It is about Data
+### It is about Data
 
-As it runs, `re-frame` generates detailed "trace" which is captured as data (not strings).
-This trace is like an x-ray of the app's functioning.
+As it runs, `re-frame` generates detailed "trace" which is captured as data, not strings.
+This trace provides an x-ray of your app's functioning.
 
 In addition, re-frame is as much "data oriented" as it is functional in design.
 It "flows" data, in a loop, through the functions you provide.
 
-So, data is at the center of `re-frame-trace`. 
+So, data is at the center of `re-frame-trace`.
 
-## Data Dashboard 
+### Data Dashboard 
 
 There's often too much data - too much detail.
 
 So, `re-frame-trace` tries to be something of a  "dashboard" in the sense that
 it tries to turn "raw data" into "information" through curated analysis, and "roll ups"
-which deliver insight "at a glance". Then allowing you to "drill into the detail".
+designed to deliver insight "at a glance". But still allowing you to "drill into the detail".
 
 Right. So, this tool an epoch-oriented, interactive data dashboard for 
-gaining insights and assisting debugging. It is also a work in progress, 
-so this grand description runs well ahead of what is delivered right now.
+gaining insights and assisting debugging. But, it is also a work in progress, 
+so these magnificent descriptions run well ahead of what is delivered right now.
 But we're getting there.
 
 
