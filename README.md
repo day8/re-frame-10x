@@ -3,27 +3,27 @@
 `re-frame-trace` is a programmer's dashboard. It helps you to see inside a running `re-frame` 
 application, allowing you to better understand it and debug it. 
  
-
 **Status:** Alpha.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
 **Note** [the latest version 0.1.14](https://github.com/Day8/re-frame-trace/releases/tag/0.1.14) ALSO requires the latest version of re-frame itself - `v0.10.3-alpha2`.
 
+### What It Can Do
 
-### What It Can Do For You
+Here's how it might be helpful to you:
 
-> The following list is aspirational. `re-frame-trace` remains a WIP. We're getting there. 
-
-  1. Helps you to learn `re-frame`.  If you are new to `re-frame`, it will assist you to 
+  1. Help you to learn `re-frame`.  If you are new to `re-frame`, it will assist you to 
      understand the data flows involved (the dominoes). 
-  2. Helps you to explore and learn an unfamiliar `re-frame` codebase.
-    When I click on this "X" button, it shows me what event is `dispatch`-ed 
-    and in what namespace the associated event handler is registered.  And, 
-    "oh look, that's interesting - four subscriptions recalculated". Etc.
-  3. Helps you with debugging. In particular, it will assist you to write and debug 
-    event handlers, which is useful because they hold most of the logic in your `re-frame` apps.
-     
+  2. Help you to explore and learn an unfamiliar `re-frame` codebase.
+     When I click on this "X" button, it shows me what event is `dispatch`-ed 
+     and in what namespace the associated event handler is registered.  And, 
+     "oh look, that's interesting - four subscriptions recalculated". Etc.
+  3. Help you with debugging. You see an x-Ray of your app's functioning. 
+     In particular, it will assist you to write and debug 
+     event handlers, which is useful because they hold most of the logic in your `re-frame` apps.
   4. Helps you to find performance problems and/or detect where there is 
     unnecessary computation occurring.
+
+> This list is aspirational. `re-frame-trace` remains a WIP. We're getting there. 
 
 ### Epoch Oriented 
 
@@ -33,11 +33,11 @@ in a known order.
 At the end of it, a `re-frame` app lapses into a quiescent state waiting for another 
 event to kick off the next iteration of the same cycle.
 
-Each `re-frame` event and its consequent computation forms a discrete "epoch" 
+Each `re-frame` event and its consequent computation forms a bounded "epoch" 
 which can be inspected, analysed and understood independently of other epochs. This 
 tool is epoch-oriented.
 
-And, yes, it is something of a "time travel debugger" - you can go backwards
+And, yes, it has "time travel debugger" capabilities - you can go backwards
 and forwards through epochs - but that's really not the most interesting or powerful 
 aspect of what `re-frame-trace` delivers.
 
@@ -49,11 +49,11 @@ This trace provides an x-ray of your app's functioning.
 In addition, re-frame is as much "data oriented" as it is functional in design.
 It "flows" data, in a loop, through the functions you provide.
 
-So, data is at the center of `re-frame-trace`.
+So, data is at the core of `re-frame-trace` and that's a powerful and leverageable substrate. 
 
 ### Data Dashboard 
 
-There's often too much data - too much detail.
+Except, there's often too much data - too much detail.
 
 So, `re-frame-trace` tries to be something of a  "dashboard" in the sense that
 it tries to turn "raw data" into "information" through curated analysis, and "roll ups"
