@@ -24,6 +24,7 @@
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]))
 
+(goog-define debug? false)
 
 ;; from https://github.com/reagent-project/reagent/blob/3fd0f1b1d8f43dbf169d136f0f905030d7e093bd/src/reagent/impl/component.cljs#L274
 (defn fiber-component-path [fiber]
@@ -232,7 +233,8 @@
 
 (defn inject-devtools! []
   (styles/inject-trace-styles js/document)
-  (r/render [devtools-outer events/traces {:panel-type :inline}] (panel-div)))
+  (r/render [devtools-outer events/traces {:panel-type :inline
+                                           :debug? debug?}] (panel-div)))
 
 (defn init-db! []
   (trace.db/init-db))

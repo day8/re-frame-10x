@@ -136,7 +136,8 @@
                                ;(tab-button :views "Views")
                                (tab-button :traces "Trace")
                                (tab-button :timing "Timing")
-                               (tab-button :debug "Debug")]]]])
+                               (when (:debug? opts)
+                                 (tab-button :debug "Debug"))]]]])
      [rc/line :color "#EEEEEE"]
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])

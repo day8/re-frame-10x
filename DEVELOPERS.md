@@ -37,6 +37,8 @@ You need both the re-frame-trace project _and_ a test project to develop it agai
   :cljsbuild {:builds {:client {:source-paths ["checkouts/re-frame-trace/src"]}}}
   ```
 
+- re-frame-trace has a debug panel useful when developing it. You can enable it by adding the :closure-define `"day8.re_frame.trace.debug_QMARK_" true` to your compiler settings.
+
 - Now run your test project however you usually run it, and re-frame-trace should be in there. \o/
 
 
