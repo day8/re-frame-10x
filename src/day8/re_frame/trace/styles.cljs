@@ -42,9 +42,10 @@
           :font-size   (em 1)}]
 
    ;; Text-level semantics
-   [(s/a) (s/a s/visited) {:color           text-color
-                           :cursor          "pointer"
-                           :text-decoration "underline"}]
+   [(s/a) (s/a s/visited) {:color  text-color
+                           :cursor "pointer"}
+    [:&:hover {:color           "#23527c"
+               :text-decoration "underline"}]]
 
    [:code {:font-family "monospace"
            :font-size   (em 1)}]

@@ -170,7 +170,10 @@
                         :border (str "1px solid " active-button-background-color)}]
    [:.bm-muted-button {:color            muted-button-text-color
                        :background-color muted-button-background-color
-                       :border           (str "1px solid " strong-button-border-color)}]
+                       :border           (str "1px solid " muted-button-border-color)
+                       :cursor           "pointer"}
+    [:&:hover {:color  strong-button-border-color
+               :border (str "1px solid " strong-button-border-color)}]]
 
    [:.bm-disabled-button {;:color            disabled-text-color (not yet defined)
                           :background-color disabled-background-color

@@ -18,7 +18,7 @@
 
 (def cljs-dev-tools-background "#e8ffe8")
 (def pod-gap common/gs-19s)
-(def pad-padding "0px")
+(def pod-padding "0px")
 
 ;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
@@ -188,7 +188,7 @@
                  :min-width "100px"
                  :style {:background-color cljs-dev-tools-background
                          :padding          common/gs-7s
-                         :margin           (css-join pad-padding pad-padding "0px" pad-padding)}
+                         :margin           (css-join pod-padding pod-padding "0px" pod-padding)}
                  :children [[components/simple-render
                              (:value pod-info)
                              ["sub-path" path]]]])
@@ -196,7 +196,7 @@
                 [rc/v-box
                  :height common/gs-19s
                  :justify :end
-                 :style {:margin (css-join "0px" pad-padding)}
+                 :style {:margin (css-join "0px" pod-padding)}
                  :children [[rc/hyperlink-href
                              ;:class  "app-db-path--label"
                              :label  "ONLY BEFORE"
@@ -209,13 +209,13 @@
                  :min-width "100px"
                  :style {:background-color cljs-dev-tools-background
                          :padding          common/gs-7s
-                         :margin           (css-join "0px" pad-padding)}
+                         :margin           (css-join "0px" pod-padding)}
                  :children ["---before-diff---"]])
               (when (and open? diff?)
                 [rc/v-box
                  :height common/gs-19s
                  :justify :end
-                 :style {:margin (css-join "0px" pad-padding)}
+                 :style {:margin (css-join "0px" pod-padding)}
                  :children [[rc/hyperlink-href
                              ;:class  "app-db-path--label"
                              :label  "ONLY AFTER"
@@ -228,10 +228,10 @@
                  :min-width "100px"
                  :style {:background-color cljs-dev-tools-background
                          :padding          common/gs-7s
-                         :margin           (css-join "0px" pad-padding)}
+                         :margin           (css-join "0px" pod-padding)}
                  :children ["---after-diff---"]])
               (when open?
-                [rc/gap-f :size pad-padding])]])
+                [rc/gap-f :size pod-padding])]])
 
 (defn no-pods []
   [rc/h-box
