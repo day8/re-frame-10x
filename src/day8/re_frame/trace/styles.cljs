@@ -6,7 +6,9 @@
             [garden.selectors :as s]
             [day8.re-frame.trace.common-styles :as common]
             [day8.re-frame.trace.utils.re-com :as rc]
-            [day8.re-frame.trace.view.app-db :as app-db]))
+            [day8.re-frame.trace.view.app-db :as app-db]
+            [cljs.spec.alpha :as spec]
+            [day8.re-frame.trace.view.timing :as timing]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -85,8 +87,16 @@
 
    [(s/attr= "type" "search") {:-webkit-appearance "textfield"
                                :outline-offset     (px -2)}]
-
-   [:li {:display "block"}]
+   [:ol
+    {:display                "block"
+     :list-style-type        "decimal"
+     "-webkit-margin-before" "1em"
+     "-webkit-margin-after"  "1em"
+     "-webkit-margin-start"  "0px"
+     "-webkit-margin-end"    "0px"
+     "-webkit-padding-start" "40px"}]
+   [:li {:display    "list-item"
+         :text-align "-webkit-match-parent"}]
    [:button {:overflow               "visible"
              :border                 0
              :-webkit-font-smoothing "inherit"
@@ -392,7 +402,7 @@
    ])
 
 
-(def panel-styles (apply garden/css [css-reset [:#--re-frame-trace-- rc/re-com-css] common/blue-modern re-frame-trace-styles app-db/app-db-styles]))
+(def panel-styles (apply garden/css [css-reset [:#--re-frame-trace-- rc/re-com-css] common/blue-modern re-frame-trace-styles app-db/app-db-styles timing/timing-styles]))
 ;(def panel-styles (macros/slurp-macro "day8/re_frame/trace/main.css"))
 
 

@@ -36,6 +36,13 @@
     @val-or-atom
     val-or-atom))
 
+(defn deep-merge
+  "Recursively merges maps. If vals are not maps, the last value wins."
+  [& vals]
+  (if (every? map? vals)
+    (apply merge-with deep-merge vals)
+    (last vals)))
+
 (defn flex-flow-style
   "A cross-browser helper function to output flex-flow with all it's potential browser prefixes"
   [flex-flow]
@@ -386,6 +393,29 @@
                {:on-click (handler-fn (on-click))})
              attr)
            label]])
+
+(defn p
+  "acts like [:p ]
+   Creates a paragraph of body text, expected to have a font-szie of 14px or 15px,
+   which should have limited width.
+   Why limited text width?  See http://baymard.com/blog/line-length-readability
+   The actual font-size is inherited.
+   At 14px, 450px will yield between 69 and 73 chars.
+   At 15px, 450px will yield about 66 to 70 chars.
+   So we're at the upper end of the prefered 50 to 75 char range.
+   If the first child is a map, it is interpreted as a map of styles / attributes."
+  [& children]
+  (let [child1 (first children)    ;; it might be a map of attributes, including styles
+        [m children] (if (map? child1)
+                       [child1 (rest children)]
+                       [{} children])
+        m      (deep-merge {:style {:flex      "none"
+                                    :width     "450px"
+                                    :min-width "450px"}}
+                           m)]
+    [:span.rc-p
+     m
+     (into [:p] children)]))    ;; the wrapping span allows children to contain [:ul] etc
 
 (defn button
   "Returns the markup for a basic button"
