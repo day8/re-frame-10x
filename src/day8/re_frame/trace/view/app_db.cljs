@@ -66,7 +66,8 @@
     {:font-size "11px"
      :margin    (css-join "0px" pod-padding)
      :min-width "100px"
-     :height    common/gs-19s}]
+     :height    common/gs-19s
+     :background-color common/white-background-color}]
    #_[:.app-db-path--label
     {:color           "#2D9CDB"
      :text-decoration "underline"
