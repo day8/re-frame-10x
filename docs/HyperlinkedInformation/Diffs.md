@@ -17,11 +17,11 @@ So, how then to display changes in a way that's easy to understand?  I'm glad yo
 Remember X is the value immediately `before` (this epoch). And `X'` is the value `after` (the epoch has completed). 
 
 By [looking at the docs](https://clojuredocs.org/clojure.data/diff) on `diff`, you'll see
-that it calculates how two values differ, and returns a triple of values. `re-frame-trace`  
-captures and displays the first two elements of this triple as "only before" and "only after" 
-respectively. The 3rd element is ignored because it is not very interesting - it says 
-what hasn't changed, so it isn't shown.  
+that it calculates how two values differ, and returns a triple of values. `re-frame-trace`
+captures and displays the first two elements of this triple as "only before" and "only after"
+respectively. The 3rd element is ignored because it is not very interesting - it says
+what hasn't changed, so it isn't shown.
 
-To correctly interpret "Only Before" and "Only after", you'll need to spend a bit 
+To correctly interpret "Only Before" and "Only after", you'll need to spend a bit
 of time properly familiarising yourself with how `clojure.data/diff` works, but
 it will be a worthwhile time investment. 
