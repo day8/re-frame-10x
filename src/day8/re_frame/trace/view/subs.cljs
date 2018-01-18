@@ -1,6 +1,5 @@
 (ns day8.re-frame.trace.view.subs
-  (:require [day8.re-frame.trace.view.app-db :refer [app-db-styles cljs-dev-tools-background pod-gap pod-padding
-                                                     pod-border-color pod-border-edge border-radius]]
+  (:require [day8.re-frame.trace.view.app-db :refer [pod-gap pod-padding border-radius]]
             [day8.re-frame.trace.utils.utils :as utils]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
@@ -20,10 +19,10 @@
 
 (defn sub-tag-class [type]
   (case type
-    :created "rft-tag__subscription_created"
+    :created   "rft-tag__subscription_created"
     :destroyed "rft-tag__subscription_destroyed"
-    :re-run "rft-tag__subscription_re_run"
-    :not-run "rft-tag__subscription_not_run"
+    :re-run    "rft-tag__subscription_re_run"
+    :not-run   "rft-tag__subscription_not_run"
     ""))
 
 (def tag-types {:created   {:long "CREATED" :short "CREATED"}
@@ -49,11 +48,11 @@
               [components/tag (sub-tag-class type) label]]])
 
 (defn panel-header []
-  (let [created-count (rf/subscribe [:subs/created-count])
-        re-run-count (rf/subscribe [:subs/re-run-count])
-        destroyed-count (rf/subscribe [:subs/destroyed-count])
-        not-run-count (rf/subscribe [:subs/not-run-count])
-        ignore-unchanged? (rf/subscribe [:subs/ignore-unchanged-subs?])
+  (let [created-count             (rf/subscribe [:subs/created-count])
+        re-run-count              (rf/subscribe [:subs/re-run-count])
+        destroyed-count           (rf/subscribe [:subs/destroyed-count])
+        not-run-count             (rf/subscribe [:subs/not-run-count])
+        ignore-unchanged?         (rf/subscribe [:subs/ignore-unchanged-subs?])
         ignore-unchanged-l2-count (rf/subscribe [:subs/unchanged-l2-subs-count])]
     [rc/h-box
      :justify :between
@@ -66,7 +65,7 @@
                  :padding (css-join "0px" common/gs-19s)
                  :style {:background-color "#fafbfc"
                          :border           "1px solid #e3e9ed"
-                         :border-radius    "3px"}
+                         :border-radius    border-radius}
                  :children [[:span {:style {:color       "#828282"
                                             :font-size   "18px"
                                             :font-weight "lighter"}}
@@ -82,7 +81,7 @@
                  :padding (css-join "0px" common/gs-19s)
                  :style {:background-color "#fafbfc"
                          :border           "1px solid #e3e9ed"
-                         :border-radius    "3px"}
+                         :border-radius    border-radius}
                  :children [[rc/checkbox
                              :model ignore-unchanged?
                              :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br] "layer 2 subs"]
@@ -190,11 +189,11 @@
 
 (defn no-pods []
   [rc/h-box
-   :margin (css-join "0px 0px 0px" common/gs-19s)
-   :gap common/gs-7s
-   :align :start
+   :margin     (css-join "0px 0px 0px" common/gs-19s)
+   :gap        common/gs-7s
+   :align      :start
    :align-self :start
-   :children [[rc/label :label "There are no subscriptions to show"]]])
+   :children   [[rc/label :label "There are no subscriptions to show"]]])
 
 (defn pod-section []
   (let [all-subs       @(rf/subscribe [:subs/visible-subs])
