@@ -1,5 +1,7 @@
 (ns day8.re-frame.trace.view.subs
-  (:require [day8.re-frame.trace.utils.utils :as utils]
+  (:require [day8.re-frame.trace.view.app-db :refer [app-db-styles cljs-dev-tools-background pod-gap pod-padding
+                                                     pod-border-color pod-border-edge border-radius]]
+            [day8.re-frame.trace.utils.utils :as utils]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
@@ -15,30 +17,6 @@
 ;(assert (s/valid? ::query-cache (rc/deref-or-value-peek subs/query->reaction)))
 
 (def copy (macros/slurp-macro "day8/re_frame/trace/images/copy.svg"))
-
-(def cljs-dev-tools-background "#e8ffe8")
-(def pod-gap common/gs-19s)
-(def pod-padding "0px")
-
-;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
-
-(def *pods (r/atom [{:id (gensym) :type :destroyed :layer "3" :path "[:todo/blah]"      :open? true :diff? false}
-                    {:id (gensym) :type :created   :layer "3" :path "[:todo/completed]" :open? true :diff? true}
-                    {:id (gensym) :type :re-run    :layer "3" :path "[:todo/completed]" :open? true :diff? false}
-                    {:id (gensym) :type :re-run    :layer "2" :path "[:todo/blah]"      :open? true :diff? false}
-                    {:id (gensym) :type :not-run   :layer "3" :path "[:todo/blah]"      :open? true :diff? false}]))
-
-(defn update-pod-field
-  [id field new-val]
-  (let [f (fn [pod]
-            (if (= id (:id pod))
-              (do
-                ;(println "Updated" field "in" (:id pod) "from" (get pod field) "to" new-val)
-                (assoc pod field new-val))
-              pod))]
-    (reset! *pods (mapv f @*pods))))
-
-;; TODO: END ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
 (defn tag-color [type]
   (let [types {:created   "#9b51e0"
@@ -122,12 +100,7 @@
 
 (defn pod-header [{:keys [id type layer path open? diff? run-times]}]
   [rc/h-box
-   :class    "app-db-path--header"
-   :style    (merge {:border-top-left-radius  "3px"
-                     :border-top-right-radius "3px"}
-                    (when-not open?
-                      {:border-bottom-left-radius  "3px"
-                       :border-bottom-right-radius "3px"}))
+   :class    (str "app-db-path--header " (when-not open? "rounded-bottom"))
    :align    :center
    :height   common/gs-31s
    :children [[rc/box
@@ -146,29 +119,20 @@
               (when run-times
                 [:span "Warning: run " run-times " times"])
               [rc/h-box
-               :size "auto"
-               :class "app-db-path--path-header"
+               :class    "app-db-path--path-header"
+               :size     "auto"
                :children [[rc/input-text
-                           :style           {:height  "25px"
-                                             :padding (css-join "0px" common/gs-7s)
-                                             :width   "-webkit-fill-available"} ;; This took a bit of finding!
-                           :width           "100%"
-                           :model           path
-                           :disabled?       true
-                           :on-change       #(update-pod-field id :path %)  ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
-                           :on-submit       #()                             ;; #(rf/dispatch [:app-db/add-path %])
-                           :change-on-blur? false
-                           :placeholder     "Showing all of app-db. Try entering a path like [:todos 1]"]]]
+                           :style {:height  "25px"
+                                   :padding (css-join "0px" common/gs-7s)
+                                   :width   "-webkit-fill-available"} ;; This took a bit of finding!
+                           :width     "100%"
+                           :model     path
+                           :disabled? true]]]
               [rc/gap-f :size common/gs-12s]
               [rc/label :label (str "Layer " layer)]
               [rc/gap-f :size common/gs-12s]
               [rc/box
-               :class "bm-muted-button noselect"
-               :style {:width         "25px"
-                       :height        "25px"
-                       :padding       "0px"
-                       :border-radius "3px"
-                       :cursor        "pointer"}
+               :class "bm-muted-button app-db-path--button noselect"
                :attr  {:title    "Show diff"
                        :on-click #(rf/dispatch [:subs/diff-pod? id (not diff?)])}
                :child [:img
@@ -178,60 +142,60 @@
               [rc/gap-f :size common/gs-12s]]])
 
 (defn pod [{:keys [id type layer path open? diff?] :as pod-info}]
-  [rc/v-box
-   :class "app-db-path"
-   :style {:border-bottom-left-radius "3px"
-           :border-bottom-right-radius "3px"}
-   :children [[pod-header pod-info]
-              (when open?
+  (let [render-diff? (and open? diff?)
+        #_#_app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
+        #_#_app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
+        #_#_[diff-before diff-after _] (when render-diff?
+                                     (clojure.data/diff (get-in @app-db-before path)
+                                                        (get-in @app-db-after path)))]
+    [rc/v-box
+     ;:class "app-db-path"
+     :children [[pod-header pod-info]
                 [rc/v-box
-                 :min-width "100px"
-                 :style {:background-color cljs-dev-tools-background
-                         :padding          common/gs-7s
-                         :margin           (css-join pod-padding pod-padding "0px" pod-padding)}
-                 :children [[components/simple-render
-                             (:value pod-info)
-                             ["sub-path" path]]]])
-              (when (and open? diff?)
-                [rc/v-box
-                 :height common/gs-19s
-                 :justify :end
-                 :style {:margin (css-join "0px" pod-padding)}
-                 :children [[rc/hyperlink-href
-                             ;:class  "app-db-path--label"
-                             :label  "ONLY BEFORE"
-                             :style  {:margin-left common/gs-7s}
-                             :target "_blank"
-                             :href   utils/diff-link]]])
-              (when (and open? diff?)
-                [rc/v-box
-                 :height "60px"
-                 :min-width "100px"
-                 :style {:background-color cljs-dev-tools-background
-                         :padding          common/gs-7s
-                         :margin           (css-join "0px" pod-padding)}
-                 :children ["---before-diff---"]])
-              (when (and open? diff?)
-                [rc/v-box
-                 :height common/gs-19s
-                 :justify :end
-                 :style {:margin (css-join "0px" pod-padding)}
-                 :children [[rc/hyperlink-href
-                             ;:class  "app-db-path--label"
-                             :label  "ONLY AFTER"
-                             :style  {:margin-left common/gs-7s}
-                             :target "_blank"
-                             :href   utils/diff-link]]])
-              (when (and open? diff?)
-                [rc/v-box
-                 :height "60px"
-                 :min-width "100px"
-                 :style {:background-color cljs-dev-tools-background
-                         :padding          common/gs-7s
-                         :margin           (css-join "0px" pod-padding)}
-                 :children ["---after-diff---"]])
-              (when open?
-                [rc/gap-f :size pod-padding])]])
+                 :class    (when open? "app-db-path--pod-border")
+                 :children [(when open?
+                              [rc/v-box
+                               :class (str "data-viewer" (when-not diff? " rounded-bottom"))
+                               :style {:margin (css-join pod-padding pod-padding "0px" pod-padding)}
+                               :children [[components/simple-render
+                                           (:value pod-info)]]])
+                            (when render-diff?
+                              (list
+                                ^{:key "only-before"}
+                                [rc/v-box
+                                 :class "app-db-path--link"
+                                 :justify :end
+                                 :children [[rc/hyperlink-href
+                                             ;:class  "app-db-path--label"
+                                             :label "ONLY BEFORE"
+                                             :style {:margin-left common/gs-7s}
+                                             :target "_blank"
+                                             :href utils/diff-link]]]
+
+                                ^{:key "only-before-diff"}
+                                [rc/v-box
+                                 :class "data-viewer data-viewer--top-rule"
+                                 :height "50px"
+                                 :children ["---before-diff---"]]
+
+                                ^{:key "only-after"}
+                                [rc/v-box
+                                 :class "app-db-path--link"
+                                 :justify :end
+                                 :children [[rc/hyperlink-href
+                                             ;:class  "app-db-path--label"
+                                             :label "ONLY AFTER"
+                                             :style {:margin-left common/gs-7s}
+                                             :target "_blank"
+                                             :href utils/diff-link]]]
+
+                                ^{:key "only-after-diff"}
+                                [rc/v-box
+                                 :class "data-viewer data-viewer--top-rule rounded-bottom"
+                                 :height "50px"
+                                 :children ["---after-diff---"]]))
+                            (when open?
+                              [rc/gap-f :size pod-padding])]]]]))
 
 (defn no-pods []
   [rc/h-box

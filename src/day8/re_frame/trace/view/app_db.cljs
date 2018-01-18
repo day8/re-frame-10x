@@ -55,12 +55,6 @@
      :border-radius border-radius
      :cursor        "pointer"}]
 
-
-   [:.app-db-path--label
-    {:color           "#2D9CDB"
-     :text-decoration "underline"
-     :font-size       "11px"
-     :margin-bottom   "2px"}]
    [:.app-db-path--path-header
     {:background-color common/white-background-color
      :color            "#48494A"
@@ -69,8 +63,15 @@
     {:font-style "italic"}]
 
    [:.app-db-path--link
-    {:margin (css-join "0px" pod-padding)
-     :height common/gs-19s}]
+    {:font-size "11px"
+     :margin    (css-join "0px" pod-padding)
+     :min-width "100px"
+     :height    common/gs-19s}]
+   #_[:.app-db-path--label
+    {:color           "#2D9CDB"
+     :text-decoration "underline"
+     :font-size       "11px"
+     :margin-bottom   "2px"}]
 
    [:.app-db-panel-button
     {:width   "129px"
@@ -86,38 +87,7 @@
      :margin           (css-join "0px" pod-padding)
      :min-width        "100px"}]
    [:.data-viewer--top-rule
-    {:border-top  pod-border-edge}]
-
-   ])
-
-;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
-
-(def *pods (r/atom [{:id (gensym) :path "[\"x\" \"y\"]" :open? true :diff? true}
-                    {:id (gensym) :path "[:abc 123]" :open? true :diff? false}
-                    {:id (gensym) :path "[:a :b :c]" :open? false :diff? true}
-                    {:id (gensym) :path nil :open? false :diff? false}
-                    {:id (gensym) :path [:boot-state] :open? true :diff? true}]))
-
-(defn add-pod []
-  (let [id (gensym)]
-    ;(println "Added pod" id)
-    (swap! *pods concat [{:id id :path "" :open? true :diff? false}])))
-
-(defn delete-pod [id]
-  ;(println "Deleted pod" id)
-  (reset! *pods (filterv #(not= id (:id %)) @*pods)))
-
-(defn update-pod-field
-  [id field new-val]
-  (let [f (fn [pod]
-            (if (= id (:id pod))
-              (do
-                ;(println "Updated" field "in" (:id pod) "from" (get pod field) "to" new-val)
-                (assoc pod field new-val))
-              pod))]
-    (reset! *pods (mapv f @*pods))))
-
-;; TODO: END ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
+    {:border-top  pod-border-edge}]])
 
 (defn panel-header []
   (let [app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
@@ -171,15 +141,15 @@
    :align :center
    :height common/gs-31s
    :children [[rc/box
-               :width "36px"
+               :width  "36px"
                :height common/gs-31s
-               :class "noselect"
-               :style {:cursor "pointer"}
-               :attr {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                      :on-click #(rf/dispatch [:app-db/set-path-visibility id (not open?)])}
-               :child [rc/box
-                       :margin "auto"
-                       :child [:span.arrow (if open? "▼" "▶")]]]
+               :class  "noselect"
+               :style  {:cursor "pointer"}
+               :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
+                        :on-click #(rf/dispatch [:app-db/set-path-visibility id (not open?)])}
+               :child  [rc/box
+                        :margin "auto"
+                        :child [:span.arrow (if open? "▼" "▶")]]]
               [rc/h-box
                :class "app-db-path--path-header"
                :size "auto"
@@ -288,8 +258,7 @@
                                              diff-after
                                              ["app-db-diff" path]]]]))
                             (when open?
-                              [rc/gap-f :size pod-padding])]]
-                ]]))
+                              [rc/gap-f :size pod-padding])]]]]))
 
 (defn no-pods []
   [rc/h-box
