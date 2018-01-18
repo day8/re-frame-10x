@@ -73,6 +73,8 @@
      :font-size       "11px"
      :margin-bottom   "2px"}]
 
+   [:.app-db-panel (common/panel-style border-radius)]
+
    [:.app-db-panel-button
     {:width   "129px"
      :padding "0px"}]
@@ -103,13 +105,10 @@
                          :children ["+ path inspector"]]
                  :on-click #(rf/dispatch [:app-db/create-path])]
                 [rc/h-box
+                 :class "app-db-panel"
                  :align :center
                  :gap common/gs-7s
                  :height "48px"
-                 :padding (css-join "0px" common/gs-12s)
-                 :style {:background-color "#fafbfc"
-                         :border           "1px solid #e3e9ed"
-                         :border-radius    border-radius}
                  :children [[rc/label :label "reset app-db to:"]
                             [rc/button
                              :class "bm-muted-button app-db-panel-button"

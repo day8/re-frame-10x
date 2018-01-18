@@ -22,7 +22,30 @@
    [:ol
     {"-webkit-padding-start" "20px"}]
    [:li
-    {:margin "0 0 1em 0"}]])
+    {:margin "0 0 1em 0"}]
+
+   [".rft-tag__timing"
+    {:background-color common/disabled-background-color
+     :border           (str "1px solid " common/border-line-color)
+     :font-weight      "normal"
+     :font-size        "14px"}]
+
+   [".timing-part-panel"
+    (merge (common/panel-style "3px")
+           {:padding "12px"})]
+
+   ])
+
+(defn timing-tag [label]
+  [components/tag "rft-tag__timing" label])
+
+(defn timing-section
+  [label time]
+  [rc/v-box
+   :align :center
+   :gap "3px"
+   :children [[rc/label :class "bm-textbox-label" :label label]
+              [timing-tag (str time "ms")]]])
 
 (defn render []
   (let [timing-data-available? @(rf/subscribe [:timing/data-available?])]
@@ -31,30 +54,27 @@
        :class "timing-details"
        :children [
                   [rc/h-box
+                   :gap common/gs-12s
+                   :class "timing-part-panel"
                    :children
-                   [[rc/label :label "Total"]
-                    [components/tag "grey" (str @(rf/subscribe [:timing/total-epoch-time]) "ms")]
-                    [rc/label :label "Event"]
-                    [components/tag "grey" (str @(rf/subscribe [:timing/event-processing-time]) "ms")]
+                   [[timing-section "total" @(rf/subscribe [:timing/total-epoch-time])]
+                    [timing-section "event" @(rf/subscribe [:timing/event-processing-time])]
                     ]]
-                  (for [frame (range 1 (inc @(rf/subscribe [:timing/animation-frame-count])))]
+                  (for [frame (range 1 (inc @(rf/subscribe [:timing/animation-frame-count])))
+                        :let [frame-time (rf/subscribe [:timing/animation-frame-time frame])]]
                     (list
                       ^{:key (str "af-line" frame)}
                       [rc/line :class "timing-details--line"]
                       ^{:key (str "af" frame)}
                       [rc/h-box
+                       :align :center
+                       :class "timing-part-panel"
+                       :gap "25px"
                        :children
-                       [[rc/label :label (str "AF #" frame)]
-                        "Subs"
-                        "2ms"
-                        "Views"
-                        "2ms"
-
-
-                        ]]))
-                  ;[rc/label :label "Animation Frames"]
-                  ;[rc/label :label "Render/Subscription time"]
-                  ;[rc/label :label (str @(rf/subscribe [:timing/render-time]) "ms")]
+                       [[rc/label :label (str "Animation frame #" frame)]
+                        [timing-section "total" @frame-time]
+                      #_  [timing-section "subs" 2]
+                      #_  [timing-section "views" 3]]]))
 
                   [rc/line :class "timing-details--line"]
 

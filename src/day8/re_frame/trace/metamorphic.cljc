@@ -75,13 +75,13 @@
   (and (fsm-trigger? event)
        (= (:operation event)
           [:scheduled :run-queue])))
-;
+
 (defn request-animation-frame? [event]
   (= :raf (:op-type event)))
-;
-;(defn request-animation-frame-end? [event history pattern-sequence pattern]
-;  (= :raf-end (:op-type event)))
-;
+
+(defn request-animation-frame-end? [event]
+  (= :raf-end (:op-type event)))
+
 (defn summarise-event [ev]
   (-> ev
       (dissoc :start :duration :end :child-of)

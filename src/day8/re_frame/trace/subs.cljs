@@ -237,10 +237,28 @@
       (metam/elapsed-time start-of-epoch end-of-epoch))))
 
 (rf/reg-sub
-  :timing/animation-frame-count
+  :timing/animation-frame-traces
   :<- [:traces/current-event-traces]
   (fn [traces]
-    (count (filter metam/request-animation-frame? traces))))
+    (filter #(or (metam/request-animation-frame? %)
+                 (metam/request-animation-frame-end? %))
+            traces)))
+
+(rf/reg-sub
+  :timing/animation-frame-count
+  :<- [:timing/animation-frame-traces]
+  (fn [frame-traces]
+    (count (filter metam/request-animation-frame? frame-traces))))
+
+(rf/reg-sub
+  :timing/animation-frame-time
+  :<- [:timing/animation-frame-traces]
+  (fn [frame-traces [_ frame-number]]
+    (let [frames (partition 2 frame-traces)
+          [start end] (first (drop (dec frame-number) frames))]
+      (metam/elapsed-time start end))))
+
+
 
 (rf/reg-sub
   :timing/event-processing-time

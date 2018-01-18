@@ -17,7 +17,7 @@
 (def light-blue "lightblue")
 (def light-gray "#efeef1")
 (def yellow "yellow")
-(def text-color "#767A7C") ;; Was "#222" but now using bm: (def default-text-color "#767A7C")
+(def text-color "#767A7C")                                  ;; Was "#222" but now using bm: (def default-text-color "#767A7C")
 (def text-color-muted "#8f8f8f")
 
 (def event-color dark-gold)
@@ -50,6 +50,12 @@
 (def sub-re-run-color "#219653")
 (def sub-not-run-color "#bdbdbd")
 
+(defn panel-style
+  ([border-radius]
+   {:background-color "#fafbfc"
+    :border           "1px solid #e3e9ed"
+    :border-radius    border-radius
+    :padding          [[0 gs-12s]]}))
 
 ;; The colors defined below are (of course) available to your app without further ado
 ;;
@@ -77,33 +83,33 @@
 ;;   Blue modern component colours
 ;; =================================================================================================
 
-(def blue-modern-color "#6EC0E6")  ;; Our standard rich blue colour
+(def blue-modern-color "#6EC0E6")                           ;; Our standard rich blue colour
 
 (def white-background-color "white")
-(def white-background-border-color "#E3E9ED")      ;; Light grey
+(def white-background-border-color "#E3E9ED")               ;; Light grey
 
-(def standard-background-color "#F3F6F7")      ;; Light grey
+(def standard-background-color "#F3F6F7")                   ;; Light grey
 (def standard-background-border-color "transparent")
 
-(def light-background-color "#FBFBFB")      ;; Medium grey
-(def light-background-border-color "#BFCCD6")      ;; Slightly darker than medium grey
+(def light-background-color "#FBFBFB")                      ;; Medium grey
+(def light-background-border-color "#BFCCD6")               ;; Slightly darker than medium grey
 
-(def dark-background-color "#768895")      ;; Darker grey
+(def dark-background-color "#768895")                       ;; Darker grey
 (def dark-background-border-color white-background-border-color)
 
-(def border-line-color "#DCE3E8")      ;; Slightly darker than light grey
-(def table-row-line-color "#EAEEF1")      ;; Light grey
+(def border-line-color "#DCE3E8")                           ;; Slightly darker than light grey
+(def table-row-line-color "#EAEEF1")                        ;; Light grey
 
-(def text-title-color "#3C454B")      ;; Darker grey than the standard text color
-(def default-text-color "#767A7C")      ;; Medium grey
+(def text-title-color "#3C454B")                            ;; Darker grey than the standard text color
+(def default-text-color "#767A7C")                          ;; Medium grey
 
 ;(def disabled-text-color                    "TBA???")       ;; Placeholder (currently not specified)
-(def disabled-background-color "#ECEDF0")      ;; Light grey
+(def disabled-background-color "#ECEDF0")                   ;; Light grey
 (def disabled-border-color border-line-color)
 
 (def strong-button-text-color "white")
 (def strong-button-background-color blue-modern-color)
-(def strong-button-border-color "#589AB8")      ;; A darker version of the standard blue
+(def strong-button-border-color "#589AB8")                  ;; A darker version of the standard blue
 
 (def active-button-text-color "white")
 (def active-button-background-color "#F2994A")
@@ -116,20 +122,20 @@
 
 (def tab-underline-color strong-button-background-color)
 
-(def sidebar-background-color "#32323C")      ;; Dark black
-(def sidebar-heading-divider-color "#191919")      ;; Darker black
-(def sidebar-item-selected-color "#3C3C45")      ;; Slightly lighter dark black
+(def sidebar-background-color "#32323C")                    ;; Dark black
+(def sidebar-heading-divider-color "#191919")               ;; Darker black
+(def sidebar-item-selected-color "#3C3C45")                 ;; Slightly lighter dark black
 (def sidebar-item-check-color strong-button-background-color)
 (def sidebar-text-color "white")
 (def navbar-text-color "white")
 
-(def wizard-panel-background-color "#636A6F")      ;; Very dark grey
+(def wizard-panel-background-color "#636A6F")               ;; Very dark grey
 (def wizard-panel-text-color "white")
 (def wizard-nav-button-background-color "white")
-(def wizard-nav-button-text-color "#303234")      ;; Almost black (also used for button arrows)
-(def wizard-cancel-button-background-color "#D6D8D9")      ;; Light grey
-(def wizard-step-past-color "#E8FFC1")      ;; Muted lime green
-(def wizard-step-current-color "#C7FF66")      ;; Bright lime green
+(def wizard-nav-button-text-color "#303234")                ;; Almost black (also used for button arrows)
+(def wizard-cancel-button-background-color "#D6D8D9")       ;; Light grey
+(def wizard-step-past-color "#E8FFC1")                      ;; Muted lime green
+(def wizard-step-current-color "#C7FF66")                   ;; Bright lime green
 (def wizard-step-future-color dark-background-color)
 
 (def font-stack ["\"Segoe UI\"" "Roboto", "Helvetica", "sans-serif"])
@@ -156,7 +162,7 @@
                      :-webkit-user-select "none"
                      :cursor              "default"}]
    [:.bm-heading-text {:font-size           "19px"
-                       :font-weight "600"
+                       :font-weight         "600"
                        :color               default-text-color
                        :-webkit-user-select "none"
                        :cursor              "default"}]
@@ -169,9 +175,9 @@
    [:.bm-strong-button {:color            strong-button-text-color
                         :background-color strong-button-background-color
                         :border           (str "1px solid " strong-button-border-color)}]
-   [:.bm-active-button {:color active-button-text-color
+   [:.bm-active-button {:color            active-button-text-color
                         :background-color active-button-background-color
-                        :border (str "1px solid " active-button-background-color)}]
+                        :border           (str "1px solid " active-button-background-color)}]
    [:.bm-muted-button {:color            muted-button-text-color
                        :background-color muted-button-background-color
                        :border           (str "1px solid " muted-button-border-color)
@@ -206,7 +212,7 @@
    [:.raptor-editable-block {:color default-text-color}]
 
    ;; button components - to 26px high
-   [:button {:height "26px"
+   [:button {:height        "26px"
              :border-radius "3px"}]
    [:.btn {:padding "0px 12px"}]
 
@@ -240,7 +246,7 @@
     [:.chosen-results {:color default-text-color}]]
 
    ;; selection-list - set background color of container
-   [:.rc-selection-list {:background-color "white"}] ;
+   [:.rc-selection-list {:background-color "white"}]        ;
 
    ;; datepicker-dropdowns - set to 26px high
    [:.dropdown-button {:height "26px"}]
