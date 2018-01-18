@@ -114,7 +114,7 @@
 
 (rf/reg-sub
   :traces/number-of-traces
-  :<- [:traces/trace-root]
+  :<- [:traces/all-traces]
   (fn [traces _]
     (count traces)))
 
