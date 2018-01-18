@@ -18,12 +18,13 @@
 
 (def copy (macros/slurp-macro "day8/re_frame/trace/images/copy.svg"))
 
-(defn tag-color [type]
-  (let [types {:created   "#9b51e0"
-               :destroyed "#f2994a"
-               :re-run    "#219653"
-               :not-run   "#bdbdbd"}]
-    (get types type "black")))
+(defn sub-tag-class [type]
+  (case type
+    :created "rft-tag__subscription_created"
+    :destroyed "rft-tag__subscription_destroyed"
+    :re-run "rft-tag__subscription_re_run"
+    :not-run "rft-tag__subscription_not_run"
+    ""))
 
 (def tag-types {:created   {:long "CREATED" :short "CREATED"}
                 :destroyed {:long "DESTROYED" :short "DESTROY"}
@@ -36,18 +37,8 @@
 (defn short-tag-desc [type]
   (get-in tag-types [type :short] "???"))
 
-(defn tag [type label]
-  [rc/box
-   :class "noselect"
-   :style {:color            "white"
-           :background-color (tag-color type)
-           :width            "48px" ;common/gs-50s
-           :height           "17px" ;common/gs-19s
-           :font-size        "10px"
-           :font-weight      "bold"
-           :border           "1px solid #bdbdbd"
-           :border-radius    "3px"}
-   :child  [:span {:style {:margin "auto"}} label]])
+(defn sub-tag [type label]
+  [components/tag (sub-tag-class type) label])
 
 (defn title-tag [type title label]
   [rc/v-box
@@ -55,7 +46,7 @@
    :align    :center
    :gap      "2px"
    :children [[:span {:style {:font-size "9px"}} title]
-              [tag type label]]])
+              [components/tag (sub-tag-class type) label]]])
 
 (defn panel-header []
   (let [created-count (rf/subscribe [:subs/created-count])
@@ -115,7 +106,7 @@
                         :child  [:span.arrow (if open? "▼" "▶")]]]
               [rc/box
                :width "64px" ;; (100-36)px from box above
-               :child [tag type (short-tag-desc type)]]
+               :child [sub-tag type (short-tag-desc type)]]
               (when run-times
                 [:span "Warning: run " run-times " times"])
               [rc/h-box

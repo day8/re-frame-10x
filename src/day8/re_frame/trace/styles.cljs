@@ -251,6 +251,29 @@
      ["&:first-child" {:padding-left "7px"}]
      ["&:last-child" {:padding-right "7px"}]]]
 
+   [:.rft-tag
+    {:background-color common/white-background-color
+     :color            common/text-color
+     :width            "48px"                               ;common/gs-50s
+     :height           "17px"                               ;common/gs-19s
+     :font-size        "10px"
+     :font-weight      "bold"
+     :border           "1px solid #bdbdbd"
+     :border-radius    "3px"}]
+
+   [".rft-tag__subscription_created"
+    {:background-color common/sub-create-color
+     :color "white"}]
+   [".rft-tag__subscription_re_run"
+    {:background-color common/sub-re-run-color
+     :color "white"}]
+   [".rft-tag__subscription_destroyed"
+    {:background-color common/sub-destroy-color
+     :color "white"}]
+   [".rft-tag__subscription_not_run"
+    {:background-color common/sub-not-run-color
+     :color "white"}]
+
    [:.button {:padding       "5px 5px 3px"
               :margin        "5px"
               :border-radius "2px"

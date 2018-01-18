@@ -4,7 +4,8 @@
             [devtools.formatters.core]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.utils.re-com :as rc]
-            [day8.re-frame.trace.common-styles :as common])
+            [day8.re-frame.trace.common-styles :as common]
+            [day8.re-frame.trace.view.components :as components])
   (:require-macros [day8.re-frame.trace.utils.macros :as macros]))
 
 (def timing-styles
@@ -32,9 +33,9 @@
                   [rc/h-box
                    :children
                    [[rc/label :label "Total"]
-                    [rc/label :label (str @(rf/subscribe [:timing/total-epoch-time]) "ms")]
+                    [components/tag "grey" (str @(rf/subscribe [:timing/total-epoch-time]) "ms")]
                     [rc/label :label "Event"]
-                    [rc/label :label (str @(rf/subscribe [:timing/event-processing-time]) "ms")]
+                    [components/tag "grey" (str @(rf/subscribe [:timing/event-processing-time]) "ms")]
                     ]]
                   (for [frame (range 1 (inc @(rf/subscribe [:timing/animation-frame-count])))]
                     (list

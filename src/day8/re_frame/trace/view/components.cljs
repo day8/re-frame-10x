@@ -226,3 +226,8 @@
                    (boolean? data)
                    (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
           @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj [] 0)))]])))
+
+(defn tag [class label]
+  [rc/box
+   :class (str "rft-tag noselect " class)
+   :child [:span {:style {:margin "auto"}} label]])

@@ -45,6 +45,10 @@
 (def gs-131s "131px")
 
 
+(def sub-create-color "#9b51e0")
+(def sub-destroy-color "#f2994a")
+(def sub-re-run-color "#219653")
+(def sub-not-run-color "#bdbdbd")
 
 
 ;; The colors defined below are (of course) available to your app without further ado
