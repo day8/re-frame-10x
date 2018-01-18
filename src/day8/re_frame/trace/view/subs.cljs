@@ -17,7 +17,7 @@
 
 (def cljs-dev-tools-background "#e8ffe8")
 (def pod-gap common/gs-19s)
-(def pad-padding common/gs-7s)
+(def pad-padding "0px")
 
 ;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
@@ -196,10 +196,11 @@
                  :justify :end
                  :style {:margin (css-join "0px" pad-padding)}
                  :children [[rc/hyperlink-href
-                             ;:class "app-db-path--label"
-                             :label "ONLY BEFORE"
+                             ;:class  "app-db-path--label"
+                             :label  "ONLY BEFORE"
+                             :style  {:margin-left common/gs-7s}
                              :target "_blank"
-                             :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
+                             :href   "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
               (when (and open? diff?)
                 [rc/v-box
                  :height "60px"
@@ -214,10 +215,11 @@
                  :justify :end
                  :style {:margin (css-join "0px" pad-padding)}
                  :children [[rc/hyperlink-href
-                             ;:class "app-db-path--label"
-                             :label "ONLY AFTER"
+                             ;:class  "app-db-path--label"
+                             :label  "ONLY AFTER"
+                             :style  {:margin-left common/gs-7s}
                              :target "_blank"
-                             :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
+                             :href   "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
               (when (and open? diff?)
                 [rc/v-box
                  :height "60px"
