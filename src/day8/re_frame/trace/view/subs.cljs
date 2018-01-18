@@ -1,5 +1,6 @@
 (ns day8.re-frame.trace.view.subs
-  (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+  (:require [day8.re-frame.trace.utils.utils :as utils]
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame.trace.common-styles :as common]
@@ -17,7 +18,7 @@
 
 (def cljs-dev-tools-background "#e8ffe8")
 (def pod-gap common/gs-19s)
-(def pad-padding common/gs-7s)
+(def pad-padding "0px")
 
 ;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
@@ -195,10 +196,12 @@
                  :height common/gs-19s
                  :justify :end
                  :style {:margin (css-join "0px" pad-padding)}
-                 :children [[rc/hyperlink
-                             ;:class "app-db-path--label"
-                             :label "ONLY BEFORE"
-                             :on-click #(println "Clicked [ONLY BEFORE]")]]])
+                 :children [[rc/hyperlink-href
+                             ;:class  "app-db-path--label"
+                             :label  "ONLY BEFORE"
+                             :style  {:margin-left common/gs-7s}
+                             :target "_blank"
+                             :href   utils/diff-link]]])
               (when (and open? diff?)
                 [rc/v-box
                  :height "60px"
@@ -212,10 +215,12 @@
                  :height common/gs-19s
                  :justify :end
                  :style {:margin (css-join "0px" pad-padding)}
-                 :children [[rc/hyperlink
-                             ;:class "app-db-path--label"
-                             :label "ONLY AFTER"
-                             :on-click #(println "Clicked [ONLY AFTER]")]]])
+                 :children [[rc/hyperlink-href
+                             ;:class  "app-db-path--label"
+                             :label  "ONLY AFTER"
+                             :style  {:margin-left common/gs-7s}
+                             :target "_blank"
+                             :href   utils/diff-link]]])
               (when (and open? diff?)
                 [rc/v-box
                  :height "60px"

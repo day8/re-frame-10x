@@ -1,6 +1,7 @@
 (ns day8.re-frame.trace.view.app-db
   (:require [devtools.prefs]
             [devtools.formatters.core]
+            [day8.re-frame.trace.utils.utils :as utils]
             [day8.re-frame.trace.view.components :as components]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
@@ -21,7 +22,7 @@
 
 (def cljs-dev-tools-background "#e8ffe8")
 (def pod-gap common/gs-19s)
-(def pad-padding common/gs-7s)
+(def pad-padding "0px")
 (def border-radius "3px")
 
 (def app-db-styles
@@ -245,9 +246,11 @@
                      :class "app-db-path--link"
                      :justify :end
                      :children [[rc/hyperlink-href
-                                 ;:class "app-db-path--label"
-                                 :label "ONLY BEFORE"
-                                 :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]]
+                                 ;:class  "app-db-path--label"
+                                 :label  "ONLY BEFORE"
+                                 :style  {:margin-left common/gs-7s}
+                                 :target "_blank"
+                                 :href   utils/diff-link]]]
 
                     ^{:key "only-before-diff"}
                     [rc/v-box
@@ -260,9 +263,11 @@
                      :class "app-db-path--link"
                      :justify :end
                      :children [[rc/hyperlink-href
-                                 ;:class "app-db-path--label"
-                                 :label "ONLY AFTER"
-                                 :href "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]]
+                                 ;:class  "app-db-path--label"
+                                 :label  "ONLY AFTER"
+                                 :style  {:margin-left common/gs-7s}
+                                 :target "_blank"
+                                 :href   utils/diff-link]]]
 
                     ^{:key "only-after-diff"}
                     [rc/v-box
