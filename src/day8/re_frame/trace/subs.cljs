@@ -361,29 +361,36 @@
       all-subs)))
 
 (rf/reg-sub
+  :subs/sub-counts
+  :<- [:subs/visible-subs]
+  (fn [subs _]
+    (->> subs
+         (map :type)
+         (frequencies))))
+
+(rf/reg-sub
   :subs/created-count
-  :<- [:subs/all-sub-traces]
-  (fn [traces]
-    (count (filter metam/subscription-created? traces))))
+  :<- [:subs/sub-counts]
+  (fn [counts]
+    (get counts :created 0)))
 
 (rf/reg-sub
   :subs/re-run-count
-  :<- [:subs/all-sub-traces]
-  ;; TODO: remove created subs that were re-run, they count as created only
-  (fn [traces]
-    (count (filter metam/subscription-re-run? traces))))
+  :<- [:subs/sub-counts]
+  (fn [counts]
+    (get counts :re-run 0)))
 
 (rf/reg-sub
   :subs/destroyed-count
-  :<- [:subs/all-sub-traces]
-  (fn [traces]
-    (count (filter metam/subscription-destroyed? traces))))
+  :<- [:subs/sub-counts]
+  (fn [counts]
+    (get counts :destroyed 0)))
 
 (rf/reg-sub
   :subs/not-run-count
-  :<- [:subs/all-sub-traces]
-  (fn [traces]
-    (count (filter metam/subscription-not-run? traces))))
+  :<- [:subs/sub-counts]
+  (fn [counts]
+    (get counts :not-run 0)))
 
 (rf/reg-sub
   :subs/unchanged-l2-subs-count
