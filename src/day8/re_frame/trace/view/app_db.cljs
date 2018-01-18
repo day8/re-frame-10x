@@ -1,6 +1,7 @@
 (ns day8.re-frame.trace.view.app-db
   (:require [devtools.prefs]
             [devtools.formatters.core]
+            [day8.re-frame.trace.utils.utils :as utils]
             [day8.re-frame.trace.view.components :as components]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
@@ -249,7 +250,7 @@
                                  :label  "ONLY BEFORE"
                                  :style  {:margin-left common/gs-7s}
                                  :target "_blank"
-                                 :href   "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]]
+                                 :href   utils/diff-link]]]
 
                     ^{:key "only-before-diff"}
                     [rc/v-box
@@ -266,7 +267,7 @@
                                  :label  "ONLY AFTER"
                                  :style  {:margin-left common/gs-7s}
                                  :target "_blank"
-                                 :href   "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]]
+                                 :href   utils/diff-link]]]
 
                     ^{:key "only-after-diff"}
                     [rc/v-box

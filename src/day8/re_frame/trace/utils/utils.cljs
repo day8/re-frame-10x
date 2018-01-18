@@ -1,5 +1,7 @@
 (ns day8.re-frame.trace.utils.utils)
 
+(def diff-link "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/Diffs.md")
+
 (defn last-in-vec
   "Get the last element in the vector"
   [v]

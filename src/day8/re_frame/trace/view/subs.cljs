@@ -1,5 +1,6 @@
 (ns day8.re-frame.trace.view.subs
-  (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+  (:require [day8.re-frame.trace.utils.utils :as utils]
+            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame.trace.common-styles :as common]
@@ -200,7 +201,7 @@
                              :label  "ONLY BEFORE"
                              :style  {:margin-left common/gs-7s}
                              :target "_blank"
-                             :href   "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
+                             :href   utils/diff-link]]])
               (when (and open? diff?)
                 [rc/v-box
                  :height "60px"
@@ -219,7 +220,7 @@
                              :label  "ONLY AFTER"
                              :style  {:margin-left common/gs-7s}
                              :target "_blank"
-                             :href   "https://github.com/Day8/re-frame-trace/wiki/app-db#diff"]]])
+                             :href   utils/diff-link]]])
               (when (and open? diff?)
                 [rc/v-box
                  :height "60px"
