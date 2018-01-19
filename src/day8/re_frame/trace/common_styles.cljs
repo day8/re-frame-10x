@@ -218,7 +218,10 @@
 
    ;; input-text - set to 26px high
    [:.rc-input-text
-    [:input {:height "26px"}]]
+    [:input {:height "25px"
+             :border-radius "2px"
+             :background-color "white"
+             :border (str "1px solid " white-background-border-color)}]]
 
    ;; input-time - set to 26px high
    [:.rc-input-time {:height "26px"}]

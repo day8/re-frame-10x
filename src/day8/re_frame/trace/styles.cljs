@@ -8,7 +8,8 @@
             [day8.re-frame.trace.utils.re-com :as rc]
             [day8.re-frame.trace.view.app-db :as app-db]
             [cljs.spec.alpha :as spec]
-            [day8.re-frame.trace.view.timing :as timing]))
+            [day8.re-frame.trace.view.timing :as timing]
+            [day8.re-frame.trace.view.settings :as settings]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -36,7 +37,7 @@
 
    ;; /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
    {:line-height "1.15"
-    :font-size   "12px"}
+    :font-size   "14px"}
    [:h1 {:font-size "2em"
          :margin    "0.67em 0"}]
    [:div :nav :h1 :h2 :h3 :h4 :h5 :h6 {:display "block"}]
@@ -74,7 +75,8 @@
     {:-webkit-appearance "button"}]
    [(s/input (s/attr= "type" "checkbox"))
     {:-webkit-appearance "checkbox"
-     :box-sizing         "border-box"}]
+     :box-sizing         "border-box"
+     :margin-top         "3px"}]
 
    [:button:-moz-focusring
     (s/attr= "type" "button")
@@ -425,7 +427,13 @@
    ])
 
 
-(def panel-styles (apply garden/css [css-reset [:#--re-frame-trace-- rc/re-com-css] common/blue-modern re-frame-trace-styles app-db/app-db-styles timing/timing-styles]))
+(def panel-styles (apply garden/css [css-reset
+                                     [:#--re-frame-trace-- rc/re-com-css]
+                                     common/blue-modern
+                                     re-frame-trace-styles
+                                     app-db/app-db-styles
+                                     timing/timing-styles
+                                     settings/settings-styles]))
 ;(def panel-styles (macros/slurp-macro "day8/re_frame/trace/main.css"))
 
 
