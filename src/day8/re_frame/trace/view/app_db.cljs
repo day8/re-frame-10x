@@ -80,6 +80,10 @@
     {:width   "129px"
      :padding "0px"}]
 
+   [:.app-db-panel-button
+    {:width   "129px"
+     :padding "0px"}]
+
    [:.rounded-bottom
     {:border-bottom-left-radius  border-radius
      :border-bottom-right-radius border-radius}]
