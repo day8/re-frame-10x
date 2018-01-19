@@ -4,6 +4,11 @@
   (:require [reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
             [clojure.string :as string]))
 
+(defn px
+  "takes a number (and optional :negative keyword to indicate a negative value) and returns that number as a string with 'px' at the end"
+  [val & negative]
+  (str (if negative (- val) val) "px"))
+
 (defn deref-or-value-peek
   "Takes a value or an atom
   If it's a value, returns it
@@ -337,6 +342,7 @@
                          :style       (merge
                                         (flex-child-style "none")
                                         {:height        height
+                                         :box-sizing    "border-box" ;; TODO: Added to override the incorrect default of "content-box" somehow set up by :all unset
                                          :padding-right "12px"} ;; override for when icon exists
                                         style)
                          :placeholder placeholder
@@ -536,6 +542,38 @@
                                      label-style)
                     :on-click (handler-fn (callback-fn))}
                    label])]]))
+
+;; Taken from day8.briefly.components.close-button
+(defn close-button
+  []
+  (let [over? (reagent/atom false)]
+    (fn close-button-render
+      [& {:keys [on-click div-size font-size color hover-color tooltip top-offset left-offset style attr]
+          :or   {div-size 16 font-size 16 color "#ccc" hover-color "#999"}}]
+      [box
+       :class "rc-close-button"
+       :style {:display          "inline-block"
+               :position         "relative"
+               :width            (px div-size)
+               :height           (px div-size)}
+       :child [box
+               :style (merge
+                        {:position  "absolute"
+                         :cursor    "pointer"
+                         :font-size (px font-size)
+                         :color     (if @over? hover-color color)
+                         :top       (px (- (/ (- font-size div-size) 2) top-offset)  :negative)
+                         :left      (px (- (/ (- font-size div-size) 2) left-offset) :negative)}
+                        style)
+               :attr  (merge
+                        {:title          tooltip
+                         :on-click       (handler-fn (on-click)
+                                                     (.stopPropagation event))
+                         :on-mouse-enter (handler-fn (reset! over? true))
+                         :on-mouse-leave (handler-fn (reset! over? false))}
+                        attr)
+               ;:child [:i {:class "zmdi zmdi-hc-fw-rc zmdi zmdi-close"}]
+               :child [:span "×"]]])))
 
 (defn css-join [& args]
   "Creates a single string from all passed args, separated by spaces (all args are coerced to strings)
