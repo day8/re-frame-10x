@@ -65,8 +65,7 @@
                                         (str/join ", ")
                                         (pp/truncate-string :middle 40)))]]]
                               [:td.trace--meta
-                               id
-                               #_ #_(.toFixed duration 1) " ms"]]
+                               (.toFixed duration 1) " ms"]]
                              (when show-row?
                                [:tr.trace--details {:key       (str id "-details")
                                                     :tab-index 0}
