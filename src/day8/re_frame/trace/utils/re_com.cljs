@@ -551,7 +551,7 @@
       [& {:keys [on-click div-size font-size color hover-color tooltip top-offset left-offset style attr]
           :or   {div-size 16 font-size 16 color "#ccc" hover-color "#999"}}]
       [box
-       :class "rc-close-button"
+       :class "rc-close-button noselect"
        :style {:display          "inline-block"
                :position         "relative"
                :width            (px div-size)

@@ -8,6 +8,39 @@
 (def instruction--section-width "190px")
 (def horizontal-gap common/gs-7s)
 (def vertical-gap common/gs-12s)
+(def settings-box-vertical-padding common/gs-7s)
+(def settings-box-81 "67px")    ;; common/gs-81s - 2 * settings-box-vertical-padding
+(def settings-box-131 "117px")  ;; common/gs-313s - 2 * settings-box-vertical-padding
+
+;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
+
+(def retain-epochs (r/atom "99"))
+
+(def *ignore-items (r/atom [{:id (gensym) :text ":some/event-id"}]))
+
+(def *filter-items (r/atom [{:id (gensym) :text "re-com.h-box"}
+                            {:id (gensym) :text "re-com.input-text"}]))
+
+(defn add-item [*items]
+  (let [id (gensym)]
+    (println "Added item" id)
+    (swap! *items concat [{:id id :text ""}])))
+
+(defn delete-item [*items id]
+  (println "Deleted item" id)
+  (reset! *items (filterv #(not= id (:id %)) @*items)))
+
+(defn update-item-field
+  [*items id field new-val]
+  (let [f (fn [item]
+            (if (= id (:id item))
+              (do
+                (println "Updated" field "in" (:id item) "from" (get item field) "to" new-val)
+                (assoc item field new-val))
+              item))]
+    (reset! *items (mapv f @*items))))
+
+;; TODO: END ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
 (def settings-styles
   [:#--re-frame-trace--
@@ -46,6 +79,7 @@
   [rc/h-box
    :gap        common/gs-19s
    :min-height min-height
+   :padding    (css-join settings-box-vertical-padding "0px")
    :align      :center
    :children   [[rc/v-box
                  :width      comp-section-width
@@ -53,8 +87,6 @@
                  ;:align-self :center
                  :children   settings]
                 [explanation-text explanation]]])
-
-(def txt (r/atom "1"))
 
 (defn render []
   [rc/v-box
@@ -64,7 +96,7 @@
                     num-traces @(rf/subscribe [:traces/number-of-traces])]
                 [settings-box
                  [[rc/h-box
-                   :align :center
+                   :align    :center
                    :gap      horizontal-gap
                    :children [[rc/label :label "Retain last"]
                               [rc/input-text
@@ -72,9 +104,9 @@
                                :style     {:width      common/gs-31s ;; TODO: Not needed in standard re-com but caused by :all unset
                                            :height     "25px"
                                            :padding    (css-join "0px" common/gs-5s)}
-                               :model     txt
+                               :model     retain-epochs
                                :change-on-blur? false
-                               :on-change #(reset! txt %)]
+                               :on-change #(reset! retain-epochs %)]
                               [rc/label :label "epochs"]
                               [rc/gap-f :size common/gs-31s]
                               [rc/button
@@ -84,12 +116,12 @@
                                        :children ["clear all epochs"]]
                                :on-click #(println "Clicked CLEAR")]]]]
                  [[:p num-epochs " epochs currently retained, involving " num-traces " traces."]]
-                 common/gs-81s])
+                 settings-box-81])
 
               [rc/line]
               [settings-box
                [[rc/h-box
-                 :align :center
+                 :align    :center
                  :gap      horizontal-gap
                  :children [[rc/label :label "Ignore epochs for:"]
                             [rc/button
@@ -98,18 +130,20 @@
                              :label [rc/v-box
                                      :align :center
                                      :children ["+ event-id"]]
-                             :on-click #(println "Add EVENT ID")]]]
-                [rc/h-box
-                 :align :center
-                 :gap      horizontal-gap
-                 :children [[closeable-text-box
-                             :model     txt
-                             :width     "212px"
-                             :on-close  #(println "Clicked event-id")
-                             :on-change #(reset! txt %)]]]]
+                             :on-click #(add-item *ignore-items)]]]
+                [rc/v-box
+                 :width      comp-section-width
+                 :gap        vertical-gap
+                 :children   (for [item @*ignore-items]
+                               ^{:key (:id item)}
+                               [closeable-text-box
+                                :model     (:text item)
+                                :width     "212px"
+                                :on-close  #(delete-item *ignore-items (:id item))
+                                :on-change #(update-item-field *ignore-items (:id item) :text %)])]]
                [[:p "All trace associated with these events will be ignored."]
                 [:p "Useful if you want to ignore a periodic background polling event."]]
-               common/gs-131s]
+               settings-box-131]
 
               [rc/line]
               [settings-box
@@ -123,18 +157,20 @@
                              :label [rc/v-box
                                      :align :center
                                      :children ["+ namespace"]]
-                             :on-click #(println "Clicked NAMESPACE")]]]
-                [rc/h-box
-                 :align :center
-                 :gap      horizontal-gap
-                 :children [[closeable-text-box
-                             :model     txt
-                             :width     "343px"
-                             :on-close  #(println "Clicked namespace")
-                             :on-change #(reset! txt %)]]]]
+                             :on-click #(add-item *filter-items)]]]
+                [rc/v-box
+                 :width      comp-section-width
+                 :gap        vertical-gap
+                 :children   (for [item @*filter-items]
+                               ^{:key (:id item)}
+                               [closeable-text-box
+                                :model     (:text item)
+                                :width     "343px"
+                                :on-close  #(delete-item *filter-items (:id item))
+                                :on-change #(update-item-field *filter-items (:id item) :text %)])]]
                [[:p "Sometimes you want to focus on just your own views, and the trace associated with library views is just noise."]
                 [:p "Nominate one or more namespaces."]]
-               common/gs-131s]
+               settings-box-131]
 
               [rc/line]
               [settings-box
@@ -148,7 +184,7 @@
                  :label     "re-frame internals"
                  :on-change #(rf/dispatch [:settings/low-level-trace :re-frame %])]]
                [[:p "Most of the time, low level trace is noisy and you want it filtered out."]]
-               common/gs-131s]
+               settings-box-131]
 
               [rc/line]
               [settings-box
@@ -160,4 +196,4 @@
                          :children ["Factory Reset"]]
                  :on-click #()]]
                [""]
-               common/gs-131s]]])
+               settings-box-81]]])
