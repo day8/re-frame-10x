@@ -7,21 +7,23 @@ application, allowing you to better understand it and debug it.
 
 **Note** [the latest version 0.1.14](https://github.com/Day8/re-frame-trace/releases/tag/0.1.14) ALSO requires the latest version of re-frame itself - `v0.10.3-alpha2`.
 
-### What It Can Do
+### Helpful How?
 
-Here's how it might be helpful to you:
+Four ways:
 
-  1. Help you to learn `re-frame`.  If you are new to `re-frame`, it will assist you to 
-     understand the data flows involved (the dominoes). 
+  1. Help you to learn `re-frame`.  If you are new to `re-frame`, looking at 
+     the raw "Traces" it will assist you to understand the data flows involved 
+     (the dominoes). 
   2. Help you to explore and learn an unfamiliar `re-frame` codebase.
      When I click on this "X" button, it shows me what event is `dispatch`-ed 
      and in what namespace the associated event handler is registered.  And, 
      "oh look, that's interesting - four subscriptions recalculated". Etc.
-  3. Help you with debugging. You see an x-Ray of your app's functioning. 
+  3. Help you with debugging. You see an x-ray of your app's functioning. 
      In particular, it will assist you to write and debug 
-     event handlers, which is useful because they hold most of the logic in your `re-frame` apps.
+     event handlers, which is useful because they hold most of the logic 
+     in your `re-frame` apps.
   4. Helps you to find performance problems and/or detect where there is 
-    unnecessary computation occurring.
+     unnecessary computation occurring.
 
 > This list is aspirational. `re-frame-trace` remains a WIP. We're getting there. 
 
