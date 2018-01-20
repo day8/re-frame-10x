@@ -37,9 +37,9 @@ There are two issues with the displayed numbers:
     
 ## Know Your Epoch Timeline
 
-You'll understand the Timings tab better if you 
-understand how an event is processed within the browser.
-This infographic might help:  
+The Timing Tab is easier to understand once you have internalised the 
+following graphic which shows how, operationally, the six dominoes play out, 
+over time, within the browser.  
 
 <img src="https://raw.githubusercontent.com/Day8/re-frame/master/images/epoch.png">
 
