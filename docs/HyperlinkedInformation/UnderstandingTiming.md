@@ -1,14 +1,14 @@
-This document explains useful things about the "Timing" tab. 
+This document highlights important aspects of the "Timing" tab. 
 
 ## Be Cautious And Sceptical
 
-There are two issues with the numbers: 
+There are two issues with the displayed numbers: 
 
 1.  Accurately timing something in the browser is almost
     a fool's errand. One moment it takes 1ms and the next it 
     takes 10ms, and you’ll never know why. Noisy.
 
-    So, don't ever base decision on one set of timings. Run 
+    So, don't ever base your decisions on one set of timings. Run 
     the same event at least a few of times.
     
     In the future, we'd like to add a 'Run It Again' button, which 
@@ -25,21 +25,29 @@ There are two issues with the numbers:
     And using `re-frame-trace` will slow things 
     down too, what with all that creating and analysing of trace.
     
-    So, run the production version of your app first before 
-    deciding you have a performance problem. Something that 
+    So, run the production version of your app first, before 
+    deciding you have a performance problem. Something what 
     takes 100ms in dev might take 20ms in prod.
     
-    This Timing Tab is not really about absolute numbers so 
+    The Timing Tab is not really about absolute numbers so 
     much as the relative time taken to do the different 
-    "parts" of an Epoch.  Is one View ridiculously slow for some 
+    "parts" of an Epoch. Is one View very slow for some 
     reason, compared to others?
     And, even then, remember point 1 (above). 
     
 ## Know Your Epoch Timeline
 
-You'll understand the contents of the Timings tab better if you 
-understand how an event is processed over time within the browser.
-The following infographic will help:  
+You'll understand the Timings tab better if you 
+understand how an event is processed within the browser.
+This infographic might help:  
 
 <img src="https://raw.githubusercontent.com/Day8/re-frame/master/images/epoch.png">
+
+## Other Tips 
+
+You should probably have [React DevTools](https://github.com/facebook/react-devtools)
+installed because it is useful. But, it can also add drag and noise to timing results, 
+so disable it when trying to get more accurate timing figures.  
+
+Here is (React 16) advice on [debugging React performance with Chrome Devtools](https://building.calibreapp.com/debugging-react-performance-with-react-16-and-chrome-devtools-c90698a522ad) 
 
