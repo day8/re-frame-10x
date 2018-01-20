@@ -47,7 +47,7 @@ over time, within the browser.
 
 You should probably have [React DevTools](https://github.com/facebook/react-devtools)
 installed because it is useful. But, it can also add drag and noise to timing results, 
-so disable it when trying to get more accurate timing figures.  
+so disable it when trying to get more accurate timing figures.
 
 Here is (React 16) advice on [debugging React performance with Chrome Devtools](https://building.calibreapp.com/debugging-react-performance-with-react-16-and-chrome-devtools-c90698a522ad) 
 
