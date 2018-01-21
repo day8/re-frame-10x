@@ -124,6 +124,18 @@
         (assoc-in [:settings :paused?] false)
         (assoc-in [:epochs :current-epoch-index] nil))))
 
+(rf/reg-event-db
+  :settings/set-number-of-retained-epochs
+  [rf/debug]
+
+  (fn [db [_ num-str]]
+    (let [num (js/parseInt num-str)]
+      (if-not (js/isNaN num)
+        (do
+          (localstorage/save! "retained-epochs" num)
+          (assoc-in db [:settings :number-of-epochs] num))
+        db))))
+
 ;; Global
 
 (defn mount [popup-window popup-document]

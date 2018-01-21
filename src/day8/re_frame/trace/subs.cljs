@@ -34,6 +34,12 @@
   (fn [settings _]
     (:paused? settings)))
 
+(rf/reg-sub
+  :settings/number-of-retained-epochs
+  :<- [:settings/root]
+  (fn [settings]
+    (:number-of-epochs settings)))
+
 ;; App DB
 
 (rf/reg-sub

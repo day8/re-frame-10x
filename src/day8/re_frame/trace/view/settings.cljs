@@ -14,8 +14,6 @@
 
 ;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
-(def retain-epochs (r/atom "99"))
-
 (def *ignore-items (r/atom [{:id (gensym) :text ":some/event-id"}]))
 
 (def *filter-items (r/atom [{:id (gensym) :text "re-com.h-box"}
@@ -93,7 +91,8 @@
    :style    {:margin-left      common/gs-12s ;; A bit of a hack, 19px already provided by parent, add 12 to get to 31 as requires by spec
               :margin-right     common/gs-19s}
    :children [(let [num-epochs @(rf/subscribe [:epochs/number-of-matches])
-                    num-traces @(rf/subscribe [:traces/number-of-traces])]
+                    num-traces @(rf/subscribe [:traces/number-of-traces])
+                    epochs-to-retain @(rf/subscribe [:settings/number-of-retained-epochs])]
                 [settings-box
                  [[rc/h-box
                    :align    :center
@@ -101,12 +100,12 @@
                    :children [[rc/label :label "Retain last"]
                               [rc/input-text
                                :width     common/gs-31s
-                               :style     {:width      common/gs-31s ;; TODO: Not needed in standard re-com but caused by :all unset
+                               :style     {:width      "35px" ;; TODO: Not needed in standard re-com but caused by :all unset
                                            :height     "25px"
                                            :padding    (css-join "0px" common/gs-5s)}
-                               :model     retain-epochs
-                               :change-on-blur? false
-                               :on-change #(reset! retain-epochs %)]
+                               :model     epochs-to-retain
+                               :change-on-blur? true
+                               :on-change #(rf/dispatch [:settings/set-number-of-retained-epochs %])]
                               [rc/label :label "epochs"]
                               [rc/gap-f :size common/gs-31s]
                               [rc/button
@@ -194,6 +193,6 @@
                  :label [rc/v-box
                          :align :center
                          :children ["Factory Reset"]]
-                 :on-click #()]]
+                 :on-click #(rf/dispatch [:settings/factory-reset])]]
                [""]
                settings-box-81]]])
