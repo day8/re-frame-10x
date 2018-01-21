@@ -1,16 +1,19 @@
 (ns day8.re-frame.trace.view.settings
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
-            [day8.re-frame.trace.common-styles :as common]))
+            [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
+            [day8.re-frame.trace.common-styles :as common]
+            [garden.units :as units]
+            [garden.compiler :refer [render-css]]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")
 (def horizontal-gap common/gs-7s)
 (def vertical-gap common/gs-12s)
-(def settings-box-vertical-padding common/gs-7s)
-(def settings-box-81 "67px")    ;; common/gs-81s - 2 * settings-box-vertical-padding
-(def settings-box-131 "117px")  ;; common/gs-313s - 2 * settings-box-vertical-padding
+(def settings-box-vertical-padding common/gs-7)
+(def settings-box-padding (css-join "7px" "0"))
+(def settings-box-81 (render-css (units/px- common/gs-81 (units/px* 2 settings-box-vertical-padding))))
+(def settings-box-131 (render-css (units/px- common/gs-131 (units/px* 2 settings-box-vertical-padding))))
 
 ;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
 
@@ -77,7 +80,7 @@
   [rc/h-box
    :gap        common/gs-19s
    :min-height min-height
-   :padding    (css-join settings-box-vertical-padding "0px")
+   :padding    settings-box-padding
    :align      :center
    :children   [[rc/v-box
                  :width      comp-section-width

@@ -126,8 +126,6 @@
 
 (rf/reg-event-db
   :settings/set-number-of-retained-epochs
-  [rf/debug]
-
   (fn [db [_ num-str]]
     (let [num (js/parseInt num-str)]
       (if-not (js/isNaN num)

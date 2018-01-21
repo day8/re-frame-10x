@@ -1,5 +1,6 @@
 (ns day8.re-frame.trace.common-styles
-  (:require [garden.units :refer [px em]]))
+  (:require [garden.units :refer [px em]]
+            [garden.compiler :refer [render-css]]))
 
 ;; TODO: Switch these to BM (or just use BM defs if available)
 
@@ -34,15 +35,14 @@
 (def gs-81 (px 81))
 (def gs-131 (px 131))
 
-;; TODO: figure out how to cast gs-* into strings, rather than manually making them here.
-(def gs-5s "5px")
-(def gs-7s "7px")
-(def gs-12s "12px")
-(def gs-19s "19px")
-(def gs-31s "31px")
-(def gs-50s "50px")
-(def gs-81s "81px")
-(def gs-131s "131px")
+(def gs-5s (render-css gs-5))
+(def gs-7s (render-css gs-7))
+(def gs-12s (render-css gs-12))
+(def gs-19s (render-css gs-19))
+(def gs-31s (render-css gs-31))
+(def gs-50s (render-css gs-50))
+(def gs-81s (render-css gs-81))
+(def gs-131s (render-css gs-131))
 
 
 (def sub-create-color "#9b51e0")
