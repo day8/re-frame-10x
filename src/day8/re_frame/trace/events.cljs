@@ -127,12 +127,21 @@
 (rf/reg-event-db
   :settings/set-number-of-retained-epochs
   (fn [db [_ num-str]]
-    (let [num (js/parseInt num-str)]
-      (if-not (js/isNaN num)
-        (do
-          (localstorage/save! "retained-epochs" num)
-          (assoc-in db [:settings :number-of-epochs] num))
-        db))))
+    ;; TODO: this is not perfect, there is an issue in re-com
+    ;; where it won't update its model if it never receives another
+    ;; changes after it's on-change is fired.
+    (let [num (js/parseInt num-str)
+          num (if (and (not (js/isNaN num)) (pos-int? num))
+                num
+                30)]
+      (localstorage/save! "retained-epochs" num)
+      (assoc-in db [:settings :number-of-epochs] num))))
+
+(rf/reg-event-db
+  :settings/low-level-trace
+  [(rf/path [:settings :low-level-trace])]
+  (fn [low-level [_ trace-type capture?]]
+    (assoc low-level trace-type capture?)))
 
 ;; Global
 

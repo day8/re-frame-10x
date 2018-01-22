@@ -95,7 +95,7 @@
               :margin-right     common/gs-19s}
    :children [(let [num-epochs @(rf/subscribe [:epochs/number-of-matches])
                     num-traces @(rf/subscribe [:traces/number-of-traces])
-                    epochs-to-retain @(rf/subscribe [:settings/number-of-retained-epochs])]
+                    epochs-to-retain (rf/subscribe [:settings/number-of-retained-epochs])]
                 [settings-box
                  [[rc/h-box
                    :align    :center
@@ -175,18 +175,19 @@
                settings-box-131]
 
               [rc/line]
-              [settings-box
-               [[rc/label :label "Remove low level trace"]
-                [rc/checkbox
-                 :model     false
-                 :label     "reagent internals"
-                 :on-change #(rf/dispatch [:settings/low-level-trace :reagent %])]
-                [rc/checkbox
-                 :model     false
-                 :label     "re-frame internals"
-                 :on-change #(rf/dispatch [:settings/low-level-trace :re-frame %])]]
-               [[:p "Most of the time, low level trace is noisy and you want it filtered out."]]
-               settings-box-131]
+              (let [low-level-trace @(rf/subscribe [:settings/low-level-trace])]
+                [settings-box
+                [[rc/label :label "Remove low level trace"]
+                 [rc/checkbox
+                  :model (:reagent low-level-trace)
+                  :label "reagent internals"
+                  :on-change #(rf/dispatch [:settings/low-level-trace :reagent %])]
+                 [rc/checkbox
+                  :model (:re-frame low-level-trace)
+                  :label "re-frame internals"
+                  :on-change #(rf/dispatch [:settings/low-level-trace :re-frame %])]]
+                [[:p "Most of the time, low level trace is noisy and you want it filtered out."]]
+                settings-box-131])
 
               [rc/line]
               [settings-box

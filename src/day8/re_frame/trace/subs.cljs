@@ -40,6 +40,14 @@
   (fn [settings]
     (:number-of-epochs settings)))
 
+(rf/reg-sub
+  :settings/low-level-trace
+  ;; TODO: filter from traces panel
+  ;; TODO: eventually drop these low level traces after computing the state we need from them.
+  :<- [:settings/root]
+  (fn [settings]
+    (:low-level-trace settings)))
+
 ;; App DB
 
 (rf/reg-sub
