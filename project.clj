@@ -7,7 +7,8 @@
                  [reagent "0.6.0" :scope "provided"]
                  [re-frame "0.10.3-alpha2" :scope "provided"]
                  [binaryage/devtools "0.9.4"]
-                 [garden "1.3.3"]]
+                 [garden "1.3.3"]
+                 [cljsjs/react-flip-move "2.9.17-0"]]
   :plugins [[thomasa/mranderson "0.4.7"]
             [lein-less "RELEASE"]]
   :deploy-repositories {"releases"  :clojars

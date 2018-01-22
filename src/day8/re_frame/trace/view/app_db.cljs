@@ -2,6 +2,7 @@
   (:require [devtools.prefs]
             [devtools.formatters.core]
             [day8.re-frame.trace.utils.utils :as utils]
+            [day8.re-frame.trace.utils.animated :as animated]
             [day8.re-frame.trace.view.components :as components]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
@@ -198,6 +199,7 @@
                                                         (get-in @app-db-after path)))]
     [rc/v-box
      ;:class "app-db-path"
+     :style    {:margin-top common/gs-19s} ;; TODO: Find out how to add a gap to the animated/v-box
      :children [[pod-header pod-info]
                 [rc/v-box
                  :class    (when open? "app-db-path--pod-border")
@@ -224,43 +226,50 @@
                                            #_[path]]
 
                                           #_"---main-section---"]])
-                            (when render-diff?
-                              (list
-                                ^{:key "only-before"}
-                                [rc/v-box
-                                 :class "app-db-path--link"
-                                 :justify :end
-                                 :children [[rc/hyperlink-href
-                                             ;:class  "app-db-path--label"
-                                             :label  "ONLY BEFORE"
-                                             :style  {:margin-left common/gs-7s}
-                                             :target "_blank"
-                                             :href   utils/diff-link]]]
+                            [animated/component
+                             (animated/v-box-options {:style {
+                                                              ;:margin-left "-34px"
+                                                              ;:opacity "1"
+                                                              ;:height "200px"
+                                                              ;:min-height "10px"
+                                                              }})
+                             (when render-diff?
+                               (list
+                                 ^{:key "only-before"}
+                                 [rc/v-box
+                                  :class "app-db-path--link"
+                                  :justify :end
+                                  :children [[rc/hyperlink-href
+                                              ;:class  "app-db-path--label"
+                                              :label "ONLY BEFORE"
+                                              :style {:margin-left common/gs-7s}
+                                              :target "_blank"
+                                              :href utils/diff-link]]]
 
-                                ^{:key "only-before-diff"}
-                                [rc/v-box
-                                 :class "data-viewer data-viewer--top-rule"
-                                 :children [[components/simple-render
-                                             diff-before
-                                             ["app-db-diff" path]]]]
+                                 ^{:key "only-before-diff"}
+                                 [rc/v-box
+                                  :class "data-viewer data-viewer--top-rule"
+                                  :children [[components/simple-render
+                                              diff-before
+                                              ["app-db-diff" path]]]]
 
-                                ^{:key "only-after"}
-                                [rc/v-box
-                                 :class "app-db-path--link"
-                                 :justify :end
-                                 :children [[rc/hyperlink-href
-                                             ;:class  "app-db-path--label"
-                                             :label  "ONLY AFTER"
-                                             :style  {:margin-left common/gs-7s}
-                                             :target "_blank"
-                                             :href   utils/diff-link]]]
+                                 ^{:key "only-after"}
+                                 [rc/v-box
+                                  :class "app-db-path--link"
+                                  :justify :end
+                                  :children [[rc/hyperlink-href
+                                              ;:class  "app-db-path--label"
+                                              :label "ONLY AFTER"
+                                              :style {:margin-left common/gs-7s}
+                                              :target "_blank"
+                                              :href utils/diff-link]]]
 
-                                ^{:key "only-after-diff"}
-                                [rc/v-box
-                                 :class "data-viewer data-viewer--top-rule rounded-bottom"
-                                 :children [[components/simple-render
-                                             diff-after
-                                             ["app-db-diff" path]]]]))
+                                 ^{:key "only-after-diff"}
+                                 [rc/v-box
+                                  :class "data-viewer data-viewer--top-rule rounded-bottom"
+                                  :children [[components/simple-render
+                                              diff-after
+                                              ["app-db-diff" path]]]]))]
                             (when open?
                               [rc/gap-f :size pod-padding])]]]]))
 
@@ -278,13 +287,51 @@
 
 (defn pod-section []
   (let [pods @(rf/subscribe [:app-db/paths])]
-    [rc/v-box
+
+    ;; CURRENT
+    #_[rc/v-box
      :gap pod-gap
      :children (if (empty? pods)
                  [[no-pods]]
                  (doall (for [p pods]
                           ^{:key (:id pods)}
-                          [pod p])))]))
+                          [pod p])))]
+
+    ;; ANIMATION EXPERIMENTS
+    [rc/v-box
+     :gap pod-gap
+     :children [
+                ;; Original non-animated
+                #_(if (empty? pods)
+                    [no-pods]
+                    (for [p pods]
+                      ^{:key (:id p)}
+                      [pod p]))
+
+                ;; First and last pods don't animate (and CSS screwed up)
+                #_(if (empty? pods)
+                    [no-pods]
+                    [animated/component
+                     (animated/v-box-options {:style {:margin-left "-34px"}})
+                     (for [p pods]
+                       ^{:key (:id p)}
+                       [pod p])])
+
+                ;; Need to always render an animated/component to get first/last animation (CSS screwed up)
+                (if (empty? pods)
+                  [no-pods]
+                  [rc/box :width "0px" :height "0px"])
+                [animated/component
+                 (animated/v-box-options {:style {
+                                                  ;:margin-left "-34px"
+                                                  }})
+                 (for [p pods]
+                   ^{:key (:id p)}
+                   [pod p])]
+                ]]
+
+
+    ))
 
 ;; TODO: OLD UI - REMOVE
 (defn original-render [app-db]
