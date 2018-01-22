@@ -54,15 +54,15 @@ to "flow" data, in a loop, through the functions you provide.
 To understand what is happening in a `re-frame` app, you must understand
 what data is happening.     
 
-So, data is at the core of `re-frame-trace` in two ways 
-and that's a delightfully powerful and leverageable substrate. 
+So, data is at the core of `re-frame-trace` in those two ways 
+and data is a powerful and leverageable substrate. 
 
 ### It Is A Data Dashboard 
 
 Except, there's often too much data - too much detail.
 
-So, `re-frame-trace` tries to be something of a "dashboard" in the sense that
-it tries to curate "raw data" into "information" through various kinds of analysis 
+So, `re-frame-trace` tries to be something of a "dashboard" which curates
+"raw data" into "information" through various kinds of analysis 
 and "roll ups". The goal is to deliver insight "at a glance", while still allowing 
 you to drill down into the detail. 
 
@@ -70,8 +70,8 @@ Right. So, we now know enough to give a summary: this tool is an epoch-oriented,
 interactive data dashboard for gaining insights and assisting debugging. 
 
 But, it is also a work in progress, 
-so my enthusiastic descriptions (above) overstate what is delivered right now.
-But we're getting there.
+so my enthusiastic claims (above) overstate what is delivered right now.
+But we're getting there and its already very useful.
 
 ## A Visual Sampler
 
