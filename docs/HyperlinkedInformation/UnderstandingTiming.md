@@ -51,3 +51,4 @@ so disable it when trying to get more accurate timing figures.
 
 Here is (React 16) advice on [debugging React performance with Chrome Devtools](https://building.calibreapp.com/debugging-react-performance-with-react-16-and-chrome-devtools-c90698a522ad) 
 
+The [re-frame.core/debug](https://github.com/Day8/re-frame/blob/master/src/re_frame/std_interceptors.cljc) middleware is relatively slow, and runs interleaved with your application's events being processed. re-frame-trace gives you the same information in the app-db panel, but saves the calculations until after your application has finished running, so you don't get the performance cost included in your timing.
