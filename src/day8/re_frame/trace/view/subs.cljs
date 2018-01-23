@@ -1,6 +1,7 @@
 (ns day8.re-frame.trace.view.subs
   (:require [day8.re-frame.trace.view.app-db :refer [pod-gap pod-padding border-radius]]
             [day8.re-frame.trace.utils.utils :as utils]
+            [day8.re-frame.trace.utils.animated :as animated]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v6v0.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
@@ -29,6 +30,9 @@
                 :destroyed {:long "DESTROYED" :short "DESTROY"}
                 :re-run    {:long "RE-RUN" :short "RE-RUN"}
                 :not-run   {:long "NOT-RUN" :short "NOT-RUN"}})
+
+(def *finished-animation? (r/atom false))
+(def animation-duration 150)
 
 (defn long-tag-desc [type]
   (get-in tag-types [type :long] "???"))
@@ -129,7 +133,7 @@
               #_[rc/box
                :class "bm-muted-button app-db-path--button noselect"
                :attr  {:title    "Show diff"
-                       :on-click #(rf/dispatch [:subs/diff-pod? id (not diff?)])}
+                       :on-click #(when open? (rf/dispatch [:subs/diff-pod? id (not diff?)]))}
                :child [:img
                        {:src   (str "data:image/svg+xml;utf8," copy)
                         :style {:width  "19px"
@@ -144,51 +148,58 @@
                                      (clojure.data/diff (get-in @app-db-before path)
                                                         (get-in @app-db-after path)))]
     [rc/v-box
-     ;:class "app-db-path"
+     :style    {:margin-bottom pod-gap}
      :children [[pod-header pod-info]
                 [rc/v-box
                  :class    (when open? "app-db-path--pod-border")
-                 :children [(when open?
-                              [rc/v-box
-                               :class (str "data-viewer" (when-not diff? " rounded-bottom"))
-                               :style {:margin (css-join pod-padding pod-padding "0px" pod-padding)}
-                               :children [[components/simple-render
-                                           (:value pod-info)]]])
-                            (when render-diff?
-                              (list
-                                ^{:key "only-before"}
-                                [rc/v-box
-                                 :class "app-db-path--link"
-                                 :justify :end
-                                 :children [[rc/hyperlink-href
-                                             ;:class  "app-db-path--label"
-                                             :label "ONLY BEFORE"
-                                             :style {:margin-left common/gs-7s}
-                                             :target "_blank"
-                                             :href utils/diff-link]]]
-
-                                ^{:key "only-before-diff"}
-                                [rc/v-box
-                                 :class "data-viewer data-viewer--top-rule"
-                                 :height "50px"
-                                 :children ["---before-diff---"]]
-
-                                ^{:key "only-after"}
-                                [rc/v-box
-                                 :class "app-db-path--link"
-                                 :justify :end
-                                 :children [[rc/hyperlink-href
-                                             ;:class  "app-db-path--label"
-                                             :label "ONLY AFTER"
-                                             :style {:margin-left common/gs-7s}
-                                             :target "_blank"
-                                             :href utils/diff-link]]]
-
-                                ^{:key "only-after-diff"}
-                                [rc/v-box
-                                 :class "data-viewer data-viewer--top-rule rounded-bottom"
-                                 :height "50px"
-                                 :children ["---after-diff---"]]))
+                 :children [[animated/component
+                             (animated/v-box-options {:enter-animation "accordionVertical"
+                                                      :leave-animation "accordionVertical"
+                                                      :duration        animation-duration
+                                                      :style           {:overflow-x "auto"
+                                                                        :overflow-y "hidden"}})
+                             (when open?
+                               [rc/v-box
+                                :class (str "data-viewer" (when-not diff? " rounded-bottom"))
+                                :style {:margin (css-join pod-padding pod-padding "0px" pod-padding)}
+                                :children [[components/simple-render
+                                            (:value pod-info)]]])]
+                            [animated/component
+                             (animated/v-box-options {:enter-animation "accordionVertical"
+                                                      :leave-animation "accordionVertical"
+                                                      :duration        animation-duration})
+                             (when render-diff?
+                               [rc/v-box
+                                :children [[rc/v-box
+                                            :class    "app-db-path--link"
+                                            :justify  :end
+                                            :children [[rc/hyperlink-href
+                                                        ;:class  "app-db-path--label"
+                                                        :label "ONLY BEFORE"
+                                                        :style {:margin-left common/gs-7s}
+                                                        :target "_blank"
+                                                        :href utils/diff-link]]]
+                                           [rc/v-box
+                                            :class    "data-viewer data-viewer--top-rule"
+                                            :style    {:overflow-x "auto"
+                                                       :overflow-y "hidden"}
+                                            :height   "50px"
+                                            :children ["---before-diff---"]]
+                                           [rc/v-box
+                                            :class    "app-db-path--link"
+                                            :justify  :end
+                                            :children [[rc/hyperlink-href
+                                                        ;:class  "app-db-path--label"
+                                                        :label "ONLY AFTER"
+                                                        :style {:margin-left common/gs-7s}
+                                                        :target "_blank"
+                                                        :href utils/diff-link]]]
+                                           [rc/v-box
+                                            :class    "data-viewer data-viewer--top-rule rounded-bottom"
+                                            :style    {:overflow-x "auto"
+                                                       :overflow-y "hidden"}
+                                            :height   "50px"
+                                            :children ["---after-diff---"]]]])]
                             (when open?
                               [rc/gap-f :size pod-padding])]]]]))
 
@@ -203,20 +214,40 @@
 (defn pod-section []
   (let [all-subs       @(rf/subscribe [:subs/visible-subs])
         sub-expansions @(rf/subscribe [:subs/sub-expansions])]
-    (js/console.log sub-expansions)
+    ;(js/console.log sub-expansions)
     [rc/v-box
-     :gap pod-gap
-     :children (if (empty? all-subs)
-                 [[no-pods]]
-                 (doall (for [p all-subs]
-                          ^{:key (:id p)}
-                          [pod (merge p (get sub-expansions (:id p)))])))]))
+     :size "1"
+     ;:gap pod-gap
+
+     ;:children (if (empty? all-subs)
+     ;            [[no-pods]]
+     ;            (doall (for [p all-subs]
+     ;                     ^{:key (:id p)}
+     ;                     [pod (merge p (get sub-expansions (:id p)))])))
+
+     :children [(if (and (empty? all-subs) @*finished-animation?)
+                  [no-pods]
+                  [rc/box :width "0px" :height "0px"])
+                [animated/component
+                 (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
+                                          :duration  animation-duration
+                                          :style     {:flex     "1 1 0px"
+                                                      :overflow-x "hidden"
+                                                      :overflow-y "auto"}})
+                 (for [p all-subs]
+                   ^{:key (:id p)}
+                   [pod (merge p (get sub-expansions (:id p)))])]]
+
+
+     ]))
 
 (defn render []
   []
   [rc/v-box
+   :size     "1"
    :style    {:margin-right common/gs-19s
-              :overflow     "hidden"}
+              ;:overflow     "hidden"
+              }
    :children [[panel-header]
               [pod-section]
               [rc/gap-f :size pod-gap]

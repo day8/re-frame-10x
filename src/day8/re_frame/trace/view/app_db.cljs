@@ -28,6 +28,9 @@
 (def pod-border-edge (str "1px solid " pod-border-color))
 (def border-radius "3px")
 
+(def *finished-animation? (r/atom false))
+(def animation-duration 150)
+
 (def app-db-styles
   [:#--re-frame-trace--
    #_[:.app-db-path
@@ -174,7 +177,7 @@
               [rc/box
                :class "bm-muted-button app-db-path--button noselect"
                :attr {:title    "Show diff"
-                      :on-click #(rf/dispatch [:app-db/set-diff-visibility id (not diff?)])}
+                      :on-click #(when open? (rf/dispatch [:app-db/set-diff-visibility id (not diff?)]))}
                :child [:img
                        {:src   (str "data:image/svg+xml;utf8," copy)
                         :style {:width  "19px"
@@ -183,7 +186,8 @@
               [rc/box
                :class "bm-muted-button app-db-path--button noselect"
                :attr {:title    "Remove this pod"
-                      :on-click #(rf/dispatch [:app-db/remove-path id])}
+                      :on-click #(do (reset! *finished-animation? false)
+                                     (rf/dispatch [:app-db/remove-path id]))}
                :child [:img
                        {:src   (str "data:image/svg+xml;utf8," trash)
                         :style {:width  "13px"
@@ -198,78 +202,77 @@
                                      (clojure.data/diff (get-in @app-db-before path)
                                                         (get-in @app-db-after path)))]
     [rc/v-box
-     ;:class "app-db-path"
-     :style    {:margin-top common/gs-19s} ;; TODO: Find out how to add a gap to the animated/v-box
+     :style    {:margin-bottom pod-gap}
      :children [[pod-header pod-info]
                 [rc/v-box
                  :class    (when open? "app-db-path--pod-border")
-                 :children [(when open?
-                              [rc/v-box
-                               :class (str "data-viewer" (when-not diff? " rounded-bottom"))
-                               :style {:margin (css-join pod-padding pod-padding "0px" pod-padding)}
-                               :children [[components/simple-render
-                                           (get-in @app-db-after path)
-                                           ["app-db-path" path]
+                 :children [[animated/component
+                             (animated/v-box-options {:enter-animation "accordionVertical"
+                                                      :leave-animation "accordionVertical"
+                                                      :duration        animation-duration
+                                                      :style           {:overflow-x "auto"
+                                                                        :overflow-y "hidden"}})
+                             (when open?
+                               [rc/v-box
+                                :class (str "data-viewer" (when-not diff? " rounded-bottom"))
+                                :style {:margin (css-join pod-padding pod-padding "0px" pod-padding)}
+                                :children [[components/simple-render
+                                            (get-in @app-db-after path)
+                                            ["app-db-path" path]
 
-                                           #_{:todos [1 2 3]}
-                                           #_(get-in @app-db path)
-                                           #_[rc/h-box
-                                              :align :center
-                                              :children [[:button.subtree-button
-                                                          [:span.subtree-button-string
-                                                           (str path)]]
-                                                         [:img
-                                                          {:src      (str "data:image/svg+xml;utf8," delete)
-                                                           :style    {:cursor "pointer"
-                                                                      :height "10px"}
-                                                           :on-click #(rf/dispatch [:app-db/remove-path path])}]]]
-                                           #_[path]]
+                                            #_{:todos [1 2 3]}
+                                            #_(get-in @app-db path)
+                                            #_[rc/h-box
+                                               :align :center
+                                               :children [[:button.subtree-button
+                                                           [:span.subtree-button-string
+                                                            (str path)]]
+                                                          [:img
+                                                           {:src      (str "data:image/svg+xml;utf8," delete)
+                                                            :style    {:cursor "pointer"
+                                                                       :height "10px"}
+                                                            :on-click #(rf/dispatch [:app-db/remove-path path])}]]]
+                                            #_[path]]
 
-                                          #_"---main-section---"]])
+                                           #_"---main-section---"]])]
                             [animated/component
-                             (animated/v-box-options {:style {
-                                                              ;:margin-left "-34px"
-                                                              ;:opacity "1"
-                                                              ;:height "200px"
-                                                              ;:min-height "10px"
-                                                              }})
+                             (animated/v-box-options {:enter-animation "accordionVertical"
+                                                      :leave-animation "accordionVertical"
+                                                      :duration        animation-duration})
                              (when render-diff?
-                               (list
-                                 ^{:key "only-before"}
-                                 [rc/v-box
-                                  :class "app-db-path--link"
-                                  :justify :end
-                                  :children [[rc/hyperlink-href
-                                              ;:class  "app-db-path--label"
-                                              :label "ONLY BEFORE"
-                                              :style {:margin-left common/gs-7s}
-                                              :target "_blank"
-                                              :href utils/diff-link]]]
-
-                                 ^{:key "only-before-diff"}
-                                 [rc/v-box
-                                  :class "data-viewer data-viewer--top-rule"
-                                  :children [[components/simple-render
-                                              diff-before
-                                              ["app-db-diff" path]]]]
-
-                                 ^{:key "only-after"}
-                                 [rc/v-box
-                                  :class "app-db-path--link"
-                                  :justify :end
-                                  :children [[rc/hyperlink-href
-                                              ;:class  "app-db-path--label"
-                                              :label "ONLY AFTER"
-                                              :style {:margin-left common/gs-7s}
-                                              :target "_blank"
-                                              :href utils/diff-link]]]
-
-                                 ^{:key "only-after-diff"}
-                                 [rc/v-box
-                                  :class "data-viewer data-viewer--top-rule rounded-bottom"
-                                  :children [[components/simple-render
-                                              diff-after
-                                              ["app-db-diff" path]]]]))]
+                               [rc/v-box
+                                :children [[rc/v-box
+                                            :class    "app-db-path--link"
+                                            :justify  :end
+                                            :children [[rc/hyperlink-href
+                                                        ;:class  "app-db-path--label"
+                                                        :label "ONLY BEFORE"
+                                                        :style {:margin-left common/gs-7s}
+                                                        :target "_blank"
+                                                        :href utils/diff-link]]]
+                                           [rc/v-box
+                                            :class    "data-viewer data-viewer--top-rule"
+                                            :style    {:overflow-x "auto"
+                                                       :overflow-y "hidden"}
+                                            :children [[components/simple-render
+                                                        diff-before
+                                                        ["app-db-diff" path]]]]
+                                           [rc/v-box
+                                            :class    "app-db-path--link"
+                                            :justify  :end
+                                            :children [[rc/hyperlink-href
+                                                        ;:class  "app-db-path--label"
+                                                        :label "ONLY AFTER"
+                                                        :style {:margin-left common/gs-7s}
+                                                        :target "_blank"
+                                                        :href utils/diff-link]]]
+                                           [rc/v-box
+                                            :class    "data-viewer data-viewer--top-rule rounded-bottom"
+                                            :style    {:overflow-x "auto"
+                                                       :overflow-y "hidden"}
+                                            :children [[components/simple-render
+                                                        diff-after
+                                                        ["app-db-diff" path]]]]]])]
                             (when open?
                               [rc/gap-f :size pod-padding])]]]]))
 
@@ -287,51 +290,21 @@
 
 (defn pod-section []
   (let [pods @(rf/subscribe [:app-db/paths])]
-
-    ;; CURRENT
-    #_[rc/v-box
-     :gap pod-gap
-     :children (if (empty? pods)
-                 [[no-pods]]
-                 (doall (for [p pods]
-                          ^{:key (:id pods)}
-                          [pod p])))]
-
-    ;; ANIMATION EXPERIMENTS
     [rc/v-box
-     :gap pod-gap
-     :children [
-                ;; Original non-animated
-                #_(if (empty? pods)
-                    [no-pods]
-                    (for [p pods]
-                      ^{:key (:id p)}
-                      [pod p]))
-
-                ;; First and last pods don't animate (and CSS screwed up)
-                #_(if (empty? pods)
-                    [no-pods]
-                    [animated/component
-                     (animated/v-box-options {:style {:margin-left "-34px"}})
-                     (for [p pods]
-                       ^{:key (:id p)}
-                       [pod p])])
-
-                ;; Need to always render an animated/component to get first/last animation (CSS screwed up)
-                (if (empty? pods)
+     :size "1"
+     ;:gap pod-gap
+     :children [(if (and (empty? pods) @*finished-animation?)
                   [no-pods]
                   [rc/box :width "0px" :height "0px"])
                 [animated/component
-                 (animated/v-box-options {:style {
-                                                  ;:margin-left "-34px"
-                                                  }})
+                 (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
+                                          :duration  animation-duration
+                                          :style     {:flex     "1 1 0px"
+                                                      :overflow-x "hidden"
+                                                      :overflow-y "auto"}})
                  (for [p pods]
                    ^{:key (:id p)}
-                   [pod p])]
-                ]]
-
-
-    ))
+                   [pod p])]]]))
 
 ;; TODO: OLD UI - REMOVE
 (defn original-render [app-db]
@@ -385,8 +358,10 @@
 
 (defn render [app-db]
   [rc/v-box
+   :size  "1"
    :style {:margin-right common/gs-19s
-           :overflow     "hidden"}
+           ;:overflow     "hidden"
+           }
    :children [[panel-header]
               [pod-section]
               [rc/gap-f :size pod-gap]]])

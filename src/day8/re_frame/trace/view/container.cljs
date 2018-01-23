@@ -148,7 +148,8 @@
      [rc/v-box
       :size     "auto"
       :style    {:margin-left common/gs-19s
-                 :overflow    "auto"}
+                 ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
+                 }
       :children [(case @selected-tab
                    :event    [event/render traces]
                    :app-db   [app-db/render db/app-db]
