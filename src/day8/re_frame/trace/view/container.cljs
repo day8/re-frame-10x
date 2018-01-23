@@ -130,7 +130,9 @@
                     :gap      "7px"
                     :align    :end
                     :height   "50px"
-                    :children [(tab-button :event "Event")
+                    ;; TODO: event tab
+                    :children [(when (:debug? opts)
+                                 (tab-button :event "Event"))
                                (tab-button :app-db "app-db")
                                (tab-button :subs "Subs")
                                ;(tab-button :views "Views")

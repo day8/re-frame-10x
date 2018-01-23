@@ -73,7 +73,8 @@
                             [title-tag :created (long-tag-desc :created) @created-count]
                             [title-tag :re-run (long-tag-desc :re-run) @re-run-count]
                             [title-tag :destroyed (long-tag-desc :destroyed) @destroyed-count]
-                            [title-tag :not-run (long-tag-desc :not-run) @not-run-count]]]
+                            ;; TODO: capture not-run traces
+                            #_[title-tag :not-run (long-tag-desc :not-run) @not-run-count]]]
                 [rc/h-box
                  :align :center
                  :gap common/gs-19s
@@ -84,7 +85,8 @@
                          :border-radius    border-radius}
                  :children [[rc/checkbox
                              :model ignore-unchanged?
-                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br] "layer 2 subs"]
+                             ;; TODO: change from l2 subs to ignored l2 subs
+                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] #_ " unchanged" [:br] "layer 2 subs"]
                              :style {:margin-top "6px"}
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-subs? %])]]]]]))
 
@@ -106,7 +108,8 @@
               [rc/box
                :width "64px" ;; (100-36)px from box above
                :child [sub-tag type (short-tag-desc type)]]
-              (when run-times
+              ;; TODO: report if a sub was run multiple times
+              #_(when run-times
                 [:span "Warning: run " run-times " times"])
               [rc/h-box
                :class    "app-db-path--path-header"
@@ -120,8 +123,10 @@
                            :disabled? true]]]
               [rc/gap-f :size common/gs-12s]
               [rc/label :label (str "Layer " layer)]
-              [rc/gap-f :size common/gs-12s]
-              [rc/box
+
+              ;; TODO: capture previous sub run value and allow diffing it.
+              #_[rc/gap-f :size common/gs-12s]
+              #_[rc/box
                :class "bm-muted-button app-db-path--button noselect"
                :attr  {:title    "Show diff"
                        :on-click #(rf/dispatch [:subs/diff-pod? id (not diff?)])}

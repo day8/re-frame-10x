@@ -96,7 +96,9 @@
    :children [(let [num-epochs @(rf/subscribe [:epochs/number-of-matches])
                     num-traces @(rf/subscribe [:traces/number-of-traces])
                     epochs-to-retain (rf/subscribe [:settings/number-of-retained-epochs])]
-                [settings-box
+
+                ;; TODO: retain last
+                #_[settings-box
                  [[rc/h-box
                    :align    :center
                    :gap      horizontal-gap
@@ -120,8 +122,9 @@
                  [[:p num-epochs " epochs currently retained, involving " num-traces " traces."]]
                  settings-box-81])
 
-              [rc/line]
-              [settings-box
+              ;; TODO: ignore epochs for:
+              #_[rc/line]
+              #_[settings-box
                [[rc/h-box
                  :align    :center
                  :gap      horizontal-gap
@@ -147,8 +150,9 @@
                 [:p "Useful if you want to ignore a periodic background polling event."]]
                settings-box-131]
 
-              [rc/line]
-              [settings-box
+              ;; TODO: filter out view trace
+              #_[rc/line]
+              #_[settings-box
                [[rc/h-box
                  :align :center
                  :gap      horizontal-gap
@@ -174,8 +178,9 @@
                 [:p "Nominate one or more namespaces."]]
                settings-box-131]
 
-              [rc/line]
-              (let [low-level-trace @(rf/subscribe [:settings/low-level-trace])]
+              ;; TODO: remove low level trace
+              #_[rc/line]
+              #_(let [low-level-trace @(rf/subscribe [:settings/low-level-trace])]
                 [settings-box
                 [[rc/label :label "Remove low level trace"]
                  [rc/checkbox
@@ -189,7 +194,7 @@
                 [[:p "Most of the time, low level trace is noisy and you want it filtered out."]]
                 settings-box-131])
 
-              [rc/line]
+              #_[rc/line]
               [settings-box
                [[rc/button
                  :class "bm-muted-button app-db-panel-button"
