@@ -148,20 +148,21 @@
                                      (clojure.data/diff (get-in @app-db-before path)
                                                         (get-in @app-db-after path)))]
     [rc/v-box
-     :style    {:margin-bottom pod-gap}
+     :style    {:margin-bottom pod-gap
+                :margin-right  "1px"}
      :children [[pod-header pod-info]
                 [rc/v-box
                  :class    (when open? "app-db-path--pod-border")
                  :children [[animated/component
                              (animated/v-box-options {:enter-animation "accordionVertical"
                                                       :leave-animation "accordionVertical"
-                                                      :duration        animation-duration
-                                                      :style           {:overflow-x "auto"
-                                                                        :overflow-y "hidden"}})
+                                                      :duration        animation-duration})
                              (when open?
                                [rc/v-box
                                 :class (str "data-viewer" (when-not diff? " rounded-bottom"))
-                                :style {:margin (css-join pod-padding pod-padding "0px" pod-padding)}
+                                :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
+                                        :overflow-x "auto"
+                                        :overflow-y "hidden"}
                                 :children [[components/simple-render
                                             (:value pod-info)]]])]
                             [animated/component
