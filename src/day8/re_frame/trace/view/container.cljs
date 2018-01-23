@@ -94,7 +94,11 @@
                                 {:on-click #(rf/dispatch [:epochs/previous-epoch])}
                                 {:class "arrow__disabled"}) "◀"]
                  [rc/v-box
-                  :size "auto"
+                  :size     "auto"
+                  :style    {:max-height       "42px" ;42 is exactly 2 lines which is perhaps neater than common/gs-50s (which would allow 3 lines to be seen)
+                             :overflow-x       "hidden"
+                             :overflow-y       "auto"
+                             :background-color "white"}
                   :children [[:span.event-header (prn-str current-event)]]]
                  [:span.arrow (if newer-epochs-available?
                                 {:on-click #(rf/dispatch [:epochs/next-epoch])}
@@ -102,8 +106,7 @@
                   "▶"]]]
      [rc/gap-f :size common/gs-12s]
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
-     [right-hand-buttons external-window?]])
-  )
+     [right-hand-buttons external-window?]]))
 
 (defn devtools-inner [traces opts]
   (let [selected-tab      (rf/subscribe [:settings/selected-tab])
