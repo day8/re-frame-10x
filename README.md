@@ -3,9 +3,9 @@
 `re-frame-trace` is a programmer's dashboard. It helps you to see inside a running `re-frame` 
 application, allowing you to better understand it and debug it.
  
-**Status:** Alpha.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
+**Status:** Beta.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
-**Note** [the latest version 0.1.14](https://github.com/Day8/re-frame-trace/releases/tag/0.1.14) ALSO requires the latest version of re-frame itself - `v0.10.3-alpha2`.
+**Note** [the latest version 0.1.15](https://github.com/Day8/re-frame-trace/releases/tag/0.1.15) ALSO requires the latest version of re-frame itself - `v0.10.3`.
 
 ### Helpful How?
 
@@ -82,6 +82,8 @@ But we're getting there and its already very useful.
 If you are using leiningen, modify `project.clj` in the following ways. When puzzling over the various possible leiningen configurations, it's often helpful to look at a sample [project.clj](https://github.com/technomancy/leiningen/blob/stable/sample.project.clj).
 
 [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
+
+- Update your re-frame dependency to at least `0.10.3` - `[re-frame "0.10.3"]`.
 
 - Add re-frame-trace as a dev dependency by placing `[day8.re-frame/trace "VERSION"]` within `:profiles :dev :dependencies`. For example:
 
