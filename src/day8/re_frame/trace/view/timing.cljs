@@ -32,8 +32,8 @@
 
    [".timing-part-panel"
     (merge (common/panel-style "3px")
-           {:padding "12px"})]
-
+           {:padding "12px"
+            :margin common/gs-7s})]
    ])
 
 (defn timing-tag [label]
@@ -60,21 +60,22 @@
                    [[timing-section "total" @(rf/subscribe [:timing/total-epoch-time])]
                     [timing-section "event" @(rf/subscribe [:timing/event-processing-time])]
                     ]]
-                  (for [frame (range 1 (inc @(rf/subscribe [:timing/animation-frame-count])))
-                        :let [frame-time (rf/subscribe [:timing/animation-frame-time frame])]]
-                    (list
-                      ^{:key (str "af-line" frame)}
-                      [rc/line :class "timing-details--line"]
-                      ^{:key (str "af" frame)}
-                      [rc/h-box
-                       :align :center
-                       :class "timing-part-panel"
-                       :gap "25px"
-                       :children
-                       [[rc/label :label (str "Animation frame #" frame)]
-                        [timing-section "total" @frame-time]
-                      #_  [timing-section "subs" 2]
-                      #_  [timing-section "views" 3]]]))
+                  (doall
+                    (for [frame (range 1 (inc @(rf/subscribe [:timing/animation-frame-count])))
+                          :let [frame-time (rf/subscribe [:timing/animation-frame-time frame])]]
+                      (list
+                        ;^{:key (str "af-line" frame)}
+                        ;[rc/line :class "timing-details--line"]
+                        ^{:key (str "af" frame)}
+                        [rc/h-box
+                         :align :center
+                         :class "timing-part-panel"
+                         :gap "25px"
+                         :children
+                         [[rc/label :label (str "Animation frame #" frame)]
+                          [timing-section "total" @frame-time]
+                          #_[timing-section "subs" 2]
+                          #_[timing-section "views" 3]]])))
 
                   [rc/line :class "timing-details--line"]
 
