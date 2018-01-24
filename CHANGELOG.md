@@ -1,11 +1,23 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [Unreleased]
+## [0.1.15] - 2018-01-24
 
-Lots of quality of life fixes
+### Added
+
+* The app-db panel now has buttons to reset app-db to the state at the beginning or end of any epoch.
+* The subscription panel shows subscriptions that were created and destroyed.
+* The trace panel automatically filters traces to just the current epoch
+* A new timing panel shows basic timing statistics around event processing and rendering. More to come here.
+
+### Changed
+
+* re-frame-trace is now organised around epochs. An epoch includes an event being processed, subscriptions running in response, and the view re-rendering.
+* A new visual design language.
 
 ### Fixed
+
+Lots of quality of life fixes:
 
 * Lower count of items in sequence before expanding icon shows [#126](https://github.com/Day8/re-frame-trace/issues/126)
 * Only allow one time based filter at a time [#125](https://github.com/Day8/re-frame-trace/issues/125)
