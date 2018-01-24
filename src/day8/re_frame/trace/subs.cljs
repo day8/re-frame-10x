@@ -176,10 +176,13 @@
 (rf/reg-sub
   :epochs/current-match
   :<- [:epochs/epoch-root]
-  (fn [epochs _]
-    (let [matches       (:matches epochs)
-          current-index (:current-epoch-index epochs)
-          match         (nth matches (+ (count matches) (or current-index 0)) (last matches))]
+  :<- [:epochs/match-ids]
+  (fn [[epochs match-ids] _]
+    (let [current-id (:current-epoch-id epochs)
+          match      (cond
+                       (nil? current-id) (last (:matches epochs))
+                       (< current-id (first match-ids)) (first (:matches epochs))
+                       :else (get (:matches-by-id epochs) current-id))]
       match)))
 
 (rf/reg-sub
@@ -207,11 +210,16 @@
     (:current-epoch-index epochs)))
 
 (rf/reg-sub
-  :epochs/event-position
-  :<- [:epochs/current-event-index]
-  :<- [:epochs/number-of-matches]
-  (fn [[current total]]
-    (str current " of " total)))
+  :epochs/current-epoch-id
+  :<- [:epochs/epoch-root]
+  (fn [epochs _]
+    (:current-epoch-id epochs)))
+
+(rf/reg-sub
+  :epochs/match-ids
+  :<- [:epochs/epoch-root]
+  (fn [epochs]
+    (:match-ids epochs)))
 
 (rf/reg-sub
   :epochs/beginning-trace-id
@@ -227,18 +235,21 @@
 
 (rf/reg-sub
   :epochs/older-epochs-available?
-  :<- [:epochs/current-event-index]
-  :<- [:epochs/number-of-matches]
-  (fn [[current total]]
-    (pos? (+ current total -1))))
+  :<- [:epochs/current-epoch-id]
+  :<- [:epochs/match-ids]
+  (fn [[current ids]]
+    (and (pos? (count ids))
+         (or (nil? current)
+             (> current (nth ids 0))))))
 
 (rf/reg-sub
   :epochs/newer-epochs-available?
-  :<- [:epochs/current-event-index]
-  :<- [:epochs/number-of-matches]
-  (fn [[current total]]
-    (and (not (zero? current))
-         (some? current))))
+  :<- [:epochs/current-epoch-id]
+  :<- [:epochs/match-ids]
+  (fn [[current ids]]
+    (and (pos? (count ids))
+         (some? current)
+         (< current (utils/last-in-vec ids)))))
 
 ;;
 
@@ -378,9 +389,6 @@
                               (frequencies (map :id raw)))
 
           output           (map (fn [sub] (assoc sub :run-times (get run-multiple? (:id sub)))) raw)]
-      (js/console.log "Output" output)
-      (js/console.log "Traces" traces)
-      (js/console.log "rerun" re-run)
       (sort-by identity subscription-comparator output))))
 
 (rf/reg-sub

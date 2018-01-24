@@ -122,7 +122,8 @@
   (fn [db _]
     (-> db
         (assoc-in [:settings :paused?] false)
-        (assoc-in [:epochs :current-epoch-index] nil))))
+        (assoc-in [:epochs :current-epoch-index] nil)
+        (assoc-in [:epochs :current-epoch-id] nil))))
 
 (rf/reg-event-db
   :settings/set-number-of-retained-epochs
@@ -228,7 +229,7 @@
                    ;; if existing, remove prior filter for :slower-than
                    ;; TODO: rework how time filters are used.
                    (let [filter-items (if (and (= :slower-than filter-type)
-                                                 (some #(= filter-type (:filter-type %)) filter-items))
+                                               (some #(= filter-type (:filter-type %)) filter-items))
                                         (remove #(= :slower-than (:filter-type %)) filter-items)
                                         filter-items)]
                      ;; add new filter
@@ -373,29 +374,29 @@
     paths))
 
 #_(rf/reg-event-db
-  :app-db/remove-path
-  (fn [db [_ path]]
-    (let [new-db (update-in db [:app-db :paths] #(remove (fn [p] (= p path)) %))]
-      (localstorage/save! "app-db-paths" (get-in new-db [:app-db :paths]))
-      ;; TODO: remove from json-ml expansions too.
-      new-db)))
+    :app-db/remove-path
+    (fn [db [_ path]]
+      (let [new-db (update-in db [:app-db :paths] #(remove (fn [p] (= p path)) %))]
+        (localstorage/save! "app-db-paths" (get-in new-db [:app-db :paths]))
+        ;; TODO: remove from json-ml expansions too.
+        new-db)))
 
 #_(rf/reg-event-db
-  :app-db/add-path
-  (fn [db _]
-    (let [search-string (get-in db [:app-db :search-string])
-          path          (try
-                          (when-not (str/blank? search-string)
-                            (cljs.reader/read-string (str "[" search-string "]")))
-                          (catch :default e
-                            nil))]
-      (if (some? path)
-        (do (localstorage/save! "app-db-paths" (cons path (get-in db [:app-db :paths])))
-            (rf/dispatch [:app-db/toggle-expansion [path]])
-            (-> db
-                (update-in [:app-db :paths] #(cons path %))
-                (assoc-in [:app-db :search-string] "")))
-        db))))
+    :app-db/add-path
+    (fn [db _]
+      (let [search-string (get-in db [:app-db :search-string])
+            path          (try
+                            (when-not (str/blank? search-string)
+                              (cljs.reader/read-string (str "[" search-string "]")))
+                            (catch :default e
+                              nil))]
+        (if (some? path)
+          (do (localstorage/save! "app-db-paths" (cons path (get-in db [:app-db :paths])))
+              (rf/dispatch [:app-db/toggle-expansion [path]])
+              (-> db
+                  (update-in [:app-db :paths] #(cons path %))
+                  (assoc-in [:app-db :search-string] "")))
+          db))))
 
 (rf/reg-event-db
   :app-db/search-string
@@ -433,25 +434,45 @@
 
 ;;;
 
+(defn first-match-id
+  [m]
+  (-> m first :id))
+
 (rf/reg-event-db
   :epochs/update-epochs
-  [(rf/path [:epochs :matches])]
-  (fn [matches [_ rt]]
-    (:matches rt)))
+  [(rf/path [:epochs])]
+  (fn [epochs [_ rt]]
+    (let [matches (:matches rt)]
+      (assoc epochs
+        :matches matches
+        :matches-by-id (into {} (map (juxt first-match-id identity)) matches)
+        :match-ids (mapv first-match-id matches)))))
 
 (rf/reg-event-fx
   :epochs/previous-epoch
-  [(rf/path [:epochs :current-epoch-index])]
-  (fn [ctx _]
-    {:db ((fnil dec 0) (:db ctx))
-     :dispatch [:settings/pause]}))
+  [(rf/path [:epochs])]
+  (fn [{:keys [db]} _]
+    (if-some [current-id (:current-epoch-id db)]
+      (let [match-ids         (:match-ids db)
+            match-array-index (utils/find-index-in-vec (fn [x] (= current-id x)) match-ids)
+            new-id            (nth match-ids (dec match-array-index))]
+        {:db       (assoc db :current-epoch-id new-id)
+         :dispatch [:settings/pause]})
+      {:db       (assoc db :current-epoch-id (nth (:match-ids db) (- (count (:match-ids db)) 2)))
+       :dispatch [:settings/pause]})))
 
 (rf/reg-event-fx
   :epochs/next-epoch
-  [(rf/path [:epochs :current-epoch-index])]
-  (fn [ctx _]
-    {:db ((fnil inc 0) (:db ctx))
-     :dispatch [:settings/pause]}))
+  [(rf/path [:epochs])]
+  (fn [{:keys [db]} _]
+    (if-some [current-id (:current-epoch-id db)]
+      (let [match-ids         (:match-ids db)
+            match-array-index (utils/find-index-in-vec (fn [x] (= current-id x)) match-ids)
+            new-id            (nth match-ids (inc match-array-index))]
+        {:db       (assoc db :current-epoch-id new-id)
+         :dispatch [:settings/pause]})
+      {:db       (assoc db :current-epoch-id (last (:match-ids db)))
+       :dispatch [:settings/pause]})))
 
 (rf/reg-event-db
   :traces/update-traces

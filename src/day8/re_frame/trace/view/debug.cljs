@@ -13,11 +13,15 @@
     [rc/label :label (str "Ending " (prn-str @(rf/subscribe [:epochs/ending-trace-id])))]
 
     [rc/label :label "Epochs"]
-    (for [match (:matches @(rf/subscribe [:epochs/epoch-root]))]
-      ^{:key (:id (first match))}
-      [rc/v-box
-       :style {:border "1px solid black"}
-       :children (doall (map (fn [event] [rc/label :label (prn-str event)]) (metam/summarise-match match)))
-       ])
+    (let [current-match @(rf/subscribe [:epochs/current-match])]
+      (for [match (:matches @(rf/subscribe [:epochs/epoch-root]))]
+        ^{:key (:id (first match))}
+        [rc/v-box
+         :style {:border "1px solid black"
+                 :font-weight (if (= current-match match)
+                                "bold"
+                                "normal")}
+         :children (doall (map (fn [event] [rc/label :label (prn-str event)]) (metam/summarise-match match)))
+         ]))
     ]]
   )
