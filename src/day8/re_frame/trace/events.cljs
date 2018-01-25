@@ -11,7 +11,8 @@
             [day8.re-frame.trace.view.container :as container]
             [day8.re-frame.trace.styles :as styles]
             [clojure.set :as set]
-            [day8.re-frame.trace.metamorphic :as metam]))
+            [day8.re-frame.trace.metamorphic :as metam]
+            [re-frame.trace]))
 
 (defonce traces (r/atom []))
 (defonce total-traces (r/atom 0))
@@ -474,6 +475,15 @@
          :dispatch [:settings/pause]})
       {:db       (assoc db :current-epoch-id (last (:match-ids db)))
        :dispatch [:settings/pause]})))
+
+(rf/reg-event-db
+  :epochs/reset
+  [(rf/path [:epochs])]
+  (fn [epochs]
+    (re-frame.trace/reset-tracing!)
+    (reset! traces [])
+    (reset! total-traces 0)
+    nil))
 
 (rf/reg-event-db
   :traces/update-traces

@@ -171,7 +171,7 @@
               (str (count @current-traces))]
              " traces "
              (when (pos? (count @current-traces))
-               [:span "(" [:button.text-button {:on-click #(do (trace/reset-tracing!) (reset! current-traces []))} "clear"] ")"])]
+               [:span "(" [:button.text-button {:on-click #(rf/dispatch [:epochs/reset])} "clear"] ")"])]
             [:th {:style {:text-align "right"}} "meta"]]
            [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]))))
 
