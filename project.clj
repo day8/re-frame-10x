@@ -36,12 +36,14 @@
                                                                               cljsjs/react
                                                                               cljsjs/react-dom
                                                                               cljsjs/react-dom-server
+                                                                              cljsjs/create-react-class
                                                                               org.clojure/tools.logging
                                                                               net.cgrand/macrovich]]
-                                                   ^:source-dep [reagent "0.6.0"
+                                                   ^:source-dep [reagent "0.7.0"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom
                                                                               cljsjs/react-dom-server
+                                                                              cljsjs/create-react-class
                                                                               org.clojure/tools.logging
                                                                               net.cgrand/macrovich]]]}})

@@ -56,12 +56,7 @@ We are using CSS preprocessing to isolate the panel styles, by namespacing the p
 
 We want to use re-frame, but we don't want to use the re-frame that the host is using, or tracing will get very messy. Instead, we use [mranderson](https://github.com/benedekfazekas/mranderson) to create source dependencies of re-frame and reagent.
 
-```console
-$ lein do clean
-$ lein with-profile mranderson source-deps
-$ cp -r target/srcdeps/mranderson047 src
-# Then delete the META-INF directories 
-```
+Run `./source-deps.sh` to update the source dependencies.
 
 ### How does re-frame-trace build?? I don't see anything in the project.clj that looks like it will build.
     
