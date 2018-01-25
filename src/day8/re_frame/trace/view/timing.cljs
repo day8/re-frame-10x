@@ -84,7 +84,13 @@
                    [[rc/p "Be careful. There are two problems with these numbers:"]
                     [:ol
                      [:li "Accurately timing anything in the browser is a nightmare. One moment a given function takes 1ms and the next it takes 10ms, and you'll never know why. So bouncy."]
-                     [:li "You're currently running the dev build, not the production build. So don't freak out too much. Yet."]]]]]]
+                     [:li "You're currently running the dev build, not the production build. So don't freak out too much. Yet."]]
+                    [rc/hyperlink-href
+                     :label "Timing documentation"
+                     :style {:margin-left common/gs-7s}
+                     :attr {:rel "noopener noreferrer"}
+                     :target "_blank"
+                     :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnderstandingTiming.md"]]]]]
       [rc/v-box
        :class "timing-details"
        :children [[:h1 "No timing data available currently."]]])))

@@ -90,7 +90,14 @@
                  :children [[rc/checkbox
                              :model ignore-unchanged?
                              ;; TODO: change from l2 subs to ignored l2 subs
-                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] #_ " unchanged" [:br] "layer 2 subs"]
+                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] #_ " unchanged" [:br] "layer 2 subs "
+
+                                     [:a
+                                      {:rel    "noopener noreferrer"
+                                       :class "rc-hyperlink-href noselect "
+                                       :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"
+                                       :target "_blank"}
+                                      "?"]]
                              :style {:margin-top "6px"}
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-subs? %])]]]]]))
 
@@ -178,6 +185,7 @@
                                                         ;:class  "app-db-path--label"
                                                         :label "ONLY BEFORE"
                                                         :style {:margin-left common/gs-7s}
+                                                        :attr {:rel "noopener noreferrer"}
                                                         :target "_blank"
                                                         :href utils/diff-link]]]
                                            [rc/v-box
@@ -193,6 +201,7 @@
                                                         ;:class  "app-db-path--label"
                                                         :label "ONLY AFTER"
                                                         :style {:margin-left common/gs-7s}
+                                                        :attr {:rel "noopener noreferrer"}
                                                         :target "_blank"
                                                         :href utils/diff-link]]]
                                            [rc/v-box

@@ -249,6 +249,7 @@
                                                         ;:class  "app-db-path--label"
                                                         :label "ONLY BEFORE"
                                                         :style {:margin-left common/gs-7s}
+                                                        :attr {:rel "noopener noreferrer"}
                                                         :target "_blank"
                                                         :href utils/diff-link]]]
                                            [rc/v-box
@@ -265,6 +266,7 @@
                                                         ;:class  "app-db-path--label"
                                                         :label "ONLY AFTER"
                                                         :style {:margin-left common/gs-7s}
+                                                        :attr {:rel "noopener noreferrer"}
                                                         :target "_blank"
                                                         :href utils/diff-link]]]
                                            [rc/v-box
