@@ -5,7 +5,6 @@
 
 (defn render []
   [rc/v-box
-   :style {:overflow-y "auto"}
    :size "1 1 auto"
    :gap "5px"
    :children

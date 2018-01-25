@@ -149,10 +149,12 @@
      (when-not (re-frame.trace/is-trace-enabled?)
        [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set " [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
      [rc/v-box
-      :size     "auto"
-      :style    {:margin-left common/gs-19s
-                 ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
-                 }
+      :size "auto"
+      :style {:margin-left common/gs-19s
+              :overflow-y  (if (contains? #{:timing :debug} @selected-tab)
+                             "auto" "initial")
+              ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
+              }
       :children [(case @selected-tab
                    :event    [event/render traces]
                    :app-db   [app-db/render db/app-db]
