@@ -1,7 +1,7 @@
 (ns day8.re-frame.trace.utils.re-com
   "Shameless pilfered from re-com."
   (:require-macros [day8.re-frame.trace.utils.re-com :refer [handler-fn]])
-  (:require [mranderson047.reagent.v0v6v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
+  (:require [mranderson047.reagent.v0v7v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
             [clojure.string :as string]))
 
 (defn px

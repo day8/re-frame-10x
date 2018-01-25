@@ -1,6 +1,6 @@
 (ns day8.re-frame.trace.view.settings
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [mranderson047.reagent.v0v6v0.reagent.core :as r]
+            [mranderson047.reagent.v0v7v0.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame.trace.common-styles :as common]
             [garden.units :as units]

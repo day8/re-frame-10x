@@ -1,12 +1,12 @@
-(ns mranderson047.reagent.v0v6v0.reagent.impl.template
+(ns mranderson047.reagent.v0v7v0.reagent.impl.template
   (:require [clojure.string :as string]
             [clojure.walk :refer [prewalk]]
-            [mranderson047.reagent.v0v6v0.reagent.impl.util :as util :refer [is-client]]
-            [mranderson047.reagent.v0v6v0.reagent.impl.component :as comp]
-            [mranderson047.reagent.v0v6v0.reagent.impl.batching :as batch]
-            [mranderson047.reagent.v0v6v0.reagent.ratom :as ratom]
-            [mranderson047.reagent.v0v6v0.reagent.interop :refer-macros [$ $!]]
-            [mranderson047.reagent.v0v6v0.reagent.debug :refer-macros [dbg prn println log dev?
+            [mranderson047.reagent.v0v7v0.reagent.impl.util :as util :refer [is-client]]
+            [mranderson047.reagent.v0v7v0.reagent.impl.component :as comp]
+            [mranderson047.reagent.v0v7v0.reagent.impl.batching :as batch]
+            [mranderson047.reagent.v0v7v0.reagent.ratom :as ratom]
+            [mranderson047.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]
+            [mranderson047.reagent.v0v7v0.reagent.debug :refer-macros [dbg prn println log dev?
                                           warn warn-unless]]))
 
 ;; From Weavejester's Hiccup, via pump:
@@ -98,6 +98,9 @@
 
 ;;; Specialization for input components
 
+;; This gets set from mranderson047.reagent.v0v7v0.reagent.dom
+(defonce find-dom-node nil)
+
 ;; <input type="??" >
 ;; The properites 'selectionStart' and 'selectionEnd' only exist on some inputs
 ;; See: https://html.spec.whatwg.org/multipage/forms.html#do-not-apply
@@ -109,10 +112,11 @@
   (contains? these-inputs-have-selection-api input-type))
 
 (defn input-set-value [this]
-  (when-some [node ($ this :cljsInputElement)]
+  (when ($ this :cljsInputLive)
     ($! this :cljsInputDirty false)
     (let [rendered-value ($ this :cljsRenderedValue)
-          dom-value ($ this :cljsDOMValue)]
+          dom-value ($ this :cljsDOMValue)
+          node (find-dom-node this)]
       (when (not= rendered-value dom-value)
         (if-not (and (identical? node ($ js/document :activeElement))
                      (has-selection-api? ($ node :type))
@@ -172,18 +176,23 @@
   (when (and (some? jsprops)
              (.hasOwnProperty jsprops "onChange")
              (.hasOwnProperty jsprops "value"))
+    (assert find-dom-node
+            "reagent.dom needs to be loaded for controlled input to work")
     (let [v ($ jsprops :value)
           value (if (nil? v) "" v)
           on-change ($ jsprops :onChange)]
-      (when (nil? ($ this :cljsInputElement))
+      (when-not ($ this :cljsInputLive)
         ;; set initial value
+        ($! this :cljsInputLive true)
         ($! this :cljsDOMValue value))
       ($! this :cljsRenderedValue value)
       (js-delete jsprops "value")
       (doto jsprops
         ($! :defaultValue value)
-        ($! :onChange #(input-handle-change this on-change %))
-        ($! :ref #($! this :cljsInputElement %1))))))
+        ($! :onChange #(input-handle-change this on-change %))))))
+
+(defn input-unmount [this]
+  ($! this :cljsInputLive nil))
 
 (defn ^boolean input-component? [x]
   (case x
@@ -197,6 +206,7 @@
 (def input-spec
   {:display-name "ReagentInput"
    :component-did-update input-set-value
+   :component-will-unmount input-unmount
    :reagent-render
    (fn [argv comp jsprops first-child]
      (let [this comp/*current-component*]
@@ -244,7 +254,7 @@
     ($ util/react createElement c jsprops)))
 
 (defn adapt-react-class [c]
-  (doto (NativeWrapper.)
+  (doto (->NativeWrapper)
     ($! :name c)
     ($! :id nil)
     ($! :class nil)))

@@ -1,7 +1,8 @@
-(ns mranderson047.reagent.v0v6v0.reagent.impl.util
+(ns mranderson047.reagent.v0v7v0.reagent.impl.util
   (:require [cljsjs.react]
-            [mranderson047.reagent.v0v6v0.reagent.debug :refer-macros [dbg log warn]]
-            [mranderson047.reagent.v0v6v0.reagent.interop :refer-macros [$ $!]]
+            [cljsjs.create-react-class]
+            [mranderson047.reagent.v0v7v0.reagent.debug :refer-macros [dbg log warn]]
+            [mranderson047.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]
             [clojure.string :as string]))
 
 (defonce react
@@ -9,6 +10,12 @@
         (exists? js/require) (or (js/require "react")
                                  (throw (js/Error. "require('react') failed")))
         :else (throw (js/Error. "js/React is missing"))))
+
+(defonce create-class
+  (cond (exists? js/createReactClass) js/createReactClass
+        (exists? js/require) (or (js/require "create-react-class")
+                                 (throw (js/Error. "require('create-react-class') failed")))
+        :else (throw (js/Error. "js/createReactClass is missing"))))
 
 (def is-client (and (exists? js/window)
                     (-> js/window ($ :document) nil? not)))
@@ -58,16 +65,61 @@
         str
         (clojure.string/replace "$" "."))))
 
-(deftype partial-ifn [f args ^:mutable p]
+(deftype PartialFn [pfn f args]
+  Fn
   IFn
-  (-invoke [_ & a]
-    (or p (set! p (apply clojure.core/partial f args)))
-    (apply p a))
+  (-invoke [_]
+    (pfn))
+  (-invoke [_ a]
+    (pfn a))
+  (-invoke [_ a b]
+    (pfn a b))
+  (-invoke [_ a b c]
+    (pfn a b c))
+  (-invoke [_ a b c d]
+    (pfn a b c d))
+  (-invoke [_ a b c d e]
+    (pfn a b c d e))
+  (-invoke [_ a b c d e f]
+    (pfn a b c d e f))
+  (-invoke [_ a b c d e f g]
+    (pfn a b c d e f g))
+  (-invoke [_ a b c d e f g h]
+    (pfn a b c d e f g h))
+  (-invoke [_ a b c d e f g h i]
+    (pfn a b c d e f g h i))
+  (-invoke [_ a b c d e f g h i j]
+    (pfn a b c d e f g h i j))
+  (-invoke [_ a b c d e f g h i j k]
+    (pfn a b c d e f g h i j k))
+  (-invoke [_ a b c d e f g h i j k l]
+    (pfn a b c d e f g h i j k l))
+  (-invoke [_ a b c d e f g h i j k l m]
+    (pfn a b c d e f g h i j k l m))
+  (-invoke [_ a b c d e f g h i j k l m n]
+    (pfn a b c d e f g h i j k l m n))
+  (-invoke [_ a b c d e f g h i j k l m n o]
+    (pfn a b c d e f g h i j k l m n o))
+  (-invoke [_ a b c d e f g h i j k l m n o p]
+    (pfn a b c d e f g h i j k l m n o p))
+  (-invoke [_ a b c d e f g h i j k l m n o p q]
+    (pfn a b c d e f g h i j k l m n o p q))
+  (-invoke [_ a b c d e f g h i j k l m n o p q r]
+    (pfn a b c d e f g h i j k l m n o p q r))
+  (-invoke [_ a b c d e f g h i j k l m n o p q r s]
+    (pfn a b c d e f g h i j k l m n o p q r s))
+  (-invoke [_ a b c d e f g h i j k l m n o p q r s t]
+    (pfn a b c d e f g h i j k l m n o p q r s t))
+  (-invoke [_ a b c d e f g h i j k l m n o p q r s t rest]
+    (apply pfn a b c d e f g h i j k l m n o p q r s t rest))
   IEquiv
   (-equiv [_ other]
     (and (= f (.-f other)) (= args (.-args other))))
   IHash
   (-hash [_] (hash [f args])))
+
+(defn make-partial-fn [f args]
+  (->PartialFn (apply partial f args) f args))
 
 (defn- merge-class [p1 p2]
   (let [class (when-let [c1 (:class p1)]
@@ -89,7 +141,8 @@
   (if (nil? p1)
     p2
     (do
-      (assert (map? p1))
+      (assert (map? p1)
+              (str "Property must be a map, not " (pr-str p1)))
       (merge-style p1 (merge-class p1 (merge p1 p2))))))
 
 

@@ -1,9 +1,9 @@
-(ns mranderson047.reagent.v0v6v0.reagent.dom.server
+(ns mranderson047.reagent.v0v7v0.reagent.dom.server
   (:require [cljsjs.react.dom.server]
-            [mranderson047.reagent.v0v6v0.reagent.impl.util :as util]
-            [mranderson047.reagent.v0v6v0.reagent.impl.template :as tmpl]
-            [mranderson047.reagent.v0v6v0.reagent.ratom :as ratom]
-            [mranderson047.reagent.v0v6v0.reagent.interop :refer-macros [$ $!]]))
+            [mranderson047.reagent.v0v7v0.reagent.impl.util :as util]
+            [mranderson047.reagent.v0v7v0.reagent.impl.template :as tmpl]
+            [mranderson047.reagent.v0v7v0.reagent.ratom :as ratom]
+            [mranderson047.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]))
 
 (defonce ^:private imported nil)
 

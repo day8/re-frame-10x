@@ -1,11 +1,11 @@
-(ns mranderson047.reagent.v0v6v0.reagent.dom
+(ns mranderson047.reagent.v0v7v0.reagent.dom
   (:require [cljsjs.react.dom]
-            [mranderson047.reagent.v0v6v0.reagent.impl.util :as util]
-            [mranderson047.reagent.v0v6v0.reagent.impl.template :as tmpl]
-            [mranderson047.reagent.v0v6v0.reagent.impl.batching :as batch]
-            [mranderson047.reagent.v0v6v0.reagent.ratom :as ratom]
-            [mranderson047.reagent.v0v6v0.reagent.debug :refer-macros [dbg]]
-            [mranderson047.reagent.v0v6v0.reagent.interop :refer-macros [$ $!]]))
+            [mranderson047.reagent.v0v7v0.reagent.impl.util :as util]
+            [mranderson047.reagent.v0v7v0.reagent.impl.template :as tmpl]
+            [mranderson047.reagent.v0v7v0.reagent.impl.batching :as batch]
+            [mranderson047.reagent.v0v7v0.reagent.ratom :as ratom]
+            [mranderson047.reagent.v0v7v0.reagent.debug :refer-macros [dbg]]
+            [mranderson047.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]))
 
 (defonce ^:private imported nil)
 
@@ -60,6 +60,8 @@
   "Returns the root DOM node of a mounted component."
   [this]
   ($ (module) findDOMNode this))
+
+(set! tmpl/find-dom-node dom-node)
 
 (defn force-update-all
   "Force re-rendering of all mounted Reagent components. This is

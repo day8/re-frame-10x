@@ -1,5 +1,5 @@
-(ns mranderson047.reagent.v0v6v0.reagent.debug
-  (:require-macros [mranderson047.reagent.v0v6v0.reagent.debug]))
+(ns mranderson047.reagent.v0v7v0.reagent.debug
+  (:require-macros [mranderson047.reagent.v0v7v0.reagent.debug]))
 
 (def ^:const has-console (exists? js/console))
 

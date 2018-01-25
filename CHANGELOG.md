@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## Unreleased
+
+### Changed
+
+* Updated bundled re-frame version to 0.10.3, and bundled reagent version to 0.7.0. This shouldn't impact your project's dependencies as they are source bundled via [mranderson](https://github.com/benedekfazekas/mranderson).
+
 ## [0.1.15] - 2018-01-24
 
 ### Added

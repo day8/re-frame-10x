@@ -1,9 +1,9 @@
-(ns mranderson047.reagent.v0v6v0.reagent.ratom
+(ns mranderson047.reagent.v0v7v0.reagent.ratom
   (:refer-clojure :exclude [atom])
-  (:require-macros [mranderson047.reagent.v0v6v0.reagent.ratom :refer [with-let]])
-  (:require [mranderson047.reagent.v0v6v0.reagent.impl.util :as util]
-            [mranderson047.reagent.v0v6v0.reagent.debug :refer-macros [dbg log warn error dev? time]]
-            [mranderson047.reagent.v0v6v0.reagent.impl.batching :as batch]
+  (:require-macros [mranderson047.reagent.v0v7v0.reagent.ratom :refer [with-let]])
+  (:require [mranderson047.reagent.v0v7v0.reagent.impl.util :as util]
+            [mranderson047.reagent.v0v7v0.reagent.debug :refer-macros [dbg log warn error dev? time]]
+            [mranderson047.reagent.v0v7v0.reagent.impl.batching :as batch]
             [clojure.set :as s]))
 
 (declare ^:dynamic *ratom-context*)
@@ -162,8 +162,8 @@
 
 (defn atom
   "Like clojure.core/atom, except that it keeps track of derefs."
-  ([x] (RAtom. x nil nil nil))
-  ([x & {:keys [meta validator]}] (RAtom. x meta validator nil)))
+  ([x] (->RAtom x nil nil nil))
+  ([x & {:keys [meta validator]}] (->RAtom x meta validator nil)))
 
 
 ;;; track
@@ -306,7 +306,7 @@
                    (not (vector? src))))
           (str "src must be a reactive atom or a function, not "
                (pr-str src)))
-  (RCursor. src path nil nil nil))
+  (->RCursor src path nil nil nil))
 
 
 ;;; with-let support
@@ -354,7 +354,7 @@
 
   IReset
   (-reset! [a newval]
-    (assert (fn? (.-on-set a)) "Reaction is read only.")
+    (assert (fn? (.-on-set a)) "Reaction is read only; on-set is not allowed")
     (let [oldval state]
       (set! state newval)
       (.on-set a oldval newval)
@@ -486,7 +486,7 @@
 
 
 (defn make-reaction [f & {:keys [auto-run on-set on-dispose]}]
-  (let [reaction (Reaction. f nil true false nil nil nil nil)]
+  (let [reaction (->Reaction f nil true false nil nil nil nil)]
     (._set-opts reaction {:auto-run auto-run
                           :on-set on-set
                           :on-dispose on-dispose})
@@ -563,9 +563,9 @@
   (-pr-writer [a w opts] (pr-atom a w opts "Wrap:")))
 
 (defn make-wrapper [value callback-fn args]
-  (Wrapper. value
-            (util/partial-ifn. callback-fn args nil)
-            false nil))
+  (->Wrapper value
+             (util/make-partial-fn callback-fn args)
+             false nil))
 
 
 

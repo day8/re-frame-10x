@@ -1,9 +1,10 @@
-(ns mranderson047.reagent.v0v6v0.reagent.impl.component
-  (:require [mranderson047.reagent.v0v6v0.reagent.impl.util :as util]
-            [mranderson047.reagent.v0v6v0.reagent.impl.batching :as batch]
-            [mranderson047.reagent.v0v6v0.reagent.ratom :as ratom]
-            [mranderson047.reagent.v0v6v0.reagent.interop :refer-macros [$ $!]]
-            [mranderson047.reagent.v0v6v0.reagent.debug :refer-macros [dbg prn dev? warn error warn-unless]]))
+(ns mranderson047.reagent.v0v7v0.reagent.impl.component
+  (:require [mranderson047.reagent.v0v7v0.reagent.impl.util :as util]
+            [mranderson047.reagent.v0v7v0.reagent.impl.batching :as batch]
+            [mranderson047.reagent.v0v7v0.reagent.ratom :as ratom]
+            [mranderson047.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]
+            [mranderson047.reagent.v0v7v0.reagent.debug :refer-macros [dbg prn dev? warn error warn-unless
+                                          assert-callable]]))
 
 (declare ^:dynamic *current-component*)
 
@@ -85,7 +86,7 @@
 
 (defn wrap-render [c]
   (let [f ($ c :reagentRender)
-        _ (assert (ifn? f))
+        _ (assert-callable f)
         res (if (true? ($ c :cljsLegacyRender))
               (.call f c c)
               (let [v (get-argv c)
@@ -144,7 +145,7 @@
 (defn custom-wrapper [key f]
   (case key
     :getDefaultProps
-    (assert false "getDefaultProps not supported")
+    (throw (js/Error. "getDefaultProps not supported"))
 
     :getInitialState
     (fn getInitialState []
@@ -201,8 +202,7 @@
 (defn get-wrapper [key f name]
   (let [wrap (custom-wrapper key f)]
     (when (and wrap f)
-      (assert (ifn? f)
-              (str "Expected function in " name key " but got " f)))
+      (assert-callable f))
     (or wrap f)))
 
 (def obligatory {:shouldComponentUpdate nil
@@ -225,8 +225,7 @@
           render-fun (-> renders vals first)]
       (assert (pos? (count renders)) "Missing reagent-render")
       (assert (== 1 (count renders)) "Too many render functions supplied")
-      (assert (ifn? render-fun) (str "Render must be a function, not "
-                                     (pr-str render-fun)))))
+      (assert-callable render-fun)))
   (let [render-fun (or (:reagentRender fmap)
                        (:componentFunction fmap))
         legacy-render (nil? render-fun)
@@ -264,7 +263,7 @@
   {:pre [(map? body)]}
   (->> body
        cljsify
-       ($ util/react createClass)))
+       util/create-class))
 
 (defn component-path [c]
   (let [elem (some-> (or (some-> c ($ :_reactInternalInstance))
@@ -291,7 +290,7 @@
     ""))
 
 (defn fn-to-class [f]
-  (assert (ifn? f) (str "Expected a function, not " (pr-str f)))
+  (assert-callable f)
   (warn-unless (not (and (react-class? f)
                          (not (reagent-class? f))))
                "Using native React classes directly in Hiccup forms "

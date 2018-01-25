@@ -5,7 +5,7 @@
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
             [day8.re-frame.trace.utils.re-com :as rc]
-            [mranderson047.reagent.v0v6v0.reagent.core :as r])
+            [mranderson047.reagent.v0v7v0.reagent.core :as r])
   (:require-macros [day8.re-frame.trace.utils.macros :refer [with-cljs-devtools-prefs]]))
 
 (defn search-input [{:keys [title placeholder on-save on-change on-stop]}]
