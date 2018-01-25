@@ -107,7 +107,8 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
        :source-paths ["src" "dev"]
        :compiler     {...
                       :closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}
-                      :preloads             [day8.re-frame.trace.preload]}}]}
+                      :preloads             [day8.re-frame.trace.preload]
+                      }}]}
   ```
 
 [cljs-devtools](https://github.com/binaryage/cljs-devtools) is not required to use re-frame-trace, but it is highly recommended.
