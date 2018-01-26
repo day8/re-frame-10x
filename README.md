@@ -5,7 +5,7 @@ application, allowing you to better understand it and debug it.
  
 **Status:** Beta.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
-**Note** [the latest version 0.1.15](https://github.com/Day8/re-frame-trace/releases/tag/0.1.15) ALSO requires the latest version of re-frame itself - `v0.10.3`.
+**Note** [the latest version 0.1.16](https://github.com/Day8/re-frame-trace/releases/tag/0.1.16) ALSO requires the latest version of re-frame itself - `v0.10.3`.
 
 ### Helpful How?
 
@@ -93,6 +93,8 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
         {:dependencies [[some-other-package  "0.0.0"]
                         [day8.re-frame/trace "0.0.0 (see version above)"]] }}
   ```
+  
+  If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/trace "0.0.0-react16"]`.
 
 - Locate the `:compiler` map under `:dev` and add:
 
