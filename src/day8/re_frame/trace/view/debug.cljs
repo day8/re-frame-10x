@@ -12,6 +12,7 @@
     [rc/label :label (str "Number of epochs " (prn-str @(rf/subscribe [:epochs/number-of-matches])))]
     [rc/label :label (str "Beginning trace " (prn-str @(rf/subscribe [:epochs/beginning-trace-id])))]
     [rc/label :label (str "Ending " (prn-str @(rf/subscribe [:epochs/ending-trace-id])))]
+    [rc/label :label (str "Current epoch ID " (prn-str @(rf/subscribe [:epochs/current-epoch-id])))]
 
     [rc/label :label "Epochs"]
     (let [current-match @(rf/subscribe [:epochs/current-match])]

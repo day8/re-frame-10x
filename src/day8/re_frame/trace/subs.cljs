@@ -188,6 +188,9 @@
           match      (cond
                        (nil? current-id) (last (:matches epochs))
                        (< current-id (first match-ids)) (first (:matches epochs))
+                       ;; This case seems impossible, but can happen if the user filters out
+                       ;; an event that they are 'on'.
+                       (> current-id (last match-ids)) (last (:matches epochs))
                        :else (get (:matches-by-id epochs) current-id))]
       match)))
 
