@@ -31,7 +31,7 @@
          :target-path  "resources/day8/re_frame/trace"}
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
-             :mranderson {:dependencies ^:replace [^:source-dep [re-frame "0.10.3"
+             :mranderson {:dependencies ^:replace [^:source-dep [re-frame "0.10.2"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom
