@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## [0.1.16] - 2018-01-26
 
+There is now a React 16 variant of re-frame-trace available under the version `0.1.16-react16`. If your application uses React 16 and Reagent 0.8.0-alpha2 or higher, this is the version that you will need to use.
+
 ### Added
 
 * Setting to control how many epochs are retained
