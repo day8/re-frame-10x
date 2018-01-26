@@ -7,6 +7,8 @@ application, allowing you to better understand it and debug it.
 
 **Note** [the latest version 0.1.15](https://github.com/Day8/re-frame-trace/releases/tag/0.1.15) ALSO requires the latest version of re-frame itself - `v0.10.3`.
 
+This `react-16` branch bundles Reagent 0.8.0-alpha2 and requires your application to use React 16, and to be on a relatively recent ClojureScript compiler (Tested on 1.9.908, should work back as far as 1.9.854).
+
 ### Helpful How?
 
 Four ways:
