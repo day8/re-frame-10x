@@ -11,7 +11,7 @@
         json-ml-paths (localstorage/get "app-db-json-ml-expansions" #{})
         external-window? (localstorage/get "external-window?" false)
         using-trace? (localstorage/get "using-trace?" true)
-        num-epochs (localstorage/get "retained-epochs" 30)
+        num-epochs (localstorage/get "retained-epochs" 5)
         categories (localstorage/get "categories" #{:event :sub/run :sub/create :sub/dispose})]
     (when using-trace?
       (rf/dispatch [:global/enable-tracing]))

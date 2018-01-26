@@ -14,8 +14,11 @@
             [day8.re-frame.trace.metamorphic :as metam]
             [re-frame.trace]))
 
+(def default-number-of-epochs-to-retain 5)
+
 (defonce traces (r/atom []))
 (defonce total-traces (r/atom 0))
+(defonce number-of-epochs-to-retain (atom default-number-of-epochs-to-retain))
 
 (defn log-trace? [trace]
   (let [render-operation? (or (= (:op-type trace) :render)
@@ -43,8 +46,16 @@
                                                               (do (reset! total-traces 0)
                                                                   (into [] new2))))
                                                           new))))
-                                             (rf/dispatch [:traces/update-traces @traces])
-                                             (rf/dispatch [:epochs/update-epochs (metam/parse-traces @traces)])))))
+                                             ;; TODO: there is a bit of double handling here, that will be cleaned up
+                                             ;; when the epoch parsing is refactored.
+                                             (let [epochs (metam/parse-traces @traces)
+                                                   retained-epochs (take-last @number-of-epochs-to-retain (:matches epochs))
+                                                   first-id-to-retain (:id (ffirst retained-epochs))
+                                                   new-traces (into [] (drop-while #(< (:id %) first-id-to-retain)) @traces)]
+                                               (reset! traces new-traces)
+                                               (reset! total-traces (count new-traces))
+                                               (rf/dispatch [:traces/update-traces new-traces])
+                                               (rf/dispatch [:epochs/update-epochs {:matches retained-epochs}]))))))
 
 (defn dissoc-in
   "Dissociates an entry from a nested associative structure returning a new
@@ -133,10 +144,13 @@
     ;; TODO: this is not perfect, there is an issue in re-com
     ;; where it won't update its model if it never receives another
     ;; changes after it's on-change is fired.
+    ;; TODO: you could reset the stored epochs on change here
+    ;; once the way they are processed is refactored.
     (let [num (js/parseInt num-str)
           num (if (and (not (js/isNaN num)) (pos-int? num))
                 num
-                30)]
+                default-number-of-epochs-to-retain)]
+      (reset! number-of-epochs-to-retain num)
       (localstorage/save! "retained-epochs" num)
       (assoc-in db [:settings :number-of-epochs] num))))
 
@@ -478,12 +492,11 @@
 
 (rf/reg-event-db
   :epochs/reset
-  [(rf/path [:epochs])]
-  (fn [epochs]
+  (fn [db]
     (re-frame.trace/reset-tracing!)
     (reset! traces [])
     (reset! total-traces 0)
-    nil))
+    (dissoc db :epochs :traces)))
 
 (rf/reg-event-db
   :traces/update-traces

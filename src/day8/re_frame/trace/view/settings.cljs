@@ -97,8 +97,7 @@
                     num-traces @(rf/subscribe [:traces/number-of-traces])
                     epochs-to-retain (rf/subscribe [:settings/number-of-retained-epochs])]
 
-                ;; TODO: retain last
-                #_[settings-box
+                [settings-box
                  [[rc/h-box
                    :align    :center
                    :gap      horizontal-gap
@@ -118,7 +117,7 @@
                                :label [rc/v-box
                                        :align :center
                                        :children ["clear all epochs"]]
-                               :on-click #(println "Clicked CLEAR")]]]]
+                               :on-click #(rf/dispatch [:epochs/reset])]]]]
                  [[:p num-epochs " epochs currently retained, involving " num-traces " traces."]]
                  settings-box-81])
 
@@ -194,7 +193,7 @@
                 [[:p "Most of the time, low level trace is noisy and you want it filtered out."]]
                 settings-box-131])
 
-              #_[rc/line]
+              [rc/line]
               [settings-box
                [[rc/button
                  :class "bm-muted-button app-db-panel-button"
