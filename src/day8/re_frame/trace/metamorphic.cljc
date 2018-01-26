@@ -142,6 +142,9 @@
 (defn subscription-not-run? [trace]
   false)
 
+(defn render? [trace]
+  (= :render (:op-type trace)))
+
 (defn unchanged-l2-subscription? [sub]
   ;; TODO: check if value changed
   (and

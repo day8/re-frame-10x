@@ -1,7 +1,8 @@
 (ns day8.re-frame.trace.subs
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.metamorphic :as metam]
-            [day8.re-frame.trace.utils.utils :as utils]))
+            [day8.re-frame.trace.utils.utils :as utils]
+            [clojure.string :as str]))
 
 (rf/reg-sub
   :settings/root
@@ -45,6 +46,12 @@
   :<- [:settings/root]
   (fn [settings]
     (sort-by :sort (vals (:ignored-events settings)))))
+
+(rf/reg-sub
+  :settings/filtered-view-trace
+  :<- [:settings/root]
+  (fn [settings]
+    (sort-by :sort (vals (:filtered-view-trace settings)))))
 
 (rf/reg-sub
   :settings/low-level-trace
@@ -139,8 +146,23 @@
     (count traces)))
 
 (rf/reg-sub
-  :traces/current-event-traces
+  :traces/all-visible-traces
   :<- [:traces/all-traces]
+  :<- [:settings/filtered-view-trace]
+  (fn [[all-traces filtered-views] _]
+    (let [munged-ns (->> filtered-views
+                         (map (comp munge :ns-str))
+                         (set))]
+      (into []
+            ;; Filter out view namespaces we don't care about.
+            (remove
+              (fn [trace] (and (metam/render? trace)
+                               (contains? munged-ns (subs (:operation trace) 0 (str/last-index-of (:operation trace) "."))))))
+            all-traces))))
+
+(rf/reg-sub
+  :traces/current-event-traces
+  :<- [:traces/all-visible-traces]
   :<- [:epochs/beginning-trace-id]
   :<- [:epochs/ending-trace-id]
   (fn [[traces beginning ending] _]
@@ -354,13 +376,13 @@
   :<- [:subs/all-sub-traces]
   :<- [:app-db/reagent-id]
   (fn [[traces app-db-id]]
-    (let [raw           (map (fn [trace] (let [pod-type (sub-op-type->type trace)
-                                               path-data    (get-in trace [:tags :query-v])
+    (let [raw           (map (fn [trace] (let [pod-type  (sub-op-type->type trace)
+                                               path-data (get-in trace [:tags :query-v])
                                                ;; TODO: detect layer 2/3 for sub/create and sub/destroy
                                                ;; This information needs to be accumulated.
-                                               layer    (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
-                                                          2
-                                                          3)]
+                                               layer     (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
+                                                           2
+                                                           3)]
                                            {:id        (str pod-type (get-in trace [:tags :reaction]))
                                             :type      pod-type
                                             :layer     layer
@@ -379,17 +401,17 @@
                              (filter #(= :created (:type %)))
                              (map (juxt :path-data identity))
                              (into {}))
-          raw (keep (fn [sub]
-                      (case (:type sub)
-                        :created (if-some [re-run-sub (get re-run (:path-data sub))]
-                                   (assoc sub :value (:value re-run-sub))
-                                   sub)
+          raw           (keep (fn [sub]
+                                (case (:type sub)
+                                  :created (if-some [re-run-sub (get re-run (:path-data sub))]
+                                             (assoc sub :value (:value re-run-sub))
+                                             sub)
 
-                        :re-run (when-not (contains? created (:path-data sub))
-                                  sub)
+                                  :re-run (when-not (contains? created (:path-data sub))
+                                            sub)
 
-                        sub))
-                    raw)
+                                  sub))
+                              raw)
 
           ;; Filter out run if it was created
           ;; Group together run time
@@ -397,7 +419,7 @@
                               (filter (fn [[k v]] (< 1 v)))
                               (frequencies (map :id raw)))
 
-          output           (map (fn [sub] (assoc sub :run-times (get run-multiple? (:id sub)))) raw)]
+          output        (map (fn [sub] (assoc sub :run-times (get run-multiple? (:id sub)))) raw)]
       (sort-by identity subscription-comparator output))))
 
 (rf/reg-sub

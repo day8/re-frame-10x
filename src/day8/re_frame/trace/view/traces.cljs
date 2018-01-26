@@ -89,6 +89,7 @@
         trace-detail-expansions (rf/subscribe [:traces/expansions])
         beginning               (rf/subscribe [:epochs/beginning-trace-id])
         end                     (rf/subscribe [:epochs/ending-trace-id])
+        traces                  (rf/subscribe [:traces/all-traces])
         current-traces          (rf/subscribe [:traces/current-event-traces])
         show-epoch-traces?      (rf/subscribe [:traces/show-epoch-traces?])]
     (fn []
@@ -173,5 +174,3 @@
                [:span "(" [:button.text-button {:on-click #(rf/dispatch [:epochs/reset])} "clear"] ")"])]
             [:th {:style {:text-align "right"}} "meta"]]
            [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]))))
-
-

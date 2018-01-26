@@ -194,6 +194,38 @@
   (fn [_ [_ ignored-events]]
     ignored-events))
 
+(def filtered-view-trace-mw
+  [(rf/path [:settings :filtered-view-trace]) (rf/after #(localstorage/save! "filtered-view-trace" %))])
+
+(rf/reg-event-db
+  :settings/add-filtered-view-trace
+  filtered-view-trace-mw
+  (fn [filtered-view-trace _]
+    (let [id (random-uuid)]
+      (assoc filtered-view-trace id {:id id :ns-str "" :ns nil :sort (js/Date.now)}))))
+
+(rf/reg-event-db
+  :settings/remove-filtered-view-trace
+  filtered-view-trace-mw
+  (fn [filtered-view-trace [_ id]]
+    (dissoc filtered-view-trace id)))
+
+(rf/reg-event-db
+  :settings/update-filtered-view-trace
+  filtered-view-trace-mw
+  (fn [filtered-view-trace [_ id ns-str]]
+    ;; TODO: this won't inform users if they type bad strings in.
+    (let [event (read-string-maybe ns-str)]
+      (-> filtered-view-trace
+          (assoc-in [id :ns-str] ns-str)
+          (update-in [id :ns] (fn [old-event] (if event event old-event)))))))
+
+(rf/reg-event-db
+  :settings/set-filtered-view-trace
+  filtered-view-trace-mw
+  (fn [_ [_ ignored-events]]
+    ignored-events))
+
 (rf/reg-event-db
   :settings/low-level-trace
   [(rf/path [:settings :low-level-trace])]

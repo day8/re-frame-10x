@@ -15,34 +15,6 @@
 (def settings-box-81 (render-css (units/px- common/gs-81 (units/px* 2 settings-box-vertical-padding))))
 (def settings-box-131 (render-css (units/px- common/gs-131 (units/px* 2 settings-box-vertical-padding))))
 
-;; TODO: START ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
-
-(def *ignore-items (r/atom [{:id (gensym) :text ":some/event-id"}]))
-
-(def *filter-items (r/atom [{:id (gensym) :text "re-com.h-box"}
-                            {:id (gensym) :text "re-com.input-text"}]))
-
-(defn add-item [*items]
-  (let [id (gensym)]
-    (println "Added item" id)
-    (swap! *items concat [{:id id :text ""}])))
-
-(defn delete-item [*items id]
-  (println "Deleted item" id)
-  (reset! *items (filterv #(not= id (:id %)) @*items)))
-
-(defn update-item-field
-  [*items id field new-val]
-  (let [f (fn [item]
-            (if (= id (:id item))
-              (do
-                (println "Updated" field "in" (:id item) "from" (get item field) "to" new-val)
-                (assoc item field new-val))
-              item))]
-    (reset! *items (mapv f @*items))))
-
-;; TODO: END ========== LOCAL DATA - REPLACE WITH SUBS AND EVENTS
-
 (def settings-styles
   [:#--re-frame-trace--
    [:.settings
@@ -149,9 +121,8 @@
                 [:p "Useful if you want to ignore a periodic background polling event."]]
                settings-box-131]
 
-              ;; TODO: filter out view trace
-              #_[rc/line]
-              #_[settings-box
+              [rc/line]
+              [settings-box
                [[rc/h-box
                  :align :center
                  :gap      horizontal-gap
@@ -162,18 +133,19 @@
                              :label [rc/v-box
                                      :align :center
                                      :children ["+ namespace"]]
-                             :on-click #(add-item *filter-items)]]]
+                             :on-click #(rf/dispatch [:settings/add-filtered-view-trace])]]]
                 [rc/v-box
                  :width      comp-section-width
                  :gap        vertical-gap
-                 :children   (for [item @*filter-items]
-                               ^{:key (:id item)}
+                 :children   (for [item @(rf/subscribe [:settings/filtered-view-trace])
+                                   :let [id (:id item)]]
+                               ^{:key id}
                                [closeable-text-box
-                                :model     (:text item)
+                                :model     (:ns-str item)
                                 :width     "343px"
-                                :on-close  #(delete-item *filter-items (:id item))
-                                :on-change #(update-item-field *filter-items (:id item) :text %)])]]
-               [[:p "Sometimes you want to focus on just your own views, and the trace associated with library views is just noise."]
+                                :on-close  #(rf/dispatch [:settings/remove-filtered-view-trace id])
+                                :on-change #(rf/dispatch [:settings/update-filtered-view-trace id %])])]]
+               [[:p "Sometimes you want to focus on your own views, and the trace associated with library views is just noise."]
                 [:p "Nominate one or more namespaces."]]
                settings-box-131]
 

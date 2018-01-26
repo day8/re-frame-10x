@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. This change
 * Setting to control how many epochs are retained
 * Setting to reset all epochs
 * Setting to ignore epochs
+* Setting to filter out trace for views from uninteresting namespaces
 
 ### Changed
 

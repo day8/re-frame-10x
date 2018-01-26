@@ -12,6 +12,10 @@
         external-window? (localstorage/get "external-window?" false)
         using-trace? (localstorage/get "using-trace?" true)
         ignored-events (localstorage/get "ignored-events" {})
+        filtered-view-trace (localstorage/get "filtered-view-trace" (let [id1 (random-uuid)
+                                                                          id2 (random-uuid)]
+                                                                      {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
+                                                                       id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}}))
         num-epochs (localstorage/get "retained-epochs" 5)
         categories (localstorage/get "categories" #{:event :sub/run :sub/create :sub/dispose})]
     (when using-trace?
@@ -20,6 +24,7 @@
     (rf/dispatch [:settings/show-panel? show-panel?])
     (rf/dispatch [:settings/selected-tab selected-tab])
     (rf/dispatch [:settings/set-ignored-events ignored-events])
+    (rf/dispatch [:settings/set-filtered-view-trace filtered-view-trace])
     (rf/dispatch [:settings/set-number-of-retained-epochs num-epochs])
     (when external-window?
       (rf/dispatch [:global/launch-external]))
