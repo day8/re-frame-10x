@@ -1,4 +1,4 @@
-(defproject day8.re-frame/trace "0.1.16"
+(defproject day8.re-frame/trace "0.1.16-react16"
   :description "Tracing and developer tools for re-frame apps"
   :url "https://github.com/Day8/re-frame-trace"
   :license {:name "MIT"}
