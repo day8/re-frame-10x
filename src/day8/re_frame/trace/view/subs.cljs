@@ -224,7 +224,6 @@
 (defn pod-section []
   (let [all-subs       @(rf/subscribe [:subs/visible-subs])
         sub-expansions @(rf/subscribe [:subs/sub-expansions])]
-    ;(js/console.log sub-expansions)
     [rc/v-box
      :size "1"
      ;:gap pod-gap

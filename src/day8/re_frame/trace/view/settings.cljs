@@ -121,9 +121,8 @@
                  [[:p num-epochs " epochs currently retained, involving " num-traces " traces."]]
                  settings-box-81])
 
-              ;; TODO: ignore epochs for:
-              #_[rc/line]
-              #_[settings-box
+              [rc/line]
+              [settings-box
                [[rc/h-box
                  :align    :center
                  :gap      horizontal-gap
@@ -134,17 +133,18 @@
                              :label [rc/v-box
                                      :align :center
                                      :children ["+ event-id"]]
-                             :on-click #(add-item *ignore-items)]]]
+                             :on-click #(rf/dispatch [:settings/add-ignored-event])]]]
                 [rc/v-box
                  :width      comp-section-width
                  :gap        vertical-gap
-                 :children   (for [item @*ignore-items]
-                               ^{:key (:id item)}
+                 :children   (for [item @(rf/subscribe [:settings/ignored-events])
+                                   :let [id (:id item)]]
+                               ^{:key id}
                                [closeable-text-box
-                                :model     (:text item)
+                                :model     (:event-str item)
                                 :width     "212px"
-                                :on-close  #(delete-item *ignore-items (:id item))
-                                :on-change #(update-item-field *ignore-items (:id item) :text %)])]]
+                                :on-close  #(rf/dispatch [:settings/remove-ignored-event id])
+                                :on-change #(rf/dispatch [:settings/update-ignored-event id %])])]]
                [[:p "All trace associated with these events will be ignored."]
                 [:p "Useful if you want to ignore a periodic background polling event."]]
                settings-box-131]

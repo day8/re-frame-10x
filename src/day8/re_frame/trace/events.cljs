@@ -19,6 +19,7 @@
 (defonce traces (r/atom []))
 (defonce total-traces (r/atom 0))
 (defonce number-of-epochs-to-retain (atom default-number-of-epochs-to-retain))
+(defonce events-to-ignore (atom #{}))
 
 (defn log-trace? [trace]
   (let [render-operation? (or (= (:op-type trace) :render)
@@ -46,12 +47,15 @@
                                                               (do (reset! total-traces 0)
                                                                   (into [] new2))))
                                                           new))))
-                                             ;; TODO: there is a bit of double handling here, that will be cleaned up
-                                             ;; when the epoch parsing is refactored.
-                                             (let [epochs (metam/parse-traces @traces)
-                                                   retained-epochs (take-last @number-of-epochs-to-retain (:matches epochs))
+                                             ;; TODO: there is a bit of double handling here with retaining the last n epochs,
+                                             ;; that will be cleaned up when the epoch parsing is refactored.
+                                             (let [matches            (:matches (metam/parse-traces @traces))
+                                                   matches            (remove (fn [match]
+                                                                                (let [event (get-in (metam/matched-event match) [:tags :event])]
+                                                                                  (contains? @events-to-ignore (first event)))) matches)
+                                                   retained-epochs    (take-last @number-of-epochs-to-retain matches)
                                                    first-id-to-retain (:id (ffirst retained-epochs))
-                                                   new-traces (into [] (drop-while #(< (:id %) first-id-to-retain)) @traces)]
+                                                   new-traces         (into [] (drop-while #(< (:id %) first-id-to-retain)) @traces)]
                                                (reset! traces new-traces)
                                                (reset! total-traces (count new-traces))
                                                (rf/dispatch [:traces/update-traces new-traces])
@@ -71,6 +75,10 @@
       m)
     (dissoc m k)))
 
+(defn read-string-maybe [s]
+  (try (cljs.tools.reader.edn/read-string s)
+       (catch :default e
+         nil)))
 
 (rf/reg-event-db
   :settings/panel-width%
@@ -154,6 +162,38 @@
       (localstorage/save! "retained-epochs" num)
       (assoc-in db [:settings :number-of-epochs] num))))
 
+(def ignored-event-mw
+  [(rf/path [:settings :ignored-events]) (rf/after #(localstorage/save! "ignored-events" %)) (rf/after #(reset! events-to-ignore (->> % vals (map :event-id) set)))])
+
+(rf/reg-event-db
+  :settings/add-ignored-event
+  ignored-event-mw
+  (fn [ignored-events _]
+    (let [id (random-uuid)]
+      (assoc ignored-events id {:id id :event-str "" :event-id nil :sort (js/Date.now)}))))
+
+(rf/reg-event-db
+  :settings/remove-ignored-event
+  ignored-event-mw
+  (fn [ignored-events [_ id]]
+    (dissoc ignored-events id)))
+
+(rf/reg-event-db
+  :settings/update-ignored-event
+  ignored-event-mw
+  (fn [ignored-events [_ id event-str]]
+    ;; TODO: this won't inform users if they type bad strings in.
+    (let [event (read-string-maybe event-str)]
+      (-> ignored-events
+          (assoc-in [id :event-str] event-str)
+          (update-in [id :event-id] (fn [old-event] (if event event old-event)))))))
+
+(rf/reg-event-db
+  :settings/set-ignored-events
+  ignored-event-mw
+  (fn [_ [_ ignored-events]]
+    ignored-events))
+
 (rf/reg-event-db
   :settings/low-level-trace
   [(rf/path [:settings :low-level-trace])]
@@ -163,27 +203,27 @@
 ;; Global
 
 (defn mount [popup-window popup-document]
-  (let [app (.getElementById popup-document "--re-frame-trace--")
+  (let [app (.getElementById popup-document " --re-frame-trace-- ")
         doc js/document]
     (styles/inject-trace-styles popup-document)
-    (goog.object/set popup-window "onunload" #(rf/dispatch [:global/external-closed]))
+    (goog.object/set popup-window " onunload " #(rf/dispatch [:global/external-closed]))
     (r/render
       [(r/create-class
-         {:display-name   "devtools outer external"
+         {:display-name   " devtools outer external "
           :reagent-render (fn []
                             [container/devtools-inner traces {:panel-type :popup}
                              ])})]
       app)))
 
 (defn open-debugger-window
-  "Copied from re-frisk.devtool/open-debugger-window"
+  " Copied from re-frisk.devtool/open-debugger-window "
   []
   (let [{:keys [ext_height ext_width]} (:prefs {})
-        w (js/window.open "" "Debugger" (str "width=" (or ext_width 800) ",height=" (or ext_height 800)
-                                             ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
+        w (js/window.open " " " Debugger " (str " width= " (or ext_width 800) ", height= " (or ext_height 800)
+                                                ", resizable=yes, scrollbars=yes, status=no, directories=no, toolbar=no, menubar=no "))
         d (.-document w)]
     (.open d)
-    (.write d "<head></head><body style=\"margin: 0px;\"><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
+    (.write d " <head></head><body style= \"margin: 0px     ;\"><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
     (goog.object/set w "onload" #(mount w d))
     (.close d)))
 
@@ -320,10 +360,7 @@
   (fn [paths _]
     (assoc paths (js/Date.now) {:diff? false :open? true :path nil :path-str "[]" :valid-path? true})))
 
-(defn read-string-maybe [s]
-  (try (cljs.tools.reader.edn/read-string s)
-       (catch :default e
-         nil)))
+
 
 ;; The core idea with :app-db/update-path and :app-db/update-path-blur
 ;; is that we need to separate the users text input (`path-str`) with the

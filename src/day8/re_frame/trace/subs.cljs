@@ -41,6 +41,12 @@
     (:number-of-epochs settings)))
 
 (rf/reg-sub
+  :settings/ignored-events
+  :<- [:settings/root]
+  (fn [settings]
+    (sort-by :sort (vals (:ignored-events settings)))))
+
+(rf/reg-sub
   :settings/low-level-trace
   ;; TODO: filter from traces panel
   ;; TODO: eventually drop these low level traces after computing the state we need from them.

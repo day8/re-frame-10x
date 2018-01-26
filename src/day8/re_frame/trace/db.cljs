@@ -11,6 +11,7 @@
         json-ml-paths (localstorage/get "app-db-json-ml-expansions" #{})
         external-window? (localstorage/get "external-window?" false)
         using-trace? (localstorage/get "using-trace?" true)
+        ignored-events (localstorage/get "ignored-events" {})
         num-epochs (localstorage/get "retained-epochs" 5)
         categories (localstorage/get "categories" #{:event :sub/run :sub/create :sub/dispose})]
     (when using-trace?
@@ -18,6 +19,7 @@
     (rf/dispatch [:settings/panel-width% panel-width%])
     (rf/dispatch [:settings/show-panel? show-panel?])
     (rf/dispatch [:settings/selected-tab selected-tab])
+    (rf/dispatch [:settings/set-ignored-events ignored-events])
     (rf/dispatch [:settings/set-number-of-retained-epochs num-epochs])
     (when external-window?
       (rf/dispatch [:global/launch-external]))
