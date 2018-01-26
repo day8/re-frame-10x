@@ -1,4 +1,4 @@
-(ns mranderson047.reagent.v0v7v0.reagent.interop
+(ns mranderson047.reagent.v0v8v0-alpha2.reagent.interop
   (:require [clojure.string :as string :refer [join]]))
 
 (defn- js-call [f args]

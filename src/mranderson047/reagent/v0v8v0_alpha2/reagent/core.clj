@@ -1,5 +1,5 @@
-(ns mranderson047.reagent.v0v7v0.reagent.core
-  (:require [mranderson047.reagent.v0v7v0.reagent.ratom :as ra]))
+(ns mranderson047.reagent.v0v8v0-alpha2.reagent.core
+  (:require [mranderson047.reagent.v0v8v0-alpha2.reagent.ratom :as ra]))
 
 (defmacro with-let [bindings & body]
   "Bind variables as with let, except that when used in a component

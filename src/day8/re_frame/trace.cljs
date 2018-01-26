@@ -22,7 +22,7 @@
             [re-frame.interop :as interop]
             [devtools.formatters.core :as devtools]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [mranderson047.reagent.v0v7v0.reagent.core :as r]))
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.core :as r]))
 
 (goog-define debug? false)
 

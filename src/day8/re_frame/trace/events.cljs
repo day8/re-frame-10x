@@ -1,6 +1,6 @@
 (ns day8.re-frame.trace.events
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [mranderson047.reagent.v0v7v0.reagent.core :as r]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.core :as r]
             [cljs.tools.reader.edn]
             [day8.re-frame.trace.utils.utils :as utils]
             [day8.re-frame.trace.utils.localstorage :as localstorage]

@@ -4,7 +4,7 @@
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.671"]
-                 [reagent "0.6.0" :scope "provided"]
+                 [reagent "0.8.0-alpha2" :scope "provided"]
                  [re-frame "0.10.3" :scope "provided"]
                  [binaryage/devtools "0.9.4"]
                  [garden "1.3.3"]
@@ -31,7 +31,7 @@
          :target-path  "resources/day8/re_frame/trace"}
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
-             :mranderson {:dependencies ^:replace [^:source-dep [re-frame "0.10.3"
+             :mranderson {:dependencies ^:replace [^:source-dep [re-frame "0.10.2"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom
@@ -39,7 +39,7 @@
                                                                               cljsjs/create-react-class
                                                                               org.clojure/tools.logging
                                                                               net.cgrand/macrovich]]
-                                                   ^:source-dep [reagent "0.7.0"
+                                                   ^:source-dep [reagent "0.8.0-alpha2"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom

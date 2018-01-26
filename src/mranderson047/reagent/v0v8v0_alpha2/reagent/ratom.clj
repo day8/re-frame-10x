@@ -1,15 +1,15 @@
-(ns mranderson047.reagent.v0v7v0.reagent.ratom
+(ns mranderson047.reagent.v0v8v0-alpha2.reagent.ratom
   (:refer-clojure :exclude [run!])
-  (:require [mranderson047.reagent.v0v7v0.reagent.debug :as d]))
+  (:require [mranderson047.reagent.v0v8v0-alpha2.reagent.debug :as d]))
 
 (defmacro reaction [& body]
-  `(mranderson047.reagent.v0v7v0.reagent.ratom/make-reaction
+  `(mranderson047.reagent.v0v8v0-alpha2.reagent.ratom/make-reaction
     (fn [] ~@body)))
 
 (defmacro run!
   "Runs body immediately, and runs again whenever atoms deferenced in the body change. Body should side effect."
   [& body]
-  `(let [co# (mranderson047.reagent.v0v7v0.reagent.ratom/make-reaction (fn [] ~@body)
+  `(let [co# (mranderson047.reagent.v0v8v0-alpha2.reagent.ratom/make-reaction (fn [] ~@body)
                                          :auto-run true)]
      (deref co#)
      co#))
@@ -37,14 +37,14 @@
                             [body nil]))
         add-destroy (when destroy
                       `(let [destroy# ~destroy]
-                         (if (mranderson047.reagent.v0v7v0.reagent.ratom/reactive?)
+                         (if (mranderson047.reagent.v0v8v0-alpha2.reagent.ratom/reactive?)
                            (when (nil? (.-destroy ~v))
                              (set! (.-destroy ~v) destroy#))
                            (destroy#))))
         asserting (if *assert* true false)]
-    `(let [~v (mranderson047.reagent.v0v7v0.reagent.ratom/with-let-values ~k)]
+    `(let [~v (mranderson047.reagent.v0v8v0-alpha2.reagent.ratom/with-let-values ~k)]
        (when ~asserting
-         (when-some [c# mranderson047.reagent.v0v7v0.reagent.ratom/*ratom-context*]
+         (when-some [c# mranderson047.reagent.v0v8v0-alpha2.reagent.ratom/*ratom-context*]
            (when (== (.-generation ~v) (.-ratomGeneration c#))
              (d/error "Warning: The same with-let is being used more "
                       "than once in the same reactive context."))

@@ -48,7 +48,7 @@
 (defn make-reaction
   "On JVM Clojure, return a `deref`-able thing which invokes the given function
   on every `deref`. That is, `make-reaction` here provides precisely none of the
-  benefits of `mranderson047.reagent.v0v7v0.reagent.ratom/make-reaction` (which only invokes its function if
+  benefits of `mranderson047.reagent.v0v8v0-alpha2.reagent.ratom/make-reaction` (which only invokes its function if
   the reactions that the function derefs have changed value). But so long as `f`
   only depends on other reactions (which also behave themselves), the only
   difference is one of efficiency. That is, your tests should see no difference

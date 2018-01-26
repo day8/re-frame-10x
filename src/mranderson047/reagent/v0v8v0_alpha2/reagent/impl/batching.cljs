@@ -1,8 +1,8 @@
-(ns mranderson047.reagent.v0v7v0.reagent.impl.batching
+(ns mranderson047.reagent.v0v8v0-alpha2.reagent.impl.batching
   (:refer-clojure :exclude [flush])
-  (:require [mranderson047.reagent.v0v7v0.reagent.debug :refer-macros [dbg assert-some]]
-            [mranderson047.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]
-            [mranderson047.reagent.v0v7v0.reagent.impl.util :refer [is-client]]
+  (:require [mranderson047.reagent.v0v8v0-alpha2.reagent.debug :refer-macros [dbg assert-some]]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.interop :refer-macros [$ $!]]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.impl.util :refer [is-client]]
             [clojure.string :as string]))
 
 ;;; Update batching

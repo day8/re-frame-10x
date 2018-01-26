@@ -3,7 +3,7 @@
             [day8.re-frame.trace.utils.utils :as utils]
             [day8.re-frame.trace.utils.animated :as animated]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [mranderson047.reagent.v0v7v0.reagent.core :as r]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame.trace.common-styles :as common]
             [day8.re-frame.trace.view.components :as components])

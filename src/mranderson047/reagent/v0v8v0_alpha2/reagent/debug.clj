@@ -1,19 +1,19 @@
-(ns mranderson047.reagent.v0v7v0.reagent.debug
+(ns mranderson047.reagent.v0v8v0-alpha2.reagent.debug
   (:refer-clojure :exclude [prn println time]))
 
 (defmacro log
   "Print with console.log, if it exists."
   [& forms]
-  `(when mranderson047.reagent.v0v7v0.reagent.debug.has-console
+  `(when mranderson047.reagent.v0v8v0-alpha2.reagent.debug.has-console
      (.log js/console ~@forms)))
 
 (defmacro warn
   "Print with console.warn."
   [& forms]
   (when *assert*
-    `(when mranderson047.reagent.v0v7v0.reagent.debug.has-console
-       (.warn (if mranderson047.reagent.v0v7v0.reagent.debug.tracking
-                mranderson047.reagent.v0v7v0.reagent.debug.track-console js/console)
+    `(when mranderson047.reagent.v0v8v0-alpha2.reagent.debug.has-console
+       (.warn (if mranderson047.reagent.v0v8v0-alpha2.reagent.debug.tracking
+                mranderson047.reagent.v0v8v0-alpha2.reagent.debug.track-console js/console)
               (str "Warning: " ~@forms)))))
 
 (defmacro warn-unless
@@ -26,9 +26,9 @@
   "Print with console.error."
   [& forms]
   (when *assert*
-    `(when mranderson047.reagent.v0v7v0.reagent.debug.has-console
-       (.error (if mranderson047.reagent.v0v7v0.reagent.debug.tracking
-                 mranderson047.reagent.v0v7v0.reagent.debug.track-console js/console)
+    `(when mranderson047.reagent.v0v8v0-alpha2.reagent.debug.has-console
+       (.error (if mranderson047.reagent.v0v8v0-alpha2.reagent.debug.tracking
+                 mranderson047.reagent.v0v8v0-alpha2.reagent.debug.track-console js/console)
                (str ~@forms)))))
 
 (defmacro println
@@ -77,7 +77,7 @@ as well as package name and line number. Returns x."
 
 (defmacro assert-component [value]
   `(assert (comp/reagent-component? ~value)
-           (str "Expected a mranderson047.reagent.v0v7v0.reagent component, not "
+           (str "Expected a mranderson047.reagent.v0v8v0-alpha2.reagent component, not "
                 (pr-str ~value))))
 
 (defmacro assert-js-object [value]

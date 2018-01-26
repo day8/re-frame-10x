@@ -1,21 +1,20 @@
-(ns mranderson047.reagent.v0v7v0.reagent.core
-  (:require-macros [mranderson047.reagent.v0v7v0.reagent.core])
+(ns mranderson047.reagent.v0v8v0-alpha2.reagent.core
+  (:require-macros [mranderson047.reagent.v0v8v0-alpha2.reagent.core])
   (:refer-clojure :exclude [partial atom flush])
-  (:require [mranderson047.reagent.v0v7v0.reagent.impl.template :as tmpl]
-            [mranderson047.reagent.v0v7v0.reagent.impl.component :as comp]
-            [mranderson047.reagent.v0v7v0.reagent.impl.util :as util]
-            [mranderson047.reagent.v0v7v0.reagent.impl.batching :as batch]
-            [mranderson047.reagent.v0v7v0.reagent.ratom :as ratom]
-            [mranderson047.reagent.v0v7v0.reagent.debug :as deb :refer-macros [dbg prn
+  (:require [react :as react]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.impl.template :as tmpl]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.impl.component :as comp]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.impl.util :as util]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.impl.batching :as batch]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.ratom :as ratom]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.debug :as deb :refer-macros [dbg prn
                                                   assert-some assert-component
                                                   assert-js-object assert-new-state
                                                   assert-callable]]
-            [mranderson047.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]
-            [mranderson047.reagent.v0v7v0.reagent.dom :as dom]))
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.interop :refer-macros [$ $!]]
+            [mranderson047.reagent.v0v8v0-alpha2.reagent.dom :as dom]))
 
 (def is-client util/is-client)
-
-(def react util/react)
 
 (defn create-element
   "Create a native React element, by calling React.createElement directly.
@@ -34,13 +33,13 @@
    (create-element type nil))
   ([type props]
    (assert-js-object props)
-   ($ react createElement type props))
+   (react/createElement type props))
   ([type props child]
    (assert-js-object props)
-   ($ react createElement type props child))
+   (react/createElement type props child))
   ([type props child & children]
    (assert-js-object props)
-   (apply ($ react :createElement) type props child children)))
+   (apply react/createElement type props child children)))
 
 (defn as-element
   "Turns a vector of Hiccup syntax into a React element. Returns form
@@ -51,9 +50,11 @@
 (defn adapt-react-class
   "Returns an adapter for a native React class, that may be used
   just like a Reagent component function or class in Hiccup forms."
-  [c]
-  (assert-some c "Component")
-  (tmpl/adapt-react-class c))
+  ([c opts]
+   (assert-some c "Component")
+   (tmpl/adapt-react-class c opts))
+  ([c]
+   (adapt-react-class c {})))
 
 (defn reactify-component
   "Returns an adapter for a Reagent component, that may be used from
