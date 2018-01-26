@@ -238,7 +238,7 @@
   :<- [:epochs/current-epoch-id]
   :<- [:epochs/match-ids]
   (fn [[current ids]]
-    (and (pos? (count ids))
+    (and (< 1 (count ids))
          (or (nil? current)
              (> current (nth ids 0))))))
 
@@ -247,7 +247,7 @@
   :<- [:epochs/current-epoch-id]
   :<- [:epochs/match-ids]
   (fn [[current ids]]
-    (and (pos? (count ids))
+    (and (< 1 (count ids))
          (some? current)
          (< current (utils/last-in-vec ids)))))
 
