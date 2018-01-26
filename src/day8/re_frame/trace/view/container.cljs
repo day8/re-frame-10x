@@ -99,7 +99,7 @@
                              :overflow-x       "hidden"
                              :overflow-y       "auto"
                              :background-color "white"}
-                  :children [[:span.event-header (prn-str current-event)]]]
+                  :children [[:span.event-header (subs (prn-str current-event) 0 400)]]]
                  [:span.arrow (if newer-epochs-available?
                                 {:on-click #(rf/dispatch [:epochs/next-epoch])}
                                 {:class "arrow__disabled"})

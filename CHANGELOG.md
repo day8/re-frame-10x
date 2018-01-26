@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file. This change
 ### Changed
 
 * Updated bundled re-frame version to 0.10.3, and bundled reagent version to 0.7.0. This shouldn't impact your project's dependencies as they are source bundled via [mranderson](https://github.com/benedekfazekas/mranderson).
+* Add hyperlinks to docs
+
+### Fixed
+
+* Set a print limit of 400 characters in the event header, to prevent very large events from DOSing the host application.
+* XML encode # character in SVGs, fixing [#130](https://github.com/Day8/re-frame-trace/issues/130).
+* Fix the reset tracing button in the traces panel.
+* Fix a bug when there is only one traced event, re-frame-trace would allow you to go back an epoch, throwing an exception.
 
 ## [0.1.15] - 2018-01-24
 

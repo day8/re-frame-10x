@@ -73,11 +73,10 @@
                                 [:td.trace--details-tags {:col-span 2
                                                           :on-click #(.log js/console tags)}
                                  [:div.trace--details-tags-text
-                                  (let [tag-str           (with-out-str (pprint/pprint tags))
-                                        string-size-limit 400]
-                                    (if (< string-size-limit (count tag-str))
-                                      (str (subs tag-str 0 string-size-limit) " ...")
-                                      tag-str))]]
+                                  (let [tag-str (prn-str tags)]
+                                    (str (subs tag-str 0 400)
+                                         (when (< 400 (count tag-str))
+                                           " ...")))]]
                                 [:td.trace--meta.trace--details-icon
                                  {:on-click #(.log js/console tags)}]]))))))))
 
