@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+
+
+## [0.1.16] - 2018-01-26
+
 ### Added
 
 * Setting to control how many epochs are retained
