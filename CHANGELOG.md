@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Changed
+
+* The version of Garden that re-frame-trace uses is now bundled as a source dependency so you should no longer get conflicts.
+
 ### Fixed
 
 * External windows not loading
