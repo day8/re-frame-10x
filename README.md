@@ -143,6 +143,12 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 * Try a `lein clean`
 * Make sure you have followed all the installation steps.
 
+### If re-frame-trace throws an exception on startup
+
+* Reset the settings to factory defaults in the settings panel
+* If you can't load the settings panel, run `day8.re_frame.trace.factory_reset_BANG_()` in the JavaScript console.
+* If neither of those work, remove all of the keys with the prefix `day8.re-frame.trace` from your browser's Local Storage.
+
 ## How does it work?
 
 re-frame is instrumented - all important activity generates trace data. `re-frame-trace` consumes this trace data and renders useful visualisations of the `re-frame` process. Currently, re-frame's tracing capabilities are in alpha and are subject to change at any time. We're testing the utility of the the trace by building an app on top. 

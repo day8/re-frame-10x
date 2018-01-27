@@ -238,3 +238,6 @@
 
 (defn init-db! []
   (trace.db/init-db))
+
+(defn ^:export factory-reset! []
+  (rf/dispatch [:settings/factory-reset]))
