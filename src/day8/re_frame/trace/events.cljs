@@ -485,33 +485,34 @@
 (rf/reg-event-db
   :epochs/receive-new-traces
   (fn [db [_ new-traces]]
-    (if-let [new-traces (->> (filter log-trace? new-traces)
-                             (sort-by :id))]
+    (if-let [filtered-traces (->> (filter log-trace? new-traces)
+                                  (sort-by :id))]
       (let [number-of-epochs-to-retain (get-in db [:settings :number-of-epochs])
             events-to-ignore           (->> (get-in db [:settings :ignored-events]) vals (map :event-id) set)
             previous-traces            (get-in db [:traces :all-traces] [])
-            all-traces                 (reduce conj previous-traces new-traces)
-            matches                    (:matches (metam/parse-traces all-traces))
-            matches                    (remove (fn [match]
+            parse-state                (get-in db [:epochs :parse-state] metam/initial-parse-state)
+            all-traces                 (reduce conj previous-traces filtered-traces)
+            parse-state                (metam/parse-traces parse-state filtered-traces)
+            new-matches                (:partitions parse-state)
+            previous-matches           (get-in db [:epochs :matches] [])
+            parse-state                (assoc parse-state :partitions []) ;; Remove matches we know about
+            new-matches                (remove (fn [match]
                                                  (let [event (get-in (metam/matched-event match) [:tags :event])]
-                                                   (contains? events-to-ignore (first event)))) matches)
-            retained-epochs            (take-last number-of-epochs-to-retain matches)
-            first-id-to-retain         (:id (ffirst retained-epochs))
+                                                   (contains? events-to-ignore (first event)))) new-matches)
+            all-matches                (reduce conj previous-matches new-matches)
+            retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
+            first-id-to-retain         (:id (ffirst retained-matches))
             retained-traces            (into [] (drop-while #(< (:id %) first-id-to-retain)) all-traces)]
-        (rf/dispatch [:epochs/update-epochs {:matches retained-epochs}])
-        (assoc-in db [:traces :all-traces] retained-traces))
+        (-> db
+            (assoc-in [:traces :all-traces] retained-traces)
+            (update :epochs (fn [epochs]
+                              (assoc epochs
+                                :matches retained-matches
+                                :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
+                                :match-ids (mapv first-match-id retained-matches)
+                                :parse-state parse-state)))))
       ;; Else
       db)))
-
-(rf/reg-event-db
-  :epochs/update-epochs
-  [(rf/path [:epochs])]
-  (fn [epochs [_ rt]]
-    (let [matches (:matches rt)]
-      (assoc epochs
-        :matches matches
-        :matches-by-id (into {} (map (juxt first-match-id identity)) matches)
-        :match-ids (mapv first-match-id matches)))))
 
 (rf/reg-event-fx
   :epochs/previous-epoch

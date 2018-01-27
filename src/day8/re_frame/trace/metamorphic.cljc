@@ -185,50 +185,51 @@
 (defn quiescent? [event]
   (= :reagent/quiescent (:op-type event)))
 
-(defn parse-traces [traces]
-  (let [partitions (reduce
-                     (fn [state event]
-                       (let [current-match  (:current-match state)
-                             previous-event (:previous-event state)
-                             no-match?      (nil? current-match)]
-                         (-> (cond
+(def initial-parse-state
+  {:current-match  nil
+   :previous-event nil
+   :partitions     []})
 
-                               ;; No current match yet, check if this is the start of an epoch
-                               no-match?
-                               (if (start-of-epoch? event)
-                                 (assoc state :current-match [event])
-                                 state)
+(defn parse-traces [parse-state traces]
+  (reduce
+    (fn [state event]
+      (let [current-match  (:current-match state)
+            previous-event (:previous-event state)
+            no-match?      (nil? current-match)]
+        (-> (cond
 
-                               ;; We are in an epoch match, and reagent has gone to a quiescent state
-                               (quiescent? event)
-                               (-> state
-                                   (update :partitions conj (conj current-match event))
-                                   (assoc :current-match nil))
+              ;; No current match yet, check if this is the start of an epoch
+              no-match?
+              (if (start-of-epoch? event)
+                (assoc state :current-match [event])
+                state)
 
-                               ;; We are in an epoch match, and we have started a new epoch
-                               ;; The previously seen event was the last event of the old epoch,
-                               ;; and we need to start a new one from this event.
-                               (start-of-epoch-and-prev-end? event state)
-                               (-> state
-                                   (update :partitions conj (conj current-match previous-event))
-                                   (assoc :current-match [event]))
+              ;; We are in an epoch match, and reagent has gone to a quiescent state
+              (quiescent? event)
+              (-> state
+                  (update :partitions conj (conj current-match event))
+                  (assoc :current-match nil))
 
-                               (event-run? event)
-                               (update state :current-match conj event)
+              ;; We are in an epoch match, and we have started a new epoch
+              ;; The previously seen event was the last event of the old epoch,
+              ;; and we need to start a new one from this event.
+              (start-of-epoch-and-prev-end? event state)
+              (-> state
+                  (update :partitions conj (conj current-match previous-event))
+                  (assoc :current-match [event]))
+
+              (event-run? event)
+              (update state :current-match conj event)
 
 
-                               :else
-                               state
-                               ;; Add a timeout/warning if a match goes on for more than a second?
+              :else
+              state
+              ;; Add a timeout/warning if a match goes on for more than a second?
 
-                               )
-                             (assoc :previous-event event))))
-                     {:current-match  nil
-                      :previous-event nil
-                      :partitions     []}
-                     traces)
-        matches    (:partitions partitions)]
-    {:matches matches}))
+              )
+            (assoc :previous-event event))))
+    parse-state
+    traces))
 
 (defn matched-event [match]
   (->> match
