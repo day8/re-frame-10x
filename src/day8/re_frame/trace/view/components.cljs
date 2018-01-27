@@ -225,7 +225,7 @@
                    (number? data)
                    (boolean? data)
                    (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
-          @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj [] 0)))]])))
+          @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]])))
 
 (defn tag [class label]
   [rc/box

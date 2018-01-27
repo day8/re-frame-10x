@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This change
 ### Fixed
 
 * External windows not loading
+* All app-db and subscription path expansions are now independent of each other [#134](https://github.com/Day8/re-frame-trace/issues/134).
 
 
 

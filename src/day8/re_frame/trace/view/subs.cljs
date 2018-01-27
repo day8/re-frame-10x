@@ -171,7 +171,9 @@
                                         :overflow-x "auto"
                                         :overflow-y "hidden"}
                                 :children [[components/simple-render
-                                            (:value pod-info)]]])]
+                                            (:value pod-info)
+                                            ["sub-path" path]
+                                            ]]])]
                             [animated/component
                              (animated/v-box-options {:enter-animation "accordionVertical"
                                                       :leave-animation "accordionVertical"
