@@ -1,6 +1,6 @@
 (ns day8.re-frame.trace.common-styles
-  (:require [garden.units :refer [px em]]
-            [garden.compiler :refer [render-css]]))
+  (:require [mranderson047.garden.v1v3v3.garden.units :refer [px em]]
+            [mranderson047.garden.v1v3v3.garden.compiler :refer [render-css]]))
 
 ;; TODO: Switch these to BM (or just use BM defs if available)
 

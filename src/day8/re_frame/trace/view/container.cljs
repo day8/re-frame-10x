@@ -10,8 +10,8 @@
             [day8.re-frame.trace.view.timing :as timing]
             [day8.re-frame.trace.view.debug :as debug]
             [day8.re-frame.trace.view.settings :as settings]
-            [garden.core :refer [css style]]
-            [garden.units :refer [px]]
+            [mranderson047.garden.v1v3v3.garden.core :refer [css style]]
+            [mranderson047.garden.v1v3v3.garden.units :refer [px]]
             [re-frame.trace]
             [day8.re-frame.trace.utils.re-com :as rc]
             [day8.re-frame.trace.common-styles :as common]))

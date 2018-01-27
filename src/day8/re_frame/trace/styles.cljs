@@ -1,9 +1,9 @@
 (ns day8.re-frame.trace.styles
   (:require-macros [day8.re-frame.trace.utils.macros :as macros])
-  (:require [garden.core :as garden]
-            [garden.units :refer [em px percent]]
-            [garden.color :as color]
-            [garden.selectors :as s]
+  (:require [mranderson047.garden.v1v3v3.garden.core :as garden]
+            [mranderson047.garden.v1v3v3.garden.units :refer [em px percent]]
+            [mranderson047.garden.v1v3v3.garden.color :as color]
+            [mranderson047.garden.v1v3v3.garden.selectors :as s]
             [day8.re-frame.trace.common-styles :as common]
             [day8.re-frame.trace.utils.re-com :as rc]
             [day8.re-frame.trace.view.app-db :as app-db]

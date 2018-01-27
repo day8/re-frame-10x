@@ -7,7 +7,6 @@
                  [reagent "0.6.0" :scope "provided"]
                  [re-frame "0.10.3" :scope "provided"]
                  [binaryage/devtools "0.9.4"]
-                 [garden "1.3.3"]
                  [cljsjs/react-flip-move "2.9.17-0"]]
   :plugins [[thomasa/mranderson "0.4.7"]
             [lein-less "RELEASE"]]
@@ -46,4 +45,6 @@
                                                                               cljsjs/react-dom-server
                                                                               cljsjs/create-react-class
                                                                               org.clojure/tools.logging
-                                                                              net.cgrand/macrovich]]]}})
+                                                                              net.cgrand/macrovich]]
+                                                   ^:source-dep [garden "1.3.3"
+                                                                 :exclusions [com.yahoo.platform.yui/yuicompressor]]]}})
