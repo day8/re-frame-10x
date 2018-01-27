@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Fixed
+
+* External windows not loading
+
 
 
 ## [0.1.16] - 2018-01-26

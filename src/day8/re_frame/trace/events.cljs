@@ -198,27 +198,28 @@
 ;; Global
 
 (defn mount [popup-window popup-document]
-  (let [app (.getElementById popup-document " --re-frame-trace-- ")
+  (let [app (.getElementById popup-document "--re-frame-trace--")
         doc js/document]
     (styles/inject-trace-styles popup-document)
-    (goog.object/set popup-window " onunload " #(rf/dispatch [:global/external-closed]))
+    (goog.object/set popup-window "onunload" #(rf/dispatch [:global/external-closed]))
     (r/render
       [(r/create-class
-         {:display-name   " devtools outer external "
+         {:display-name   "devtools outer external"
           :reagent-render (fn []
                             [container/devtools-inner traces {:panel-type :popup}
                              ])})]
       app)))
 
 (defn open-debugger-window
-  " Copied from re-frisk.devtool/open-debugger-window "
+  "Copied from re-frisk.devtool/open-debugger-window"
   []
   (let [{:keys [ext_height ext_width]} (:prefs {})
-        w (js/window.open " " " Debugger " (str " width= " (or ext_width 800) ", height= " (or ext_height 800)
-                                                ", resizable=yes, scrollbars=yes, status=no, directories=no, toolbar=no, menubar=no "))
+        w (js/window.open "" "Debugger" (str "width=" (or ext_width 800) ",height=" (or ext_height 800)
+                                             ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
+
         d (.-document w)]
     (.open d)
-    (.write d " <head></head><body style= \"margin: 0px     ;\"><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
+    (.write d "<head></head><body style=\"margin: 0px;\"><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
     (goog.object/set w "onload" #(mount w d))
     (.close d)))
 
