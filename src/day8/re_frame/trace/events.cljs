@@ -14,10 +14,6 @@
             [day8.re-frame.trace.metamorphic :as metam]
             [re-frame.trace]))
 
-(def default-number-of-epochs-to-retain 5)
-
-(defonce traces (r/atom []))
-
 (defn log-trace? [trace]
   (let [render-operation? (or (= (:op-type trace) :render)
                               (= (:op-type trace) :componentWillUnmount))
@@ -121,7 +117,7 @@
     (let [num (js/parseInt num-str)
           num (if (and (not (js/isNaN num)) (pos-int? num))
                 num
-                default-number-of-epochs-to-retain)]
+                5)]
       (localstorage/save! "retained-epochs" num)
       (assoc-in db [:settings :number-of-epochs] num))))
 
@@ -206,8 +202,7 @@
       [(r/create-class
          {:display-name   "devtools outer external"
           :reagent-render (fn []
-                            [container/devtools-inner traces {:panel-type :popup}
-                             ])})]
+                            [container/devtools-inner {:panel-type :popup}])})]
       app)))
 
 (defn open-debugger-window
@@ -494,37 +489,17 @@
                                (sort-by :id))]
       (let [number-of-epochs-to-retain (get-in db [:settings :number-of-epochs])
             events-to-ignore           (->> (get-in db [:settings :ignored-events]) vals (map :event-id) set)
-
-
-            #_ #_ total-traces               (get-in db [:traces :total-traces])
-            #_ #_ new-total-traces (+ total-traces (count new-traces))]
-        #_(swap! total-traces + (count new-traces))
-        ;; TODO: add this back in once the algorithm is better defined
-        #_(swap! traces
-               (fn [existing]
-                 (let [new  (reduce conj existing new-traces)
-                       size (count new)]
-                   (if (< 8000 size)
-                     (let [new2 (subvec new (- size 4000))]
-                       (if (< new-total-traces 40000)          ;; Create a new vector to avoid structurally sharing all traces forever
-                         (do (comment "Total traces set to 0")                               ;(reset! total-traces 0)
-                             (into [] new2))))
-                     new))))
-        (swap! traces (fn [existing] (reduce conj existing new-traces)))
-        ;; TODO: there is a bit of double handling here with retaining the last n epochs,
-        ;; that will be cleaned up when the epoch parsing is refactored.
-        (let [matches            (:matches (metam/parse-traces @traces))
-              matches            (remove (fn [match]
-                                           (let [event (get-in (metam/matched-event match) [:tags :event])]
-                                             (contains? events-to-ignore (first event)))) matches)
-              retained-epochs    (take-last number-of-epochs-to-retain matches)
-              first-id-to-retain (:id (ffirst retained-epochs))
-              new-traces         (into [] (drop-while #(< (:id %) first-id-to-retain)) @traces)]
-          (reset! traces new-traces)
-          ;; Reset total-traces count to new traces
-          #_(reset! total-traces (count new-traces))
-          (rf/dispatch [:traces/update-traces new-traces])
-          (rf/dispatch [:epochs/update-epochs {:matches retained-epochs}]))))
+            existing-traces            (get-in db [:traces :all-traces])
+            new-traces                 (reduce conj existing-traces new-traces)
+            matches                    (:matches (metam/parse-traces new-traces))
+            matches                    (remove (fn [match]
+                                                 (let [event (get-in (metam/matched-event match) [:tags :event])]
+                                                   (contains? events-to-ignore (first event)))) matches)
+            retained-epochs            (take-last number-of-epochs-to-retain matches)
+            first-id-to-retain         (:id (ffirst retained-epochs))
+            new-traces                 (into [] (drop-while #(< (:id %) first-id-to-retain)) new-traces)]
+        (rf/dispatch [:traces/update-traces new-traces])
+        (rf/dispatch [:epochs/update-epochs {:matches retained-epochs}])))
     db))
 
 (rf/reg-event-db
@@ -567,7 +542,6 @@
   :epochs/reset
   (fn [db]
     (re-frame.trace/reset-tracing!)
-    (reset! traces [])
     (dissoc db :epochs :traces)))
 
 (rf/reg-event-db

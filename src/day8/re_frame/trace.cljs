@@ -114,18 +114,18 @@
             ;; Schedule a trace to be emitted after a render if there is nothing else scheduled after that render.
             ;; This signals the end of the epoch.
 
-           #_ (swap! do-after-render-trace-scheduled?
-                   (fn [scheduled?]
-                     (js/console.log "Setting up scheduled after" scheduled?)
-                     (if scheduled?
-                       scheduled?
-                       (do (reagent.impl.batching/do-after-render ;; a do-after-flush would probably be a better spot to put this if it existed.
-                             (fn []
-                               (js/console.log "Do after render" reagent.impl.batching/render-queue)
-                               (reset! do-after-render-trace-scheduled? false)
-                               (when (false? (.-scheduled? reagent.impl.batching/render-queue))
-                                 (trace/with-trace {:op-type :reagent/quiescent}))))
-                           true))))
+            #_(swap! do-after-render-trace-scheduled?
+                     (fn [scheduled?]
+                       (js/console.log "Setting up scheduled after" scheduled?)
+                       (if scheduled?
+                         scheduled?
+                         (do (reagent.impl.batching/do-after-render ;; a do-after-flush would probably be a better spot to put this if it existed.
+                               (fn []
+                                 (js/console.log "Do after render" reagent.impl.batching/render-queue)
+                                 (reset! do-after-render-trace-scheduled? false)
+                                 (when (false? (.-scheduled? reagent.impl.batching/render-queue))
+                                   (trace/with-trace {:op-type :reagent/quiescent}))))
+                             true))))
             (real-next-tick (fn []
                               (trace/with-trace {:op-type :raf}
                                                 (f)
@@ -136,13 +136,13 @@
                                                 )))))
 
     #_(set! reagent.impl.batching/schedule
-          (fn []
-            (reagent.impl.batching/do-after-render
-              (fn []
-                (when @do-after-render-trace-scheduled?
-                  (trace/with-trace {:op-type :do-after-render})
-                  (reset! do-after-render-trace-scheduled? false))))
-            (real-schedule)))))
+            (fn []
+              (reagent.impl.batching/do-after-render
+                (fn []
+                  (when @do-after-render-trace-scheduled?
+                    (trace/with-trace {:op-type :do-after-render})
+                    (reset! do-after-render-trace-scheduled? false))))
+              (real-schedule)))))
 
 
 (defn init-tracing!
@@ -157,7 +157,7 @@
 
 (def ease-transition "left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out")
 
-(defn devtools-outer [traces opts]
+(defn devtools-outer [opts]
   ;; Add clear button
   ;; Filter out different trace types
   (let [position             (r/atom :right)
@@ -190,7 +190,7 @@
                                    (reset! window-width new-window-width))))
         handle-mouse-up      (fn [e] (reset! dragging? false))]
     (r/create-class
-      {:component-did-mount   (fn []
+      {:component-did-mount    (fn []
                                  (js/window.addEventListener "keydown" handle-keys)
                                  (js/window.addEventListener "mousemove" handle-mousemove)
                                  (js/window.addEventListener "mouseup" handle-mouse-up)
@@ -217,7 +217,7 @@
                                               :transition transition}}
                                      [:div.panel-resizer {:style         (resizer-style draggable-area)
                                                           :on-mouse-down #(reset! dragging? true)}]
-                                     [container/devtools-inner traces opts]]]))})))
+                                     [container/devtools-inner opts]]]))})))
 
 
 (defn panel-div []
@@ -233,8 +233,8 @@
 
 (defn inject-devtools! []
   (styles/inject-trace-styles js/document)
-  (r/render [devtools-outer events/traces {:panel-type :inline
-                                           :debug? debug?}] (panel-div)))
+  (r/render [devtools-outer {:panel-type :inline
+                             :debug?     debug?}] (panel-div)))
 
 (defn init-db! []
   (trace.db/init-db))

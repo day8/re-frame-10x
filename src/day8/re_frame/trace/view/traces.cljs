@@ -80,7 +80,7 @@
                                 [:td.trace--meta.trace--details-icon
                                  {:on-click #(.log js/console tags)}]]))))))))
 
-(defn render [traces]
+(defn render []
   (let [filter-input            (r/atom "")
         filter-items            (rf/subscribe [:traces/filter-items])
         filter-type             (r/atom :contains)

@@ -2,7 +2,7 @@
   (:require [day8.re-frame.trace.utils.re-com :as rc]
             [day8.re-frame.trace.metamorphic :as metam]))
 
-(defn render [traces]
+(defn render []
   [rc/v-box
    :padding "12px 0px"
    :children [[rc/label :label "Event"]

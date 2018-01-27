@@ -108,7 +108,7 @@
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))
 
-(defn devtools-inner [traces opts]
+(defn devtools-inner [opts]
   (let [selected-tab      (rf/subscribe [:settings/selected-tab])
         panel-type        (:panel-type opts)
         external-window?  (= panel-type :popup)
@@ -156,11 +156,11 @@
               ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
               }
       :children [(case @selected-tab
-                   :event    [event/render traces]
+                   :event    [event/render]
                    :app-db   [app-db/render db/app-db]
                    :subs     [subs/render]
                    :views    [views/render]
-                   :traces   [traces/render traces]
+                   :traces   [traces/render]
                    :timing   [timing/render]
                    :debug    [debug/render]
                    :settings [settings/render]
