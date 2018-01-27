@@ -6,10 +6,12 @@ All notable changes to this project will be documented in this file. This change
 ### Added
 
 * Debugging instructions if re-frame-trace fails to start.
+* Setting to drop low level traces. This reduces the memory overhead of re-frame-trace as we can drop more traces that you are unlikely to want most of the time.
 
 ### Changed
 
-* The version of Garden that re-frame-trace uses is now bundled as a source dependency so you should no longer get conflicts.
+* The version of Garden that re-frame-trace uses is now bundled as a source dependency so you should no longer get conflicts if you use Garden 2.
+* Refactored re-frame-trace trace parsing internals to incrementally parse new traces.
 
 ### Fixed
 

@@ -12,6 +12,7 @@
         external-window? (localstorage/get "external-window?" false)
         using-trace? (localstorage/get "using-trace?" true)
         ignored-events (localstorage/get "ignored-events" {})
+        low-level-trace (localstorage/get "low-level-trace" {:reagent true :re-frame true})
         filtered-view-trace (localstorage/get "filtered-view-trace" (let [id1 (random-uuid)
                                                                           id2 (random-uuid)]
                                                                       {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
@@ -25,6 +26,7 @@
     (rf/dispatch [:settings/selected-tab selected-tab])
     (rf/dispatch [:settings/set-ignored-events ignored-events])
     (rf/dispatch [:settings/set-filtered-view-trace filtered-view-trace])
+    (rf/dispatch [:settings/set-low-level-trace low-level-trace])
     (rf/dispatch [:settings/set-number-of-retained-epochs num-epochs])
     (when external-window?
       (rf/dispatch [:global/launch-external]))

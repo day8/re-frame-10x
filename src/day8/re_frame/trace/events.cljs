@@ -185,9 +185,17 @@
   (fn [_ [_ ignored-events]]
     ignored-events))
 
+(def low-level-trace-mw [(rf/path [:settings :low-level-trace]) (rf/after #(localstorage/save! "low-level-trace" %))])
+
+(rf/reg-event-db
+  :settings/set-low-level-trace
+  low-level-trace-mw
+  (fn [_ [_ low-level]]
+    low-level))
+
 (rf/reg-event-db
   :settings/low-level-trace
-  [(rf/path [:settings :low-level-trace])]
+  low-level-trace-mw
   (fn [low-level [_ trace-type capture?]]
     (assoc low-level trace-type capture?)))
 
@@ -491,6 +499,7 @@
             events-to-ignore           (->> (get-in db [:settings :ignored-events]) vals (map :event-id) set)
             previous-traces            (get-in db [:traces :all-traces] [])
             parse-state                (get-in db [:epochs :parse-state] metam/initial-parse-state)
+            {drop-re-frame :re-frame drop-reagent :reagent} (get-in db [:settings :low-level-trace])
             all-traces                 (reduce conj previous-traces filtered-traces)
             parse-state                (metam/parse-traces parse-state filtered-traces)
             new-matches                (:partitions parse-state)
@@ -502,7 +511,9 @@
             all-matches                (reduce conj previous-matches new-matches)
             retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
             first-id-to-retain         (:id (ffirst retained-matches))
-            retained-traces            (into [] (drop-while #(< (:id %) first-id-to-retain)) all-traces)]
+            retained-traces            (into [] (comp (drop-while #(< (:id %) first-id-to-retain))
+                                                      (remove (fn [trace] (or (when drop-reagent (metam/low-level-reagent-trace? trace))
+                                                                              (when drop-re-frame (metam/low-level-re-frame-trace? trace)))))) all-traces)]
         (-> db
             (assoc-in [:traces :all-traces] retained-traces)
             (update :epochs (fn [epochs]

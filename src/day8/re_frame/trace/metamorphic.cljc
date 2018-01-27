@@ -142,6 +142,18 @@
 (defn subscription-not-run? [trace]
   false)
 
+(defn low-level-re-frame-trace?
+  "Is this part of re-frame internals?"
+  [trace]
+  (case (:op-type trace)
+    (:re-frame.router/fsm-trigger) true
+    false))
+
+(defn low-level-reagent-trace?
+  "Is this part of reagent internals?"
+  [trace]
+  (= :componentWillUnmount (:op-type trace)))
+
 (defn render? [trace]
   (= :render (:op-type trace)))
 

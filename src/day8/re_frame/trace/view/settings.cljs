@@ -149,9 +149,8 @@
                 [:p "Nominate one or more namespaces."]]
                settings-box-131]
 
-              ;; TODO: remove low level trace
-              #_[rc/line]
-              #_(let [low-level-trace @(rf/subscribe [:settings/low-level-trace])]
+              [rc/line]
+              (let [low-level-trace @(rf/subscribe [:settings/low-level-trace])]
                 [settings-box
                 [[rc/label :label "Remove low level trace"]
                  [rc/checkbox
