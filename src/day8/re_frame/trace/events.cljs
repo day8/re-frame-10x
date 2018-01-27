@@ -485,22 +485,23 @@
 (rf/reg-event-db
   :epochs/receive-new-traces
   (fn [db [_ new-traces]]
-    (when-let [new-traces (->> (filter log-trace? new-traces)
-                               (sort-by :id))]
+    (if-let [new-traces (->> (filter log-trace? new-traces)
+                             (sort-by :id))]
       (let [number-of-epochs-to-retain (get-in db [:settings :number-of-epochs])
             events-to-ignore           (->> (get-in db [:settings :ignored-events]) vals (map :event-id) set)
-            existing-traces            (get-in db [:traces :all-traces])
-            new-traces                 (reduce conj existing-traces new-traces)
-            matches                    (:matches (metam/parse-traces new-traces))
+            previous-traces            (get-in db [:traces :all-traces] [])
+            all-traces                 (reduce conj previous-traces new-traces)
+            matches                    (:matches (metam/parse-traces all-traces))
             matches                    (remove (fn [match]
                                                  (let [event (get-in (metam/matched-event match) [:tags :event])]
                                                    (contains? events-to-ignore (first event)))) matches)
             retained-epochs            (take-last number-of-epochs-to-retain matches)
             first-id-to-retain         (:id (ffirst retained-epochs))
-            new-traces                 (into [] (drop-while #(< (:id %) first-id-to-retain)) new-traces)]
-        (rf/dispatch [:traces/update-traces new-traces])
-        (rf/dispatch [:epochs/update-epochs {:matches retained-epochs}])))
-    db))
+            retained-traces            (into [] (drop-while #(< (:id %) first-id-to-retain)) all-traces)]
+        (rf/dispatch [:epochs/update-epochs {:matches retained-epochs}])
+        (assoc-in db [:traces :all-traces] retained-traces))
+      ;; Else
+      db)))
 
 (rf/reg-event-db
   :epochs/update-epochs
@@ -543,12 +544,6 @@
   (fn [db]
     (re-frame.trace/reset-tracing!)
     (dissoc db :epochs :traces)))
-
-(rf/reg-event-db
-  :traces/update-traces
-  [(rf/path [:traces :all-traces])]
-  (fn [_ [_ traces]]
-    traces))
 
 ;;
 
