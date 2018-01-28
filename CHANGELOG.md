@@ -13,12 +13,14 @@ All notable changes to this project will be documented in this file. This change
 * The version of Garden that re-frame-trace uses is now bundled as a source dependency so you should no longer get conflicts if you use Garden 2.
 * Refactored re-frame-trace trace parsing internals to incrementally parse new traces.
 * Clicking on a trace's expanded information now prints the entire trace to the console instead of just the tags.
+* Improved efficency of rendering views that do not need to filter out view namespaces.
 
 ### Fixed
 
 * External windows not loading
 * All app-db and subscription path expansions are now independent of each other [#134](https://github.com/Day8/re-frame-trace/issues/134).
 * Layer 2/3 calculations are more accurate now. We now use the last seen layer level when a subscription runs, to inform it's layer level if it was created or destroyed.
+* View namespaces that are ignored are no longer shown when showing traces for all epochs. 
 
 
 

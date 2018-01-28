@@ -514,13 +514,16 @@
             subscription-info          (->> new-traces
                                             (filter metam/subscription-re-run?)
                                             (reduce (fn [state trace]
-                                                      ;; TODO: can we take any shortcuts by assuming that a sub with
+                                                      ;; Can we take any shortcuts by assuming that a sub with
                                                       ;; multiple input signals is a layer 3? I don't *think* so because
                                                       ;; one of those input signals could be a naughty subscription to app-db
                                                       ;; directly.
-                                                      ;; If any of the input signals are app-db, it is a layer 2 sub, else 3
+                                                      ;; If we knew when subscription handlers were loaded/reloaded then
+                                                      ;; we could avoid doing most of this work, and only check the input
+                                                      ;; signals if we hadn't seen it before, or it had been reloaded.
                                                       (assoc-in state
                                                                 [(:operation trace) :layer]
+                                                                ;; If any of the input signals are app-db, it is a layer 2 sub, else 3
                                                                 (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
                                                                   2
                                                                   3)))

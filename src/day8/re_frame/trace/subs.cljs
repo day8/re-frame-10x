@@ -146,27 +146,35 @@
     (count traces)))
 
 (rf/reg-sub
-  :traces/all-visible-traces
-  :<- [:traces/all-traces]
-  :<- [:settings/filtered-view-trace]
-  (fn [[all-traces filtered-views] _]
-    (let [munged-ns (->> filtered-views
-                         (map (comp munge :ns-str))
-                         (set))]
-      (into []
-            ;; Filter out view namespaces we don't care about.
-            (remove
-              (fn [trace] (and (metam/render? trace)
-                               (contains? munged-ns (subs (:operation trace) 0 (str/last-index-of (:operation trace) "."))))))
-            all-traces))))
-
-(rf/reg-sub
   :traces/current-event-traces
-  :<- [:traces/all-visible-traces]
+  :<- [:traces/all-traces]
   :<- [:epochs/beginning-trace-id]
   :<- [:epochs/ending-trace-id]
   (fn [[traces beginning ending] _]
     (into [] (filter #(<= beginning (:id %) ending)) traces)))
+
+(defn filter-ignored-views [[traces filtered-views] _]
+  (let [munged-ns (->> filtered-views
+                       (map (comp munge :ns-str))
+                       (set))]
+    (into []
+          ;; Filter out view namespaces we don't care about.
+          (remove
+            (fn [trace] (and (metam/render? trace)
+                             (contains? munged-ns (subs (:operation trace) 0 (str/last-index-of (:operation trace) "."))))))
+          traces)))
+
+(rf/reg-sub
+  :traces/current-event-visible-traces
+  :<- [:traces/current-event-traces]
+  :<- [:settings/filtered-view-trace]
+  filter-ignored-views)
+
+(rf/reg-sub
+  :traces/all-visible-traces
+  :<- [:traces/all-traces]
+  :<- [:settings/filtered-view-trace]
+  filter-ignored-views)
 
 (rf/reg-sub
   :traces/show-epoch-traces?

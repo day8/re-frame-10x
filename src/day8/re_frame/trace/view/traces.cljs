@@ -89,8 +89,8 @@
         trace-detail-expansions (rf/subscribe [:traces/expansions])
         beginning               (rf/subscribe [:epochs/beginning-trace-id])
         end                     (rf/subscribe [:epochs/ending-trace-id])
-        traces                  (rf/subscribe [:traces/all-traces])
-        current-traces          (rf/subscribe [:traces/current-event-traces])
+        traces                  (rf/subscribe [:traces/all-visible-traces])
+        current-traces          (rf/subscribe [:traces/current-event-visible-traces])
         show-epoch-traces?      (rf/subscribe [:traces/show-epoch-traces?])]
     (fn []
       (let [toggle-category-fn #(rf/dispatch [:traces/toggle-categories %])
