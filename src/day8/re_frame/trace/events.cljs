@@ -488,7 +488,7 @@
 
 (defn first-match-id
   [m]
-  (-> m first :id))
+  (-> m :match-info first :id))
 
 (rf/reg-event-db
   :epochs/receive-new-traces
@@ -503,7 +503,7 @@
             all-traces                 (reduce conj previous-traces filtered-traces)
             parse-state                (metam/parse-traces parse-state filtered-traces)
             new-matches                (:partitions parse-state)
-            previous-matches           (get-in db [:epochs :matches] [])
+            previous-matches           (get-in db [:epochs :matches-and-subs] [])
             parse-state                (assoc parse-state :partitions []) ;; Remove matches we know about
             new-matches                (remove (fn [match]
                                                  (let [event (get-in (metam/matched-event match) [:tags :event])]
@@ -549,8 +549,8 @@
                                                      sub-state
                                                      new-matches))
 
-            ;_                          (js/console.log new-matches subscription-match-state)
-            new-matches                (map (fn [match sub-match] match) new-matches subscription-match-state)
+            new-matches                (map (fn [match sub-match] {:match-info match
+                                                                   :sub-state  sub-match}) new-matches subscription-match-state)
             all-matches                (reduce conj previous-matches new-matches)
             retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
             app-db-id                  (get-in db [:app-db :reagent-id])
@@ -571,7 +571,7 @@
                                                                   2
                                                                   3)))
                                                     (get-in db [:epochs :subscription-info] {})))
-            first-id-to-retain         (:id (ffirst retained-matches))
+            first-id-to-retain         (first-match-id (first retained-matches))
             retained-traces            (into [] (comp (drop-while #(< (:id %) first-id-to-retain))
                                                       (remove (fn [trace]
                                                                 (or (when drop-reagent (metam/low-level-reagent-trace? trace))
@@ -580,11 +580,13 @@
             (assoc-in [:traces :all-traces] retained-traces)
             (update :epochs (fn [epochs]
                               (assoc epochs
-                                :matches retained-matches
-                                :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
+                                :matches (into [] (map :match-info) retained-matches)
+                                :matches-by-id (into {} (map (juxt first-match-id :match-info)) retained-matches)
                                 :match-ids (mapv first-match-id retained-matches)
                                 :parse-state parse-state
-                                :subscription-info subscription-info)))))
+                                :subscription-info subscription-info
+                                :matches-and-subs retained-matches
+                                :matches-by-id2 (into {} (map (juxt first-match-id identity)) retained-matches))))))
       ;; Else
       db)))
 

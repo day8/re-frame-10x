@@ -21,3 +21,11 @@
   "Returns a transducer that filters for :id between beginning and ending."
   [beginning ending]
   (filter #(<= beginning (:id %) ending)))
+
+(defn spy
+  ([x]
+   (js/console.log x)
+   x)
+  ([label x]
+   (js/console.log label x)
+   x))
