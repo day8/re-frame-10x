@@ -133,7 +133,7 @@
                            :model     path
                            :disabled? true]]]
               [rc/gap-f :size common/gs-12s]
-              [rc/label :label (str "Layer " layer)]
+              [rc/label :label (str "Layer " (if (some? layer) layer "?"))]
 
               ;; TODO: capture previous sub run value and allow diffing it.
               #_[rc/gap-f :size common/gs-12s]

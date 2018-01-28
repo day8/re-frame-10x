@@ -351,6 +351,12 @@
   (fn [traces]
     (filter metam/subscription? traces)))
 
+(rf/reg-sub
+  :subs/subscription-info
+  :<- [:epochs/epoch-root]
+  (fn [epoch]
+    (:subscription-info epoch)))
+
 (defn sub-sort-val
   [sub]
   (case (:type sub)
@@ -375,7 +381,8 @@
   :subs/all-subs
   :<- [:subs/all-sub-traces]
   :<- [:app-db/reagent-id]
-  (fn [[traces app-db-id]]
+  :<- [:subs/subscription-info]
+  (fn [[traces app-db-id sub-info]]
     (let [raw           (map (fn [trace] (let [pod-type  (sub-op-type->type trace)
                                                path-data (get-in trace [:tags :query-v])
                                                ;; TODO: detect layer 2/3 for sub/create and sub/destroy
@@ -385,7 +392,7 @@
                                                            3)]
                                            {:id        (str pod-type (get-in trace [:tags :reaction]))
                                             :type      pod-type
-                                            :layer     layer
+                                            :layer     (get-in sub-info [(:operation trace) :layer])
                                             :path-data path-data
                                             :path      (pr-str path-data)
                                             :value     (get-in trace [:tags :value])

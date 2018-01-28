@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file. This change
 
 * External windows not loading
 * All app-db and subscription path expansions are now independent of each other [#134](https://github.com/Day8/re-frame-trace/issues/134).
+* Layer 2/3 calculations are more accurate now. We now use the last seen layer level when a subscription runs, to inform it's layer level if it was created or destroyed.
 
 
 

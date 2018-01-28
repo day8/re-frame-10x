@@ -510,10 +510,26 @@
                                                    (contains? events-to-ignore (first event)))) new-matches)
             all-matches                (reduce conj previous-matches new-matches)
             retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
+            app-db-id                  (get-in db [:app-db :reagent-id])
+            subscription-info          (->> new-traces
+                                            (filter metam/subscription-re-run?)
+                                            (reduce (fn [state trace]
+                                                      ;; TODO: can we take any shortcuts by assuming that a sub with
+                                                      ;; multiple input signals is a layer 3? I don't *think* so because
+                                                      ;; one of those input signals could be a naughty subscription to app-db
+                                                      ;; directly.
+                                                      ;; If any of the input signals are app-db, it is a layer 2 sub, else 3
+                                                      (assoc-in state
+                                                                [(:operation trace) :layer]
+                                                                (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
+                                                                  2
+                                                                  3)))
+                                                    (get-in db [:epochs :subscription-info] {})))
             first-id-to-retain         (:id (ffirst retained-matches))
             retained-traces            (into [] (comp (drop-while #(< (:id %) first-id-to-retain))
-                                                      (remove (fn [trace] (or (when drop-reagent (metam/low-level-reagent-trace? trace))
-                                                                              (when drop-re-frame (metam/low-level-re-frame-trace? trace)))))) all-traces)]
+                                                      (remove (fn [trace]
+                                                                (or (when drop-reagent (metam/low-level-reagent-trace? trace))
+                                                                    (when drop-re-frame (metam/low-level-re-frame-trace? trace)))))) all-traces)]
         (-> db
             (assoc-in [:traces :all-traces] retained-traces)
             (update :epochs (fn [epochs]
@@ -521,7 +537,8 @@
                                 :matches retained-matches
                                 :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
                                 :match-ids (mapv first-match-id retained-matches)
-                                :parse-state parse-state)))))
+                                :parse-state parse-state
+                                :subscription-info subscription-info)))))
       ;; Else
       db)))
 
