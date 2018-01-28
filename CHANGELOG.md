@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This change
 
 * The version of Garden that re-frame-trace uses is now bundled as a source dependency so you should no longer get conflicts if you use Garden 2.
 * Refactored re-frame-trace trace parsing internals to incrementally parse new traces.
+* Clicking on a trace's expanded information now prints the entire trace to the console instead of just the tags.
 
 ### Fixed
 

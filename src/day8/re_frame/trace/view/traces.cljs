@@ -71,7 +71,7 @@
                                                     :tab-index 0}
                                 [:td]
                                 [:td.trace--details-tags {:col-span 2
-                                                          :on-click #(.log js/console tags)}
+                                                          :on-click #(.log js/console trace)}
                                  [:div.trace--details-tags-text
                                   (let [tag-str (prn-str tags)]
                                     (str (subs tag-str 0 400)
