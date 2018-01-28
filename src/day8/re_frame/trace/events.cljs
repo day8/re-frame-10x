@@ -508,10 +508,53 @@
             new-matches                (remove (fn [match]
                                                  (let [event (get-in (metam/matched-event match) [:tags :event])]
                                                    (contains? events-to-ignore (first event)))) new-matches)
+            sub-state                  {}
+
+            ;; Retrieve previous state
+            ;; Save new states, removing unretained ones (maybe by mapping with match?)
+            ;; Save final state
+
+
+            subscription-match-state   (rest
+                                         (reductions (fn [state match]
+                                                       (let [epoch-traces (into []
+                                                                                (comp
+                                                                                  (utils/id-between-xf (:id (first match)) (:id (last match)))
+                                                                                  (filter metam/subscription?))
+                                                                                filtered-traces)
+                                                             reset-state  (into {}
+                                                                                (map (fn [[k v]]
+                                                                                       [k (dissoc v :order :created? :run? :disposed? :previous-value)]))
+                                                                                state)]
+                                                         (->> epoch-traces
+                                                              (reduce (fn [state trace]
+                                                                        (let [tags        (get trace :tags)
+                                                                              reaction-id (:reaction tags)]
+                                                                          (case (:op-type trace)
+                                                                            :sub/create (assoc state reaction-id {:created?     true
+                                                                                                                  :subscription (:query-v tags)
+                                                                                                                  :order        [:sub/create]})
+                                                                            :sub/run (update state reaction-id (fn [sub-state]
+                                                                                                                 (-> (if (contains? sub-state :value)
+                                                                                                                       (assoc sub-state :previous-value (:value sub-state))
+                                                                                                                       sub-state)
+                                                                                                                     (assoc :run? true
+                                                                                                                            :value (:value tags))
+                                                                                                                     (update :order conj :sub/run))))
+                                                                            :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
+                                                                                             (update-in [reaction-id :order] conj :sub/dispose))
+                                                                            (do (js/console.warn "Unhandled sub trace" trace)
+                                                                                state))))
+                                                                      reset-state))))
+                                                     sub-state
+                                                     new-matches))
+
+            ;_                          (js/console.log new-matches subscription-match-state)
+            new-matches                (map (fn [match sub-match] match) new-matches subscription-match-state)
             all-matches                (reduce conj previous-matches new-matches)
             retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
             app-db-id                  (get-in db [:app-db :reagent-id])
-            subscription-info          (->> new-traces
+            subscription-info          (->> filtered-traces
                                             (filter metam/subscription-re-run?)
                                             (reduce (fn [state trace]
                                                       ;; Can we take any shortcuts by assuming that a sub with

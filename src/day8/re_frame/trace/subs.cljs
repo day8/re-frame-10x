@@ -151,7 +151,7 @@
   :<- [:epochs/beginning-trace-id]
   :<- [:epochs/ending-trace-id]
   (fn [[traces beginning ending] _]
-    (into [] (filter #(<= beginning (:id %) ending)) traces)))
+    (into [] (utils/id-between-xf beginning ending) traces)))
 
 (defn filter-ignored-views [[traces filtered-views] _]
   (let [munged-ns (->> filtered-views

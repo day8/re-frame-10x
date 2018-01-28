@@ -16,3 +16,8 @@
   "Gets the index of the first item in vec that matches the predicate"
   [pred v]
   (first (find-all-indexes-in-vec pred v)))
+
+(defn id-between-xf
+  "Returns a transducer that filters for :id between beginning and ending."
+  [beginning ending]
+  (filter #(<= beginning (:id %) ending)))
