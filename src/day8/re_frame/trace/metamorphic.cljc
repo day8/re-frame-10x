@@ -85,7 +85,7 @@
 (defn summarise-event [ev]
   (-> ev
       (dissoc :start :duration :end :child-of)
-      (update :tags dissoc :app-db-before :app-db-after :effects :coeffects)))
+      (update :tags dissoc :app-db-before :app-db-after :effects :coeffects :interceptors)))
 
 
 (defn summarise-match [match]
