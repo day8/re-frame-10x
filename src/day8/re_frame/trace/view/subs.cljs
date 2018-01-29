@@ -91,14 +91,9 @@
                  :children [[rc/checkbox
                              :model ignore-unchanged?
                              ;; TODO: change from l2 subs to ignored l2 subs
-                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] #_ " unchanged" [:br] "layer 2 subs "
-
-                                     [:a
-                                      {:rel    "noopener noreferrer"
-                                       :class "rc-hyperlink-href noselect "
-                                       :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"
-                                       :target "_blank"}
-                                      "?"]]
+                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] #_ " unchanged" [:br]
+                                     [rc/link {:label "layer 2 subs"
+                                               :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
                              :style {:margin-top "6px"}
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-subs? %])]]]]]))
 
@@ -134,7 +129,10 @@
                            :model     path
                            :disabled? true]]]
               [rc/gap-f :size common/gs-12s]
-              [rc/label :label (str "Layer " (if (some? layer) layer "?"))]
+              [rc/label :label (if (some? layer)
+                                 (str "Layer " layer)
+                                 [rc/link {:label "Layer ?"
+                                           :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]
 
               ;; TODO: capture previous sub run value and allow diffing it.
               #_[rc/gap-f :size common/gs-12s]

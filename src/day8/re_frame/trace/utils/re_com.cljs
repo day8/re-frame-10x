@@ -510,6 +510,14 @@
          :align :start
          :child the-button]))))
 
+(defn link [{:keys [label href]}]
+  [:a
+   {:rel    "noopener noreferrer"
+    :class  "rc-hyperlink-href noselect "
+    :href   href
+    :target "_blank"}
+   label])
+
 (defn checkbox
   "I return the markup for a checkbox, with an optional RHS label"
   [& {:keys [model on-change label disabled? label-class label-style class style attr]
