@@ -50,6 +50,8 @@
 (def sub-re-run-color "#219653")
 (def sub-not-run-color "#bdbdbd")
 
+(def expansion-button-horizontal-padding (px 2))
+
 (defn panel-style
   ([border-radius]
    {:background-color "#fafbfc"
@@ -128,6 +130,7 @@
 (def sidebar-item-check-color strong-button-background-color)
 (def sidebar-text-color "white")
 (def navbar-text-color "white")
+(def navbar-tint-lighter "#797B7B")
 
 (def wizard-panel-background-color "#636A6F")               ;; Very dark grey
 (def wizard-panel-text-color "white")

@@ -9,7 +9,8 @@
             [day8.re-frame.trace.view.app-db :as app-db]
             [cljs.spec.alpha :as spec]
             [day8.re-frame.trace.view.timing :as timing]
-            [day8.re-frame.trace.view.settings :as settings]))
+            [day8.re-frame.trace.view.settings :as settings]
+            [day8.re-frame.trace.view.event :as event]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -408,12 +409,13 @@
     [:.toggle {:color       text-color-muted
                :cursor      "pointer"
                :line-height 1}]
-    ["> span" {:vertical-align "text-top"}]]
+    ["> span" {:vertical-align "text-top"}]
+    [:li {:margin 0}]]
    [:.host-closed {:font-size        (em 4)
                    :background-color (color/rgba 255 255 0 0.8)}]
    [:.expansion-button {:font-family    "sans-serif"
                         :width          (px 16)
-                        :padding        "0 2px"
+                        :padding        [[0 common/expansion-button-horizontal-padding]]
                         :vertical-align "middle"}]
    [:.bm-muted-button {:font-size "14px"
                        :height    "23px"
@@ -433,6 +435,7 @@
                                      re-frame-trace-styles
                                      app-db/app-db-styles
                                      timing/timing-styles
+                                     event/event-styles
                                      settings/settings-styles]))
 ;(def panel-styles (macros/slurp-macro "day8/re_frame/trace/main.css"))
 

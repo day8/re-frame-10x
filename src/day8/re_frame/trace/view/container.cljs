@@ -133,9 +133,7 @@
                     :gap      "7px"
                     :align    :end
                     :height   "50px"
-                    ;; TODO: event tab
-                    :children [(when (:debug? opts)
-                                 (tab-button :event "Event"))
+                    :children [(tab-button :event "Event")
                                (tab-button :app-db "app-db")
                                (tab-button :subs "Subs")
                                ;(tab-button :views "Views")
@@ -151,7 +149,7 @@
      [rc/v-box
       :size "auto"
       :style {:margin-left common/gs-19s
-              :overflow-y  (if (contains? #{:timing :debug} @selected-tab)
+              :overflow-y  (if (contains? #{:timing :debug :event} @selected-tab)
                              "auto" "initial")
               ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
               }

@@ -46,7 +46,7 @@
      :border-bottom-right-radius border-radius}]
 
    [:.app-db-path--header
-    {:background-color        "#797B7B"                     ; Name this navbar tint-lighter
+    {:background-color        common/navbar-tint-lighter
      :color                   "white"
      :height                  common/gs-31
      :border-top-left-radius  border-radius

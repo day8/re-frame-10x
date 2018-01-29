@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Added
 
+* New event panel. This panel shows the coeffects given to your event handler, the effects your event handler produced, and all of the interceptors in the chain.
 * Debugging instructions if re-frame-trace fails to start.
 * Setting to drop low level traces. This reduces the memory overhead of re-frame-trace as we can drop more traces that you are unlikely to want most of the time.
 
@@ -20,7 +21,7 @@ All notable changes to this project will be documented in this file. This change
 * External windows not loading
 * All app-db and subscription path expansions are now independent of each other [#134](https://github.com/Day8/re-frame-trace/issues/134).
 * Layer 2/3 calculations are more accurate now. We now use the last seen layer level when a subscription runs, to inform it's layer level if it was created or destroyed.
-* View namespaces that are ignored are no longer shown when showing traces for all epochs. 
+* View namespaces that are ignored are no longer shown when showing traces for all epochs.
 
 
 

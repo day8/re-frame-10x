@@ -209,12 +209,13 @@
                    (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
           @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]])))
 
-(defn simple-render [data path]
+(defn simple-render [data path & [class]]
   (let [expanded? (r/atom true) #_(rf/subscribe [:app-db/node-expanded? path])]
     (fn [data]
       [:div
        {:class (str/join " " ["re-frame-trace--object"
-                              (when @expanded? "expanded")])}
+                              (when @expanded? "expanded")
+                              class])}
        #_[:span {:class    "toggle"
                  :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
           [:button.expansion-button (if @expanded? "▼ " "▶ ")]]
