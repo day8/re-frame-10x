@@ -25,6 +25,7 @@ This version requires re-frame 0.10.4 to make use of the newly added Event panel
 * All app-db and subscription path expansions are now independent of each other [#134](https://github.com/Day8/re-frame-trace/issues/134).
 * Layer 2/3 calculations are more accurate now. We now use the last seen layer level when a subscription runs, to inform it's layer level if it was created or destroyed.
 * View namespaces that are ignored are no longer shown when showing traces for all epochs.
+* Distinguish between subscriptions that return `nil` values and those that haven't run yet.
 
 
 

@@ -391,22 +391,25 @@
   :<- [:app-db/reagent-id]
   :<- [:subs/subscription-info]
   (fn [[traces app-db-id sub-info]]
-    (let [raw           (map (fn [trace] (let [pod-type  (sub-op-type->type trace)
-                                               path-data (get-in trace [:tags :query-v])
-                                               ;; TODO: detect layer 2/3 for sub/create and sub/destroy
-                                               ;; This information needs to be accumulated.
-                                               layer     (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
-                                                           2
-                                                           3)]
-                                           {:id        (str pod-type (get-in trace [:tags :reaction]))
-                                            :type      pod-type
-                                            :layer     (get-in sub-info [(:operation trace) :layer])
-                                            :path-data path-data
-                                            :path      (pr-str path-data)
-                                            :value     (get-in trace [:tags :value])
-
-                                            ;; TODO: Get not run subscriptions
-                                            }))
+    (let [raw           (map (fn [trace]
+                               (let [pod-type  (sub-op-type->type trace)
+                                     path-data (get-in trace [:tags :query-v])
+                                     ;; TODO: detect layer 2/3 for sub/create and sub/destroy
+                                     ;; This information needs to be accumulated.
+                                     layer     (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
+                                                 2
+                                                 3)
+                                     sub
+                                     (-> {:id        (str pod-type (get-in trace [:tags :reaction]))
+                                          :type      pod-type
+                                          :layer     (get-in sub-info [(:operation trace) :layer])
+                                          :path-data path-data
+                                          :path      (pr-str path-data)
+                                          ;; TODO: Get not run subscriptions
+                                          })]
+                                 (if (contains? (:tags trace) :value)
+                                   (assoc sub :value (get-in trace [:tags :value]))
+                                   sub)))
                              traces)
           re-run        (->> raw
                              (filter #(= :re-run (:type %)))

@@ -169,10 +169,12 @@
                                 :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
                                         :overflow-x "auto"
                                         :overflow-y "hidden"}
-                                :children [[components/simple-render
-                                            (:value pod-info)
-                                            ["sub-path" path]
-                                            ]]])]
+                                :children [(if (contains? pod-info :value)
+                                             [components/simple-render
+                                              (:value pod-info)
+                                              ["sub-path" path]]
+                                             [rc/label :style {:font-style "italic"} :label "Subscription not run, so no value produced."]
+                                             )]])]
                             [animated/component
                              (animated/v-box-options {:enter-animation "accordionVertical"
                                                       :leave-animation "accordionVertical"
