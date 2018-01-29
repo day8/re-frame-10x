@@ -17,6 +17,7 @@ This version requires re-frame 0.10.4 to make use of the newly added Event panel
 * Refactored re-frame-trace trace parsing internals to incrementally parse new traces.
 * Clicking on a trace's expanded information now prints the entire trace to the console instead of just the tags.
 * Improved efficency of rendering views that do not need to filter out view namespaces.
+* app-db and subs panel now have a slightly more responsive design.
 
 ### Fixed
 

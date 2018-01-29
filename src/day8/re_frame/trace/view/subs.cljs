@@ -61,6 +61,7 @@
     [rc/h-box
      :justify :between
      :align :center
+     :style {:flex-flow "row wrap"}
      :margin (css-join common/gs-19s "0px")
      :children [[rc/h-box
                  :align :center

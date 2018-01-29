@@ -107,6 +107,7 @@
      :justify :between
      :align :center
      :margin (css-join common/gs-19s "0px")
+     :style {:flex-flow "row wrap"}
      :children [[rc/button
                  :class "bm-muted-button app-db-panel-button"
                  :label [rc/v-box
