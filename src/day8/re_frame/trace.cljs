@@ -9,7 +9,6 @@
             [day8.re-frame.trace.db :as trace.db]
             [re-frame.trace :as trace :include-macros true]
             [re-frame.db :as db]
-            [cljs.pprint :as pprint]
             [clojure.string :as str]
             [clojure.set :as set]
             [reagent.core :as real-reagent]

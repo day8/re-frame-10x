@@ -4,7 +4,6 @@
             [re-frame.trace :as trace]
             [clojure.string :as str]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
-            [cljs.pprint :as pprint]
             [clojure.set :as set]
             [mranderson047.reagent.v0v7v0.reagent.core :as r]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
