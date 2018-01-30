@@ -7,7 +7,9 @@
                  [reagent "0.6.0" :scope "provided"]
                  [re-frame "0.10.3" :scope "provided"]
                  [binaryage/devtools "0.9.4"]
-                 [cljsjs/react-flip-move "2.9.17-0"]]
+                 [cljsjs/react-flip-move "2.9.17-0"]
+                 [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
+                 ]
   :plugins [[thomasa/mranderson "0.4.7"]
             [lein-less "RELEASE"]]
   :deploy-repositories {"releases"  :clojars
