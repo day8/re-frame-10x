@@ -20,10 +20,10 @@
 
 (defn sub-tag-class [type]
   (case type
-    :created   "rft-tag__subscription_created"
+    :created "rft-tag__subscription_created"
     :destroyed "rft-tag__subscription_destroyed"
-    :re-run    "rft-tag__subscription_re_run"
-    :not-run   "rft-tag__subscription_not_run"
+    :re-run "rft-tag__subscription_re_run"
+    :not-run "rft-tag__subscription_not_run"
     ""))
 
 (def tag-types {:created   {:long "CREATED" :short "CREATED"}
@@ -45,9 +45,9 @@
 
 (defn title-tag [type title label]
   [rc/v-box
-   :class    "noselect"
-   :align    :center
-   :gap      "2px"
+   :class "noselect"
+   :align :center
+   :gap "2px"
    :children [[:span {:style {:font-size "9px"}} title]
               [components/tag (sub-tag-class type) label]]])
 
@@ -91,55 +91,56 @@
                  :children [[rc/checkbox
                              :model ignore-unchanged?
                              ;; TODO: change from l2 subs to ignored l2 subs
-                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] #_ " unchanged" [:br]
+                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] #_" unchanged" [:br]
                                      [rc/link {:label "layer 2 subs"
-                                               :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
+                                               :href  "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
                              :style {:margin-top "6px"}
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-subs? %])]]]]]))
 
 (defn pod-header [{:keys [id type layer path open? diff? run-times]}]
   [rc/h-box
-   :class    (str "app-db-path--header " (when-not open? "rounded-bottom"))
-   :align    :center
-   :height   common/gs-31s
+   :class (str "app-db-path--header " (when-not open? "rounded-bottom"))
+   :align :center
+   :height common/gs-31s
    :children [[rc/box
-               :width  "36px"
+               :width "36px"
                :height common/gs-31s
-               :class  "noselect"
-               :style  {:cursor "pointer"}
-               :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                        :on-click #(rf/dispatch [:subs/open-pod? id (not open?)])}
-               :child  [rc/box
-                        :margin "auto"
-                        :child  [:span.arrow (if open? "▼" "▶")]]]
+               :class "noselect"
+               :style {:cursor "pointer"}
+               :attr {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
+                      :on-click #(rf/dispatch [:subs/open-pod? id (not open?)])}
+               :child [rc/box
+                       :margin "auto"
+                       :child [:span.arrow (if open? "▼" "▶")]]]
               [rc/box
-               :width "64px" ;; (100-36)px from box above
+               :width "64px"                                ;; (100-36)px from box above
                :child [sub-tag type (short-tag-desc type)]]
               ;; TODO: report if a sub was run multiple times
               #_(when run-times
-                [:span "Warning: run " run-times " times"])
+                  [:span "Warning: run " run-times " times"])
               [rc/h-box
-               :class    "app-db-path--path-header"
-               :size     "auto"
+               :class "app-db-path--path-header"
+               :size "auto"
                :children [[rc/input-text
                            :style {:height  "25px"
                                    :padding (css-join "0px" common/gs-7s)
                                    :width   "-webkit-fill-available"} ;; This took a bit of finding!
-                           :width     "100%"
-                           :model     path
+                           :width "100%"
+                           :model path
                            :disabled? true]]]
+              (when @(rf/subscribe [:settings/debug?])
+                [rc/label :label (str id)])
               [rc/gap-f :size common/gs-12s]
               [rc/label :label (if (some? layer)
                                  (str "Layer " layer)
                                  [rc/link {:label "Layer ?"
-                                           :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]
+                                           :href  "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]
 
-              ;; TODO: capture previous sub run value and allow diffing it.
-              #_[rc/gap-f :size common/gs-12s]
-              #_[rc/box
+              [rc/gap-f :size common/gs-12s]
+              [rc/box
                :class "bm-muted-button app-db-path--button noselect"
-               :attr  {:title    "Show diff"
-                       :on-click #(when open? (rf/dispatch [:subs/diff-pod? id (not diff?)]))}
+               :attr {:title    "Show diff"
+                      :on-click #(when open? (rf/dispatch [:subs/diff-pod? id (not diff?)]))}
                :child [:img
                        {:src   (str "data:image/svg+xml;utf8," copy)
                         :style {:width  "19px"
@@ -147,86 +148,99 @@
               [rc/gap-f :size common/gs-12s]]])
 
 (defn pod [{:keys [id type layer path open? diff?] :as pod-info}]
-  (let [render-diff? (and open? diff?)
-        #_#_app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
-        #_#_app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
-        #_#_[diff-before diff-after _] (when render-diff?
-                                     (clojure.data/diff (get-in @app-db-before path)
-                                                        (get-in @app-db-after path)))]
+  (let [render-diff?    (and open? diff?)
+        value?          (contains? pod-info :value)
+        previous-value? (contains? pod-info :previous-value)]
     [rc/v-box
-     :style    {:margin-bottom pod-gap
-                :margin-right  "1px"}
+     :style {:margin-bottom pod-gap
+             :margin-right  "1px"}
      :children [[pod-header pod-info]
                 [rc/v-box
-                 :class    (when open? "app-db-path--pod-border")
+                 :class (when open? "app-db-path--pod-border")
                  :children [[animated/component
                              (animated/v-box-options {:enter-animation "accordionVertical"
                                                       :leave-animation "accordionVertical"
                                                       :duration        animation-duration})
                              (when open?
-                               [rc/v-box
-                                :class (str "data-viewer" (when-not diff? " rounded-bottom"))
-                                :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
-                                        :overflow-x "auto"
-                                        :overflow-y "hidden"}
-                                :children [(if (contains? pod-info :value)
-                                             [components/simple-render
-                                              (:value pod-info)
-                                              ["sub-path" path]]
-                                             [rc/label :style {:font-style "italic"} :label "Subscription not run, so no value produced."]
-                                             )]])]
+                               (let [main-value (cond value? (:value pod-info)
+                                                      previous-value? (:previous-value pod-info)
+                                                      :else nil)]
+                                 [rc/v-box
+                                  :class (str "data-viewer" (when-not diff? " rounded-bottom"))
+                                  :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
+                                          :overflow-x "auto"
+                                          :overflow-y "hidden"}
+                                  :children [(if (or value? previous-value?)
+                                               [components/simple-render
+                                                main-value
+                                                ["sub-path" path]]
+                                               [rc/label :style {:font-style "italic"} :label "Subscription not run, so no value produced."]
+                                               )]]))]
                             [animated/component
                              (animated/v-box-options {:enter-animation "accordionVertical"
                                                       :leave-animation "accordionVertical"
                                                       :duration        animation-duration})
                              (when render-diff?
-                               [rc/v-box
-                                :children [[rc/v-box
-                                            :class    "app-db-path--link"
-                                            :justify  :end
-                                            :children [[rc/hyperlink-href
-                                                        ;:class  "app-db-path--label"
-                                                        :label "ONLY BEFORE"
-                                                        :style {:margin-left common/gs-7s}
-                                                        :attr {:rel "noopener noreferrer"}
-                                                        :target "_blank"
-                                                        :href utils/diff-link]]]
-                                           [rc/v-box
-                                            :class    "data-viewer data-viewer--top-rule"
-                                            :style    {:overflow-x "auto"
-                                                       :overflow-y "hidden"}
-                                            :height   "50px"
-                                            :children ["---before-diff---"]]
-                                           [rc/v-box
-                                            :class    "app-db-path--link"
-                                            :justify  :end
-                                            :children [[rc/hyperlink-href
-                                                        ;:class  "app-db-path--label"
-                                                        :label "ONLY AFTER"
-                                                        :style {:margin-left common/gs-7s}
-                                                        :attr {:rel "noopener noreferrer"}
-                                                        :target "_blank"
-                                                        :href utils/diff-link]]]
-                                           [rc/v-box
-                                            :class    "data-viewer data-viewer--top-rule rounded-bottom"
-                                            :style    {:overflow-x "auto"
-                                                       :overflow-y "hidden"}
-                                            :height   "50px"
-                                            :children ["---after-diff---"]]]])]
+                               (let [diffable? (and value? previous-value?)
+                                     [diff-before diff-after _] (when render-diff?
+                                                                  (clojure.data/diff (:previous-value pod-info)
+                                                                                     (:value pod-info)))]
+                                 [rc/v-box
+                                  :children [[rc/v-box
+                                              :class "app-db-path--link"
+                                              :justify :end
+                                              :children [[rc/hyperlink-href
+                                                          ;:class  "app-db-path--label"
+                                                          :label "ONLY BEFORE"
+                                                          :style {:margin-left common/gs-7s}
+                                                          :attr {:rel "noopener noreferrer"}
+                                                          :target "_blank"
+                                                          :href utils/diff-link]]]
+                                             [rc/v-box
+                                              :class "data-viewer data-viewer--top-rule"
+                                              :style {:overflow-x "auto"
+                                                      :overflow-y "hidden"}
+                                              :children [(if diffable?
+                                                           [components/simple-render
+                                                            diff-before
+                                                            ["app-db-diff" path]]
+                                                           [:p {:style {:font-style "italic"}} "No previous value exists to diff"])]]
+                                             [rc/v-box
+                                              :class "app-db-path--link"
+                                              :justify :end
+                                              :children [[rc/hyperlink-href
+                                                          ;:class  "app-db-path--label"
+                                                          :label "ONLY AFTER"
+                                                          :style {:margin-left common/gs-7s}
+                                                          :attr {:rel "noopener noreferrer"}
+                                                          :target "_blank"
+                                                          :href utils/diff-link]]]
+                                             [rc/v-box
+                                              :class "data-viewer data-viewer--top-rule rounded-bottom"
+                                              :style {:overflow-x "auto"
+                                                      :overflow-y "hidden"}
+                                              :children [(if diffable?
+                                                           [components/simple-render
+                                                            diff-after
+                                                            ["app-db-diff" path]]
+                                                           [:p {:style {:font-style "italic"}} "No previous value exists to diff"])]]]]))]
                             (when open?
                               [rc/gap-f :size pod-padding])]]]]))
 
 (defn no-pods []
   [rc/h-box
-   :margin     (css-join "0px 0px 0px" common/gs-19s)
-   :gap        common/gs-7s
-   :align      :start
+   :margin (css-join "0px 0px 0px" common/gs-19s)
+   :gap common/gs-7s
+   :align :start
    :align-self :start
-   :children   [[rc/label :label "There are no subscriptions to show"]]])
+   :children [[rc/label :label "There are no subscriptions to show"]]])
 
 (defn pod-section []
   (let [all-subs       @(rf/subscribe [:subs/visible-subs])
-        sub-expansions @(rf/subscribe [:subs/sub-expansions])]
+        sub-expansions @(rf/subscribe [:subs/sub-expansions])
+        all-subs       (if @(rf/subscribe [:settings/debug?])
+                         (cons {:id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} all-subs)
+                         all-subs)]
     [rc/v-box
      :size "1"
      ;:gap pod-gap
@@ -243,13 +257,13 @@
                 [animated/component
                  (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
                                           :duration  animation-duration
-                                          :style     {:flex     "1 1 0px"
+                                          :style     {:flex       "1 1 0px"
                                                       :overflow-x "hidden"
                                                       :overflow-y "auto"}})
+
                  (for [p all-subs]
                    ^{:key (:id p)}
                    [pod (merge p (get sub-expansions (:id p)))])]]
-
 
      ]))
 
@@ -266,25 +280,25 @@
 
               ;; TODO: OLD UI - REMOVE
               #_[:div.panel-content-scrollable
-               {:style {:border "1px solid lightgrey"
-                        :margin "0px"}}
-               [:div.subtrees
-                {:style {:margin "20px 0"}}
-                (doall
-                  (->> @subs/query->reaction
-                       (sort-by (fn [me] (ffirst (key me))))
-                       (map (fn [me]
-                              (let [[query-v dyn-v :as inputs] (key me)]
-                                ^{:key query-v}
-                                [:div.subtree-wrapper {:style {:margin "10px 0"}}
-                                 [:div.subtree
-                                  [components/subscription-render
-                                   (rc/deref-or-value-peek (val me))
-                                   [:button.subtree-button {:on-click #(rf/dispatch [:app-db/remove-path (key me)])}
-                                    [:span.subtree-button-string
-                                     (prn-str (first (key me)))]]
-                                   (into [:subs] query-v)]]]))
-                            )))
-                (do @re-frame.db/app-db
-                    nil)]]]])
+                 {:style {:border "1px solid lightgrey"
+                          :margin "0px"}}
+                 [:div.subtrees
+                  {:style {:margin "20px 0"}}
+                  (doall
+                    (->> @subs/query->reaction
+                         (sort-by (fn [me] (ffirst (key me))))
+                         (map (fn [me]
+                                (let [[query-v dyn-v :as inputs] (key me)]
+                                  ^{:key query-v}
+                                  [:div.subtree-wrapper {:style {:margin "10px 0"}}
+                                   [:div.subtree
+                                    [components/subscription-render
+                                     (rc/deref-or-value-peek (val me))
+                                     [:button.subtree-button {:on-click #(rf/dispatch [:app-db/remove-path (key me)])}
+                                      [:span.subtree-button-string
+                                       (prn-str (first (key me)))]]
+                                     (into [:subs] query-v)]]]))
+                              )))
+                  (do @re-frame.db/app-db
+                      nil)]]]])
 

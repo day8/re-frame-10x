@@ -197,11 +197,7 @@
 
 (defn pod [{:keys [id path open? diff?] :as pod-info}]
   (let [render-diff?  (and open? diff?)
-        app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
-        app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
-        [diff-before diff-after _] (when render-diff?
-                                     (clojure.data/diff (get-in @app-db-before path)
-                                                        (get-in @app-db-after path)))]
+        app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])]
     [rc/v-box
      :style    {:margin-bottom pod-gap
                 :margin-right  "1px"}
@@ -242,41 +238,45 @@
                                                       :leave-animation "accordionVertical"
                                                       :duration        animation-duration})
                              (when render-diff?
-                               [rc/v-box
-                                :children [[rc/v-box
-                                            :class    "app-db-path--link"
-                                            :justify  :end
-                                            :children [[rc/hyperlink-href
-                                                        ;:class  "app-db-path--label"
-                                                        :label "ONLY BEFORE"
-                                                        :style {:margin-left common/gs-7s}
-                                                        :attr {:rel "noopener noreferrer"}
-                                                        :target "_blank"
-                                                        :href utils/diff-link]]]
-                                           [rc/v-box
-                                            :class    "data-viewer data-viewer--top-rule"
-                                            :style    {:overflow-x "auto"
-                                                       :overflow-y "hidden"}
-                                            :children [[components/simple-render
-                                                        diff-before
-                                                        ["app-db-diff" path]]]]
-                                           [rc/v-box
-                                            :class    "app-db-path--link"
-                                            :justify  :end
-                                            :children [[rc/hyperlink-href
-                                                        ;:class  "app-db-path--label"
-                                                        :label "ONLY AFTER"
-                                                        :style {:margin-left common/gs-7s}
-                                                        :attr {:rel "noopener noreferrer"}
-                                                        :target "_blank"
-                                                        :href utils/diff-link]]]
-                                           [rc/v-box
-                                            :class    "data-viewer data-viewer--top-rule rounded-bottom"
-                                            :style    {:overflow-x "auto"
-                                                       :overflow-y "hidden"}
-                                            :children [[components/simple-render
-                                                        diff-after
-                                                        ["app-db-diff" path]]]]]])]
+                               (let [app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
+                                     [diff-before diff-after _] (when render-diff?
+                                                                  (clojure.data/diff (get-in @app-db-before path)
+                                                                                     (get-in @app-db-after path)))]
+                                 [rc/v-box
+                                  :children [[rc/v-box
+                                              :class "app-db-path--link"
+                                              :justify :end
+                                              :children [[rc/hyperlink-href
+                                                          ;:class  "app-db-path--label"
+                                                          :label "ONLY BEFORE"
+                                                          :style {:margin-left common/gs-7s}
+                                                          :attr {:rel "noopener noreferrer"}
+                                                          :target "_blank"
+                                                          :href utils/diff-link]]]
+                                             [rc/v-box
+                                              :class "data-viewer data-viewer--top-rule"
+                                              :style {:overflow-x "auto"
+                                                      :overflow-y "hidden"}
+                                              :children [[components/simple-render
+                                                          diff-before
+                                                          ["app-db-diff" path]]]]
+                                             [rc/v-box
+                                              :class "app-db-path--link"
+                                              :justify :end
+                                              :children [[rc/hyperlink-href
+                                                          ;:class  "app-db-path--label"
+                                                          :label "ONLY AFTER"
+                                                          :style {:margin-left common/gs-7s}
+                                                          :attr {:rel "noopener noreferrer"}
+                                                          :target "_blank"
+                                                          :href utils/diff-link]]]
+                                             [rc/v-box
+                                              :class "data-viewer data-viewer--top-rule rounded-bottom"
+                                              :style {:overflow-x "auto"
+                                                      :overflow-y "hidden"}
+                                              :children [[components/simple-render
+                                                          diff-after
+                                                          ["app-db-diff" path]]]]]]))]
                             (when open?
                               [rc/gap-f :size pod-padding])]]]]))
 

@@ -513,40 +513,16 @@
             new-matches                (remove (fn [match]
                                                  (let [event (get-in (metam/matched-event match) [:tags :event])]
                                                    (contains? events-to-ignore (first event)))) new-matches)
-            sub-state                  {}
-            subscription-match-state   (rest
-                                         (reductions (fn [state match]
-                                                       (let [epoch-traces (into []
-                                                                                (comp
-                                                                                  (utils/id-between-xf (:id (first match)) (:id (last match)))
-                                                                                  (filter metam/subscription?))
-                                                                                filtered-traces)
-                                                             reset-state  (into {}
-                                                                                (map (fn [[k v]]
-                                                                                       [k (dissoc v :order :created? :run? :disposed? :previous-value)]))
-                                                                                state)]
-                                                         (->> epoch-traces
-                                                              (reduce (fn [state trace]
-                                                                        (let [tags        (get trace :tags)
-                                                                              reaction-id (:reaction tags)]
-                                                                          (case (:op-type trace)
-                                                                            :sub/create (assoc state reaction-id {:created?     true
-                                                                                                                  :subscription (:query-v tags)
-                                                                                                                  :order        [:sub/create]})
-                                                                            :sub/run (update state reaction-id (fn [sub-state]
-                                                                                                                 (-> (if (contains? sub-state :value)
-                                                                                                                       (assoc sub-state :previous-value (:value sub-state))
-                                                                                                                       sub-state)
-                                                                                                                     (assoc :run? true
-                                                                                                                            :value (:value tags))
-                                                                                                                     (update :order (fnil conj []) :sub/run))))
-                                                                            :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
-                                                                                             (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
-                                                                            (do (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace)
-                                                                                state))))
-                                                                      reset-state))))
-                                                     sub-state
-                                                     new-matches))
+            ;; subscription-info is calculated separately from subscription-match-state because they serve different purposes:
+            ;; - subscription-info collects all the data that we know about the subscription itself, like its layer, inputs and other
+            ;;   things that are defined as part of the reg-sub.
+            ;; - subscription-match-state collects all the data that we know about the state of specific instances of subscriptions
+            ;;   like its reagent id, when it was created, run, disposed, what values it returned, e.t.c.
+            subscription-info          (metam/subscription-info (get-in db [:epochs :subscription-info] {}) filtered-traces (get-in db [:app-db :reagent-id]))
+            sub-state                  (get-in db [:epochs :sub-state] {})
+            subscription-match-state   (metam/subscription-match-state sub-state filtered-traces new-matches)
+            subscription-matches       (rest subscription-match-state)
+            new-sub-state              (last subscription-match-state)
             timing                     (mapv (fn [match]
                                                (let [epoch-traces   (into []
                                                                           (comp
@@ -560,27 +536,10 @@
 
             new-matches                (map (fn [match sub-match t] {:match-info match
                                                                      :sub-state  sub-match
-                                                                     :timing     t}) new-matches subscription-match-state timing)
+                                                                     :timing     t})
+                                            new-matches subscription-matches timing)
             all-matches                (reduce conj previous-matches new-matches)
             retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
-            app-db-id                  (get-in db [:app-db :reagent-id])
-            subscription-info          (->> filtered-traces
-                                            (filter metam/subscription-re-run?)
-                                            (reduce (fn [state trace]
-                                                      ;; Can we take any shortcuts by assuming that a sub with
-                                                      ;; multiple input signals is a layer 3? I don't *think* so because
-                                                      ;; one of those input signals could be a naughty subscription to app-db
-                                                      ;; directly.
-                                                      ;; If we knew when subscription handlers were loaded/reloaded then
-                                                      ;; we could avoid doing most of this work, and only check the input
-                                                      ;; signals if we hadn't seen it before, or it had been reloaded.
-                                                      (assoc-in state
-                                                                [(:operation trace) :layer]
-                                                                ;; If any of the input signals are app-db, it is a layer 2 sub, else 3
-                                                                (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
-                                                                  2
-                                                                  3)))
-                                                    (get-in db [:epochs :subscription-info] {})))
             first-id-to-retain         (first-match-id (first retained-matches))
             retained-traces            (into [] (comp (drop-while #(< (:id %) first-id-to-retain))
                                                       (remove (fn [trace]
@@ -594,6 +553,7 @@
                                 :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
                                 :match-ids (mapv first-match-id retained-matches)
                                 :parse-state parse-state
+                                :sub-state new-sub-state
                                 :subscription-info subscription-info)))))
       ;; Else
       db)))

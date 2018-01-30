@@ -10,6 +10,7 @@ This version requires re-frame 0.10.4 to make use of the newly added Event panel
 * New event panel. This panel shows the coeffects given to your event handler, the effects your event handler produced, and all of the interceptors in the chain.
 * Debugging instructions if re-frame-trace fails to start.
 * Setting to drop low level traces. This reduces the memory overhead of re-frame-trace as we can drop more traces that you are unlikely to want most of the time.
+* Diff the previous value of a subscription with its current value.
 
 ### Changed
 

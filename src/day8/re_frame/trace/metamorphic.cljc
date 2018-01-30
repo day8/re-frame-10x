@@ -1,5 +1,11 @@
 (ns day8.re-frame.trace.metamorphic)
 
+(defn id-between-xf
+  ;; Copied here because I got undeclared Var warnings from figwheel when requiring a CLJC utils ns.
+  "Returns a transducer that filters for :id between beginning and ending."
+  [beginning ending]
+  (filter #(<= beginning (:id %) ending)))
+
 ;; What starts an epoch?
 
 ;;; idle -> dispatch -> running
@@ -68,7 +74,7 @@
         end-of-epoch   (:end ev2)]
     (when (and (some? start-of-epoch) (some? end-of-epoch))
       #?(:cljs (js/Math.round (- end-of-epoch start-of-epoch))
-         :clj (Math/round ^double (- end-of-epoch start-of-epoch))))))
+         :clj  (Math/round ^double (- end-of-epoch start-of-epoch))))))
 
 (defn run-queue? [event]
   (and (fsm-trigger? event)
@@ -245,3 +251,64 @@
   (->> match
        (filter event-run?)
        (first)))
+
+(defn subscription-info
+  "Collect information about the subscription that we'd like
+  to know, like its layer."
+  [initial-state filtered-traces app-db-id]
+  (->> filtered-traces
+       (filter subscription-re-run?)
+       (reduce (fn [state trace]
+                 ;; Can we take any shortcuts by assuming that a sub with
+                 ;; multiple input signals is a layer 3? I don't *think* so because
+                 ;; one of those input signals could be a naughty subscription to app-db
+                 ;; directly.
+                 ;; If we knew when subscription handlers were loaded/reloaded then
+                 ;; we could avoid doing most of this work, and only check the input
+                 ;; signals if we hadn't seen it before, or it had been reloaded.
+                 (assoc-in state
+                           [(:operation trace) :layer]
+                           ;; If any of the input signals are app-db, it is a layer 2 sub, else 3
+                           (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
+                             2
+                             3)))
+               initial-state)))
+
+(defn subscription-match-state
+  "Build up the state of re-frame's running subscriptions over each matched epoch.
+  Returns initial state as first item in list"
+  [sub-state filtered-traces new-matches]
+  (reductions (fn [state match]
+                (let [epoch-traces (into []
+                                         (comp
+                                           (id-between-xf (:id (first match)) (:id (last match)))
+                                           (filter subscription?))
+                                         filtered-traces)
+                      reset-state  (into {}
+                                         (comp
+                                           (filter (fn [me] (when-not (:disposed? (val me)) me)))
+                                           (map (fn [[k v]]
+                                                  [k (dissoc v :order :created? :run? :disposed? :previous-value)])))
+                                         state)]
+                  (->> epoch-traces
+                       (reduce (fn [state trace]
+                                 (let [tags        (get trace :tags)
+                                       reaction-id (:reaction tags)]
+                                   (case (:op-type trace)
+                                     :sub/create (assoc state reaction-id {:created?     true
+                                                                           :subscription (:query-v tags)
+                                                                           :order        [:sub/create]})
+                                     :sub/run (update state reaction-id (fn [sub-state]
+                                                                          (-> (if (contains? sub-state :value)
+                                                                                (assoc sub-state :previous-value (:value sub-state))
+                                                                                sub-state)
+                                                                              (assoc :run? true
+                                                                                     :value (:value tags))
+                                                                              (update :order (fnil conj []) :sub/run))))
+                                     :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
+                                                      (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
+                                     (do #?(:cljs (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace))
+                                         state))))
+                               reset-state))))
+              sub-state
+              new-matches))
