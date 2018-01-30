@@ -1,12 +1,58 @@
 # re-frame-trace
 
-`re-frame-trace` is a programmer's dashboard. Its goal is to provide insight and illumination. It let's you see inside a running `re-frame` application, so you better understand it and debug it.
+`re-frame-trace` let's you look at the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination. So, you'll use it to better understand your application and to debug it. 
  
 **Status:** Beta.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
-**Note** also use the latest version of re-frame itself. That's `v0.10.4` currently (but please check yourself just in case these docs get out of date).
+**Note** also use the latest version of re-frame itself - currently `v0.10.4` (but please check yourself - out of date docs and all that) 
 
-### Helpful How?
+### It Is Epoch Oriented 
+
+`re-frame` applications are computationally regular. First an event happens,
+and then boom, boom, boom go a series of known computational steps (dominoes), 
+in a known order. When this chain reaction completes, 
+a `re-frame` app lapses into a quiescent state waiting for another 
+event to kick off the next iteration of the same process.
+
+Each `re-frame` event and its consequent computation forms a bounded "epoch" 
+which can be inspected, analysed and understood independently of other epochs. This 
+tool is epoch-oriented - it shows you one at a time.
+
+And, yes, it has "time travel debugger" capabilities - you can go backwards
+and forwards through epochs - but that's really not the most interesting or powerful 
+aspect of what `re-frame-trace` delivers.
+
+### It Is All About Trace Data
+
+As it runs, `re-frame` logs "trace" as data (not strings).
+This data trace provides an x-ray of your app's functioning.
+
+`re-frame-trace` is essentially a consumer, processor and displayer of this xray trace data.
+
+### More Data
+
+While re-frame is a functional framework, it is
+strongly defined by its "data oriented" design. `re-frame`
+"flows" data, in a loop, through the functions you provide.
+To understand what is happening in a `re-frame` app, you must understand
+what data is happening.     
+
+So, data is at the core of `re-frame-trace` in both of the ways just described, 
+and data is a powerful and leverageable substrate.
+
+### It Is A Data Dashboard 
+
+Except, there's often too much data - you can drown in the detail.
+
+So, `re-frame-trace` tries to be a "dashboard" which curates the
+"raw data" into "information" through various kinds of analysis 
+and "roll ups". It should deliver insight "at a glance", while still allowing 
+you to drill down into the detail. 
+
+Okay. So, we now know enough to do a summary: this tool is an epoch-oriented, 
+interactive data dashboard which delivers insights and assists debugging.
+
+### Which Is Helpful How?
 
 Four ways:
 
@@ -24,53 +70,9 @@ Four ways:
   4. It helps you to find performance problems and/or detect where there is 
      unnecessary computation occurring.
 
-> This list is currently aspirational. `re-frame-trace` remains a WIP. We're getting there. 
+### Temporary Warning 
 
-### It Is Epoch Oriented 
-
-`re-frame` applications are computationally regular. First an event happens,
-and then boom, boom, boom go a series of known computational steps (dominoes), 
-in a known order. 
-At the end of it, a `re-frame` app lapses into a quiescent state waiting for another 
-event to kick off the next iteration of the same cycle.
-
-Each `re-frame` event and its consequent computation forms a bounded "epoch" 
-which can be inspected, analysed and understood independently of other epochs. This 
-tool is epoch-oriented - it shows you one at a time.
-
-And, yes, it has "time travel debugger" capabilities - you can go backwards
-and forwards through epochs - but that's really not the most interesting or powerful 
-aspect of what `re-frame-trace` delivers.
-
-### It Is All About The Data
-
-As it runs, `re-frame` logs "trace" as data (not strings).
-This data trace provides an x-ray of your app's functioning.
-
-In addition, while re-frame is a functional framework, it is more 
-strongly defined by its "data oriented" design. `re-frame's` approach is
-to "flow" data, in a loop, through the functions you provide.
-To understand what is happening in a `re-frame` app, you must understand
-what data is happening.     
-
-So, data is at the core of `re-frame-trace` in those two ways 
-and data is a powerful and leverageable substrate. 
-
-### It Is A Data Dashboard 
-
-Except, there's often too much data - too much detail.
-
-So, `re-frame-trace` tries to be something of a "dashboard" which curates
-"raw data" into "information" through various kinds of analysis 
-and "roll ups". The goal is to deliver insight "at a glance", while still allowing 
-you to drill down into the detail. 
-
-Right. So, we now know enough to give a summary: this tool is an epoch-oriented, 
-interactive data dashboard for gaining insights and assisting debugging. 
-
-But, it is also a work in progress, 
-so my enthusiastic claims (above) overstate what is delivered right now.
-But we're getting there and its already very useful.
+> Some of the descriptions above are aspirational. `re-frame-trace` remains a WIP experiment. But we're getting there. 
 
 ## A Visual Sampler
 
