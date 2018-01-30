@@ -503,18 +503,12 @@
             all-traces                 (reduce conj previous-traces filtered-traces)
             parse-state                (metam/parse-traces parse-state filtered-traces)
             new-matches                (:partitions parse-state)
-            previous-matches           (get-in db [:epochs :matches-and-subs] [])
+            previous-matches           (get-in db [:epochs :matches] [])
             parse-state                (assoc parse-state :partitions []) ;; Remove matches we know about
             new-matches                (remove (fn [match]
                                                  (let [event (get-in (metam/matched-event match) [:tags :event])]
                                                    (contains? events-to-ignore (first event)))) new-matches)
             sub-state                  {}
-
-            ;; Retrieve previous state
-            ;; Save new states, removing unretained ones (maybe by mapping with match?)
-            ;; Save final state
-
-
             subscription-match-state   (rest
                                          (reductions (fn [state match]
                                                        (let [epoch-traces (into []
@@ -540,10 +534,10 @@
                                                                                                                        sub-state)
                                                                                                                      (assoc :run? true
                                                                                                                             :value (:value tags))
-                                                                                                                     (update :order conj :sub/run))))
+                                                                                                                     (update :order (fnil conj []) :sub/run))))
                                                                             :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
-                                                                                             (update-in [reaction-id :order] conj :sub/dispose))
-                                                                            (do (js/console.warn "Unhandled sub trace" trace)
+                                                                                             (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
+                                                                            (do (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace)
                                                                                 state))))
                                                                       reset-state))))
                                                      sub-state
@@ -556,7 +550,6 @@
                                                      start-of-epoch (nth epoch-traces 0)
                                                      finish-run     (or (first (filter metam/finish-run? epoch-traces))
                                                                         (utils/last-in-vec epoch-traces))]
-                                                 ;; Note, sometimes we still end up with a nil elapsed time here, look into more
                                                  {:re-frame/event-time (metam/elapsed-time start-of-epoch finish-run)}))
                                              new-matches)
 
@@ -592,13 +585,11 @@
             (assoc-in [:traces :all-traces] retained-traces)
             (update :epochs (fn [epochs]
                               (assoc epochs
-                                :matches (into [] (map :match-info) retained-matches)
-                                :matches-by-id (into {} (map (juxt first-match-id :match-info)) retained-matches)
+                                :matches retained-matches
+                                :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
                                 :match-ids (mapv first-match-id retained-matches)
                                 :parse-state parse-state
-                                :subscription-info subscription-info
-                                :matches-and-subs retained-matches
-                                :matches-by-id2 (into {} (map (juxt first-match-id identity)) retained-matches))))))
+                                :subscription-info subscription-info)))))
       ;; Else
       db)))
 

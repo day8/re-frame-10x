@@ -210,7 +210,7 @@
     (:epochs db)))
 
 (rf/reg-sub
-  :epochs/current-match
+  :epochs/current-match-state
   :<- [:epochs/epoch-root]
   :<- [:epochs/match-ids]
   (fn [[epochs match-ids] _]
@@ -225,19 +225,10 @@
       match)))
 
 (rf/reg-sub
-  :epochs/current-match-state
-  :<- [:epochs/epoch-root]
-  :<- [:epochs/match-ids]
-  (fn [[epochs match-ids] _]
-    (let [current-id (:current-epoch-id epochs)
-          match      (cond
-                       (nil? current-id) (last (:matches-and-subs epochs))
-                       (< current-id (first match-ids)) (first (:matches-and-subs epochs))
-                       ;; This case seems impossible, but can happen if the user filters out
-                       ;; an event that they are 'on'.
-                       (> current-id (last match-ids)) (last (:matches-and-subs epochs))
-                       :else (get (:matches-by-id2 epochs) current-id))]
-      match)))
+  :epochs/current-match
+  :<- [:epochs/current-match-state]
+  (fn [match-state _]
+    (:match-info match-state)))
 
 (rf/reg-sub
   :epochs/current-event-trace
@@ -341,16 +332,7 @@
   :timing/event-processing-time
   :<- [:epochs/current-match-state]
   (fn [match]
-    (utils/spy "match" match)
     (get-in match [:timing :re-frame/event-time])))
-
-#_(rf/reg-sub
-  :timing/event-processing-time
-  :<- [:traces/current-event-traces]
-  (fn [traces]
-    (let [start-of-epoch (nth traces 0)
-          finish-run     (first (filter metam/finish-run? traces))]
-      (metam/elapsed-time start-of-epoch finish-run))))
 
 (rf/reg-sub
   :timing/render-time
