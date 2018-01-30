@@ -2,7 +2,7 @@
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v7v0.reagent.core :as r]
             [cljs.tools.reader.edn]
-            [day8.re-frame.trace.utils.utils :as utils]
+            [day8.re-frame.trace.utils.utils :as utils :refer [spy]]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
             [goog.object]
@@ -548,9 +548,21 @@
                                                                       reset-state))))
                                                      sub-state
                                                      new-matches))
+            timing                     (mapv (fn [match]
+                                               (let [epoch-traces   (into []
+                                                                          (comp
+                                                                            (utils/id-between-xf (:id (first match)) (:id (last match))))
+                                                                          filtered-traces)
+                                                     start-of-epoch (nth epoch-traces 0)
+                                                     finish-run     (or (first (filter metam/finish-run? epoch-traces))
+                                                                        (utils/last-in-vec epoch-traces))]
+                                                 ;; Note, sometimes we still end up with a nil elapsed time here, look into more
+                                                 {:re-frame/event-time (metam/elapsed-time start-of-epoch finish-run)}))
+                                             new-matches)
 
-            new-matches                (map (fn [match sub-match] {:match-info match
-                                                                   :sub-state  sub-match}) new-matches subscription-match-state)
+            new-matches                (map (fn [match sub-match t] {:match-info match
+                                                                     :sub-state  sub-match
+                                                                     :timing     t}) new-matches subscription-match-state timing)
             all-matches                (reduce conj previous-matches new-matches)
             retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
             app-db-id                  (get-in db [:app-db :reagent-id])
