@@ -593,7 +593,7 @@
 ;;
 
 (rf/reg-event-db
-  :subs/ignore-unchanged-subs?
+  :subs/ignore-unchanged-l2-subs?
   [(rf/path [:subs :ignore-unchanged-subs?])]
   (fn [_ [_ ignore?]]
     ignore?))

@@ -162,12 +162,12 @@
   (= :render (:op-type trace)))
 
 (defn unchanged-l2-subscription? [sub]
-  ;; TODO: check if value changed
   (and
     (= :re-run (:type sub))
     (= 2 (:layer sub))
-    ;; Show any subs that ran multiple times
-    (nil? (:run-times sub))))
+    (and (contains? sub :previous-value)
+         (contains? sub :value)
+         (= (:previous-value sub) (:value sub)))))
 
 
 (defn finish-run? [event]

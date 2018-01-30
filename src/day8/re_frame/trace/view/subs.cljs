@@ -56,7 +56,7 @@
         re-run-count              (rf/subscribe [:subs/re-run-count])
         destroyed-count           (rf/subscribe [:subs/destroyed-count])
         not-run-count             (rf/subscribe [:subs/not-run-count])
-        ignore-unchanged?         (rf/subscribe [:subs/ignore-unchanged-subs?])
+        ignore-unchanged-l2-subs? (rf/subscribe [:subs/ignore-unchanged-l2-subs?])
         ignore-unchanged-l2-count (rf/subscribe [:subs/unchanged-l2-subs-count])]
     [rc/h-box
      :justify :between
@@ -89,13 +89,12 @@
                          :border           "1px solid #e3e9ed"
                          :border-radius    border-radius}
                  :children [[rc/checkbox
-                             :model ignore-unchanged?
-                             ;; TODO: change from l2 subs to ignored l2 subs
-                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] #_" unchanged" [:br]
-                                     [rc/link {:label "layer 2 subs"
+                             :model ignore-unchanged-l2-subs?
+                             :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br]
+                                     [rc/link {:label (str "layer 2 " (utils/pluralize- @ignore-unchanged-l2-count "sub"))
                                                :href  "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
                              :style {:margin-top "6px"}
-                             :on-change #(rf/dispatch [:subs/ignore-unchanged-subs? %])]]]]]))
+                             :on-change #(rf/dispatch [:subs/ignore-unchanged-l2-subs? %])]]]]]))
 
 (defn pod-header [{:keys [id type layer path open? diff? run-times]}]
   [rc/h-box
@@ -270,10 +269,10 @@
 (defn render []
   []
   [rc/v-box
-   :size     "1"
-   :style    {:margin-right common/gs-19s
-              ;:overflow     "hidden"
-              }
+   :size "1"
+   :style {:margin-right common/gs-19s
+           ;:overflow     "hidden"
+           }
    :children [[panel-header]
               [pod-section]
               [rc/gap-f :size pod-gap]

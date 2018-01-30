@@ -14,6 +14,7 @@ This version requires re-frame 0.10.4 to make use of the newly added Event panel
 
 ### Changed
 
+* In the subs panel "Ignore **n** layer 2 subs" is now "Ignore **n** unchanged layer 2 subs". This is a more useful filter, as you can filter out noisy layer 2 subscriptions, while still seeing the changes that do happen to layer 2 subs.
 * The version of Garden that re-frame-trace uses is now bundled as a source dependency so you should no longer get conflicts if you use Garden 2.
 * Refactored re-frame-trace trace parsing internals to incrementally parse new traces.
 * Clicking on a trace's expanded information now prints the entire trace to the console instead of just the tags.

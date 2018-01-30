@@ -464,7 +464,7 @@
 (rf/reg-sub
   :subs/visible-subs
   :<- [:subs/all-subs]
-  :<- [:subs/ignore-unchanged-subs?]
+  :<- [:subs/ignore-unchanged-l2-subs?]
   (fn [[all-subs ignore-unchanged-l2?]]
     (if ignore-unchanged-l2?
       (remove metam/unchanged-l2-subscription? all-subs)
@@ -509,7 +509,7 @@
     (count (filter metam/unchanged-l2-subscription? subs))))
 
 (rf/reg-sub
-  :subs/ignore-unchanged-subs?
+  :subs/ignore-unchanged-l2-subs?
   :<- [:subs/root]
   (fn [subs _]
     (:ignore-unchanged-subs? subs true)))
