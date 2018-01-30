@@ -1,5 +1,6 @@
 (ns day8.re-frame.trace.view.debug
   (:require [day8.re-frame.trace.utils.re-com :as rc]
+            [day8.re-frame.trace.view.components :as components]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.metamorphic :as metam]))
 
@@ -14,16 +15,20 @@
     [rc/label :label (str "Ending " (prn-str @(rf/subscribe [:epochs/ending-trace-id])))]
     [rc/label :label (str "Current epoch ID " (prn-str @(rf/subscribe [:epochs/current-epoch-id])))]
 
+    [:h2 "Subscriptions"]
+    [components/simple-render @(rf/subscribe [:subs/sub-state]) ["debug-subs"]]
+
     [rc/label :label "Epochs"]
     (let [current-match @(rf/subscribe [:epochs/current-match])]
-      (for [match (:matches @(rf/subscribe [:epochs/epoch-root]))]
-        ^{:key (:id (first match))}
+      (for [match (:matches @(rf/subscribe [:epochs/epoch-root]))
+            :let [match-info (:match-info match)]]
+        ^{:key (:id (first match-info))}
         [rc/v-box
          :style {:border "1px solid black"
-                 :font-weight (if (= current-match match)
+                 :font-weight (if (= current-match match-info)
                                 "bold"
                                 "normal")}
-         :children (doall (map (fn [event] [rc/label :label (prn-str event)]) (metam/summarise-match match)))
+         :children (doall (map (fn [event] [rc/label :label (prn-str event)]) (metam/summarise-match match-info)))
          ]))
     ]]
   )

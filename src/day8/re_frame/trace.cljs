@@ -1,18 +1,11 @@
 (ns day8.re-frame.trace
-  (:require [day8.re-frame.trace.view.app-db :as app-db]
-            [day8.re-frame.trace.styles :as styles]
-            [day8.re-frame.trace.view.components :as components]
+  (:require [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.view.container :as container]
-            [day8.re-frame.trace.utils.localstorage :as localstorage]
-            [day8.re-frame.trace.events :as events]
             [day8.re-frame.trace.subs]
+            [day8.re-frame.trace.events]
             [day8.re-frame.trace.db :as trace.db]
             [re-frame.trace :as trace :include-macros true]
-            [re-frame.db :as db]
-            [cljs.pprint :as pprint]
             [clojure.string :as str]
-            [clojure.set :as set]
-            [reagent.core :as real-reagent]
             [reagent.interop :refer-macros [$ $!]]
             [reagent.impl.util :as util]
             [reagent.impl.component :as component]
@@ -20,7 +13,6 @@
             [reagent.ratom :as ratom]
             [goog.object :as gob]
             [re-frame.interop :as interop]
-            [devtools.formatters.core :as devtools]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v8v0-alpha2.reagent.core :as r]))
 
@@ -114,18 +106,18 @@
             ;; Schedule a trace to be emitted after a render if there is nothing else scheduled after that render.
             ;; This signals the end of the epoch.
 
-           #_ (swap! do-after-render-trace-scheduled?
-                   (fn [scheduled?]
-                     (js/console.log "Setting up scheduled after" scheduled?)
-                     (if scheduled?
-                       scheduled?
-                       (do (reagent.impl.batching/do-after-render ;; a do-after-flush would probably be a better spot to put this if it existed.
-                             (fn []
-                               (js/console.log "Do after render" reagent.impl.batching/render-queue)
-                               (reset! do-after-render-trace-scheduled? false)
-                               (when (false? (.-scheduled? reagent.impl.batching/render-queue))
-                                 (trace/with-trace {:op-type :reagent/quiescent}))))
-                           true))))
+            #_(swap! do-after-render-trace-scheduled?
+                     (fn [scheduled?]
+                       (js/console.log "Setting up scheduled after" scheduled?)
+                       (if scheduled?
+                         scheduled?
+                         (do (reagent.impl.batching/do-after-render ;; a do-after-flush would probably be a better spot to put this if it existed.
+                               (fn []
+                                 (js/console.log "Do after render" reagent.impl.batching/render-queue)
+                                 (reset! do-after-render-trace-scheduled? false)
+                                 (when (false? (.-scheduled? reagent.impl.batching/render-queue))
+                                   (trace/with-trace {:op-type :reagent/quiescent}))))
+                             true))))
             (real-next-tick (fn []
                               (trace/with-trace {:op-type :raf}
                                                 (f)
@@ -136,13 +128,13 @@
                                                 )))))
 
     #_(set! reagent.impl.batching/schedule
-          (fn []
-            (reagent.impl.batching/do-after-render
-              (fn []
-                (when @do-after-render-trace-scheduled?
-                  (trace/with-trace {:op-type :do-after-render})
-                  (reset! do-after-render-trace-scheduled? false))))
-            (real-schedule)))))
+            (fn []
+              (reagent.impl.batching/do-after-render
+                (fn []
+                  (when @do-after-render-trace-scheduled?
+                    (trace/with-trace {:op-type :do-after-render})
+                    (reset! do-after-render-trace-scheduled? false))))
+              (real-schedule)))))
 
 
 (defn init-tracing!
@@ -157,7 +149,7 @@
 
 (def ease-transition "left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out")
 
-(defn devtools-outer [traces opts]
+(defn devtools-outer [opts]
   ;; Add clear button
   ;; Filter out different trace types
   (let [position             (r/atom :right)
@@ -190,7 +182,7 @@
                                    (reset! window-width new-window-width))))
         handle-mouse-up      (fn [e] (reset! dragging? false))]
     (r/create-class
-      {:component-did-mount   (fn []
+      {:component-did-mount    (fn []
                                  (js/window.addEventListener "keydown" handle-keys)
                                  (js/window.addEventListener "mousemove" handle-mousemove)
                                  (js/window.addEventListener "mouseup" handle-mouse-up)
@@ -217,7 +209,7 @@
                                               :transition transition}}
                                      [:div.panel-resizer {:style         (resizer-style draggable-area)
                                                           :on-mouse-down #(reset! dragging? true)}]
-                                     [container/devtools-inner traces opts]]]))})))
+                                     [container/devtools-inner opts]]]))})))
 
 
 (defn panel-div []
@@ -233,8 +225,11 @@
 
 (defn inject-devtools! []
   (styles/inject-trace-styles js/document)
-  (r/render [devtools-outer events/traces {:panel-type :inline
-                                           :debug? debug?}] (panel-div)))
+  (r/render [devtools-outer {:panel-type :inline
+                             :debug?     debug?}] (panel-div)))
 
 (defn init-db! []
-  (trace.db/init-db))
+  (trace.db/init-db debug?))
+
+(defn ^:export factory-reset! []
+  (rf/dispatch [:settings/factory-reset]))

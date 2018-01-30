@@ -1,6 +1,6 @@
 (ns day8.re-frame.trace.common-styles
-  (:require [garden.units :refer [px em]]
-            [garden.compiler :refer [render-css]]))
+  (:require [mranderson047.garden.v1v3v3.garden.units :refer [px em]]
+            [mranderson047.garden.v1v3v3.garden.compiler :refer [render-css]]))
 
 ;; TODO: Switch these to BM (or just use BM defs if available)
 
@@ -49,6 +49,8 @@
 (def sub-destroy-color "#f2994a")
 (def sub-re-run-color "#219653")
 (def sub-not-run-color "#bdbdbd")
+
+(def expansion-button-horizontal-padding (px 2))
 
 (defn panel-style
   ([border-radius]
@@ -128,6 +130,7 @@
 (def sidebar-item-check-color strong-button-background-color)
 (def sidebar-text-color "white")
 (def navbar-text-color "white")
+(def navbar-tint-lighter "#797B7B")
 
 (def wizard-panel-background-color "#636A6F")               ;; Very dark grey
 (def wizard-panel-text-color "white")

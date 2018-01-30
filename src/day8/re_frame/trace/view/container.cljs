@@ -10,8 +10,8 @@
             [day8.re-frame.trace.view.timing :as timing]
             [day8.re-frame.trace.view.debug :as debug]
             [day8.re-frame.trace.view.settings :as settings]
-            [garden.core :refer [css style]]
-            [garden.units :refer [px]]
+            [mranderson047.garden.v1v3v3.garden.core :refer [css style]]
+            [mranderson047.garden.v1v3v3.garden.units :refer [px]]
             [re-frame.trace]
             [day8.re-frame.trace.utils.re-com :as rc]
             [day8.re-frame.trace.common-styles :as common]))
@@ -108,7 +108,7 @@
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))
 
-(defn devtools-inner [traces opts]
+(defn devtools-inner [opts]
   (let [selected-tab      (rf/subscribe [:settings/selected-tab])
         panel-type        (:panel-type opts)
         external-window?  (= panel-type :popup)
@@ -133,9 +133,7 @@
                     :gap      "7px"
                     :align    :end
                     :height   "50px"
-                    ;; TODO: event tab
-                    :children [(when (:debug? opts)
-                                 (tab-button :event "Event"))
+                    :children [(tab-button :event "Event")
                                (tab-button :app-db "app-db")
                                (tab-button :subs "Subs")
                                ;(tab-button :views "Views")
@@ -151,16 +149,16 @@
      [rc/v-box
       :size "auto"
       :style {:margin-left common/gs-19s
-              :overflow-y  (if (contains? #{:timing :debug} @selected-tab)
+              :overflow-y  (if (contains? #{:timing :debug :event} @selected-tab)
                              "auto" "initial")
               ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
               }
       :children [(case @selected-tab
-                   :event    [event/render traces]
+                   :event    [event/render]
                    :app-db   [app-db/render db/app-db]
                    :subs     [subs/render]
                    :views    [views/render]
-                   :traces   [traces/render traces]
+                   :traces   [traces/render]
                    :timing   [timing/render]
                    :debug    [debug/render]
                    :settings [settings/render]

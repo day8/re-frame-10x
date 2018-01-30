@@ -1,5 +1,10 @@
-(ns day8.re-frame.trace.metamorphic
-  (:require [mranderson047.re-frame.v0v10v2.re-frame.utils :as utils]))
+(ns day8.re-frame.trace.metamorphic)
+
+(defn id-between-xf
+  ;; Copied here because I got undeclared Var warnings from figwheel when requiring a CLJC utils ns.
+  "Returns a transducer that filters for :id between beginning and ending."
+  [beginning ending]
+  (filter #(<= beginning (:id %) ending)))
 
 ;; What starts an epoch?
 
@@ -69,7 +74,7 @@
         end-of-epoch   (:end ev2)]
     (when (and (some? start-of-epoch) (some? end-of-epoch))
       #?(:cljs (js/Math.round (- end-of-epoch start-of-epoch))
-         :clj (Math/round ^double (- end-of-epoch start-of-epoch))))))
+         :clj  (Math/round ^double (- end-of-epoch start-of-epoch))))))
 
 (defn run-queue? [event]
   (and (fsm-trigger? event)
@@ -85,8 +90,7 @@
 (defn summarise-event [ev]
   (-> ev
       (dissoc :start :duration :end :child-of)
-      (utils/dissoc-in [:tags :app-db-before])
-      (utils/dissoc-in [:tags :app-db-after])))
+      (update :tags dissoc :app-db-before :app-db-after :effects :coeffects :interceptors)))
 
 
 (defn summarise-match [match]
@@ -142,16 +146,28 @@
 (defn subscription-not-run? [trace]
   false)
 
+(defn low-level-re-frame-trace?
+  "Is this part of re-frame internals?"
+  [trace]
+  (case (:op-type trace)
+    (:re-frame.router/fsm-trigger) true
+    false))
+
+(defn low-level-reagent-trace?
+  "Is this part of reagent internals?"
+  [trace]
+  (= :componentWillUnmount (:op-type trace)))
+
 (defn render? [trace]
   (= :render (:op-type trace)))
 
 (defn unchanged-l2-subscription? [sub]
-  ;; TODO: check if value changed
   (and
     (= :re-run (:type sub))
     (= 2 (:layer sub))
-    ;; Show any subs that ran multiple times
-    (nil? (:run-times sub))))
+    (and (contains? sub :previous-value)
+         (contains? sub :value)
+         (= (:previous-value sub) (:value sub)))))
 
 
 (defn finish-run? [event]
@@ -185,52 +201,114 @@
 (defn quiescent? [event]
   (= :reagent/quiescent (:op-type event)))
 
-(defn parse-traces [traces]
-  (let [partitions (reduce
-                     (fn [state event]
-                       (let [current-match  (:current-match state)
-                             previous-event (:previous-event state)
-                             no-match?      (nil? current-match)]
-                         (-> (cond
+(def initial-parse-state
+  {:current-match  nil
+   :previous-event nil
+   :partitions     []})
 
-                               ;; No current match yet, check if this is the start of an epoch
-                               no-match?
-                               (if (start-of-epoch? event)
-                                 (assoc state :current-match [event])
-                                 state)
+(defn parse-traces [parse-state traces]
+  (reduce
+    (fn [state event]
+      (let [current-match  (:current-match state)
+            previous-event (:previous-event state)
+            no-match?      (nil? current-match)]
+        (-> (cond
 
-                               ;; We are in an epoch match, and reagent has gone to a quiescent state
-                               (quiescent? event)
-                               (-> state
-                                   (update :partitions conj (conj current-match event))
-                                   (assoc :current-match nil))
+              ;; No current match yet, check if this is the start of an epoch
+              no-match?
+              (if (start-of-epoch? event)
+                (assoc state :current-match [event])
+                state)
 
-                               ;; We are in an epoch match, and we have started a new epoch
-                               ;; The previously seen event was the last event of the old epoch,
-                               ;; and we need to start a new one from this event.
-                               (start-of-epoch-and-prev-end? event state)
-                               (-> state
-                                   (update :partitions conj (conj current-match previous-event))
-                                   (assoc :current-match [event]))
+              ;; We are in an epoch match, and reagent has gone to a quiescent state
+              (quiescent? event)
+              (-> state
+                  (update :partitions conj (conj current-match event))
+                  (assoc :current-match nil))
 
-                               (event-run? event)
-                               (update state :current-match conj event)
+              ;; We are in an epoch match, and we have started a new epoch
+              ;; The previously seen event was the last event of the old epoch,
+              ;; and we need to start a new one from this event.
+              (start-of-epoch-and-prev-end? event state)
+              (-> state
+                  (update :partitions conj (conj current-match previous-event))
+                  (assoc :current-match [event]))
+
+              (event-run? event)
+              (update state :current-match conj event)
 
 
-                               :else
-                               state
-                               ;; Add a timeout/warning if a match goes on for more than a second?
+              :else
+              state
+              ;; Add a timeout/warning if a match goes on for more than a second?
 
-                               )
-                             (assoc :previous-event event))))
-                     {:current-match  nil
-                      :previous-event nil
-                      :partitions     []}
-                     traces)
-        matches    (:partitions partitions)]
-    {:matches matches}))
+              )
+            (assoc :previous-event event))))
+    parse-state
+    traces))
 
 (defn matched-event [match]
   (->> match
        (filter event-run?)
        (first)))
+
+(defn subscription-info
+  "Collect information about the subscription that we'd like
+  to know, like its layer."
+  [initial-state filtered-traces app-db-id]
+  (->> filtered-traces
+       (filter subscription-re-run?)
+       (reduce (fn [state trace]
+                 ;; Can we take any shortcuts by assuming that a sub with
+                 ;; multiple input signals is a layer 3? I don't *think* so because
+                 ;; one of those input signals could be a naughty subscription to app-db
+                 ;; directly.
+                 ;; If we knew when subscription handlers were loaded/reloaded then
+                 ;; we could avoid doing most of this work, and only check the input
+                 ;; signals if we hadn't seen it before, or it had been reloaded.
+                 (assoc-in state
+                           [(:operation trace) :layer]
+                           ;; If any of the input signals are app-db, it is a layer 2 sub, else 3
+                           (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
+                             2
+                             3)))
+               initial-state)))
+
+(defn subscription-match-state
+  "Build up the state of re-frame's running subscriptions over each matched epoch.
+  Returns initial state as first item in list"
+  [sub-state filtered-traces new-matches]
+  (reductions (fn [state match]
+                (let [epoch-traces (into []
+                                         (comp
+                                           (id-between-xf (:id (first match)) (:id (last match)))
+                                           (filter subscription?))
+                                         filtered-traces)
+                      reset-state  (into {}
+                                         (comp
+                                           (filter (fn [me] (when-not (:disposed? (val me)) me)))
+                                           (map (fn [[k v]]
+                                                  [k (dissoc v :order :created? :run? :disposed? :previous-value)])))
+                                         state)]
+                  (->> epoch-traces
+                       (reduce (fn [state trace]
+                                 (let [tags        (get trace :tags)
+                                       reaction-id (:reaction tags)]
+                                   (case (:op-type trace)
+                                     :sub/create (assoc state reaction-id {:created?     true
+                                                                           :subscription (:query-v tags)
+                                                                           :order        [:sub/create]})
+                                     :sub/run (update state reaction-id (fn [sub-state]
+                                                                          (-> (if (contains? sub-state :value)
+                                                                                (assoc sub-state :previous-value (:value sub-state))
+                                                                                sub-state)
+                                                                              (assoc :run? true
+                                                                                     :value (:value tags))
+                                                                              (update :order (fnil conj []) :sub/run))))
+                                     :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
+                                                      (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
+                                     (do #?(:cljs (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace))
+                                         state))))
+                               reset-state))))
+              sub-state
+              new-matches))

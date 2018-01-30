@@ -1,4 +1,4 @@
-(defproject day8.re-frame/trace "0.1.16-react16"
+(defproject day8.re-frame/trace "0.1.17-react16"
   :description "Tracing and developer tools for re-frame apps"
   :url "https://github.com/Day8/re-frame-trace"
   :license {:name "MIT"}
@@ -7,7 +7,6 @@
                  [reagent "0.8.0-alpha2" :scope "provided"]
                  [re-frame "0.10.3" :scope "provided"]
                  [binaryage/devtools "0.9.4"]
-                 [garden "1.3.3"]
                  [cljsjs/react-flip-move "2.9.17-0"]]
   :plugins [[thomasa/mranderson "0.4.7"]
             [lein-less "RELEASE"]]
@@ -46,4 +45,6 @@
                                                                               cljsjs/react-dom-server
                                                                               cljsjs/create-react-class
                                                                               org.clojure/tools.logging
-                                                                              net.cgrand/macrovich]]]}})
+                                                                              net.cgrand/macrovich]]
+                                                   ^:source-dep [garden "1.3.3"
+                                                                 :exclusions [com.yahoo.platform.yui/yuicompressor]]]}})

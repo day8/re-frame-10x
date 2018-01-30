@@ -1,10 +1,9 @@
 (ns day8.re-frame.trace.view.settings
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [mranderson047.reagent.v0v8v0-alpha2.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame.trace.common-styles :as common]
-            [garden.units :as units]
-            [garden.compiler :refer [render-css]]))
+            [mranderson047.garden.v1v3v3.garden.units :as units]
+            [mranderson047.garden.v1v3v3.garden.compiler :refer [render-css]]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")
@@ -149,9 +148,8 @@
                 [:p "Nominate one or more namespaces."]]
                settings-box-131]
 
-              ;; TODO: remove low level trace
-              #_[rc/line]
-              #_(let [low-level-trace @(rf/subscribe [:settings/low-level-trace])]
+              [rc/line]
+              (let [low-level-trace @(rf/subscribe [:settings/low-level-trace])]
                 [settings-box
                 [[rc/label :label "Remove low level trace"]
                  [rc/checkbox

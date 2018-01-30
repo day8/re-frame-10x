@@ -2,7 +2,7 @@
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v8v0-alpha2.reagent.core :as r]
             [cljs.tools.reader.edn]
-            [day8.re-frame.trace.utils.utils :as utils]
+            [day8.re-frame.trace.utils.utils :as utils :refer [spy]]
             [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
             [goog.object]
@@ -13,13 +13,6 @@
             [clojure.set :as set]
             [day8.re-frame.trace.metamorphic :as metam]
             [re-frame.trace]))
-
-(def default-number-of-epochs-to-retain 5)
-
-(defonce traces (r/atom []))
-(defonce total-traces (r/atom 0))
-(defonce number-of-epochs-to-retain (atom default-number-of-epochs-to-retain))
-(defonce events-to-ignore (atom #{}))
 
 (defn log-trace? [trace]
   (let [render-operation? (or (= (:op-type trace) :render)
@@ -33,33 +26,7 @@
   (re-frame.trace/remove-trace-cb ::cb))
 
 (defn enable-tracing! []
-  (re-frame.trace/register-trace-cb ::cb (fn [new-traces]
-                                           (when-let [new-traces (->> (filter log-trace? new-traces)
-                                                                      (sort-by :id))]
-                                             (swap! total-traces + (count new-traces))
-                                             (swap! traces
-                                                    (fn [existing]
-                                                      (let [new  (reduce conj existing new-traces)
-                                                            size (count new)]
-                                                        (if (< 8000 size)
-                                                          (let [new2 (subvec new (- size 4000))]
-                                                            (if (< @total-traces 40000) ;; Create a new vector to avoid structurally sharing all traces forever
-                                                              (do (reset! total-traces 0)
-                                                                  (into [] new2))))
-                                                          new))))
-                                             ;; TODO: there is a bit of double handling here with retaining the last n epochs,
-                                             ;; that will be cleaned up when the epoch parsing is refactored.
-                                             (let [matches            (:matches (metam/parse-traces @traces))
-                                                   matches            (remove (fn [match]
-                                                                                (let [event (get-in (metam/matched-event match) [:tags :event])]
-                                                                                  (contains? @events-to-ignore (first event)))) matches)
-                                                   retained-epochs    (take-last @number-of-epochs-to-retain matches)
-                                                   first-id-to-retain (:id (ffirst retained-epochs))
-                                                   new-traces         (into [] (drop-while #(< (:id %) first-id-to-retain)) @traces)]
-                                               (reset! traces new-traces)
-                                               (reset! total-traces (count new-traces))
-                                               (rf/dispatch [:traces/update-traces new-traces])
-                                               (rf/dispatch [:epochs/update-epochs {:matches retained-epochs}]))))))
+  (re-frame.trace/register-trace-cb ::cb #(rf/dispatch [:epochs/receive-new-traces %])))
 
 (defn dissoc-in
   "Dissociates an entry from a nested associative structure returning a new
@@ -111,13 +78,6 @@
     db))
 
 (rf/reg-event-db
-  :settings/clear-epochs
-  (fn [db _]
-    (reset! traces [])
-    (reset! total-traces 0)
-    db))
-
-(rf/reg-event-db
   :settings/user-toggle-panel
   (fn [db _]
     (let [now-showing?    (not (get-in db [:settings :show-panel?]))
@@ -157,13 +117,12 @@
     (let [num (js/parseInt num-str)
           num (if (and (not (js/isNaN num)) (pos-int? num))
                 num
-                default-number-of-epochs-to-retain)]
-      (reset! number-of-epochs-to-retain num)
+                5)]
       (localstorage/save! "retained-epochs" num)
       (assoc-in db [:settings :number-of-epochs] num))))
 
 (def ignored-event-mw
-  [(rf/path [:settings :ignored-events]) (rf/after #(localstorage/save! "ignored-events" %)) (rf/after #(reset! events-to-ignore (->> % vals (map :event-id) set)))])
+  [(rf/path [:settings :ignored-events]) (rf/after #(localstorage/save! "ignored-events" %))])
 
 (rf/reg-event-db
   :settings/add-ignored-event
@@ -226,36 +185,49 @@
   (fn [_ [_ ignored-events]]
     ignored-events))
 
+(def low-level-trace-mw [(rf/path [:settings :low-level-trace]) (rf/after #(localstorage/save! "low-level-trace" %))])
+
+(rf/reg-event-db
+  :settings/set-low-level-trace
+  low-level-trace-mw
+  (fn [_ [_ low-level]]
+    low-level))
+
 (rf/reg-event-db
   :settings/low-level-trace
-  [(rf/path [:settings :low-level-trace])]
+  low-level-trace-mw
   (fn [low-level [_ trace-type capture?]]
     (assoc low-level trace-type capture?)))
+
+(rf/reg-event-db
+  :settings/debug?
+  (fn [db [_ debug?]]
+    (assoc-in db [:settings :debug?] debug?)))
 
 ;; Global
 
 (defn mount [popup-window popup-document]
-  (let [app (.getElementById popup-document " --re-frame-trace-- ")
+  (let [app (.getElementById popup-document "--re-frame-trace--")
         doc js/document]
     (styles/inject-trace-styles popup-document)
-    (goog.object/set popup-window " onunload " #(rf/dispatch [:global/external-closed]))
+    (goog.object/set popup-window "onunload" #(rf/dispatch [:global/external-closed]))
     (r/render
       [(r/create-class
-         {:display-name   " devtools outer external "
+         {:display-name   "devtools outer external"
           :reagent-render (fn []
-                            [container/devtools-inner traces {:panel-type :popup}
-                             ])})]
+                            [container/devtools-inner {:panel-type :popup}])})]
       app)))
 
 (defn open-debugger-window
-  " Copied from re-frisk.devtool/open-debugger-window "
+  "Copied from re-frisk.devtool/open-debugger-window"
   []
   (let [{:keys [ext_height ext_width]} (:prefs {})
-        w (js/window.open " " " Debugger " (str " width= " (or ext_width 800) ", height= " (or ext_height 800)
-                                                ", resizable=yes, scrollbars=yes, status=no, directories=no, toolbar=no, menubar=no "))
+        w (js/window.open "" "Debugger" (str "width=" (or ext_width 800) ",height=" (or ext_height 800)
+                                             ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
+
         d (.-document w)]
     (.open d)
-    (.write d " <head></head><body style= \"margin: 0px     ;\"><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
+    (.write d "<head></head><body style=\"margin: 0px;\"><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
     (goog.object/set w "onload" #(mount w d))
     (.close d)))
 
@@ -521,17 +493,70 @@
 
 (defn first-match-id
   [m]
-  (-> m first :id))
+  (-> m :match-info first :id))
 
 (rf/reg-event-db
-  :epochs/update-epochs
-  [(rf/path [:epochs])]
-  (fn [epochs [_ rt]]
-    (let [matches (:matches rt)]
-      (assoc epochs
-        :matches matches
-        :matches-by-id (into {} (map (juxt first-match-id identity)) matches)
-        :match-ids (mapv first-match-id matches)))))
+  :epochs/receive-new-traces
+  (fn [db [_ new-traces]]
+    (if-let [filtered-traces (->> (filter log-trace? new-traces)
+                                  (sort-by :id))]
+      (let [number-of-epochs-to-retain (get-in db [:settings :number-of-epochs])
+            events-to-ignore           (->> (get-in db [:settings :ignored-events]) vals (map :event-id) set)
+            previous-traces            (get-in db [:traces :all-traces] [])
+            parse-state                (get-in db [:epochs :parse-state] metam/initial-parse-state)
+            {drop-re-frame :re-frame drop-reagent :reagent} (get-in db [:settings :low-level-trace])
+            all-traces                 (reduce conj previous-traces filtered-traces)
+            parse-state                (metam/parse-traces parse-state filtered-traces)
+            new-matches                (:partitions parse-state)
+            previous-matches           (get-in db [:epochs :matches] [])
+            parse-state                (assoc parse-state :partitions []) ;; Remove matches we know about
+            new-matches                (remove (fn [match]
+                                                 (let [event (get-in (metam/matched-event match) [:tags :event])]
+                                                   (contains? events-to-ignore (first event)))) new-matches)
+            ;; subscription-info is calculated separately from subscription-match-state because they serve different purposes:
+            ;; - subscription-info collects all the data that we know about the subscription itself, like its layer, inputs and other
+            ;;   things that are defined as part of the reg-sub.
+            ;; - subscription-match-state collects all the data that we know about the state of specific instances of subscriptions
+            ;;   like its reagent id, when it was created, run, disposed, what values it returned, e.t.c.
+            subscription-info          (metam/subscription-info (get-in db [:epochs :subscription-info] {}) filtered-traces (get-in db [:app-db :reagent-id]))
+            sub-state                  (get-in db [:epochs :sub-state] {})
+            subscription-match-state   (metam/subscription-match-state sub-state filtered-traces new-matches)
+            subscription-matches       (rest subscription-match-state)
+            new-sub-state              (last subscription-match-state)
+            timing                     (mapv (fn [match]
+                                               (let [epoch-traces   (into []
+                                                                          (comp
+                                                                            (utils/id-between-xf (:id (first match)) (:id (last match))))
+                                                                          filtered-traces)
+                                                     start-of-epoch (nth epoch-traces 0)
+                                                     finish-run     (or (first (filter metam/finish-run? epoch-traces))
+                                                                        (utils/last-in-vec epoch-traces))]
+                                                 {:re-frame/event-time (metam/elapsed-time start-of-epoch finish-run)}))
+                                             new-matches)
+
+            new-matches                (map (fn [match sub-match t] {:match-info match
+                                                                     :sub-state  sub-match
+                                                                     :timing     t})
+                                            new-matches subscription-matches timing)
+            all-matches                (reduce conj previous-matches new-matches)
+            retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
+            first-id-to-retain         (first-match-id (first retained-matches))
+            retained-traces            (into [] (comp (drop-while #(< (:id %) first-id-to-retain))
+                                                      (remove (fn [trace]
+                                                                (or (when drop-reagent (metam/low-level-reagent-trace? trace))
+                                                                    (when drop-re-frame (metam/low-level-re-frame-trace? trace)))))) all-traces)]
+        (-> db
+            (assoc-in [:traces :all-traces] retained-traces)
+            (update :epochs (fn [epochs]
+                              (assoc epochs
+                                :matches retained-matches
+                                :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
+                                :match-ids (mapv first-match-id retained-matches)
+                                :parse-state parse-state
+                                :sub-state new-sub-state
+                                :subscription-info subscription-info)))))
+      ;; Else
+      db)))
 
 (rf/reg-event-fx
   :epochs/previous-epoch
@@ -563,20 +588,12 @@
   :epochs/reset
   (fn [db]
     (re-frame.trace/reset-tracing!)
-    (reset! traces [])
-    (reset! total-traces 0)
     (dissoc db :epochs :traces)))
-
-(rf/reg-event-db
-  :traces/update-traces
-  [(rf/path [:traces :all-traces])]
-  (fn [_ [_ traces]]
-    traces))
 
 ;;
 
 (rf/reg-event-db
-  :subs/ignore-unchanged-subs?
+  :subs/ignore-unchanged-l2-subs?
   [(rf/path [:subs :ignore-unchanged-subs?])]
   (fn [_ [_ ignore?]]
     ignore?))

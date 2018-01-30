@@ -61,6 +61,12 @@
   (fn [settings]
     (:low-level-trace settings)))
 
+(rf/reg-sub
+  :settings/debug?
+  :<- [:settings/root]
+  (fn [settings]
+    (:debug? settings)))
+
 ;; App DB
 
 (rf/reg-sub
@@ -146,27 +152,35 @@
     (count traces)))
 
 (rf/reg-sub
-  :traces/all-visible-traces
-  :<- [:traces/all-traces]
-  :<- [:settings/filtered-view-trace]
-  (fn [[all-traces filtered-views] _]
-    (let [munged-ns (->> filtered-views
-                         (map (comp munge :ns-str))
-                         (set))]
-      (into []
-            ;; Filter out view namespaces we don't care about.
-            (remove
-              (fn [trace] (and (metam/render? trace)
-                               (contains? munged-ns (subs (:operation trace) 0 (str/last-index-of (:operation trace) "."))))))
-            all-traces))))
-
-(rf/reg-sub
   :traces/current-event-traces
-  :<- [:traces/all-visible-traces]
+  :<- [:traces/all-traces]
   :<- [:epochs/beginning-trace-id]
   :<- [:epochs/ending-trace-id]
   (fn [[traces beginning ending] _]
-    (into [] (filter #(<= beginning (:id %) ending)) traces)))
+    (into [] (utils/id-between-xf beginning ending) traces)))
+
+(defn filter-ignored-views [[traces filtered-views] _]
+  (let [munged-ns (->> filtered-views
+                       (map (comp munge :ns-str))
+                       (set))]
+    (into []
+          ;; Filter out view namespaces we don't care about.
+          (remove
+            (fn [trace] (and (metam/render? trace)
+                             (contains? munged-ns (subs (:operation trace) 0 (str/last-index-of (:operation trace) "."))))))
+          traces)))
+
+(rf/reg-sub
+  :traces/current-event-visible-traces
+  :<- [:traces/current-event-traces]
+  :<- [:settings/filtered-view-trace]
+  filter-ignored-views)
+
+(rf/reg-sub
+  :traces/all-visible-traces
+  :<- [:traces/all-traces]
+  :<- [:settings/filtered-view-trace]
+  filter-ignored-views)
 
 (rf/reg-sub
   :traces/show-epoch-traces?
@@ -202,7 +216,7 @@
     (:epochs db)))
 
 (rf/reg-sub
-  :epochs/current-match
+  :epochs/current-match-state
   :<- [:epochs/epoch-root]
   :<- [:epochs/match-ids]
   (fn [[epochs match-ids] _]
@@ -215,6 +229,12 @@
                        (> current-id (last match-ids)) (last (:matches epochs))
                        :else (get (:matches-by-id epochs) current-id))]
       match)))
+
+(rf/reg-sub
+  :epochs/current-match
+  :<- [:epochs/current-match-state]
+  (fn [match-state _]
+    (:match-info match-state)))
 
 (rf/reg-sub
   :epochs/current-event-trace
@@ -314,15 +334,11 @@
           [start end] (first (drop (dec frame-number) frames))]
       (metam/elapsed-time start end))))
 
-
-
 (rf/reg-sub
   :timing/event-processing-time
-  :<- [:traces/current-event-traces]
-  (fn [traces]
-    (let [start-of-epoch (nth traces 0)
-          finish-run     (first (filter metam/finish-run? traces))]
-      (metam/elapsed-time start-of-epoch finish-run))))
+  :<- [:epochs/current-match-state]
+  (fn [match]
+    (get-in match [:timing :re-frame/event-time])))
 
 (rf/reg-sub
   :timing/render-time
@@ -351,6 +367,24 @@
   (fn [traces]
     (filter metam/subscription? traces)))
 
+(rf/reg-sub
+  :subs/subscription-info
+  :<- [:epochs/epoch-root]
+  (fn [epoch]
+    (:subscription-info epoch)))
+
+(rf/reg-sub
+  :subs/sub-state
+  :<- [:epochs/epoch-root]
+  (fn [epochs]
+    (:sub-state epochs)))
+
+(rf/reg-sub
+  :subs/current-epoch-sub-state
+  :<- [:epochs/current-match-state]
+  (fn [match-state]
+    (:sub-state match-state)))
+
 (defn sub-sort-val
   [sub]
   (case (:type sub)
@@ -375,23 +409,28 @@
   :subs/all-subs
   :<- [:subs/all-sub-traces]
   :<- [:app-db/reagent-id]
-  (fn [[traces app-db-id]]
-    (let [raw           (map (fn [trace] (let [pod-type  (sub-op-type->type trace)
-                                               path-data (get-in trace [:tags :query-v])
-                                               ;; TODO: detect layer 2/3 for sub/create and sub/destroy
-                                               ;; This information needs to be accumulated.
-                                               layer     (if (some #(= app-db-id %) (get-in trace [:tags :input-signals]))
-                                                           2
-                                                           3)]
-                                           {:id        (str pod-type (get-in trace [:tags :reaction]))
-                                            :type      pod-type
-                                            :layer     layer
-                                            :path-data path-data
-                                            :path      (pr-str path-data)
-                                            :value     (get-in trace [:tags :value])
-
-                                            ;; TODO: Get not run subscriptions
-                                            }))
+  :<- [:subs/subscription-info]
+  :<- [:subs/current-epoch-sub-state]
+  (fn [[traces app-db-id sub-info sub-state]]
+    (let [raw           (map (fn [trace]
+                               (let [pod-type   (sub-op-type->type trace)
+                                     path-data  (get-in trace [:tags :query-v])
+                                     reagent-id (get-in trace [:tags :reaction])
+                                     sub        (-> {:id         (str pod-type reagent-id)
+                                                     :reagent-id reagent-id
+                                                     :type       pod-type
+                                                     :layer      (get-in sub-info [(:operation trace) :layer])
+                                                     :path-data  path-data
+                                                     :path       (pr-str path-data)
+                                                     ;; TODO: Get not run subscriptions
+                                                     })
+                                     sub        (if (contains? (:tags trace) :value)
+                                                  (assoc sub :value (get-in trace [:tags :value]))
+                                                  sub)
+                                     sub        (if (contains? (get sub-state reagent-id) :previous-value)
+                                                  (assoc sub :previous-value (get-in sub-state [reagent-id :previous-value]))
+                                                  sub)]
+                                 sub))
                              traces)
           re-run        (->> raw
                              (filter #(= :re-run (:type %)))
@@ -425,7 +464,7 @@
 (rf/reg-sub
   :subs/visible-subs
   :<- [:subs/all-subs]
-  :<- [:subs/ignore-unchanged-subs?]
+  :<- [:subs/ignore-unchanged-l2-subs?]
   (fn [[all-subs ignore-unchanged-l2?]]
     (if ignore-unchanged-l2?
       (remove metam/unchanged-l2-subscription? all-subs)
@@ -470,7 +509,7 @@
     (count (filter metam/unchanged-l2-subscription? subs))))
 
 (rf/reg-sub
-  :subs/ignore-unchanged-subs?
+  :subs/ignore-unchanged-l2-subs?
   :<- [:subs/root]
   (fn [subs _]
     (:ignore-unchanged-subs? subs true)))

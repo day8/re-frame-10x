@@ -3,6 +3,41 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+
+
+## [0.1.17] - 2018-01-31
+
+This version requires re-frame 0.10.4 to make use of the newly added Event panel.
+
+### Added
+
+* New event panel. This panel shows the coeffects given to your event handler, the effects your event handler produced, and all of the interceptors in the chain.
+* Debugging instructions if re-frame-trace fails to start.
+* Setting to drop low level traces. This reduces the memory overhead of re-frame-trace as we can drop more traces that you are unlikely to want most of the time.
+* Diff the previous value of a subscription with its current value.
+
+### Changed
+
+* In the subs panel "Ignore **n** layer 2 subs" is now "Ignore **n** unchanged layer 2 subs". This is a more useful filter, as you can filter out noisy layer 2 subscriptions, while still seeing the changes that do happen to layer 2 subs.
+* The version of Garden that re-frame-trace uses is now bundled as a source dependency so you should no longer get conflicts if you use Garden 2.
+* Refactored re-frame-trace trace parsing internals to incrementally parse new traces.
+* Clicking on a trace's expanded information now prints the entire trace to the console instead of just the tags.
+* Improved efficency of rendering views that do not need to filter out view namespaces.
+* app-db and subs panel now have a slightly more responsive design.
+
+### Fixed
+
+* External windows not loading
+* All app-db and subscription path expansions are now independent of each other [#134](https://github.com/Day8/re-frame-trace/issues/134).
+* Layer 2/3 calculations are more accurate now. We now use the last seen layer level when a subscription runs, to inform it's layer level if it was created or destroyed.
+* View namespaces that are ignored are no longer shown when showing traces for all epochs.
+* Distinguish between subscriptions that return `nil` values and those that haven't run yet.
+* Timing panel not showing elapsed event processing time.
+
+## [0.1.16] - 2018-01-26
+
+There is now a React 16 variant of re-frame-trace available under the version `0.1.16-react16`. If your application uses React 16 and Reagent 0.8.0-alpha2 or higher, this is the version that you will need to use.
+
 ### Added
 
 * Setting to control how many epochs are retained

@@ -1,6 +1,6 @@
 (ns day8.re-frame.trace.utils.localstorage
-  (:require [goog.storage.Storage :as Storage]
-            [goog.storage.mechanism.HTML5LocalStorage :as html5localstore]
+  (:require [goog.storage.Storage]
+            [goog.storage.mechanism.HTML5LocalStorage]
             [cljs.reader :as reader]
             [clojure.string :as str])
   (:refer-clojure :exclude [get]))

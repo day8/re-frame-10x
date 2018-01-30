@@ -2,7 +2,7 @@
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.utils.localstorage :as localstorage]))
 
-(defn init-db []
+(defn init-db [debug?]
   (let [panel-width% (localstorage/get "panel-width-ratio" 0.35)
         show-panel? (localstorage/get "show-panel" false)
         selected-tab (localstorage/get "selected-tab" :app-db)
@@ -12,6 +12,7 @@
         external-window? (localstorage/get "external-window?" false)
         using-trace? (localstorage/get "using-trace?" true)
         ignored-events (localstorage/get "ignored-events" {})
+        low-level-trace (localstorage/get "low-level-trace" {:reagent true :re-frame true})
         filtered-view-trace (localstorage/get "filtered-view-trace" (let [id1 (random-uuid)
                                                                           id2 (random-uuid)]
                                                                       {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
@@ -25,7 +26,9 @@
     (rf/dispatch [:settings/selected-tab selected-tab])
     (rf/dispatch [:settings/set-ignored-events ignored-events])
     (rf/dispatch [:settings/set-filtered-view-trace filtered-view-trace])
+    (rf/dispatch [:settings/set-low-level-trace low-level-trace])
     (rf/dispatch [:settings/set-number-of-retained-epochs num-epochs])
+    (rf/dispatch [:settings/debug? debug?])
     (when external-window?
       (rf/dispatch [:global/launch-external]))
     (rf/dispatch [:traces/filter-items filter-items])

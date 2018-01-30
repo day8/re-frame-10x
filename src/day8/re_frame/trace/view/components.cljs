@@ -2,7 +2,6 @@
   (:require [clojure.string :as str]
             [goog.fx.dom :as fx]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
             [day8.re-frame.trace.utils.re-com :as rc]
             [mranderson047.reagent.v0v8v0-alpha2.reagent.core :as r])
@@ -209,12 +208,13 @@
                    (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
           @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]])))
 
-(defn simple-render [data path]
+(defn simple-render [data path & [class]]
   (let [expanded? (r/atom true) #_(rf/subscribe [:app-db/node-expanded? path])]
     (fn [data]
       [:div
        {:class (str/join " " ["re-frame-trace--object"
-                              (when @expanded? "expanded")])}
+                              (when @expanded? "expanded")
+                              class])}
        #_[:span {:class    "toggle"
                  :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
           [:button.expansion-button (if @expanded? "▼ " "▶ ")]]
@@ -225,7 +225,7 @@
                    (number? data)
                    (boolean? data)
                    (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
-          @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj [] 0)))]])))
+          @expanded? (jsonml->hiccup (cljs-devtools-header data) (conj path 0)))]])))
 
 (defn tag [class label]
   [rc/box

@@ -1,11 +1,7 @@
 (ns day8.re-frame.trace.view.traces
   (:require [day8.re-frame.trace.view.components :as components]
             [day8.re-frame.trace.utils.pretty-print-condensed :as pp]
-            [re-frame.trace :as trace]
             [clojure.string :as str]
-            [day8.re-frame.trace.utils.localstorage :as localstorage]
-            [cljs.pprint :as pprint]
-            [clojure.set :as set]
             [mranderson047.reagent.v0v8v0-alpha2.reagent.core :as r]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.utils.re-com :as rc]))
@@ -71,7 +67,7 @@
                                                     :tab-index 0}
                                 [:td]
                                 [:td.trace--details-tags {:col-span 2
-                                                          :on-click #(.log js/console tags)}
+                                                          :on-click #(.log js/console trace)}
                                  [:div.trace--details-tags-text
                                   (let [tag-str (prn-str tags)]
                                     (str (subs tag-str 0 400)
@@ -80,7 +76,7 @@
                                 [:td.trace--meta.trace--details-icon
                                  {:on-click #(.log js/console tags)}]]))))))))
 
-(defn render [traces]
+(defn render []
   (let [filter-input            (r/atom "")
         filter-items            (rf/subscribe [:traces/filter-items])
         filter-type             (r/atom :contains)
@@ -89,8 +85,8 @@
         trace-detail-expansions (rf/subscribe [:traces/expansions])
         beginning               (rf/subscribe [:epochs/beginning-trace-id])
         end                     (rf/subscribe [:epochs/ending-trace-id])
-        traces                  (rf/subscribe [:traces/all-traces])
-        current-traces          (rf/subscribe [:traces/current-event-traces])
+        traces                  (rf/subscribe [:traces/all-visible-traces])
+        current-traces          (rf/subscribe [:traces/current-event-visible-traces])
         show-epoch-traces?      (rf/subscribe [:traces/show-epoch-traces?])]
     (fn []
       (let [toggle-category-fn #(rf/dispatch [:traces/toggle-categories %])
