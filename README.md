@@ -1,11 +1,10 @@
 # re-frame-trace
 
-`re-frame-trace` is a programmer's dashboard. It helps you to see inside a running `re-frame` 
-application, allowing you to better understand it and debug it.
+`re-frame-trace` is a programmer's dashboard. Its goal is to provide insight and illumination. It let's you see inside a running `re-frame` application, so you better understand it and debug it.
  
 **Status:** Beta.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
-**Note** [the latest version 0.1.16](https://github.com/Day8/re-frame-trace/releases/tag/0.1.16) ALSO requires the latest version of re-frame itself - `v0.10.3`.
+**Note** also use the latest version of re-frame itself. That's `v0.10.4` currently (but please check yourself just in case these docs get out of date).
 
 ### Helpful How?
 
