@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+
+
+## [0.1.17] - 2018-01-31
+
 This version requires re-frame 0.10.4 to make use of the newly added Event panel.
 
 ### Added
@@ -29,8 +33,6 @@ This version requires re-frame 0.10.4 to make use of the newly added Event panel
 * View namespaces that are ignored are no longer shown when showing traces for all epochs.
 * Distinguish between subscriptions that return `nil` values and those that haven't run yet.
 * Timing panel not showing elapsed event processing time.
-
-
 
 ## [0.1.16] - 2018-01-26
 
