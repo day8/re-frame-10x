@@ -2,8 +2,8 @@
   (:require [mranderson047.garden.v1v3v3.garden.types]
             [mranderson047.garden.v1v3v3.garden.util :as util]
             [mranderson047.garden.v1v3v3.garden.core])
-  (:import garden.types.CSSFunction
-           garden.types.CSSAtRule))
+  (:import mranderson047.garden.v1v3v3.garden.types.CSSFunction
+           mranderson047.garden.v1v3v3.garden.types.CSSAtRule))
 
 (defmacro defstyles
   "Convenience macro equivalent to `(def name (list styles*))`."
@@ -60,7 +60,7 @@
       ;; => #garden.types.CSSFunction{:function \"url\", :args \"http://fonts.googleapis.com/css?family=Lato\"}
 
       (css (url \"http://fonts.googleapis.com/css?family=Lato\"))
-      ;; => url(http://fonts.googleapis.com/css?family=Lato) 
+      ;; => url(http://fonts.googleapis.com/css?family=Lato)
 
   Ex.
       (defcssfn attr
@@ -77,7 +77,7 @@
       (css (attr :vertical :length))
       ;; => \"attr(vertical length)\"
 
-      (attr :end-of-quote :string :inherit) 
+      (attr :end-of-quote :string :inherit)
       ;; => #garden.types.CSSFunction{:function \"url\", :args [:end-of-quote [:string :inherit]]}
 
       (css (attr :end-of-quote :string :inherit))
@@ -97,7 +97,7 @@
 (defmacro defkeyframes
   "Define a CSS @keyframes animation.
 
-  Ex. 
+  Ex.
       (defkeyframes my-animation
         [:from
          {:background \"red\"}]

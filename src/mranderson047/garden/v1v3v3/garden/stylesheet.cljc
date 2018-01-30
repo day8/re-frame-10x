@@ -4,8 +4,8 @@
             [mranderson047.garden.v1v3v3.garden.color :as color]
             [mranderson047.garden.v1v3v3.garden.types :as t])
   #?(:clj
-      (:import garden.types.CSSFunction
-               garden.types.CSSAtRule)))
+      (:import mranderson047.garden.v1v3v3.garden.types.CSSFunction
+               mranderson047.garden.v1v3v3.garden.types.CSSAtRule)))
 
 ;;;; ## Stylesheet helpers
 

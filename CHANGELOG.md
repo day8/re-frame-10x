@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## [0.1.18] - 2018-01-31
+
+#### Fixed
+
+* Garden source dependencies are now working if you don't have your own dependency on Garden.
 
 
 ## [0.1.17] - 2018-01-31
