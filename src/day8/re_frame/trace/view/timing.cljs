@@ -1,12 +1,10 @@
 (ns day8.re-frame.trace.view.timing
-  (:require [clojure.string :as str]
-            [devtools.prefs]
+  (:require [devtools.prefs]
             [devtools.formatters.core]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.utils.re-com :as rc]
             [day8.re-frame.trace.common-styles :as common]
-            [day8.re-frame.trace.view.components :as components])
-  (:require-macros [day8.re-frame.trace.utils.macros :as macros]))
+            [day8.re-frame.trace.view.components :as components]))
 
 (def timing-styles
   [:#--re-frame-trace--

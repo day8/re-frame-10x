@@ -1,17 +1,11 @@
 (ns day8.re-frame.trace
-  (:require [day8.re-frame.trace.view.app-db :as app-db]
-            [day8.re-frame.trace.styles :as styles]
-            [day8.re-frame.trace.view.components :as components]
+  (:require [day8.re-frame.trace.styles :as styles]
             [day8.re-frame.trace.view.container :as container]
-            [day8.re-frame.trace.utils.localstorage :as localstorage]
-            [day8.re-frame.trace.events :as events]
             [day8.re-frame.trace.subs]
+            [day8.re-frame.trace.events]
             [day8.re-frame.trace.db :as trace.db]
             [re-frame.trace :as trace :include-macros true]
-            [re-frame.db :as db]
             [clojure.string :as str]
-            [clojure.set :as set]
-            [reagent.core :as real-reagent]
             [reagent.interop :refer-macros [$ $!]]
             [reagent.impl.util :as util]
             [reagent.impl.component :as component]
@@ -19,7 +13,6 @@
             [reagent.ratom :as ratom]
             [goog.object :as gob]
             [re-frame.interop :as interop]
-            [devtools.formatters.core :as devtools]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v7v0.reagent.core :as r]))
 

@@ -1,6 +1,5 @@
 (ns day8.re-frame.trace.view.event
   (:require [day8.re-frame.trace.utils.re-com :as rc]
-            [day8.re-frame.trace.metamorphic :as metam]
             [day8.re-frame.trace.view.components :as components]
             [day8.re-frame.trace.common-styles :as common]
             [mranderson047.garden.v1v3v3.garden.units :as units]

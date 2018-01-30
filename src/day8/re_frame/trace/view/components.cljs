@@ -2,7 +2,6 @@
   (:require [clojure.string :as str]
             [goog.fx.dom :as fx]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [day8.re-frame.trace.utils.localstorage :as localstorage]
             [clojure.string :as str]
             [day8.re-frame.trace.utils.re-com :as rc]
             [mranderson047.reagent.v0v7v0.reagent.core :as r])

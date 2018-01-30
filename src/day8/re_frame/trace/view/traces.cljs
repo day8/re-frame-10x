@@ -1,10 +1,7 @@
 (ns day8.re-frame.trace.view.traces
   (:require [day8.re-frame.trace.view.components :as components]
             [day8.re-frame.trace.utils.pretty-print-condensed :as pp]
-            [re-frame.trace :as trace]
             [clojure.string :as str]
-            [day8.re-frame.trace.utils.localstorage :as localstorage]
-            [clojure.set :as set]
             [mranderson047.reagent.v0v7v0.reagent.core :as r]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.utils.re-com :as rc]))

@@ -1,5 +1,4 @@
 (ns day8.re-frame.trace.styles
-  (:require-macros [day8.re-frame.trace.utils.macros :as macros])
   (:require [mranderson047.garden.v1v3v3.garden.core :as garden]
             [mranderson047.garden.v1v3v3.garden.units :refer [em px percent]]
             [mranderson047.garden.v1v3v3.garden.color :as color]
@@ -7,7 +6,6 @@
             [day8.re-frame.trace.common-styles :as common]
             [day8.re-frame.trace.utils.re-com :as rc]
             [day8.re-frame.trace.view.app-db :as app-db]
-            [cljs.spec.alpha :as spec]
             [day8.re-frame.trace.view.timing :as timing]
             [day8.re-frame.trace.view.settings :as settings]
             [day8.re-frame.trace.view.event :as event]))
@@ -437,8 +435,6 @@
                                      timing/timing-styles
                                      event/event-styles
                                      settings/settings-styles]))
-;(def panel-styles (macros/slurp-macro "day8/re_frame/trace/main.css"))
-
 
 (defn inject-style [document id style]
   (let [styles-el     (.getElementById document id)

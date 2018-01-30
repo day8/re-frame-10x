@@ -1,5 +1,4 @@
-(ns day8.re-frame.trace.metamorphic
-  (:require [mranderson047.re-frame.v0v10v2.re-frame.utils :as utils]))
+(ns day8.re-frame.trace.metamorphic)
 
 ;; What starts an epoch?
 
