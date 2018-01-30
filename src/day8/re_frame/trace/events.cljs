@@ -199,6 +199,11 @@
   (fn [low-level [_ trace-type capture?]]
     (assoc low-level trace-type capture?)))
 
+(rf/reg-event-db
+  :settings/debug?
+  (fn [db [_ debug?]]
+    (assoc-in db [:settings :debug?] debug?)))
+
 ;; Global
 
 (defn mount [popup-window popup-document]

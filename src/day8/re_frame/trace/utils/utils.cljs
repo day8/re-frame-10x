@@ -24,8 +24,8 @@
 
 (defn spy
   ([x]
-   (js/console.log x)
+   #?(:cljs (js/console.log x))
    x)
   ([label x]
-   (js/console.log label x)
+   #?(:cljs (js/console.log label x))
    x))

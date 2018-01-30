@@ -61,6 +61,12 @@
   (fn [settings]
     (:low-level-trace settings)))
 
+(rf/reg-sub
+  :settings/debug?
+  :<- [:settings/root]
+  (fn [settings]
+    (:debug? settings)))
+
 ;; App DB
 
 (rf/reg-sub

@@ -2,7 +2,7 @@
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.utils.localstorage :as localstorage]))
 
-(defn init-db []
+(defn init-db [debug?]
   (let [panel-width% (localstorage/get "panel-width-ratio" 0.35)
         show-panel? (localstorage/get "show-panel" false)
         selected-tab (localstorage/get "selected-tab" :app-db)
@@ -28,6 +28,7 @@
     (rf/dispatch [:settings/set-filtered-view-trace filtered-view-trace])
     (rf/dispatch [:settings/set-low-level-trace low-level-trace])
     (rf/dispatch [:settings/set-number-of-retained-epochs num-epochs])
+    (rf/dispatch [:settings/debug? debug?])
     (when external-window?
       (rf/dispatch [:global/launch-external]))
     (rf/dispatch [:traces/filter-items filter-items])

@@ -229,7 +229,7 @@
                              :debug?     debug?}] (panel-div)))
 
 (defn init-db! []
-  (trace.db/init-db))
+  (trace.db/init-db debug?))
 
 (defn ^:export factory-reset! []
   (rf/dispatch [:settings/factory-reset]))
