@@ -2,7 +2,7 @@
 
 `re-frame-trace` let's you look at the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination. So, you'll use it to better understand your application and to debug it. 
  
-**Status:** Beta.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
+**Status:** Beta.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace) [![CircleCI](https://circleci.com/gh/Day8/re-frame-trace.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-trace)
 
 **Note** also use the latest version of re-frame itself - currently `v0.10.4` (but please check yourself - out of date docs and all that) 
 
