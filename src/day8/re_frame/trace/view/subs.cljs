@@ -78,8 +78,7 @@
                             [title-tag :created (long-tag-desc :created) @created-count]
                             [title-tag :re-run (long-tag-desc :re-run) @re-run-count]
                             [title-tag :destroyed (long-tag-desc :destroyed) @destroyed-count]
-                            ;; TODO: capture not-run traces
-                            #_[title-tag :not-run (long-tag-desc :not-run) @not-run-count]]]
+                            [title-tag :not-run (long-tag-desc :not-run) @not-run-count]]]
                 [rc/h-box
                  :align :center
                  :gap common/gs-19s
@@ -275,29 +274,5 @@
            }
    :children [[panel-header]
               [pod-section]
-              [rc/gap-f :size pod-gap]
-
-              ;; TODO: OLD UI - REMOVE
-              #_[:div.panel-content-scrollable
-                 {:style {:border "1px solid lightgrey"
-                          :margin "0px"}}
-                 [:div.subtrees
-                  {:style {:margin "20px 0"}}
-                  (doall
-                    (->> @subs/query->reaction
-                         (sort-by (fn [me] (ffirst (key me))))
-                         (map (fn [me]
-                                (let [[query-v dyn-v :as inputs] (key me)]
-                                  ^{:key query-v}
-                                  [:div.subtree-wrapper {:style {:margin "10px 0"}}
-                                   [:div.subtree
-                                    [components/subscription-render
-                                     (rc/deref-or-value-peek (val me))
-                                     [:button.subtree-button {:on-click #(rf/dispatch [:app-db/remove-path (key me)])}
-                                      [:span.subtree-button-string
-                                       (prn-str (first (key me)))]]
-                                     (into [:subs] query-v)]]]))
-                              )))
-                  (do @re-frame.db/app-db
-                      nil)]]]])
+              [rc/gap-f :size pod-gap]]])
 
