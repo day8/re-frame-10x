@@ -9,8 +9,8 @@
        (sort-by :id)))
 
 (deftest parse-app-trace1-test
-  (let [rt      (m/parse-traces (trace-events "app-trace1.edn"))
-        matches (:matches rt)
+  (let [rt      (m/parse-traces m/initial-parse-state (trace-events "app-trace1.edn"))
+        matches (:partitions rt)
         [m1 m2 m3 m4 m5 m6] matches]
     (is (= (count matches) 6))
 
