@@ -412,8 +412,7 @@
   :<- [:subs/subscription-info]
   :<- [:subs/current-epoch-sub-state]
   (fn [[traces app-db-id sub-info sub-state]]
-    (let [rx-state      (:reaction-state sub-state)
-          raw           (map (fn [trace]
+    (let [raw           (map (fn [trace]
                                (let [pod-type   (sub-op-type->type trace)
                                      path-data  (get-in trace [:tags :query-v])
                                      reagent-id (get-in trace [:tags :reaction])
@@ -428,8 +427,8 @@
                                      sub        (if (contains? (:tags trace) :value)
                                                   (assoc sub :value (get-in trace [:tags :value]))
                                                   sub)
-                                     sub        (if (contains? (get rx-state reagent-id) :previous-value)
-                                                  (assoc sub :previous-value (get-in rx-state [reagent-id :previous-value]))
+                                     sub        (if (contains? (get sub-state reagent-id) :previous-value)
+                                                  (assoc sub :previous-value (get-in sub-state [reagent-id :previous-value]))
                                                   sub)]
                                  sub))
                              traces)

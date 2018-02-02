@@ -206,10 +206,6 @@
    :previous-event nil
    :partitions     []})
 
-(def initial-sub-state
-  {:last-matched-id 0
-   :reaction-state {}})
-
 (defn parse-traces [parse-state traces]
   (reduce
     (fn [state event]
@@ -293,7 +289,7 @@
                                            (filter (fn [me] (when-not (:disposed? (val me)) me)))
                                            (map (fn [[k v]]
                                                   [k (dissoc v :order :created? :run? :disposed? :previous-value)])))
-                                         (:reaction-state state))]
+                                         state)]
                   (->> epoch-traces
                        (reduce (fn [state trace]
                                  (let [tags        (get trace :tags)
@@ -313,7 +309,6 @@
                                                       (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
                                      (do #?(:cljs (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace))
                                          state))))
-                               reset-state)
-                       (assoc state :reaction-state))))
+                               reset-state))))
               sub-state
               new-matches))
