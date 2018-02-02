@@ -207,8 +207,8 @@
                                               :display    "flex"
                                               :left       left :top "0px" :width (str (* 100 @panel-width%) "%") :height "100%"
                                               :transition transition}}
-                                     [:div.panel-resizer {:style         (resizer-style draggable-area)
-                                                          :on-mouse-down #(reset! dragging? true)}]
+                                     [:div.panel-resizer (when @showing? {:style         (resizer-style draggable-area)
+                                                                          :on-mouse-down #(reset! dragging? true)})]
                                      [container/devtools-inner opts]]]))})))
 
 
