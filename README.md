@@ -70,7 +70,7 @@ Deeper knowledge is the goal. Easier debugging is the symptom.
 
 ### Temporary Warning 
 
-> Some of the descriptions above are aspirational. `re-frame-trace` remains a WIP experiment. But we're getting there.
+> Some of the claims above are aspirational. `re-frame-trace` remains a WIP experiment. But we're getting there.
 
 ## A Visual Sampler
 
