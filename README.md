@@ -1,17 +1,13 @@
 # re-frame-trace
 
-`re-frame-trace` let's you look at the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination. So, you'll use it to better understand your application and to debug it. 
- 
-**Status:** Beta.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace) [![CircleCI](https://circleci.com/gh/Day8/re-frame-trace.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-trace)
-
-**Note** also use the latest version of re-frame itself - currently `v0.10.4` (but please check yourself - out of date docs and all that) 
+`re-frame-trace` let's you look at the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination. Your capacity to debug will increase because you know more.
 
 ### It Is Epoch Oriented 
 
 `re-frame` applications are computationally regular. First an event happens,
-and then boom, boom, boom go a series of known computational steps (dominoes), 
+and then boom, boom, boom go a series of known computational steps (aka dominoes), 
 in a known order. When this chain reaction completes, 
-a `re-frame` app lapses into a quiescent state waiting for another 
+a `re-frame` app enters a quiescent state waiting for another 
 event to kick off the next iteration of the same process.
 
 Each `re-frame` event and its consequent computation forms a bounded "epoch" 
@@ -27,7 +23,7 @@ aspect of what `re-frame-trace` delivers.
 As it runs, `re-frame` logs "trace" as data (not strings).
 This data trace provides an x-ray of your app's functioning.
 
-`re-frame-trace` is essentially a consumer, processor and displayer of this xray trace data.
+`re-frame-trace` is essentially a consumer, processor and displayer of this x-ray trace data.
 
 ### More Data
 
@@ -35,7 +31,7 @@ While re-frame is a functional framework, it is
 strongly defined by its "data oriented" design. `re-frame`
 "flows" data, in a loop, through the functions you provide.
 To understand what is happening in a `re-frame` app, you must understand
-what data is happening.     
+what data is "happening".     
 
 So, data is at the core of `re-frame-trace` in both of the ways just described, 
 and data is a powerful and leverageable substrate.
@@ -44,13 +40,10 @@ and data is a powerful and leverageable substrate.
 
 Except, there's often too much data - you can drown in the detail.
 
-So, `re-frame-trace` tries to be a "dashboard" which curates the
+So, `re-frame-trace` tries to be a "dashboard" which curates this
 "raw data" into "information" through various kinds of analysis 
 and "roll ups". It should deliver insight "at a glance", while still allowing 
 you to drill down into the detail. 
-
-Okay. So, we now know enough to do a summary: this tool is an epoch-oriented, 
-interactive data dashboard which delivers insights and assists debugging.
 
 ### Which Is Helpful How?
 
@@ -59,20 +52,25 @@ Four ways:
   1. It helps you to learn `re-frame`.  Simply looking at 
      the "raw traces" provides insight into how it operates. Even experienced
      re-framians, er, like me, have learned a lot.
+     
   2. It helps you to explore and learn an unfamiliar `re-frame` codebase.
      When I click, over here, on this "X" button, it shows me what event is `dispatch`-ed 
      and in what namespace the associated event handler is registered.  And, 
      "oh look, that's interesting - four subscriptions recalculated". Etc.
+     
   3. It helps you with debugging. You see an x-ray of your app's functioning. 
      In particular, it will assist you to write and debug 
      event handlers, which is useful because they hold most of the logic 
      in your `re-frame` apps.
+     
   4. It helps you to find performance problems and/or detect where there is 
      unnecessary computation occurring.
 
+Deeper knowledge is the goal. Easier debugging is the symptom.
+
 ### Temporary Warning 
 
-> Some of the descriptions above are aspirational. `re-frame-trace` remains a WIP experiment. But we're getting there. 
+> Some of the descriptions above are aspirational. `re-frame-trace` remains a WIP experiment. But we're getting there.
 
 ## A Visual Sampler
 
