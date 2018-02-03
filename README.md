@@ -18,14 +18,14 @@ And, yes, it has "time travel debugger" capabilities - you can go backwards
 and forwards through epochs - but that's really not the most interesting or powerful 
 aspect of what `re-frame-trace` delivers.
 
-### It Is All About Trace Data
+### It Is About Trace Data
 
 As it runs, `re-frame` logs "trace" as data (not strings).
 This data trace provides an x-ray of your app's functioning.
 
 `re-frame-trace` is essentially a consumer, processor and displayer of this x-ray trace data.
 
-### More Data
+### It Is About The Data Flow
 
 While re-frame is a functional framework, it is
 strongly defined by its "data oriented" design. `re-frame`
@@ -150,11 +150,13 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ## How does it work?
 
-re-frame is instrumented - all important activity generates trace data. `re-frame-trace` consumes this trace data and renders useful visualisations of the `re-frame` process. Currently, re-frame's tracing capabilities are in alpha and are subject to change at any time. We're testing the utility of the the trace by building an app on top. 
+re-frame is instrumented - all important activity generates trace data. 
+
+`re-frame-trace` consumes this trace data and renders useful visualisations of the `re-frame` process. Currently, re-frame's tracing capabilities are in alpha and are subject to change at any time. We're testing the utility of the the trace by building an app on top. 
 
 By default, re-frame tracing is "compiled out", so it won't impose a performance cost in production. The trade-off here is that you need to explicitly enable it in development.
 
-The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#preloads) option (`:preloads [day8.re-frame.trace.preload]`) has to be set in order to automatically monkeypatch Reagent to add appropriate lifecycle hooks. Yes this is gross, and yes we will try and make a PR to reagent to add proper hooks, once we know exactly what we need. The preload namespace also injects a div containing the devtools panel into the DOM.
+The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#preloads) option (`:preloads [day8.re-frame.trace.preload]`) has to be set in order to automatically monkeypatch Reagent to add appropriate lifecycle hooks. Yes this is gross, and yes we will [make a PR to reagent to add proper hooks](https://github.com/Day8/re-frame-trace/issues/115), once we know exactly what we need. The preload namespace also injects a div containing the devtools panel into the DOM.
 
 ## Developing/Contributing
 
