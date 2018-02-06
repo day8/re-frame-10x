@@ -234,11 +234,11 @@
    :children [[rc/label :label "There are no subscriptions to show"]]])
 
 (defn pod-section []
-  (let [all-subs       @(rf/subscribe [:subs/visible-subs])
+  (let [visible-subs   @(rf/subscribe [:subs/visible-subs])
         sub-expansions @(rf/subscribe [:subs/sub-expansions])
         all-subs       (if @(rf/subscribe [:settings/debug?])
-                         (cons {:id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} all-subs)
-                         all-subs)]
+                         (cons {:id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
+                         visible-subs)]
     [rc/v-box
      :size "1"
      ;:gap pod-gap
