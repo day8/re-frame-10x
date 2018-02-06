@@ -160,7 +160,8 @@
                                                       :leave-animation "accordionVertical"
                                                       :duration        animation-duration})
                              (when open?
-                               (let [main-value (cond value? (:value pod-info)
+                               (let [main-value (:value pod-info)
+                                     #_(cond value? (:value pod-info)
                                                       previous-value? (:previous-value pod-info)
                                                       :else nil)]
                                  [rc/v-box
@@ -237,7 +238,7 @@
   (let [visible-subs   @(rf/subscribe [:subs/visible-subs])
         sub-expansions @(rf/subscribe [:subs/sub-expansions])
         all-subs       (if @(rf/subscribe [:settings/debug?])
-                         (cons {:id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
+                         (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
                          visible-subs)]
     [rc/v-box
      :size "1"
