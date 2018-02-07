@@ -2,7 +2,7 @@
 
 (defn id-between-xf
   ;; Copied here because I got undeclared Var warnings from figwheel when requiring a CLJC utils ns.
-  "Returns a transducer that filters for :id between beginning and ending."
+  "Returns a transducer that filters for :id between beginning and ending. Inclusive on both ends."
   [beginning ending]
   (filter #(<= beginning (:id %) ending)))
 
@@ -208,7 +208,7 @@
 
 (def initial-sub-state
   {:last-matched-id 0
-   :reaction-state {}})
+   :reaction-state  {}})
 
 (defn parse-traces [parse-state traces]
   (reduce
@@ -278,42 +278,96 @@
                              3)))
                initial-state)))
 
+(defn reset-sub-state
+  "Remove information about the subscription that is transient and specific to a single
+  phase."
+  [state]
+  (into {}
+        (comp
+          (filter (fn [me] (when-not (:disposed? (val me)) me)))
+          (map (fn [[k v]]
+                 [k (dissoc v :order :created? :run? :disposed? :previous-value)])))
+        state))
+
+(defn process-sub-traces
+  [initial-state traces]
+  (reduce (fn [state trace]
+            (let [tags        (get trace :tags)
+                  reaction-id (:reaction tags)]
+              (case (:op-type trace)
+                :sub/create (assoc state reaction-id {:created?     true
+                                                      :subscription (:query-v tags)
+                                                      :order        [:sub/create]})
+                :sub/run (update state reaction-id (fn [sub-state]
+                                                     (-> (if (contains? sub-state :value)
+                                                           (assoc sub-state :previous-value (:value sub-state))
+                                                           sub-state)
+                                                         (assoc :run? true
+                                                                :value (:value tags))
+                                                         (update :order (fnil conj []) :sub/run))))
+                :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
+                                 (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
+                (do #?(:cljs (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace))
+                    state))))
+          initial-state
+          traces))
+
 (defn subscription-match-state
   "Build up the state of re-frame's running subscriptions over each matched epoch.
   Returns initial state as first item in list"
   [sub-state filtered-traces new-matches]
+  ;; For each match that we process there are two phases:
+  ;; - Phase 1: Update and collect the state of the subscriptions that have trace between the last epoch
+  ;;   and the new epoch. These traces can be from hover state, local ratom events, figwheel re-renders
+  ;;   or rft resetting app-db. Most of the time these traces are noisy and not interesting, but we do
+  ;;   need to use them to maintain our subscription state. We also want to show them down below the main
+  ;;   subs, in case someone is wondering where they went. If there are no sub traces to process then
+  ;;   this phase doesn't run.
+  ;; - Phase 2: Update and collect the state of the subscription traces within an epoch. These subscription
+  ;;   traces are going to be changing because of app-db changes.
+  ;; We collect and present the state for both phases for consumption in the subs panel
+
+
+  ;#?(:cljs (js/console.log "New matches?" (not (empty? new-matches))))
   (reductions (fn [state match]
-                (let [epoch-traces (into []
-                                         (comp
-                                           (id-between-xf (:id (first match)) (:id (last match)))
-                                           (filter subscription?))
-                                         filtered-traces)
-                      reset-state  (into {}
-                                         (comp
-                                           (filter (fn [me] (when-not (:disposed? (val me)) me)))
-                                           (map (fn [[k v]]
-                                                  [k (dissoc v :order :created? :run? :disposed? :previous-value)])))
-                                         (:reaction-state state))]
-                  (->> epoch-traces
-                       (reduce (fn [state trace]
-                                 (let [tags        (get trace :tags)
-                                       reaction-id (:reaction tags)]
-                                   (case (:op-type trace)
-                                     :sub/create (assoc state reaction-id {:created?     true
-                                                                           :subscription (:query-v tags)
-                                                                           :order        [:sub/create]})
-                                     :sub/run (update state reaction-id (fn [sub-state]
-                                                                          (-> (if (contains? sub-state :value)
-                                                                                (assoc sub-state :previous-value (:value sub-state))
-                                                                                sub-state)
-                                                                              (assoc :run? true
-                                                                                     :value (:value tags))
-                                                                              (update :order (fnil conj []) :sub/run))))
-                                     :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
-                                                      (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
-                                     (do #?(:cljs (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace))
-                                         state))))
-                               reset-state)
-                       (assoc state :reaction-state))))
+                (let [previous-id      (:last-matched-id state)
+                      first-match-id   (:id (first match))
+                      last-match-id    (:id (last match))
+                      pre-epoch-traces (into []
+                                             (comp
+                                               (id-between-xf (inc previous-id)
+                                                              (dec first-match-id))
+                                               (filter subscription?))
+                                             filtered-traces)
+                      epoch-traces     (into []
+                                             (comp
+                                               (id-between-xf first-match-id last-match-id)
+                                               (filter subscription?))
+                                             filtered-traces)
+                      reset-rx-state   (reset-sub-state (:reaction-state state))]
+                  (-> (->> epoch-traces
+                           (reduce (fn [state trace]
+                                     (let [tags        (get trace :tags)
+                                           reaction-id (:reaction tags)]
+                                       (case (:op-type trace)
+                                         :sub/create (assoc state reaction-id {:created?     true
+                                                                               :subscription (:query-v tags)
+                                                                               :order        [:sub/create]})
+                                         :sub/run (update state reaction-id (fn [sub-state]
+                                                                              (-> (if (contains? sub-state :value)
+                                                                                    (assoc sub-state :previous-value (:value sub-state))
+                                                                                    sub-state)
+                                                                                  (assoc :run? true
+                                                                                         :value (:value tags))
+                                                                                  (update :order (fnil conj []) :sub/run))))
+                                         :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
+                                                          (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
+                                         (do #?(:cljs (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace))
+                                             state))))
+                                   reset-rx-state)
+                           (assoc state :reaction-state))
+                      (assoc :first-matched-id first-match-id
+                             :last-matched-id last-match-id
+                             :previous-matched-id previous-id))))
               sub-state
               new-matches))

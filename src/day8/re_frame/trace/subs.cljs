@@ -2,7 +2,9 @@
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.metamorphic :as metam]
             [day8.re-frame.trace.utils.utils :as utils]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [cljs.spec.alpha :as s]
+            [expound.alpha :as expound]))
 
 (rf/reg-sub
   :settings/root
@@ -390,6 +392,38 @@
   (fn [match-state]
     (:sub-state match-state)))
 
+(def string! (s/and string? #(not (empty? %))))
+
+(s/def :sub/id string!)
+(s/def :sub/reagent-id string!)
+(s/def :sub/type #{:created :re-run :destroyed :not-run})
+(s/def :sub/layer pos-int?)
+(s/def :sub/path-data any?)
+(s/def :sub/path string!)
+(s/def :sub/value any?)
+(s/def :sub/previous-value any?)
+(s/def :subs/view-panel-sub
+  (s/keys :req-un [:sub/id :sub/reagent-id :sub/type :sub/layer :sub/path-data :sub/path]
+          :opt-un [:sub/value :sub/previous-value]))
+(s/def :subs/view-subs (s/coll-of :subs/view-panel-sub))
+
+
+(rf/reg-sub
+  :subs/inter-epoch-subs
+  (fn [db]
+    (let [sub
+          [{:id             ":test1"
+            :reagent-id     "ra87"
+            :type           :created
+            :layer          3
+            :path-data      [:test/sub]
+            :path           (pr-str [:test/sub])
+            :value          5
+            :previous-value 3}]]
+      (when-not (s/valid? :subs/view-subs sub)
+        (js/console.error (expound/expound-str :subs/view-subs sub)))
+      sub)))
+
 (defn sub-sort-val
   [sub]
   (case (:type sub)
@@ -464,8 +498,12 @@
                               (filter (fn [[k v]] (< 1 v)))
                               (frequencies (map :id raw)))
 
-          output        (map (fn [sub] (assoc sub :run-times (get run-multiple? (:id sub)))) raw)]
-      (sort-by identity subscription-comparator output))))
+          output        (map (fn [sub] (assoc sub :run-times (get run-multiple? (:id sub)))) raw)
+          subs (sort-by identity subscription-comparator output)]
+      (when-not (s/valid? :subs/view-subs subs)
+        (js/console.error (expound/expound-str :subs/view-subs subs)))
+      subs
+      )))
 
 (rf/reg-sub
   :subs/visible-subs

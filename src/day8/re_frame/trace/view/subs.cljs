@@ -236,12 +236,13 @@
 
 (defn pod-section []
   (let [visible-subs   @(rf/subscribe [:subs/visible-subs])
+        inter-epoch-subs @(rf/subscribe [:subs/inter-epoch-subs])
         sub-expansions @(rf/subscribe [:subs/sub-expansions])
         all-subs       (if @(rf/subscribe [:settings/debug?])
                          (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
                          visible-subs)]
     [rc/v-box
-     :size "1"
+     ;:size "1"
      ;:gap pod-gap
 
      ;:children (if (empty? all-subs)
@@ -253,16 +254,35 @@
      :children [(if (and (empty? all-subs) @*finished-animation?)
                   [no-pods]
                   [rc/box :width "0px" :height "0px"])
-                [animated/component
+
+                (for [p all-subs]
+                  ^{:key (:id p)}
+                  [pod (merge p (get sub-expansions (:id p)))])
+                #_[animated/component
                  (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
                                           :duration  animation-duration
                                           :style     {:flex       "1 1 0px"
                                                       :overflow-x "hidden"
                                                       :overflow-y "auto"}})
 
-                 (for [p all-subs]
-                   ^{:key (:id p)}
-                   [pod (merge p (get sub-expansions (:id p)))])]]
+                 ]
+                [rc/line :size "5px"
+                 :style {:margin "19px 0px"}]
+                [:h2 {:class "bm-heading-text"
+                      :style {:margin "19px 0px"}} "Inter-epoch subscriptions"]
+                (for [p inter-epoch-subs]
+                  ^{:key (:id p)}
+                  [pod (merge p (get sub-expansions (:id p)))])
+
+                #_[animated/component
+                 (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
+                                          :duration  animation-duration
+                                          :style     {:flex       "1 1 0px"
+                                                      :overflow-x "hidden"
+                                                      :overflow-y "auto"}})
+
+                 ]
+                ]
 
      ]))
 
