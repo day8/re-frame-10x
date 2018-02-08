@@ -397,7 +397,7 @@
 (s/def :sub/id string!)
 (s/def :sub/reagent-id string!)
 (s/def :sub/type #{:created :re-run :destroyed :not-run})
-(s/def :sub/layer pos-int?)
+(s/def :sub/layer (s/nilable pos-int?))
 (s/def :sub/path-data any?)
 (s/def :sub/path string!)
 (s/def :sub/value any?)
@@ -408,25 +408,11 @@
 (s/def :subs/view-subs (s/coll-of :subs/view-panel-sub))
 
 
-(rf/reg-sub
-  :subs/inter-epoch-subs
-  (fn [db]
-    (let [sub
-          [{:id             ":test1"
-            :reagent-id     "ra87"
-            :type           :created
-            :layer          3
-            :path-data      [:test/sub]
-            :path           (pr-str [:test/sub])
-            :value          5
-            :previous-value 3}]]
-      (when-not (s/valid? :subs/view-subs sub)
-        (js/console.error (expound/expound-str :subs/view-subs sub)))
-      sub)))
+
 
 (defn sub-sort-val
-  [sub]
-  (case (:type sub)
+  [sub-type]
+  (case sub-type
     :created 1
     :re-run 2
     :destroyed 3
@@ -444,66 +430,49 @@
 
     :not-run))
 
+(defn prepare-pod-info
+  "Returns sub info prepared for rendering in pods"
+  [[sub-info sub-state]]
+  (let [rx-state (:reaction-state sub-state)
+        subx     (->>
+                   rx-state
+                   (remove (fn [me] (nil? (:order (val me)))))
+                   (map (fn [me] (let [state        (val me)
+                                       subscription (:subscription state)
+                                       sub          {:id         (key me)
+                                                     :reagent-id (key me)
+                                                     :type       :created
+                                                     :layer      (get-in sub-info [(first subscription) :layer])
+                                                     :path-data  subscription
+                                                     :path       (pr-str subscription)
+                                                     :order      (:order state)}
+                                       sub          (if (contains? state :value)
+                                                      (assoc sub :value (:value state))
+                                                      sub)
+                                       sub          (if (contains? state :previous-value)
+                                                      (assoc sub :previous-value (:previous-value state))
+                                                      sub)]
+                                   sub))))
+        ]
+    (utils/spy "subx" subx)
+
+
+    (when-not (s/valid? :subs/view-subs subx)
+      (js/console.error (expound/expound-str :subs/view-subs subx)))
+
+    subx))
+
 (rf/reg-sub
-  :subs/all-subs
-  :<- [:subs/all-sub-traces]
-  :<- [:app-db/reagent-id]
+  :subs/inter-epoch-subs
   :<- [:subs/subscription-info]
   :<- [:subs/current-epoch-sub-state]
-  (fn [[traces app-db-id sub-info sub-state]]
-    (let [rx-state      (:reaction-state sub-state)
-          raw           (map (fn [trace]
-                               (let [pod-type   (sub-op-type->type trace)
-                                     path-data  (get-in trace [:tags :query-v])
-                                     reagent-id (get-in trace [:tags :reaction])
-                                     sub        (-> {:id         (str pod-type reagent-id)
-                                                     :reagent-id reagent-id
-                                                     :type       pod-type
-                                                     :layer      (get-in sub-info [(:operation trace) :layer])
-                                                     :path-data  path-data
-                                                     :path       (pr-str path-data)
-                                                     ;; TODO: Get not run subscriptions
-                                                     })
-                                     sub        (if (contains? (:tags trace) :value)
-                                                  (assoc sub :value (get-in trace [:tags :value]))
-                                                  sub)
-                                     sub        (if (contains? (get rx-state reagent-id) :previous-value)
-                                                  (assoc sub :previous-value (get-in rx-state [reagent-id :previous-value]))
-                                                  sub)]
-                                 sub))
-                             traces)
-          re-run        (->> raw
-                             (filter #(= :re-run (:type %)))
-                             (map (juxt :path-data identity))
-                             (into {}))
-          created       (->> raw
-                             (filter #(= :created (:type %)))
-                             (map (juxt :path-data identity))
-                             (into {}))
-          raw           (keep (fn [sub]
-                                (case (:type sub)
-                                  :created (if-some [re-run-sub (get re-run (:path-data sub))]
-                                             (assoc sub :value (:value re-run-sub))
-                                             sub)
+  prepare-pod-info)
 
-                                  :re-run (when-not (contains? created (:path-data sub))
-                                            sub)
-
-                                  sub))
-                              raw)
-
-          ;; Filter out run if it was created
-          ;; Group together run time
-          run-multiple? (into {}
-                              (filter (fn [[k v]] (< 1 v)))
-                              (frequencies (map :id raw)))
-
-          output        (map (fn [sub] (assoc sub :run-times (get run-multiple? (:id sub)))) raw)
-          subs (sort-by identity subscription-comparator output)]
-      (when-not (s/valid? :subs/view-subs subs)
-        (js/console.error (expound/expound-str :subs/view-subs subs)))
-      subs
-      )))
+(rf/reg-sub
+  :subs/all-subs
+  :<- [:subs/subscription-info]
+  :<- [:subs/current-epoch-sub-state]
+  prepare-pod-info)
 
 (rf/reg-sub
   :subs/visible-subs

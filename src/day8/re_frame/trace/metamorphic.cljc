@@ -208,6 +208,7 @@
 
 (def initial-sub-state
   {:last-matched-id 0
+   :pre-epoch-state {}
    :reaction-state  {}})
 
 (defn parse-traces [parse-state traces]
@@ -284,10 +285,13 @@
   [state]
   (into {}
         (comp
+          ;; Remove disposed subscriptions
           (filter (fn [me] (when-not (:disposed? (val me)) me)))
+          ;; Remove transient state
           (map (fn [[k v]]
                  [k (dissoc v :order :created? :run? :disposed? :previous-value)])))
         state))
+
 
 (defn process-sub-traces
   [initial-state traces]
@@ -327,6 +331,9 @@
   ;;   traces are going to be changing because of app-db changes.
   ;; We collect and present the state for both phases for consumption in the subs panel
 
+  ;; If you look closely at the state of the subscriptions, and the traces they derive from, you will
+  ;; come to a disturbing realisation: Disposed reactions are resurrected and continue to be run.
+  ;; This is tracked in https://github.com/reagent-project/reagent/pull/270.
 
   ;#?(:cljs (js/console.log "New matches?" (not (empty? new-matches))))
   (reductions (fn [state match]
@@ -344,30 +351,17 @@
                                                (id-between-xf first-match-id last-match-id)
                                                (filter subscription?))
                                              filtered-traces)
-                      reset-rx-state   (reset-sub-state (:reaction-state state))]
-                  (-> (->> epoch-traces
-                           (reduce (fn [state trace]
-                                     (let [tags        (get trace :tags)
-                                           reaction-id (:reaction tags)]
-                                       (case (:op-type trace)
-                                         :sub/create (assoc state reaction-id {:created?     true
-                                                                               :subscription (:query-v tags)
-                                                                               :order        [:sub/create]})
-                                         :sub/run (update state reaction-id (fn [sub-state]
-                                                                              (-> (if (contains? sub-state :value)
-                                                                                    (assoc sub-state :previous-value (:value sub-state))
-                                                                                    sub-state)
-                                                                                  (assoc :run? true
-                                                                                         :value (:value tags))
-                                                                                  (update :order (fnil conj []) :sub/run))))
-                                         :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
-                                                          (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
-                                         (do #?(:cljs (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace))
-                                             state))))
-                                   reset-rx-state)
-                           (assoc state :reaction-state))
-                      (assoc :first-matched-id first-match-id
-                             :last-matched-id last-match-id
-                             :previous-matched-id previous-id))))
+                      reaction-state   (:reaction-state state)
+                      pre-epoch-state  (-> reaction-state
+                                           (reset-sub-state)
+                                           (process-sub-traces pre-epoch-traces))
+                      epoch-state      (-> pre-epoch-state
+                                           (reset-sub-state)
+                                           (process-sub-traces epoch-traces))]
+                  {:pre-epoch-state     pre-epoch-state
+                   :reaction-state      epoch-state
+                   :first-matched-id    first-match-id
+                   :last-matched-id     last-match-id
+                   :previous-matched-id previous-id}))
               sub-state
               new-matches))

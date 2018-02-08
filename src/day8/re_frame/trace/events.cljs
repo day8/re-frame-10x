@@ -536,7 +536,7 @@
             ;;   like its reagent id, when it was created, run, disposed, what values it returned, e.t.c.
             subscription-info          (metam/subscription-info (get-in db [:epochs :subscription-info] {}) filtered-traces (get-in db [:app-db :reagent-id]))
             sub-state                  (get-in db [:epochs :sub-state] metam/initial-sub-state)
-            subscription-match-state   (utils/spy "SUB" (metam/subscription-match-state sub-state filtered-traces new-matches))
+            subscription-match-state   (metam/subscription-match-state sub-state filtered-traces new-matches)
             subscription-matches       (rest subscription-match-state)
             new-sub-state              (last subscription-match-state)
             timing                     (mapv (fn [match]

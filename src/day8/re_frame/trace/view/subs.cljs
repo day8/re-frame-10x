@@ -20,25 +20,26 @@
 
 (defn sub-tag-class [type]
   (case type
-    :created "rft-tag__subscription_created"
-    :destroyed "rft-tag__subscription_destroyed"
-    :re-run "rft-tag__subscription_re_run"
-    :not-run "rft-tag__subscription_not_run"
+    :sub/create "rft-tag__subscription_created"
+    :sub/dispose "rft-tag__subscription_destroyed"
+    :sub/run "rft-tag__subscription_re_run"
+    :sub/not-run "rft-tag__subscription_not_run"
     ""))
 
-(def tag-types {:created   {:long "CREATED" :short "CREATED"}
-                :destroyed {:long "DESTROYED" :short "DESTROY"}
-                :re-run    {:long "RE-RUN" :short "RE-RUN"}
-                :not-run   {:long "NOT-RUN" :short "NOT-RUN"}})
+(def tag-types {:sub/create  {:long "CREATED" :short "C"}
+                :sub/dispose {:long "DISPOSED" :short "D"}
+                :sub/run     {:long "RUN" :short "R"}
+                :sub/not-run {:long "NOT-RUN" :short "N"}
+                nil          {:long "NIL" :short "NIL"}})
 
 (def *finished-animation? (r/atom false))
 (def animation-duration 150)
 
 (defn long-tag-desc [type]
-  (get-in tag-types [type :long] "???"))
+  (get-in tag-types [type :long] (str type)))
 
 (defn short-tag-desc [type]
-  (get-in tag-types [type :short] "???"))
+  (get-in tag-types [type :short] (str type)))
 
 (defn sub-tag [type label]
   [components/tag (sub-tag-class type) label])
@@ -75,10 +76,10 @@
                                             :font-size   "18px"
                                             :font-weight "lighter"}}
                              "Summary:"]
-                            [title-tag :created (long-tag-desc :created) @created-count]
-                            [title-tag :re-run (long-tag-desc :re-run) @re-run-count]
-                            [title-tag :destroyed (long-tag-desc :destroyed) @destroyed-count]
-                            [title-tag :not-run (long-tag-desc :not-run) @not-run-count]]]
+                            [title-tag :sub/create (long-tag-desc :sub/create) @created-count]
+                            [title-tag :sub/run (long-tag-desc :sub/run) @re-run-count]
+                            [title-tag :sub/dispose (long-tag-desc :sub/dispose) @destroyed-count]
+                            [title-tag :sub/not-run (long-tag-desc :sub/not-run) @not-run-count]]]
                 [rc/h-box
                  :align :center
                  :gap common/gs-19s
@@ -95,7 +96,7 @@
                              :style {:margin-top "6px"}
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-l2-subs? %])]]]]]))
 
-(defn pod-header [{:keys [id type layer path open? diff? run-times]}]
+(defn pod-header [{:keys [id layer path open? diff? run-times order]}]
   [rc/h-box
    :class (str "app-db-path--header " (when-not open? "rounded-bottom"))
    :align :center
@@ -110,9 +111,13 @@
                :child [rc/box
                        :margin "auto"
                        :child [:span.arrow (if open? "▼" "▶")]]]
-              [rc/box
-               :width "64px"                                ;; (100-36)px from box above
-               :child [sub-tag type (short-tag-desc type)]]
+              [rc/h-box
+               :children (into [] (map (fn [o] [sub-tag o (short-tag-desc o)])) order)]
+
+              #_[rc/box
+                 ;:width "64px"                                ;; (100-36)px from box above
+                 :child [sub-tag (first order) (short-tag-desc (first order))]]
+
               ;; TODO: report if a sub was run multiple times
               #_(when run-times
                   [:span "Warning: run " run-times " times"])
@@ -145,7 +150,7 @@
                                 :margin "0px 3px"}}]]
               [rc/gap-f :size common/gs-12s]]])
 
-(defn pod [{:keys [id type layer path open? diff?] :as pod-info}]
+(defn pod [{:keys [id layer path open? diff?] :as pod-info}]
   (let [render-diff?    (and open? diff?)
         value?          (contains? pod-info :value)
         previous-value? (contains? pod-info :previous-value)]
@@ -162,8 +167,8 @@
                              (when open?
                                (let [main-value (:value pod-info)
                                      #_(cond value? (:value pod-info)
-                                                      previous-value? (:previous-value pod-info)
-                                                      :else nil)]
+                                             previous-value? (:previous-value pod-info)
+                                             :else nil)]
                                  [rc/v-box
                                   :class (str "data-viewer" (when-not diff? " rounded-bottom"))
                                   :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
@@ -181,9 +186,8 @@
                                                       :duration        animation-duration})
                              (when render-diff?
                                (let [diffable? (and value? previous-value?)
-                                     [diff-before diff-after _] (when render-diff?
-                                                                  (clojure.data/diff (:previous-value pod-info)
-                                                                                     (:value pod-info)))]
+                                     [diff-before diff-after _] (clojure.data/diff (:previous-value pod-info)
+                                                                                   (:value pod-info))]
                                  [rc/v-box
                                   :children [[rc/v-box
                                               :class "app-db-path--link"
@@ -235,12 +239,12 @@
    :children [[rc/label :label "There are no subscriptions to show"]]])
 
 (defn pod-section []
-  (let [visible-subs   @(rf/subscribe [:subs/visible-subs])
+  (let [visible-subs     @(rf/subscribe [:subs/visible-subs])
         inter-epoch-subs @(rf/subscribe [:subs/inter-epoch-subs])
-        sub-expansions @(rf/subscribe [:subs/sub-expansions])
-        all-subs       (if @(rf/subscribe [:settings/debug?])
-                         (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
-                         visible-subs)]
+        sub-expansions   @(rf/subscribe [:subs/sub-expansions])
+        all-subs         (if @(rf/subscribe [:settings/debug?])
+                           (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
+                           visible-subs)]
     [rc/v-box
      ;:size "1"
      ;:gap pod-gap
@@ -259,13 +263,13 @@
                   ^{:key (:id p)}
                   [pod (merge p (get sub-expansions (:id p)))])
                 #_[animated/component
-                 (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
-                                          :duration  animation-duration
-                                          :style     {:flex       "1 1 0px"
-                                                      :overflow-x "hidden"
-                                                      :overflow-y "auto"}})
+                   (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
+                                            :duration  animation-duration
+                                            :style     {:flex       "1 1 0px"
+                                                        :overflow-x "hidden"
+                                                        :overflow-y "auto"}})
 
-                 ]
+                   ]
                 [rc/line :size "5px"
                  :style {:margin "19px 0px"}]
                 [:h2 {:class "bm-heading-text"
@@ -275,13 +279,13 @@
                   [pod (merge p (get sub-expansions (:id p)))])
 
                 #_[animated/component
-                 (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
-                                          :duration  animation-duration
-                                          :style     {:flex       "1 1 0px"
-                                                      :overflow-x "hidden"
-                                                      :overflow-y "auto"}})
+                   (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
+                                            :duration  animation-duration
+                                            :style     {:flex       "1 1 0px"
+                                                        :overflow-x "hidden"
+                                                        :overflow-y "auto"}})
 
-                 ]
+                   ]
                 ]
 
      ]))
