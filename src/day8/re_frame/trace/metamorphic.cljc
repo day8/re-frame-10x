@@ -289,32 +289,42 @@
           (filter (fn [me] (when-not (:disposed? (val me)) me)))
           ;; Remove transient state
           (map (fn [[k v]]
-                 [k (dissoc v :order :created? :run? :disposed? :previous-value)])))
+                 [k (dissoc v :order :created? :run? :disposed? :previous-value :sub/traits)])))
         state))
 
 
 (defn process-sub-traces
   [initial-state traces]
-  (reduce (fn [state trace]
-            (let [tags        (get trace :tags)
-                  reaction-id (:reaction tags)]
-              (case (:op-type trace)
-                :sub/create (assoc state reaction-id {:created?     true
-                                                      :subscription (:query-v tags)
-                                                      :order        [:sub/create]})
-                :sub/run (update state reaction-id (fn [sub-state]
-                                                     (-> (if (contains? sub-state :value)
-                                                           (assoc sub-state :previous-value (:value sub-state))
-                                                           sub-state)
-                                                         (assoc :run? true
-                                                                :value (:value tags))
-                                                         (update :order (fnil conj []) :sub/run))))
-                :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
-                                 (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
-                (do #?(:cljs (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace))
-                    state))))
-          initial-state
-          traces))
+  (let [first-pass (reduce (fn [state trace]
+                             (let [tags        (get trace :tags)
+                                   reaction-id (:reaction tags)]
+                               (case (:op-type trace)
+                                 :sub/create (assoc state reaction-id {:created?     true
+                                                                       :subscription (:query-v tags)
+                                                                       :order        [:sub/create]})
+                                 :sub/run (update state reaction-id (fn [sub-state]
+                                                                      (-> (if (contains? sub-state :value)
+                                                                            ;; TODO: this should only update once per phase, even if a sub runs multiple times
+                                                                            (assoc sub-state :previous-value (:value sub-state))
+                                                                            sub-state)
+                                                                          (assoc :run? true
+                                                                                 :value (:value tags))
+                                                                          (update :order (fnil conj []) :sub/run))))
+                                 :sub/dispose (-> (assoc-in state [reaction-id :disposed?] true)
+                                                  (update-in [reaction-id :order] (fnil conj []) :sub/dispose))
+                                 (do #?(:cljs (js/console.warn "Unhandled sub trace, this is a bug, report to re-frame-trace please" trace))
+                                     state))))
+                           initial-state
+                           traces)
+        second-pass (reduce (fn [all-state [sub-id sub-state]]
+                              (if (and (contains? sub-state :previous-value)
+                                       (contains? sub-state :value)
+                                       (= (:previous-value sub-state) (:value sub-state)))
+                                (assoc-in all-state [sub-id :sub/traits :unchanged?] true)
+                                all-state))
+                            first-pass
+                            first-pass)]
+    second-pass))
 
 (defn subscription-match-state
   "Build up the state of re-frame's running subscriptions over each matched epoch.

@@ -396,14 +396,15 @@
 
 (s/def :sub/id string!)
 (s/def :sub/reagent-id string!)
-(s/def :sub/type #{:created :re-run :destroyed :not-run})
+(s/def :sub/run-types #{:sub/create :sub/dispose :sub/run :sub/not-run})
+(s/def :sub/order (s/nilable (s/coll-of :sub/run-types)))
 (s/def :sub/layer (s/nilable pos-int?))
 (s/def :sub/path-data any?)
 (s/def :sub/path string!)
 (s/def :sub/value any?)
 (s/def :sub/previous-value any?)
 (s/def :subs/view-panel-sub
-  (s/keys :req-un [:sub/id :sub/reagent-id :sub/type :sub/layer :sub/path-data :sub/path]
+  (s/keys :req-un [:sub/id :sub/reagent-id :sub/order :sub/layer :sub/path-data :sub/path]
           :opt-un [:sub/value :sub/previous-value]))
 (s/def :subs/view-subs (s/coll-of :subs/view-panel-sub))
 
@@ -441,11 +442,11 @@
                                        subscription (:subscription state)
                                        sub          {:id         (key me)
                                                      :reagent-id (key me)
-                                                     :type       :created
                                                      :layer      (get-in sub-info [(first subscription) :layer])
                                                      :path-data  subscription
                                                      :path       (pr-str subscription)
-                                                     :order      (:order state)}
+                                                     :order      (:order state)
+                                                     :sub/traits (:sub/traits state)}
                                        sub          (if (contains? state :value)
                                                       (assoc sub :value (:value state))
                                                       sub)

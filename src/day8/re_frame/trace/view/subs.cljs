@@ -150,6 +150,9 @@
                                 :margin "0px 3px"}}]]
               [rc/gap-f :size common/gs-12s]]])
 
+(def no-prev-value-msg [:p {:style {:font-style "italic"}} "No previous value exists to diff"])
+(def unchanged-value-msg [:p {:style {:font-style "italic"}} "Subscription value is unchanged"])
+
 (defn pod [{:keys [id layer path open? diff?] :as pod-info}]
   (let [render-diff?    (and open? diff?)
         value?          (contains? pod-info :value)
@@ -174,7 +177,7 @@
                                   :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
                                           :overflow-x "auto"
                                           :overflow-y "hidden"}
-                                  :children [(if (or value? previous-value?)
+                                  :children [(if (or value? #_ previous-value?)
                                                [components/simple-render
                                                 main-value
                                                 ["sub-path" path]]
@@ -185,9 +188,11 @@
                                                       :leave-animation "accordionVertical"
                                                       :duration        animation-duration})
                              (when render-diff?
-                               (let [diffable? (and value? previous-value?)
-                                     [diff-before diff-after _] (clojure.data/diff (:previous-value pod-info)
-                                                                                   (:value pod-info))]
+                               (let [diffable?        (and value? previous-value?)
+                                     previous-value   (:previous-value pod-info)
+                                     value            (:value pod-info)
+                                     unchanged-value? (get-in pod-info [:sub/traits :unchanged?] false)
+                                     [diff-before diff-after _] (clojure.data/diff previous-value value)]
                                  [rc/v-box
                                   :children [[rc/v-box
                                               :class "app-db-path--link"
@@ -203,11 +208,12 @@
                                               :class "data-viewer data-viewer--top-rule"
                                               :style {:overflow-x "auto"
                                                       :overflow-y "hidden"}
-                                              :children [(if diffable?
-                                                           [components/simple-render
-                                                            diff-before
-                                                            ["app-db-diff" path]]
-                                                           [:p {:style {:font-style "italic"}} "No previous value exists to diff"])]]
+                                              :children [(cond
+                                                           unchanged-value? unchanged-value-msg
+                                                           diffable? [components/simple-render
+                                                                      diff-before
+                                                                      ["app-db-diff" path]]
+                                                           :else no-prev-value-msg)]]
                                              [rc/v-box
                                               :class "app-db-path--link"
                                               :justify :end
@@ -222,11 +228,12 @@
                                               :class "data-viewer data-viewer--top-rule rounded-bottom"
                                               :style {:overflow-x "auto"
                                                       :overflow-y "hidden"}
-                                              :children [(if diffable?
-                                                           [components/simple-render
-                                                            diff-after
-                                                            ["app-db-diff" path]]
-                                                           [:p {:style {:font-style "italic"}} "No previous value exists to diff"])]]]]))]
+                                              :children [(cond
+                                                           unchanged-value? unchanged-value-msg
+                                                           diffable? [components/simple-render
+                                                                      diff-after
+                                                                      ["app-db-diff" path]]
+                                                           :else no-prev-value-msg)]]]]))]
                             (when open?
                               [rc/gap-f :size pod-padding])]]]]))
 
