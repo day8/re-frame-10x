@@ -433,46 +433,59 @@
 
 (defn prepare-pod-info
   "Returns sub info prepared for rendering in pods"
-  [[sub-info sub-state]]
-  (let [rx-state (:reaction-state sub-state)
-        subx     (->>
-                   rx-state
-                   (remove (fn [me] (nil? (:order (val me)))))
-                   (map (fn [me] (let [state        (val me)
-                                       subscription (:subscription state)
-                                       sub          {:id         (key me)
-                                                     :reagent-id (key me)
-                                                     :layer      (get-in sub-info [(first subscription) :layer])
-                                                     :path-data  subscription
-                                                     :path       (pr-str subscription)
-                                                     :order      (:order state)
-                                                     :sub/traits (:sub/traits state)}
-                                       sub          (if (contains? state :value)
-                                                      (assoc sub :value (:value state))
-                                                      sub)
-                                       sub          (if (contains? state :previous-value)
-                                                      (assoc sub :previous-value (:previous-value state))
-                                                      sub)]
-                                   sub))))
+  [[sub-info sub-state] [subscription]]
+  (let [remove-fn (if (= subscription :subs/inter-epoch-subs)
+                    (fn [me] (nil? (:order (val me))))
+                    (constantly false))
+        subx     (->> sub-state
+                      (remove remove-fn)
+                      (map (fn [me] (let [state        (val me)
+                                          subscription (:subscription state)
+                                          sub          {:id         (key me)
+                                                        :reagent-id (key me)
+                                                        :layer      (get-in sub-info [(first subscription) :layer])
+                                                        :path-data  subscription
+                                                        :path       (pr-str subscription)
+                                                        :order      (:order state)
+                                                        :sub/traits (:sub/traits state)}
+                                          sub          (if (contains? state :value)
+                                                         (assoc sub :value (:value state))
+                                                         sub)
+                                          sub          (if (contains? state :previous-value)
+                                                         (assoc sub :previous-value (:previous-value state))
+                                                         sub)]
+                                      sub)))
+                      (sort-by :path))
         ]
-    (utils/spy "subx" subx)
+    #_(utils/spy "subx" subx)
 
-
-    (when-not (s/valid? :subs/view-subs subx)
+    #_(when-not (s/valid? :subs/view-subs subx)
       (js/console.error (expound/expound-str :subs/view-subs subx)))
 
     subx))
 
 (rf/reg-sub
+  :subs/pre-epoch-state
+  :<- [:subs/current-epoch-sub-state]
+  (fn [sub-state]
+    (:pre-epoch-state sub-state)))
+
+(rf/reg-sub
+  :subs/reaction-state
+  :<- [:subs/current-epoch-sub-state]
+  (fn [sub-state]
+    (:reaction-state sub-state)))
+
+(rf/reg-sub
   :subs/inter-epoch-subs
   :<- [:subs/subscription-info]
-  :<- [:subs/current-epoch-sub-state]
+  :<- [:subs/pre-epoch-state]
   prepare-pod-info)
 
 (rf/reg-sub
   :subs/all-subs
   :<- [:subs/subscription-info]
-  :<- [:subs/current-epoch-sub-state]
+  :<- [:subs/reaction-state]
   prepare-pod-info)
 
 (rf/reg-sub

@@ -152,6 +152,7 @@
 
 (def no-prev-value-msg [:p {:style {:font-style "italic"}} "No previous value exists to diff"])
 (def unchanged-value-msg [:p {:style {:font-style "italic"}} "Subscription value is unchanged"])
+(def not-run-msg [rc/label :style {:font-style "italic"} :label "Subscription not run, so no value produced."])
 
 (defn pod [{:keys [id layer path open? diff?] :as pod-info}]
   (let [render-diff?    (and open? diff?)
@@ -181,7 +182,7 @@
                                                [components/simple-render
                                                 main-value
                                                 ["sub-path" path]]
-                                               [rc/label :style {:font-style "italic"} :label "Subscription not run, so no value produced."]
+                                               not-run-msg
                                                )]]))]
                             [animated/component
                              (animated/v-box-options {:enter-animation "accordionVertical"
@@ -277,13 +278,18 @@
                                                         :overflow-y "auto"}})
 
                    ]
-                [rc/line :size "5px"
-                 :style {:margin "19px 0px"}]
-                [:h2 {:class "bm-heading-text"
-                      :style {:margin "19px 0px"}} "Inter-epoch subscriptions"]
-                (for [p inter-epoch-subs]
-                  ^{:key (:id p)}
-                  [pod (merge p (get sub-expansions (:id p)))])
+                (when (seq inter-epoch-subs)
+                  (list
+                    ^{:key "inter-epoch-line"}
+                    [rc/line :size "5px"
+                     :style {:margin "19px 0px"}]
+                    ^{:key "inter-epoch-title"}
+                    [:h2 {:class "bm-heading-text"
+                          :style {:margin "19px 0px"}} "Inter-epoch subscriptions"]
+                    (for [p inter-epoch-subs]
+                      ^{:key (:id p)}
+                      [pod (merge p (get sub-expansions (:id p)))])))
+
 
                 #_[animated/component
                    (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
