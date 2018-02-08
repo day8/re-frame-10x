@@ -18,63 +18,67 @@
   (rf/dispatch [:traces/add-filter filter-input filter-type]))
 
 (defn render-traces [visible-traces filter-items filter-input trace-detail-expansions]
-  (doall
-    (->>
-      visible-traces
-      (map-indexed (fn [index {:keys [op-type id operation tags duration] :as trace}]
-                     (let [show-row? (get-in @trace-detail-expansions [:overrides id]
-                                             (:show-all? @trace-detail-expansions))
-                           op-name   (if (vector? operation)
-                                       (second operation)
-                                       operation)
-                           #_#__ (js/console.log (devtools/header-api-call tags))]
-                       (list [:tr {:key      id
-                                   :on-click #(rf/dispatch [:traces/toggle-trace id])
-                                   :class    (str/join " " ["trace--trace"
-                                                            (case op-type
-                                                              :sub/create "trace--sub-create"
-                                                              :sub/run "trace--sub-run"
-                                                              :sub/dispose "trace--sub-run"
-                                                              :event "trace--event"
-                                                              :render "trace--render"
-                                                              :re-frame.router/fsm-trigger "trace--fsm-trigger"
-                                                              nil)])}
+  (let [debug? @(rf/subscribe [:settings/debug?])]
+    (doall
+      (->>
+        visible-traces
+        (map-indexed (fn [index {:keys [op-type id operation tags duration] :as trace}]
+                       (let [show-row? (get-in @trace-detail-expansions [:overrides id]
+                                               (:show-all? @trace-detail-expansions))
+                             op-name   (if (vector? operation)
+                                         (second operation)
+                                         operation)
+                             #_#__ (js/console.log (devtools/header-api-call tags))]
+                         (list [:tr {:key      id
+                                     :on-click #(rf/dispatch [:traces/toggle-trace id])
+                                     :class    (str/join " " ["trace--trace"
+                                                              (case op-type
+                                                                :sub/create "trace--sub-create"
+                                                                :sub/run "trace--sub-run"
+                                                                :sub/dispose "trace--sub-run"
+                                                                :event "trace--event"
+                                                                :render "trace--render"
+                                                                :re-frame.router/fsm-trigger "trace--fsm-trigger"
+                                                                nil)])}
+                                [:td.trace--toggle
+                                 [:button.expansion-button (if show-row? "▼" "▶")]]
+                                [:td.trace--op
+                                 [:span.op-string {:on-click (fn [ev]
+                                                               (add-filter filter-items (name op-type) :contains)
+                                                               (.stopPropagation ev))}
+                                  (str op-type)]]
+                                [:td.trace--op-string
+                                 [:span.op-string {:on-click (fn [ev]
+                                                               (add-filter filter-items (name op-name) :contains)
+                                                               (.stopPropagation ev))}
+                                  (pp/truncate 20 :middle (pp/str->namespaced-sym op-name)) " "
+                                  [:span
+                                   {:style {:opacity 0.5
+                                            :display "inline-block"}}
+                                   (when-let [[_ & params] (or (get tags :query-v)
+                                                               (get tags :event))]
+                                     (->> (map pp/pretty-condensed params)
+                                          (str/join ", ")
+                                          (pp/truncate-string :middle 40)))]]]
+                                (if debug?
+                                  [:td.trace--meta
+                                   (:reaction (:tags trace)) "/" id]
+                                  [:td.trace--meta
 
-                              [:td.trace--toggle
-                               [:button.expansion-button (if show-row? "▼" "▶")]]
-                              [:td.trace--op
-                               [:span.op-string {:on-click (fn [ev]
-                                                             (add-filter filter-items (name op-type) :contains)
-                                                             (.stopPropagation ev))}
-                                (str op-type)]]
-                              [:td.trace--op-string
-                               [:span.op-string {:on-click (fn [ev]
-                                                             (add-filter filter-items (name op-name) :contains)
-                                                             (.stopPropagation ev))}
-                                (pp/truncate 20 :middle (pp/str->namespaced-sym op-name)) " "
-                                [:span
-                                 {:style {:opacity 0.5
-                                          :display "inline-block"}}
-                                 (when-let [[_ & params] (or (get tags :query-v)
-                                                             (get tags :event))]
-                                   (->> (map pp/pretty-condensed params)
-                                        (str/join ", ")
-                                        (pp/truncate-string :middle 40)))]]]
-                              [:td.trace--meta
-                               (.toFixed duration 1) " ms"]]
-                             (when show-row?
-                               [:tr.trace--details {:key       (str id "-details")
-                                                    :tab-index 0}
-                                [:td]
-                                [:td.trace--details-tags {:col-span 2
-                                                          :on-click #(.log js/console trace)}
-                                 [:div.trace--details-tags-text
-                                  (let [tag-str (prn-str tags)]
-                                    (str (subs tag-str 0 400)
-                                         (when (< 400 (count tag-str))
-                                           " ...")))]]
-                                [:td.trace--meta.trace--details-icon
-                                 {:on-click #(.log js/console tags)}]]))))))))
+                                   (.toFixed duration 1) " ms"])]
+                               (when show-row?
+                                 [:tr.trace--details {:key       (str id "-details")
+                                                      :tab-index 0}
+                                  [:td]
+                                  [:td.trace--details-tags {:col-span 2
+                                                            :on-click #(.log js/console trace)}
+                                   [:div.trace--details-tags-text
+                                    (let [tag-str (prn-str tags)]
+                                      (str (subs tag-str 0 400)
+                                           (when (< 400 (count tag-str))
+                                             " ...")))]]
+                                  [:td.trace--meta.trace--details-icon
+                                   {:on-click #(.log js/console tags)}]])))))))))
 
 (defn render []
   (let [filter-input            (r/atom "")

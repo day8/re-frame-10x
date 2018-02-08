@@ -366,7 +366,6 @@
   :trace-panel/update-show-epoch-traces?
   [(rf/path [:trace-panel :show-epoch-traces?]) (fixed-after #(localstorage/save! "show-epoch-traces?" %))]
   (fn [_ [k show-epoch-traces?]]
-    (js/console.log k show-epoch-traces?)
     show-epoch-traces?))
 
 ;; App DB
@@ -523,6 +522,8 @@
             {drop-re-frame :re-frame drop-reagent :reagent} (get-in db [:settings :low-level-trace])
             all-traces                 (reduce conj previous-traces filtered-traces)
             parse-state                (metam/parse-traces parse-state filtered-traces)
+            ;; TODO:!!!!!!!!!!!!! We should be parsing everything else with the traces that span the newly matched
+            ;; epochs, not the filtered-traces, as these are only partial.
             new-matches                (:partitions parse-state)
             previous-matches           (get-in db [:epochs :matches] [])
             parse-state                (assoc parse-state :partitions []) ;; Remove matches we know about
@@ -536,10 +537,12 @@
             ;;   like its reagent id, when it was created, run, disposed, what values it returned, e.t.c.
             subscription-info          (metam/subscription-info (get-in db [:epochs :subscription-info] {}) filtered-traces (get-in db [:app-db :reagent-id]))
             sub-state                  (get-in db [:epochs :sub-state] metam/initial-sub-state)
-            subscription-match-state   (metam/subscription-match-state sub-state filtered-traces new-matches)
+            subscription-match-state   (metam/subscription-match-state sub-state all-traces new-matches)
             subscription-matches       (rest subscription-match-state)
+
             new-sub-state              (last subscription-match-state)
             timing                     (mapv (fn [match]
+                                               ;; TODO: this isn't quite correct, shouldn't be using filtered-traces here
                                                (let [epoch-traces   (into []
                                                                           (comp
                                                                             (utils/id-between-xf (:id (first match)) (:id (last match))))

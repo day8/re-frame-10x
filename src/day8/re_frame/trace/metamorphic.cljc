@@ -296,38 +296,38 @@
 
 (defn process-sub-traces
   [initial-state traces]
-  (let [first-pass (reduce (fn [state trace]
-                             (let [tags        (get trace :tags)
-                                   reaction-id (:reaction tags)
-                                   state       (-> state
-                                                   (update-in [reaction-id :order] (fnil conj []) (:op-type trace))
-                                                   ;; In a perfect world we could provide this only in the :sub/create branch, but we have
-                                                   ;; zombie reactions roaming the DOM, so we re-add it on every trace in case a sub was
-                                                   ;; disposed of previously (and removed from the sub state).
-                                                   (assoc-in [reaction-id :subscription] (:query-v tags)))
-                                   new-state
-                                               (case (:op-type trace)
-                                                 :sub/create (-> state
-                                                                 (assoc-in [reaction-id :created?] true)
-                                                                 (assoc-in [reaction-id :subscription] (:query-v tags)))
-                                                 :sub/run (update state reaction-id (fn [sub-state]
-                                                                                      ;; TODO: should we keep track of subscriptions that have been disposed
-                                                                                      ;; so we can detect zombies?
+  (let [first-pass  (reduce (fn [init-state trace]
+                              (let [tags        (get trace :tags)
+                                    reaction-id (:reaction tags)
+                                    state       (-> init-state
+                                                    (update-in [reaction-id :order] (fnil conj []) (:op-type trace))
+                                                    ;; In a perfect world we could provide this only in the :sub/create branch, but we have
+                                                    ;; zombie reactions roaming the DOM, so we re-add it on every trace in case a sub was
+                                                    ;; disposed of previously (and removed from the sub state).
+                                                    (assoc-in [reaction-id :subscription] (:query-v tags)))
+                                    new-state
+                                                (case (:op-type trace)
+                                                  :sub/create (-> state
+                                                                  (assoc-in [reaction-id :created?] true)
+                                                                  (assoc-in [reaction-id :subscription] (:query-v tags)))
+                                                  :sub/run (update state reaction-id (fn [sub-state]
+                                                                                       ;; TODO: should we keep track of subscriptions that have been disposed
+                                                                                       ;; so we can detect zombies?
 
-                                                                                      ;; TODO: this should only update once per phase, even if a sub runs multiple times
-                                                                                      (-> (if (contains? sub-state :value)
-                                                                                            (assoc sub-state :previous-value (:value sub-state))
-                                                                                            sub-state)
-                                                                                          (assoc :run? true
-                                                                                                 :value (:value tags)))))
-                                                 :sub/dispose (assoc-in state [reaction-id :disposed?] true))]
-                               (when-not (contains? (get new-state reaction-id) :subscription)
-                                 #?(:cljs (js/console.warn trace (get new-state reaction-id))))
+                                                                                       ;; TODO: this should only update once per phase, even if a sub runs multiple times
+                                                                                       (-> (if (contains? sub-state :value)
+                                                                                             (assoc sub-state :previous-value (:value sub-state))
+                                                                                             sub-state)
+                                                                                           (assoc :run? true
+                                                                                                  :value (:value tags)))))
+                                                  :sub/dispose (assoc-in state [reaction-id :disposed?] true))]
+                                (when-not (contains? (get new-state reaction-id) :subscription)
+                                  #?(:cljs (js/console.warn trace (get new-state reaction-id))))
 
 
-                               new-state))
-                           initial-state
-                           traces)
+                                new-state))
+                            initial-state
+                            traces)
         second-pass (reduce (fn [all-state [sub-id sub-state]]
                               ;; TODO: integrate this into the first pass for efficiency
                               (if (and (contains? sub-state :previous-value)
