@@ -152,7 +152,8 @@
 
 (def no-prev-value-msg [:p {:style {:font-style "italic"}} "No previous value exists to diff"])
 (def unchanged-value-msg [:p {:style {:font-style "italic"}} "Subscription value is unchanged"])
-(def not-run-msg [rc/label :style {:font-style "italic"} :label "Subscription not run, so no value produced."])
+(def sub-not-run-msg [:p {:style {:font-style "italic"}} "Subscription not run, so no diff is available"])
+(def not-run-yet-msg [rc/label :style {:font-style "italic"} :label "Subscription not run yet, so no value is available"])
 
 (defn pod [{:keys [id layer path open? diff?] :as pod-info}]
   (let [render-diff?    (and open? diff?)
@@ -182,7 +183,7 @@
                                                [components/simple-render
                                                 main-value
                                                 ["sub-path" path]]
-                                               not-run-msg
+                                               not-run-yet-msg
                                                )]]))]
                             [animated/component
                              (animated/v-box-options {:enter-animation "accordionVertical"
@@ -190,6 +191,7 @@
                                                       :duration        animation-duration})
                              (when render-diff?
                                (let [diffable?        (and value? previous-value?)
+                                     not-run?         (= (:order pod-info) [:sub/not-run])
                                      previous-value   (:previous-value pod-info)
                                      value            (:value pod-info)
                                      unchanged-value? (get-in pod-info [:sub/traits :unchanged?] false)
@@ -210,6 +212,7 @@
                                               :style {:overflow-x "auto"
                                                       :overflow-y "hidden"}
                                               :children [(cond
+                                                           not-run? sub-not-run-msg
                                                            unchanged-value? unchanged-value-msg
                                                            diffable? [components/simple-render
                                                                       diff-before
@@ -230,6 +233,7 @@
                                               :style {:overflow-x "auto"
                                                       :overflow-y "hidden"}
                                               :children [(cond
+                                                           not-run? sub-not-run-msg
                                                            unchanged-value? unchanged-value-msg
                                                            diffable? [components/simple-render
                                                                       diff-after
