@@ -9,9 +9,7 @@
 (def timing-styles
   [:#--re-frame-trace--
    [:.timing-details
-    {:background-color common/white-background-color
-     :margin-top       common/gs-31s
-     :padding          common/gs-19}]
+    {:margin-top common/gs-31s}]
    [:.timing-details--line
     {:margin "1em 0"}]
 
@@ -28,10 +26,13 @@
      :font-weight      "normal"
      :font-size        "14px"}]
 
+   [".timing-elapsed-panel"
+    {:padding "12px"
+     :margin  common/gs-7s}]
    [".timing-part-panel"
     (merge (common/panel-style "3px")
            {:padding "12px"
-            :margin common/gs-7s})]
+            :margin  common/gs-7s})]
    ])
 
 (defn timing-tag [label]
@@ -50,13 +51,29 @@
     (if timing-data-available?
       [rc/v-box
        :class "timing-details"
-       :children [
+       :children [[rc/h-box
+                   :class "timing-elapsed-panel"
+                   :align :end
+                   :children [[timing-section "elapsed" @(rf/subscribe [:timing/total-epoch-time])]
+                              [rc/hyperlink-href
+                               :label "guide me to greatness"
+                               :style {:margin-left common/gs-19s}
+                               :attr {:rel "noopener noreferrer"}
+                               :target "_blank"
+                               :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnderstandingTiming.md"]
+
+                              #_[rc/link {:label "Guide me to greatness"
+                                        :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnderstandingTiming.md"}]]]
                   [rc/h-box
                    :gap common/gs-12s
                    :class "timing-part-panel"
                    :children
-                   [[timing-section "total" @(rf/subscribe [:timing/total-epoch-time])]
+                   [[:p "event" [:br] "processing"]
                     [timing-section "event" @(rf/subscribe [:timing/event-processing-time])]
+                    ;;; TODO: calculate handler and effects timing separately
+                    [timing-section "handler" -1]
+                    [timing-section "effects" -1]
+
                     ]]
                   (doall
                     (for [frame (range 1 (inc @(rf/subscribe [:timing/animation-frame-count])))
@@ -68,27 +85,19 @@
                         [rc/h-box
                          :align :center
                          :class "timing-part-panel"
-                         :gap "25px"
+                         :gap common/gs-12s
                          :children
-                         [[rc/label :label (str "Animation frame #" frame)]
+                         [[:p "Animation" [:br] "frame" [:br] (str "#" frame)]
                           [timing-section "total" @frame-time]
-                          #_[timing-section "subs" 2]
-                          #_[timing-section "views" 3]]])))
-
-                  [rc/line :class "timing-details--line"]
-
-                  [rc/v-box
-                   :children
-                   [[rc/p "Be careful. There are two problems with these numbers:"]
-                    [:ol
-                     [:li "Accurately timing anything in the browser is a nightmare. One moment a given function takes 1ms and the next it takes 10ms, and you'll never know why. So bouncy."]
-                     [:li "You're currently running the dev build, not the production build. So don't freak out too much. Yet."]]
-                    [rc/hyperlink-href
-                     :label "Timing documentation"
-                     :style {:margin-left common/gs-7s}
-                     :attr {:rel "noopener noreferrer"}
-                     :target "_blank"
-                     :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnderstandingTiming.md"]]]]]
+                          [:span "="]
+                          ;; TODO: subs timing
+                          [timing-section "subs" -1]
+                          [:span "+"]
+                          ;; TODO: views timing
+                          [timing-section "views" -1]
+                          [:span "+"]
+                          ;; TODO: timing for the rest
+                          [timing-section "react, etc" -1]]])))]]
       [rc/v-box
        :class "timing-details"
        :children [[:h1 "No timing data available currently."]]])))
