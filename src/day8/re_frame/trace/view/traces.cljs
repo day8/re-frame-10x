@@ -87,7 +87,7 @@
         end                     (rf/subscribe [:epochs/ending-trace-id])
         traces                  (rf/subscribe [:traces/all-visible-traces])
         current-traces          (rf/subscribe [:traces/current-event-visible-traces])
-        show-epoch-traces?      (rf/subscribe [:traces/show-epoch-traces?])]
+        show-epoch-traces?      (rf/subscribe [:trace-panel/show-epoch-traces?])]
     (fn []
       (let [toggle-category-fn #(rf/dispatch [:traces/toggle-categories %])
             traces-to-filter   (if @show-epoch-traces?
@@ -127,7 +127,7 @@
              "internals"]]
            [rc/checkbox
             :model show-epoch-traces?
-            :on-change #(rf/dispatch [:traces/update-show-epoch-traces? %])
+            :on-change #(rf/dispatch [:trace-panel/update-show-epoch-traces? %])
             :label "Show only traces for this epoch?"]
            [:div.filter-fields
             [:select {:value     @filter-type

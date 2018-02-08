@@ -125,6 +125,11 @@
     (:traces db)))
 
 (rf/reg-sub
+  :trace-panel/root
+  (fn [db _]
+    (:trace-panel db)))
+
+(rf/reg-sub
   :traces/filter-items
   (fn [db _]
     (get-in db [:traces :filter-items])))
@@ -183,8 +188,8 @@
   filter-ignored-views)
 
 (rf/reg-sub
-  :traces/show-epoch-traces?
-  :<- [:traces/trace-root]
+  :trace-panel/show-epoch-traces?
+  :<- [:trace-panel/root]
   (fn [trace-root]
     (:show-epoch-traces? trace-root)))
 
