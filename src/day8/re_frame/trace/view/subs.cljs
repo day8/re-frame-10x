@@ -299,7 +299,11 @@
                      :style {:margin "19px 0px"}]
                     ^{:key "inter-epoch-title"}
                     [:h2 {:class "bm-heading-text"
-                          :style {:margin "19px 0px"}} "Inter-Epoch Subscriptions"]
+                          :style {:margin "19px 0px"}}
+                     [rc/link
+                      {:href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/InterEpoch.md"
+                       :label "Inter-Epoch Subscriptions"}]]
+
                     (for [p inter-epoch-subs]
                       ^{:key (:id p)}
                       [pod (merge p (get sub-expansions (:id p)))])))
