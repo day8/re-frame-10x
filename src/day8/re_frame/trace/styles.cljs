@@ -1,6 +1,6 @@
 (ns day8.re-frame.trace.styles
   (:require [mranderson047.garden.v1v3v3.garden.core :as garden]
-            [mranderson047.garden.v1v3v3.garden.units :refer [em px percent]]
+            [mranderson047.garden.v1v3v3.garden.units :as units :refer [em px percent]]
             [mranderson047.garden.v1v3v3.garden.color :as color]
             [mranderson047.garden.v1v3v3.garden.selectors :as s]
             [day8.re-frame.trace.common-styles :as common]
@@ -256,7 +256,7 @@
     {:background-color common/white-background-color
      :color            common/text-color
      :width            "48px"                               ;common/gs-50s
-     :height           "17px"                               ;common/gs-19s
+     :height           "19px"                               ;common/gs-19s
      :font-size        "10px"
      :font-weight      "bold"
      :border           "1px solid #bdbdbd"
@@ -274,6 +274,8 @@
    [".rft-tag__subscription_not_run"
     {:background-color common/sub-not-run-color
      :color "white"}]
+   [".rft-tag__short"
+    {:width common/gs-19}]
 
    [:.button {:padding       "5px 5px 3px"
               :margin        "5px"

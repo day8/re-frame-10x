@@ -6,7 +6,8 @@
             [mranderson047.reagent.v0v7v0.reagent.core :as r]
             [day8.re-frame.trace.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame.trace.common-styles :as common]
-            [day8.re-frame.trace.view.components :as components])
+            [day8.re-frame.trace.view.components :as components]
+            [mranderson047.garden.v1v3v3.garden.units :as units])
   (:require-macros [day8.re-frame.trace.utils.macros :as macros]))
 
 ;(s/def ::query-v any?)
@@ -43,6 +44,9 @@
 
 (defn sub-tag [type label]
   [components/tag (sub-tag-class type) label])
+
+(defn short-sub-tag [type label]
+  [components/tag (str (sub-tag-class type) " rft-tag__short") label])
 
 (defn title-tag [type title label]
   [rc/v-box
@@ -112,7 +116,13 @@
                        :margin "auto"
                        :child [:span.arrow (if open? "▼" "▶")]]]
               [rc/h-box
-               :children (into [] (map (fn [o] [sub-tag o (short-tag-desc o)])) order)]
+               :width "75px"
+               :gap common/gs-5s
+               :children (into []
+                               (comp
+                                 (take 3)
+                                 (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
+                               order)]
 
               #_[rc/box
                  ;:width "64px"                                ;; (100-36)px from box above

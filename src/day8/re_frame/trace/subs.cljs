@@ -474,8 +474,10 @@
                                                           (assoc sub :previous-value (:previous-value state))
                                                           sub)]
                                        sub)))
-                       (sort-by :order sub-sort-val))]
+                       (sort-by :order sub-sort-val)        ;; Also sort by subscription-id
+                       #_(sort-by :path))]
     subx))
+
 
 (rf/reg-sub
   :subs/pre-epoch-state
