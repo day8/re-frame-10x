@@ -33,20 +33,27 @@ strongly defined by its "data oriented" design. `re-frame`
 To understand what is happening in a `re-frame` app, you must understand
 what data is "happening".     
 
-So, data is at the core of `re-frame-trace` in both of the ways just described, 
-and data is a powerful and leverageable substrate.  
+### It is Just About Data
 
-Think about it ... every single time you put a printlin into your program, 
+So, data is at the core of `re-frame-trace` in both of the ways just described, 
+and that should not be the slightest bit surprising.
+
+Think about it ... every single time you put a `printlin` into your program, 
 you are printing out what?  Obvserving data is how you figure out what's going on. 
+
+Have you seen LightTable?  It was attractive because it co-renders the data and 
+code. The shown data is the "paper trail" by which you can percieve the dynamics of the code.
 
 ### It Is A Data Dashboard 
 
-Except, there's often too much data - you can drown in the detail.
+Observing raw data is certaintly interesting, but it isn't enough. Data is the substrate and 
+we want to leverage it.  Apart from anything else, there's often too much data - you 
+can drown in the detail.
 
 So, `re-frame-trace` tries to be a "dashboard" which curates this
 "raw data" into "information" through various kinds of analysis 
 and "roll ups". It should deliver insight "at a glance", while still allowing 
-you to drill down into the detail. 
+you to drill down into the detail.
 
 ### Which Is Helpful How?
 
