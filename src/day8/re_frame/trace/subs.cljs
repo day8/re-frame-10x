@@ -411,17 +411,40 @@
 
 
 
-(defn sub-sort-val
+(defn sub-type-value
   [sub-type]
   (case sub-type
-    :created 1
-    :re-run 2
-    :destroyed 3
-    :not-run 4))
+    :sub/create 5
+    :sub/run 4
+    :sub/dispose 3
+    :sub/not-run 2
+    1))
 
-(def subscription-comparator
-  (fn [x y]
-    (compare (sub-sort-val x) (sub-sort-val y))))
+(defn accumulate-sub-value
+  "Calculate a sorting value for a series of subscription trace types."
+  ;; A reader might reasonably ask, "Why are we going to all this work here?"
+  ;; We calculate a custom value rather than just comparing two order vectors,
+  ;; because the default compare logic for comparing vectors is to sort shorter
+  ;; vectors above longer ones, whereas we want all CRR, CR, C orders to be
+  ;; sorted adjacent to each other, in that order.
+  ;;
+  ;; The first sub type in the order is worth (n * 10^3),
+  ;; then the next one (if it exists), is worth (n * 10^2), and so-on.
+  [order]
+  (loop [exp   3
+         total 0
+         order order]
+    (if-let [sub-type (first order)]
+      (recur (dec exp) (+ total (* (sub-type-value sub-type) (js/Math.pow 10 exp))) (rest order))
+      total)))
+
+(def accumulate-sub-value-memoized
+  (memoize accumulate-sub-value))
+
+(defn sub-sort-val [order-x order-y]
+  ;; Note x and y are reversed here so that the "highest" sub orders get sorted first.
+  (compare (accumulate-sub-value-memoized order-y)
+           (accumulate-sub-value-memoized order-x)))
 
 (defn sub-op-type->type [t]
   (case (:op-type t)
@@ -455,7 +478,7 @@
                                                          (assoc sub :previous-value (:previous-value state))
                                                          sub)]
                                       sub)))
-                      (sort-by :path))
+                      (sort-by :order sub-sort-val))
         ]
     #_(utils/spy "subx" subx)
 
