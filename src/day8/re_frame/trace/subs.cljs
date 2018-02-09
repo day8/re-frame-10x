@@ -3,8 +3,7 @@
             [day8.re-frame.trace.metamorphic :as metam]
             [day8.re-frame.trace.utils.utils :as utils]
             [clojure.string :as str]
-            [cljs.spec.alpha :as s]
-            [expound.alpha :as expound]))
+            [cljs.spec.alpha :as s]))
 
 (rf/reg-sub
   :settings/root
@@ -408,9 +407,6 @@
           :opt-un [:sub/value :sub/previous-value]))
 (s/def :subs/view-subs (s/coll-of :subs/view-panel-sub))
 
-
-
-
 (defn sub-type-value
   [sub-type]
   (case sub-type
@@ -460,31 +456,25 @@
   (let [remove-fn (if (= subscription :subs/inter-epoch-subs)
                     (fn [me] (nil? (:order (val me))))
                     (constantly false))
-        subx     (->> sub-state
-                      (remove remove-fn)
-                      (map (fn [me] (let [state        (val me)
-                                          subscription (:subscription state)
-                                          sub          {:id         (key me)
-                                                        :reagent-id (key me)
-                                                        :layer      (get-in sub-info [(first subscription) :layer])
-                                                        :path-data  subscription
-                                                        :path       (pr-str subscription)
-                                                        :order      (or (:order state) [:sub/not-run])
-                                                        :sub/traits (:sub/traits state)}
-                                          sub          (if (contains? state :value)
-                                                         (assoc sub :value (:value state))
-                                                         sub)
-                                          sub          (if (contains? state :previous-value)
-                                                         (assoc sub :previous-value (:previous-value state))
-                                                         sub)]
-                                      sub)))
-                      (sort-by :order sub-sort-val))
-        ]
-    #_(utils/spy "subx" subx)
-
-    #_(when-not (s/valid? :subs/view-subs subx)
-      (js/console.error (expound/expound-str :subs/view-subs subx)))
-
+        subx      (->> sub-state
+                       (remove remove-fn)
+                       (map (fn [me] (let [state        (val me)
+                                           subscription (:subscription state)
+                                           sub          {:id         (key me)
+                                                         :reagent-id (key me)
+                                                         :layer      (get-in sub-info [(first subscription) :layer])
+                                                         :path-data  subscription
+                                                         :path       (pr-str subscription)
+                                                         :order      (or (:order state) [:sub/not-run])
+                                                         :sub/traits (:sub/traits state)}
+                                           sub          (if (contains? state :value)
+                                                          (assoc sub :value (:value state))
+                                                          sub)
+                                           sub          (if (contains? state :previous-value)
+                                                          (assoc sub :previous-value (:previous-value state))
+                                                          sub)]
+                                       sub)))
+                       (sort-by :order sub-sort-val))]
     subx))
 
 (rf/reg-sub

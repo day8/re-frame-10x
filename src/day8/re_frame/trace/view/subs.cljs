@@ -289,7 +289,7 @@
                      :style {:margin "19px 0px"}]
                     ^{:key "inter-epoch-title"}
                     [:h2 {:class "bm-heading-text"
-                          :style {:margin "19px 0px"}} "Inter-epoch subscriptions"]
+                          :style {:margin "19px 0px"}} "Inter-Epoch Subscriptions"]
                     (for [p inter-epoch-subs]
                       ^{:key (:id p)}
                       [pod (merge p (get sub-expansions (:id p)))])))

@@ -377,7 +377,8 @@
   :app-db/create-path
   app-db-path-mw
   (fn [paths _]
-    (assoc paths (js/Date.now) {:diff? false :open? true :path nil :path-str "[]" :valid-path? true})))
+
+    (assoc paths (js/Date.now) {:diff? false :open? true :path nil :path-str "" :valid-path? true})))
 
 
 
