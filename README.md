@@ -34,7 +34,10 @@ To understand what is happening in a `re-frame` app, you must understand
 what data is "happening".     
 
 So, data is at the core of `re-frame-trace` in both of the ways just described, 
-and data is a powerful and leverageable substrate.
+and data is a powerful and leverageable substrate.  
+
+Think about it ... every single time you put a printlin into your program, 
+you are printing out what?  Obvserving data is how you figure out what's going on. 
 
 ### It Is A Data Dashboard 
 
