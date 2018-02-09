@@ -162,12 +162,9 @@
   (= :render (:op-type trace)))
 
 (defn unchanged-l2-subscription? [sub]
-  (and
-    (= :re-run (:type sub))
-    (= 2 (:layer sub))
-    (and (contains? sub :previous-value)
-         (contains? sub :value)
-         (= (:previous-value sub) (:value sub)))))
+  (and (get-in sub [:sub/traits :unchanged?])
+       (not-any? #(= :sub/dispose %) (:order sub))
+       (= 2 (get sub :layer))))
 
 
 (defn finish-run? [event]
