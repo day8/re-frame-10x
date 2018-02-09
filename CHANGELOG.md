@@ -5,9 +5,18 @@ All notable changes to this project will be documented in this file. This change
 
 ## [0.1.18] - 2018-01-31
 
-#### Fixed
+### Changed
+
+* Massive overhaul to how subscriptions are processed.
+  * Subscriptions that exist but weren't run, now show up in the subscription panel.
+  * Subscription creations and disposals that happen during figwheel reloads or otherwise outside of the re-frame event domino cycle are now correctly handled. If any of these happen, they show up in the new section Inter-Epoch Subscriptions.
+  * All of the actions that happen to a subscription within an epoch are now shown. This lets you spot unusual behaviour like a subscription being created but not-run, or a subscription running multiple times.
+  * Present better explanation messages when viewing the diff section for a sub where the value is unchanged, not run yet, or only run once. 
+
+### Fixed
 
 * Garden source dependencies are now working if you don't have your own dependency on Garden.
+* New app-db path inspectors default to `"""` instead of `"[]"` so you can see the help text.
 
 
 ## [0.1.17] - 2018-01-31

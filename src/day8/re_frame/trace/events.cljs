@@ -14,6 +14,20 @@
             [day8.re-frame.trace.metamorphic :as metam]
             [re-frame.trace]))
 
+(defn fixed-after
+  ;; Waiting on https://github.com/Day8/re-frame/issues/447
+  [f]
+  (rf/->interceptor
+    :id :after
+    :after (fn after-after
+             [context]
+             (let [db    (if (contains? (:effects context) :db)
+                           (get-in context [:effects :db])
+                           (get-in context [:coeffects :db]))
+                   event (get-in context [:coeffects :event])]
+               (f db event)    ;; call f for side effects
+               context))))     ;; context is unchanged
+
 (defn log-trace? [trace]
   (let [render-operation? (or (= (:op-type trace) :render)
                               (= (:op-type trace) :componentWillUnmount))
@@ -122,7 +136,7 @@
       (assoc-in db [:settings :number-of-epochs] num))))
 
 (def ignored-event-mw
-  [(rf/path [:settings :ignored-events]) (rf/after #(localstorage/save! "ignored-events" %))])
+  [(rf/path [:settings :ignored-events]) (fixed-after #(localstorage/save! "ignored-events" %))])
 
 (rf/reg-event-db
   :settings/add-ignored-event
@@ -154,7 +168,7 @@
     ignored-events))
 
 (def filtered-view-trace-mw
-  [(rf/path [:settings :filtered-view-trace]) (rf/after #(localstorage/save! "filtered-view-trace" %))])
+  [(rf/path [:settings :filtered-view-trace]) (fixed-after #(localstorage/save! "filtered-view-trace" %))])
 
 (rf/reg-event-db
   :settings/add-filtered-view-trace
@@ -185,7 +199,7 @@
   (fn [_ [_ ignored-events]]
     ignored-events))
 
-(def low-level-trace-mw [(rf/path [:settings :low-level-trace]) (rf/after #(localstorage/save! "low-level-trace" %))])
+(def low-level-trace-mw [(rf/path [:settings :low-level-trace]) (fixed-after #(localstorage/save! "low-level-trace" %))])
 
 (rf/reg-event-db
   :settings/set-low-level-trace
@@ -347,22 +361,24 @@
   (fn [categories [_ new-categories]]
     new-categories))
 
+
 (rf/reg-event-db
-  :traces/update-show-epoch-traces?
-  [(rf/path [:traces :show-epoch-traces?])]
-  (fn [_ [_ show-epoch-traces?]]
+  :trace-panel/update-show-epoch-traces?
+  [(rf/path [:trace-panel :show-epoch-traces?]) (fixed-after #(localstorage/save! "show-epoch-traces?" %))]
+  (fn [_ [k show-epoch-traces?]]
     show-epoch-traces?))
 
 ;; App DB
 
 (def app-db-path-mw
-  [(rf/path [:app-db :paths]) (rf/after #(localstorage/save! "app-db-paths" %))])
+  [(rf/path [:app-db :paths]) (fixed-after #(localstorage/save! "app-db-paths" %))])
 
 (rf/reg-event-db
   :app-db/create-path
   app-db-path-mw
   (fn [paths _]
-    (assoc paths (js/Date.now) {:diff? false :open? true :path nil :path-str "[]" :valid-path? true})))
+
+    (assoc paths (js/Date.now) {:diff? false :open? true :path nil :path-str "" :valid-path? true})))
 
 
 
@@ -507,6 +523,8 @@
             {drop-re-frame :re-frame drop-reagent :reagent} (get-in db [:settings :low-level-trace])
             all-traces                 (reduce conj previous-traces filtered-traces)
             parse-state                (metam/parse-traces parse-state filtered-traces)
+            ;; TODO:!!!!!!!!!!!!! We should be parsing everything else with the traces that span the newly matched
+            ;; epochs, not the filtered-traces, as these are only partial.
             new-matches                (:partitions parse-state)
             previous-matches           (get-in db [:epochs :matches] [])
             parse-state                (assoc parse-state :partitions []) ;; Remove matches we know about
@@ -519,11 +537,13 @@
             ;; - subscription-match-state collects all the data that we know about the state of specific instances of subscriptions
             ;;   like its reagent id, when it was created, run, disposed, what values it returned, e.t.c.
             subscription-info          (metam/subscription-info (get-in db [:epochs :subscription-info] {}) filtered-traces (get-in db [:app-db :reagent-id]))
-            sub-state                  (get-in db [:epochs :sub-state] {})
-            subscription-match-state   (metam/subscription-match-state sub-state filtered-traces new-matches)
+            sub-state                  (get-in db [:epochs :sub-state] metam/initial-sub-state)
+            subscription-match-state   (metam/subscription-match-state sub-state all-traces new-matches)
             subscription-matches       (rest subscription-match-state)
+
             new-sub-state              (last subscription-match-state)
             timing                     (mapv (fn [match]
+                                               ;; TODO: this isn't quite correct, shouldn't be using filtered-traces here
                                                (let [epoch-traces   (into []
                                                                           (comp
                                                                             (utils/id-between-xf (:id (first match)) (:id (last match))))

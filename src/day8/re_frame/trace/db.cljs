@@ -10,6 +10,7 @@
         app-db-paths (into (sorted-map) (localstorage/get "app-db-paths" {}))
         json-ml-paths (localstorage/get "app-db-json-ml-expansions" #{})
         external-window? (localstorage/get "external-window?" false)
+        show-epoch-traces? (localstorage/get "show-epoch-traces?" true)
         using-trace? (localstorage/get "using-trace?" true)
         ignored-events (localstorage/get "ignored-events" {})
         low-level-trace (localstorage/get "low-level-trace" {:reagent true :re-frame true})
@@ -33,7 +34,7 @@
       (rf/dispatch [:global/launch-external]))
     (rf/dispatch [:traces/filter-items filter-items])
     (rf/dispatch [:traces/set-categories categories])
-    (rf/dispatch [:traces/update-show-epoch-traces? true])  ;; TODO: source this from LS.
+    (rf/dispatch [:trace-panel/update-show-epoch-traces? show-epoch-traces?])
     (rf/dispatch [:app-db/paths app-db-paths])
     (rf/dispatch [:app-db/set-json-ml-paths json-ml-paths])
     (rf/dispatch [:global/add-unload-hook])

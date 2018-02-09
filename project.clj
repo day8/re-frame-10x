@@ -1,4 +1,4 @@
-(defproject day8.re-frame/trace "0.1.18-react16"
+(defproject day8.re-frame/trace "0.1.19-react16"
   :description "Tracing and developer tools for re-frame apps"
   :url "https://github.com/Day8/re-frame-trace"
   :license {:name "MIT"}
@@ -9,6 +9,7 @@
                  [binaryage/devtools "0.9.4"]
                  [cljsjs/react-flip-move "2.9.17-0"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
+                 ;[expound "0.4.0"]
                  ]
   :plugins [[thomasa/mranderson "0.4.7"]
             [lein-less "RELEASE"]]

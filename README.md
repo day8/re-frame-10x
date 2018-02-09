@@ -1,41 +1,14 @@
 # re-frame-trace
 
-`re-frame-trace` is a programmer's dashboard. It helps you to see inside a running `re-frame` 
-application, allowing you to better understand it and debug it.
- 
-**Status:** Beta.  [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
-
-**Note** [the latest version 0.1.16](https://github.com/Day8/re-frame-trace/releases/tag/0.1.16) ALSO requires the latest version of re-frame itself - `v0.10.3`.
-
-This `react-16` branch bundles Reagent 0.8.0-alpha2 and requires your application to use React 16, and to be on a relatively recent ClojureScript compiler (Tested on 1.9.908, should work back as far as 1.9.854).
-
-### Helpful How?
-
-Four ways:
-
-  1. It helps you to learn `re-frame`.  Simply looking at 
-     the "raw traces" provides insight into how it operates. Even experienced
-     re-framians, er, like me, have learned a lot.
-  2. It helps you to explore and learn an unfamiliar `re-frame` codebase.
-     When I click, over here, on this "X" button, it shows me what event is `dispatch`-ed 
-     and in what namespace the associated event handler is registered.  And, 
-     "oh look, that's interesting - four subscriptions recalculated". Etc.
-  3. It helps you with debugging. You see an x-ray of your app's functioning. 
-     In particular, it will assist you to write and debug 
-     event handlers, which is useful because they hold most of the logic 
-     in your `re-frame` apps.
-  4. It helps you to find performance problems and/or detect where there is 
-     unnecessary computation occurring.
-
-> This list is currently aspirational. `re-frame-trace` remains a WIP. We're getting there. 
+`re-frame-trace` let's you look at the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination. Your capacity to debug will increase because you know more.
 
 ### It Is Epoch Oriented 
 
 `re-frame` applications are computationally regular. First an event happens,
-and then boom, boom, boom go a series of known computational steps (dominoes), 
-in a known order. 
-At the end of it, a `re-frame` app lapses into a quiescent state waiting for another 
-event to kick off the next iteration of the same cycle.
+and then boom, boom, boom go a series of known computational steps (aka dominoes), 
+in a known order. When this chain reaction completes, 
+a `re-frame` app enters a quiescent state waiting for another 
+event to kick off the next iteration of the same process.
 
 Each `re-frame` event and its consequent computation forms a bounded "epoch" 
 which can be inspected, analysed and understood independently of other epochs. This 
@@ -45,35 +18,59 @@ And, yes, it has "time travel debugger" capabilities - you can go backwards
 and forwards through epochs - but that's really not the most interesting or powerful 
 aspect of what `re-frame-trace` delivers.
 
-### It Is All About The Data
+### It Is About Trace Data
 
 As it runs, `re-frame` logs "trace" as data (not strings).
 This data trace provides an x-ray of your app's functioning.
 
-In addition, while re-frame is a functional framework, it is more 
-strongly defined by its "data oriented" design. `re-frame's` approach is
-to "flow" data, in a loop, through the functions you provide.
-To understand what is happening in a `re-frame` app, you must understand
-what data is happening.     
+`re-frame-trace` is essentially a consumer, processor and displayer of this x-ray trace data.
 
-So, data is at the core of `re-frame-trace` in those two ways 
-and data is a powerful and leverageable substrate. 
+### It Is About The Data Flow
+
+While re-frame is a functional framework, it is
+strongly defined by its "data oriented" design. `re-frame`
+"flows" data, in a loop, through the functions you provide.
+To understand what is happening in a `re-frame` app, you must understand
+what data is "happening".     
+
+So, data is at the core of `re-frame-trace` in both of the ways just described, 
+and data is a powerful and leverageable substrate.
 
 ### It Is A Data Dashboard 
 
-Except, there's often too much data - too much detail.
+Except, there's often too much data - you can drown in the detail.
 
-So, `re-frame-trace` tries to be something of a "dashboard" which curates
+So, `re-frame-trace` tries to be a "dashboard" which curates this
 "raw data" into "information" through various kinds of analysis 
-and "roll ups". The goal is to deliver insight "at a glance", while still allowing 
+and "roll ups". It should deliver insight "at a glance", while still allowing 
 you to drill down into the detail. 
 
-Right. So, we now know enough to give a summary: this tool is an epoch-oriented, 
-interactive data dashboard for gaining insights and assisting debugging. 
+### Which Is Helpful How?
 
-But, it is also a work in progress, 
-so my enthusiastic claims (above) overstate what is delivered right now.
-But we're getting there and its already very useful.
+Four ways:
+
+  1. It helps you to learn `re-frame`.  Simply looking at 
+     the "raw traces" provides insight into how it operates. Even experienced
+     re-framians, er, like me, have learned a lot.
+     
+  2. It helps you to explore and learn an unfamiliar `re-frame` codebase.
+     When I click, over here, on this "X" button, it shows me what event is `dispatch`-ed 
+     and in what namespace the associated event handler is registered.  And, 
+     "oh look, that's interesting - four subscriptions recalculated". Etc.
+     
+  3. It helps you with debugging. You see an x-ray of your app's functioning. 
+     In particular, it will assist you to write and debug 
+     event handlers, which is useful because they hold most of the logic 
+     in your `re-frame` apps.
+     
+  4. It helps you to find performance problems and/or detect where there is 
+     unnecessary computation occurring.
+
+Deeper knowledge is the goal. Easier debugging is the symptom.
+
+### Temporary Warning 
+
+> Some of the claims above are aspirational. `re-frame-trace` remains a WIP experiment. But we're getting there.
 
 ## A Visual Sampler
 
@@ -85,7 +82,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
-- Update your re-frame dependency to at least `0.10.3` - `[re-frame "0.10.3"]`.
+- Update your re-frame dependency to at least `0.10.4` - `[re-frame "0.10.4"]`.
 
 - Add re-frame-trace as a dev dependency by placing `[day8.re-frame/trace "VERSION"]` within `:profiles :dev :dependencies`. For example:
 
@@ -153,11 +150,13 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ## How does it work?
 
-re-frame is instrumented - all important activity generates trace data. `re-frame-trace` consumes this trace data and renders useful visualisations of the `re-frame` process. Currently, re-frame's tracing capabilities are in alpha and are subject to change at any time. We're testing the utility of the the trace by building an app on top. 
+re-frame is instrumented - all important activity generates trace data. 
+
+`re-frame-trace` consumes this trace data and renders useful visualisations of the `re-frame` process. Currently, re-frame's tracing capabilities are in alpha and are subject to change at any time. We're testing the utility of the the trace by building an app on top. 
 
 By default, re-frame tracing is "compiled out", so it won't impose a performance cost in production. The trade-off here is that you need to explicitly enable it in development.
 
-The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#preloads) option (`:preloads [day8.re-frame.trace.preload]`) has to be set in order to automatically monkeypatch Reagent to add appropriate lifecycle hooks. Yes this is gross, and yes we will try and make a PR to reagent to add proper hooks, once we know exactly what we need. The preload namespace also injects a div containing the devtools panel into the DOM.
+The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#preloads) option (`:preloads [day8.re-frame.trace.preload]`) has to be set in order to automatically monkeypatch Reagent to add appropriate lifecycle hooks. Yes this is gross, and yes we will [make a PR to reagent to add proper hooks](https://github.com/Day8/re-frame-trace/issues/115), once we know exactly what we need. The preload namespace also injects a div containing the devtools panel into the DOM.
 
 ## Developing/Contributing
 

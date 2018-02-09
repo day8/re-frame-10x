@@ -2,7 +2,8 @@
   (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame.trace.metamorphic :as metam]
             [day8.re-frame.trace.utils.utils :as utils]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [cljs.spec.alpha :as s]))
 
 (rf/reg-sub
   :settings/root
@@ -125,6 +126,11 @@
     (:traces db)))
 
 (rf/reg-sub
+  :trace-panel/root
+  (fn [db _]
+    (:trace-panel db)))
+
+(rf/reg-sub
   :traces/filter-items
   (fn [db _]
     (get-in db [:traces :filter-items])))
@@ -183,8 +189,8 @@
   filter-ignored-views)
 
 (rf/reg-sub
-  :traces/show-epoch-traces?
-  :<- [:traces/trace-root]
+  :trace-panel/show-epoch-traces?
+  :<- [:trace-panel/root]
   (fn [trace-root]
     (:show-epoch-traces? trace-root)))
 
@@ -385,17 +391,56 @@
   (fn [match-state]
     (:sub-state match-state)))
 
-(defn sub-sort-val
-  [sub]
-  (case (:type sub)
-    :created 1
-    :re-run 2
-    :destroyed 3
-    :not-run 4))
+(def string! (s/and string? #(not (empty? %))))
 
-(def subscription-comparator
-  (fn [x y]
-    (compare (sub-sort-val x) (sub-sort-val y))))
+(s/def :sub/id string!)
+(s/def :sub/reagent-id string!)
+(s/def :sub/run-types #{:sub/create :sub/dispose :sub/run :sub/not-run})
+(s/def :sub/order (s/nilable (s/coll-of :sub/run-types)))
+(s/def :sub/layer (s/nilable pos-int?))
+(s/def :sub/path-data any?)
+(s/def :sub/path string!)
+(s/def :sub/value any?)
+(s/def :sub/previous-value any?)
+(s/def :subs/view-panel-sub
+  (s/keys :req-un [:sub/id :sub/reagent-id :sub/order :sub/layer :sub/path-data :sub/path]
+          :opt-un [:sub/value :sub/previous-value]))
+(s/def :subs/view-subs (s/coll-of :subs/view-panel-sub))
+
+(defn sub-type-value
+  [sub-type]
+  (case sub-type
+    :sub/create 5
+    :sub/run 4
+    :sub/dispose 3
+    :sub/not-run 2
+    1))
+
+(defn accumulate-sub-value
+  "Calculate a sorting value for a series of subscription trace types."
+  ;; A reader might reasonably ask, "Why are we going to all this work here?"
+  ;; We calculate a custom value rather than just comparing two order vectors,
+  ;; because the default compare logic for comparing vectors is to sort shorter
+  ;; vectors above longer ones, whereas we want all CRR, CR, C orders to be
+  ;; sorted adjacent to each other, in that order.
+  ;;
+  ;; The first sub type in the order is worth (n * 10^3),
+  ;; then the next one (if it exists), is worth (n * 10^2), and so-on.
+  [order]
+  (loop [exp   3
+         total 0
+         order order]
+    (if-let [sub-type (first order)]
+      (recur (dec exp) (+ total (* (sub-type-value sub-type) (js/Math.pow 10 exp))) (rest order))
+      total)))
+
+(def accumulate-sub-value-memoized
+  (memoize accumulate-sub-value))
+
+(defn sub-sort-val [order-x order-y]
+  ;; Note x and y are reversed here so that the "highest" sub orders get sorted first.
+  (compare (accumulate-sub-value-memoized order-y)
+           (accumulate-sub-value-memoized order-x)))
 
 (defn sub-op-type->type [t]
   (case (:op-type t)
@@ -405,61 +450,58 @@
 
     :not-run))
 
+(defn prepare-pod-info
+  "Returns sub info prepared for rendering in pods"
+  [[sub-info sub-state] [subscription]]
+  (let [remove-fn (if (= subscription :subs/inter-epoch-subs)
+                    (fn [me] (nil? (:order (val me))))
+                    (constantly false))
+        subx      (->> sub-state
+                       (remove remove-fn)
+                       (map (fn [me] (let [state        (val me)
+                                           subscription (:subscription state)
+                                           sub          {:id         (key me)
+                                                         :reagent-id (key me)
+                                                         :layer      (get-in sub-info [(first subscription) :layer])
+                                                         :path-data  subscription
+                                                         :path       (pr-str subscription)
+                                                         :order      (or (:order state) [:sub/not-run])
+                                                         :sub/traits (:sub/traits state)}
+                                           sub          (if (contains? state :value)
+                                                          (assoc sub :value (:value state))
+                                                          sub)
+                                           sub          (if (contains? state :previous-value)
+                                                          (assoc sub :previous-value (:previous-value state))
+                                                          sub)]
+                                       sub)))
+                       (sort-by :order sub-sort-val)        ;; Also sort by subscription-id
+                       #_(sort-by :path))]
+    subx))
+
+
+(rf/reg-sub
+  :subs/pre-epoch-state
+  :<- [:subs/current-epoch-sub-state]
+  (fn [sub-state]
+    (:pre-epoch-state sub-state)))
+
+(rf/reg-sub
+  :subs/reaction-state
+  :<- [:subs/current-epoch-sub-state]
+  (fn [sub-state]
+    (:reaction-state sub-state)))
+
+(rf/reg-sub
+  :subs/inter-epoch-subs
+  :<- [:subs/subscription-info]
+  :<- [:subs/pre-epoch-state]
+  prepare-pod-info)
+
 (rf/reg-sub
   :subs/all-subs
-  :<- [:subs/all-sub-traces]
-  :<- [:app-db/reagent-id]
   :<- [:subs/subscription-info]
-  :<- [:subs/current-epoch-sub-state]
-  (fn [[traces app-db-id sub-info sub-state]]
-    (let [raw           (map (fn [trace]
-                               (let [pod-type   (sub-op-type->type trace)
-                                     path-data  (get-in trace [:tags :query-v])
-                                     reagent-id (get-in trace [:tags :reaction])
-                                     sub        (-> {:id         (str pod-type reagent-id)
-                                                     :reagent-id reagent-id
-                                                     :type       pod-type
-                                                     :layer      (get-in sub-info [(:operation trace) :layer])
-                                                     :path-data  path-data
-                                                     :path       (pr-str path-data)
-                                                     ;; TODO: Get not run subscriptions
-                                                     })
-                                     sub        (if (contains? (:tags trace) :value)
-                                                  (assoc sub :value (get-in trace [:tags :value]))
-                                                  sub)
-                                     sub        (if (contains? (get sub-state reagent-id) :previous-value)
-                                                  (assoc sub :previous-value (get-in sub-state [reagent-id :previous-value]))
-                                                  sub)]
-                                 sub))
-                             traces)
-          re-run        (->> raw
-                             (filter #(= :re-run (:type %)))
-                             (map (juxt :path-data identity))
-                             (into {}))
-          created       (->> raw
-                             (filter #(= :created (:type %)))
-                             (map (juxt :path-data identity))
-                             (into {}))
-          raw           (keep (fn [sub]
-                                (case (:type sub)
-                                  :created (if-some [re-run-sub (get re-run (:path-data sub))]
-                                             (assoc sub :value (:value re-run-sub))
-                                             sub)
-
-                                  :re-run (when-not (contains? created (:path-data sub))
-                                            sub)
-
-                                  sub))
-                              raw)
-
-          ;; Filter out run if it was created
-          ;; Group together run time
-          run-multiple? (into {}
-                              (filter (fn [[k v]] (< 1 v)))
-                              (frequencies (map :id raw)))
-
-          output        (map (fn [sub] (assoc sub :run-times (get run-multiple? (:id sub)))) raw)]
-      (sort-by identity subscription-comparator output))))
+  :<- [:subs/reaction-state]
+  prepare-pod-info)
 
 (rf/reg-sub
   :subs/visible-subs
@@ -475,32 +517,32 @@
   :<- [:subs/visible-subs]
   (fn [subs _]
     (->> subs
-         (map :type)
+         (mapcat :order)
          (frequencies))))
 
 (rf/reg-sub
   :subs/created-count
   :<- [:subs/sub-counts]
   (fn [counts]
-    (get counts :created 0)))
+    (get counts :sub/create 0)))
 
 (rf/reg-sub
   :subs/re-run-count
   :<- [:subs/sub-counts]
   (fn [counts]
-    (get counts :re-run 0)))
+    (get counts :sub/run 0)))
 
 (rf/reg-sub
   :subs/destroyed-count
   :<- [:subs/sub-counts]
   (fn [counts]
-    (get counts :destroyed 0)))
+    (get counts :sub/dispose 0)))
 
 (rf/reg-sub
   :subs/not-run-count
   :<- [:subs/sub-counts]
   (fn [counts]
-    (get counts :not-run 0)))
+    (get counts :sub/not-run 0)))
 
 (rf/reg-sub
   :subs/unchanged-l2-subs-count
