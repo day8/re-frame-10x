@@ -517,32 +517,32 @@
   :<- [:subs/visible-subs]
   (fn [subs _]
     (->> subs
-         (map :type)
+         (mapcat :order)
          (frequencies))))
 
 (rf/reg-sub
   :subs/created-count
   :<- [:subs/sub-counts]
   (fn [counts]
-    (get counts :created 0)))
+    (get counts :sub/create 0)))
 
 (rf/reg-sub
   :subs/re-run-count
   :<- [:subs/sub-counts]
   (fn [counts]
-    (get counts :re-run 0)))
+    (get counts :sub/run 0)))
 
 (rf/reg-sub
   :subs/destroyed-count
   :<- [:subs/sub-counts]
   (fn [counts]
-    (get counts :destroyed 0)))
+    (get counts :sub/dispose 0)))
 
 (rf/reg-sub
   :subs/not-run-count
   :<- [:subs/sub-counts]
   (fn [counts]
-    (get counts :not-run 0)))
+    (get counts :sub/not-run 0)))
 
 (rf/reg-sub
   :subs/unchanged-l2-subs-count
