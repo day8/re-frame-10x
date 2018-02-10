@@ -39,7 +39,7 @@ So, data is at the core of `re-frame-trace` in both of the ways just described,
 and that should not be the slightest bit surprising.
 
 Think about it ... every single time you put a `printlin` into your program, 
-you are printing out what?  Obvserving data is how you figure out what's going on. 
+you are printing out what? And why?  Data is the fuel of your investigation. 
 
 Have you seen LightTable?  It was attractive because it co-renders the data and 
 code. The shown data is the "paper trail" by which you can percieve the dynamics of the code.
