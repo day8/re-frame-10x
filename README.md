@@ -84,7 +84,7 @@ Deeper knowledge is the goal. Easier debugging is the symptom.
 
 ## The Name
 
-We debated internally about the name `re-frame-trace`.  We knew that `-trace` was okay, but anemic because it talked about low level function, not higher level benefit.  I wanted to call it `vox-datum` (voice of the data) but it was cruelly rejected, for reasons I don't care to remember. I mean, who doesn't like a Latin name??  Philistines.  Anyway, "insight" and "illumination" are the benefits, but they made the name too long.  Naming things - its a nightmare!  As is inertia.  So, `-trace` it remains. 
+We debated internally about the name `re-frame-trace`.  We knew that `-trace` was okay, but anemic because it talked about low level function, not higher level benefit.  I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.  Anyway, "insight" and "illumination" are the benefits, but they made the name too long.  Naming things - its a nightmare!  As is inertia.  So, `-trace` it remains. 
 
 ## A Visual Sampler
 
