@@ -1,6 +1,6 @@
 # re-frame-trace
 
-`re-frame-trace` let's you look at the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination. Your capacity to debug will increase because you know more.
+`re-frame-trace` let's you look at the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination. Because you know more, your capacity to debug will increase.
 
 ### It Is Epoch Oriented 
 
