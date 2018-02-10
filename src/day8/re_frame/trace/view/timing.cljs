@@ -43,8 +43,9 @@
   [rc/v-box
    :align :center
    :gap "3px"
+   ;; TODO: detect <1 ms timing here, to distinguish between none at all, and rounding to 0.
    :children [[rc/label :class "bm-textbox-label" :label label]
-              [timing-tag (str time "ms")]]])
+              [timing-tag (str (js/Math.round time) "ms")]]])
 
 (defn render []
   (let [timing-data-available? @(rf/subscribe [:timing/data-available?])]
@@ -60,10 +61,7 @@
                                :style {:margin-left common/gs-19s}
                                :attr {:rel "noopener noreferrer"}
                                :target "_blank"
-                               :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnderstandingTiming.md"]
-
-                              #_[rc/link {:label "Guide me to greatness"
-                                        :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnderstandingTiming.md"}]]]
+                               :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnderstandingTiming.md"]]]
                   [rc/h-box
                    :gap common/gs-12s
                    :class "timing-part-panel"
@@ -77,7 +75,7 @@
                     ]]
                   (doall
                     (for [frame (range 1 (inc @(rf/subscribe [:timing/animation-frame-count])))
-                          :let [frame-time (rf/subscribe [:timing/animation-frame-time frame])]]
+                          :let [frame-time @(rf/subscribe [:timing/animation-frame-time frame])]]
                       (list
                         ;^{:key (str "af-line" frame)}
                         ;[rc/line :class "timing-details--line"]
@@ -88,16 +86,13 @@
                          :gap common/gs-12s
                          :children
                          [[:p "Animation" [:br] "frame" [:br] (str "#" frame)]
-                          [timing-section "total" @frame-time]
+                          [timing-section "total" (:timing/animation-frame-total frame-time)]
                           [:span "="]
-                          ;; TODO: subs timing
-                          [timing-section "subs" -1]
+                          [timing-section "subs" (:timing/animation-frame-subs frame-time)]
                           [:span "+"]
-                          ;; TODO: views timing
-                          [timing-section "views" -1]
+                          [timing-section "views" (:timing/animation-frame-render frame-time)]
                           [:span "+"]
-                          ;; TODO: timing for the rest
-                          [timing-section "react, etc" -1]]])))]]
+                          [timing-section "react, etc" (:timing/animation-frame-misc frame-time)]]])))]]
       [rc/v-box
        :class "timing-details"
        :children [[:h1 "No timing data available currently."]]])))

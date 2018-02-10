@@ -131,6 +131,7 @@
 
 (defn subscription? [trace]
   (and (= "sub" (namespace (:op-type trace)))
+       ;; TODO: should we remove cached checks?
        (not (get-in trace [:tags :cached?]))))
 
 (defn subscription-created? [trace]
