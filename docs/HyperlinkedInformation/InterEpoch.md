@@ -6,7 +6,7 @@
 
 Intra-epoch traces are emitted under (at least) three circumstances:
 
-* When views have local ratoms, used, for example, to handle the appearance of popups or mouseover annimations. When the state of these ratoms change, views will likely rerender, and the trace to do with this rerendering will flow from reagent to `re-frame`trace`. But there'll be no "current" epoch to put it in.  Because there was no event.
+* Views sometimes have local state in the form of local ratoms which control, for example, the appearance of popups or mouseover annimations. When the state of these ratoms change, dependent views will likely rerender, and the trace to do with this rerendering will flow from reagent to `re-frame`trace`. But there'll be no "current" epoch to put it in.  Because there was no event (just a pseudo event caused by the ratom reset)
 * A Figwheel recompile and subsequent code reload will cause all existing subscriptions to be destroyed, andwill trigger a complete re-render of your application
 * `re-frame-trace` itself resetting the value in `app-db`. Again there will be a flurry of subscription and view trace, but no epoch, because there was no event.
 
