@@ -38,16 +38,16 @@ what data is "happening".
 So, data is at the core of `re-frame-trace` in both of the ways just described, 
 and that should not be the slightest bit surprising.
 
-Think about it ... every single time you put a `printlin` into your program, 
-you are printing out what? And why?  Data is the fuel of your investigation. 
+Each time you put a `println` into your program, 
+you are printing out what? And why?  Data is the fuel of your debugging investigation. 
 
-Have you seen LightTable?  It was attractive because it co-renders the data and 
-code. The shown data is the "paper trail" by which you can percieve the dynamics of the code.
+Have you seen LightTable?  It was attractive because it co-renders data and 
+code. The data presented is the "paper trail" by which you can percieve the dynamics of the code.
 
 ### It Is A Data Dashboard 
 
-Observing raw data is certaintly interesting, but it isn't enough. Data is the substrate and 
-we want to leverage it.  Apart from anything else, there's often too much data - you 
+Observing raw data is certaintly interesting, but it isn't enough. Data is the substrate
+we want to leverage.  Apart from anything else, there's often too much data - you 
 can drown in the detail.
 
 So, `re-frame-trace` tries to be a "dashboard" which curates this
