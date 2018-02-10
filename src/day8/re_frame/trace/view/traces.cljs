@@ -163,14 +163,7 @@
               (if (:show-all? @trace-detail-expansions) "-" "+")]]
             [:th "operations"]
             [:th
-             [:button {:class    (str/join " " ["filter-items-count"
-                                                (when (pos? (count @filter-items)) "active")])
-                       :on-click #(rf/dispatch [:traces/reset-filter-items])}
-              (when (pos? (count @filter-items))
-                (str (count visible-traces) " of "))
-              (str (count @current-traces))]
-             " traces "
-             (when (pos? (count @current-traces))
-               [:span "(" [:button.text-button {:on-click #(rf/dispatch [:epochs/reset])} "clear"] ")"])]
+             (str (count visible-traces) " traces")
+             [:span "(" [:button.text-button {:on-click #(rf/dispatch [:epochs/reset])} "clear"] ")"]]
             [:th {:style {:text-align "right"}} "meta"]]
            [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]))))
