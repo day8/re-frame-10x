@@ -335,10 +335,31 @@
 (rf/reg-sub
   :timing/animation-frame-time
   :<- [:timing/animation-frame-traces]
-  (fn [frame-traces [_ frame-number]]
-    (let [frames (partition 2 frame-traces)
-          [start end] (first (drop (dec frame-number) frames))]
-      (metam/elapsed-time start end))))
+  :<- [:traces/current-event-traces]
+  (fn [[af-start-end epoch-traces] [_ frame-number]]
+    (let [frame-pairs (partition 2 af-start-end)
+          [start end] (nth frame-pairs (dec frame-number))
+          af-traces   (into [] (metam/id-between-xf (:id start) (:id end)) epoch-traces)
+          total-time  (metam/elapsed-time start end)
+          ;; TODO: these times double count renders/subs that happened as a child of another
+          ;; need to fix either here, at ingestion point, or most preferably in re-frame at tracing point.
+          subs-time   (transduce (comp
+                                   (filter metam/subscription?)
+                                   (map :duration))
+                                 + af-traces)
+          render-time (transduce (comp
+                                   (filter metam/render?)
+                                   (map :duration))
+                                 + af-traces)
+          ]
+      ;; TODO: where should rounding happen? In metam/elapsed-time?
+      ;(js/console.log "start" start "end" end af-traces)
+      (js/console.log "tsubs" subs-time "subs" subs-time)
+      {:timing/animation-frame-total  total-time
+       :timing/animation-frame-subs   subs-time
+       :timing/animation-frame-render render-time
+       ;; TODO: handle rounding weirdness here, make sure it is never below 0.
+       :timing/animation-frame-misc   (- total-time subs-time render-time)})))
 
 (rf/reg-sub
   :timing/event-processing-time
