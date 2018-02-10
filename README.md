@@ -88,7 +88,8 @@ We debated internally about the name `re-frame-trace`.  We knew that `-trace` wa
 
 ## A Visual Sampler
 
-Slightly out of date, but indicative ... 
+Slightly out of date, but indicative ...  
+
 <img src="docs/images/re-frame-trace-demo.gif" height="500px">
 
 ## Installation
