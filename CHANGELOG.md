@@ -1,9 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## Unreleased
+## [0.1.20] - Unreleased
 
-## [0.1.18] - 2018-01-31
+
+
+## [0.1.19] - 2018-02-09
 
 ### Changed
 
@@ -17,6 +19,12 @@ All notable changes to this project will be documented in this file. This change
 
 * Garden source dependencies are now working if you don't have your own dependency on Garden.
 * New app-db path inspectors default to `"""` instead of `"[]"` so you can see the help text.
+
+## [0.1.18] - 2018-01-31 
+
+### Fixed
+
+* Garden source dependencies now work if you don't have your own dependency on Garden.
 
 
 ## [0.1.17] - 2018-01-31
