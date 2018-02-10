@@ -3,7 +3,13 @@ All notable changes to this project will be documented in this file. This change
 
 ## [0.1.20] - Unreleased
 
+### Improved
 
+* Improve Timing panel to show more granular timing info.
+
+### Fixed 
+
+* View and subscription runtime now only measures self time instead of elapsed time, i.e. we subtract the time of any child subcriptions/renders. 
 
 ## [0.1.19] - 2018-02-09
 
