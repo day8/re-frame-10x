@@ -85,9 +85,12 @@
    [right-hand-buttons external-window?]])
 
 (defn standard-header [external-window?]
-  (let [current-event @(rf/subscribe [:epochs/current-event])
+  (let [current-event           @(rf/subscribe [:epochs/current-event])
         older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])
-        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])]
+        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])
+        event-str               (if (some? current-event)
+                                  (subs (prn-str current-event) 0 400)
+                                  "No event")]
     [[rc/h-box
       :align    :center
       :size     "auto"
@@ -100,8 +103,9 @@
                   :style    {:max-height       "42px" ;42 is exactly 2 lines which is perhaps neater than common/gs-50s (which would allow 3 lines to be seen)
                              :overflow-x       "hidden"
                              :overflow-y       "auto"
-                             :background-color "white"}
-                  :children [[:span.event-header (subs (prn-str current-event) 0 400)]]]
+                             :background-color "white"
+                             :font-style       (if (some? current-event) "normal" "italic")}
+                  :children [[:span.event-header event-str]]]
                  [:span.arrow (if newer-epochs-available?
                                 {:on-click #(rf/dispatch [:epochs/next-epoch])}
                                 {:class "arrow__disabled"})
