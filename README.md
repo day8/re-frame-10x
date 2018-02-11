@@ -20,8 +20,8 @@ aspect of what `re-frame-trace` delivers.
 
 ### It Is About Trace Data
 
-As it runs, `re-frame` logs "trace" as data (not strings).
-This data trace provides an x-ray of your app's functioning.
+As it runs, `re-frame` logs "trace" as data (not strings). 
+And this data trace provides an x-ray of your app's functioning.
 
 `re-frame-trace` is essentially a consumer, processor and displayer of this x-ray trace data.
 
@@ -39,10 +39,11 @@ So, data is at the core of `re-frame-trace` in both of the ways just described,
 and that should not be the slightest bit surprising.
 
 Each time you put a `println` into your program, 
-you are printing out what? And why?  Data is the fuel of your debugging investigation. 
+you are printing out what? And why?  Data is the fuel of your debugging investigation.
 
 Have you seen LightTable?  It was attractive because it co-renders data and 
-code. The data presented is the "paper trail" by which you can percieve the dynamics of the code.
+code. The data presented is the "paper trail" by which you can better percieve 
+the dynamics of the code.
 
 ### It Is A Data Dashboard 
 
@@ -80,11 +81,12 @@ Deeper knowledge is the goal. Easier debugging is the symptom.
 
 ### Temporary Warning 
 
-> Some of the claims above are aspirational. `re-frame-trace` remains a WIP experiment. But [we're getting there](https://github.com/Day8/re-frame-trace/issues/118).
+> Some of the claims above are aspirational. `re-frame-trace` [remains a WIP](https://github.com/Day8/re-frame-trace/issues/118).
+
 
 ## The Name
 
-We debated internally about the name `re-frame-trace`.  We knew that `-trace` was okay, but anemic because it talked about low level function, not higher level benefit.  I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.  Anyway, "insight" and "illumination" are the benefits, but they made the name too long.  Naming things - its a nightmare!  As is inertia.  So, `-trace` it remains. 
+We debated internally about the name `re-frame-trace`.  We knew that `-trace` was okay, but anemic because it talked about low level function, not higher level benefit.  I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.  Anyway, "insight" and "illumination" are the benefits, but they made the name too long.  Naming things - it's a nightmare!  As is inertia.  So, `-trace` it remains. 
 
 ## A Visual Sampler
 
