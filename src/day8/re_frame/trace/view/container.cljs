@@ -136,7 +136,8 @@
                     :children [(tab-button :event "Event")
                                (tab-button :app-db "app-db")
                                (tab-button :subs "Subs")
-                               ;(tab-button :views "Views")
+                               (when (:debug? opts)
+                                 (tab-button :views "Views"))
                                (tab-button :traces "Trace")
                                (tab-button :timing "Timing")
                                (when (:debug? opts)
@@ -149,7 +150,7 @@
      [rc/v-box
       :size "auto"
       :style {:margin-left common/gs-19s
-              :overflow-y  (if (contains? #{:timing :debug :event :subs} @selected-tab)
+              :overflow-y  (if (contains? #{:timing :debug :event :subs :views} @selected-tab)
                              "auto" "initial")
               ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
               }
