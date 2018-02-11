@@ -48,7 +48,8 @@
               [timing-tag (str (js/Math.round time) "ms")]]])
 
 (defn render []
-  (let [timing-data-available? @(rf/subscribe [:timing/data-available?])]
+  (let [timing-data-available? @(rf/subscribe [:timing/data-available?])
+        event-processing-time  @(rf/subscribe [:timing/event-processing-time])]
     (if timing-data-available?
       [rc/v-box
        :class "timing-details"
@@ -67,10 +68,11 @@
                    :class "timing-part-panel"
                    :children
                    [[:p "event" [:br] "processing"]
-                    [timing-section "event" @(rf/subscribe [:timing/event-processing-time])]
-                    ;;; TODO: calculate handler and effects timing separately
-                    [timing-section "handler" -1]
-                    [timing-section "effects" -1]
+                    [timing-section "total" (:timing/event-total event-processing-time)]
+                    [:span "="]
+                    [timing-section "handler" (:timing/event-handler event-processing-time)]
+                    [:span "+"]
+                    [timing-section "effects" (:timing/event-effects event-processing-time)]
 
                     ]]
                   (doall

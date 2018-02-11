@@ -365,7 +365,10 @@
   :timing/event-processing-time
   :<- [:epochs/current-match-state]
   (fn [match]
-    (get-in match [:timing :re-frame/event-time])))
+    {:timing/event-total (get-in match [:timing :re-frame/event-time])
+     ;;; TODO: calculate handler and effects timing separately
+     :timing/event-handler -1
+     :timing/event-effects -1}))
 
 (rf/reg-sub
   :timing/render-time
