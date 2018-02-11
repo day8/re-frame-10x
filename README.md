@@ -14,9 +14,8 @@ Each `re-frame` event and its consequent computation forms a bounded "epoch"
 which can be inspected, analysed and understood independently of other epochs. This 
 tool is epoch-oriented - it shows you one at a time.
 
-And, yes, it has "time travel debugger" capabilities - you can go backwards
-and forwards through epochs - but that's really not the most interesting or powerful 
-aspect of what `re-frame-trace` delivers.
+And, yes, it has "time travel debugger" capabilities - you can go 
+[backwards and forwards through epochs](https://condenaststore.com/featured/the-conga-line-of-past-selves-a-string-liana-finck.html) - but that's really not the most interesting or powerful aspect of what `re-frame-trace` delivers.
 
 ### It Is About Trace Data
 
