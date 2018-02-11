@@ -84,9 +84,9 @@ Deeper knowledge is the goal. Easier debugging is the symptom.
 > Some of the claims above are aspirational. `re-frame-trace` [remains a WIP](https://github.com/Day8/re-frame-trace/issues/118).
 
 
-## The Name
+## The Sausage, Not The Sizzle
 
-We debated internally about the name `re-frame-trace`.  We knew that `-trace` was okay, but anemic because it talked about low level function, not higher level benefit.  I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.  Anyway, "insight" and "illumination" are the benefits, but they made the name too long.  Naming things - it's a nightmare!  As is inertia.  So, `-trace` it remains. 
+We debated internally about the name `re-frame-trace`.  While `-trace` is accurate, it is also 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a pretentious Latin name??  Philistines.  Anyway, `-insight` and `-illumination` are the benefits, but they made the name waaaay too long.  Naming things - it's just a nightmare!  As is inertia.  So, `-trace` it remains. 
 
 ## A Visual Sampler
 
