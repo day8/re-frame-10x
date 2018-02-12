@@ -80,6 +80,10 @@
                     [timing-section "handler" (:timing/event-handler event-processing-time)]
                     [:span "+"]
                     [timing-section "effects" (:timing/event-effects event-processing-time)]
+                    [:span "+"]
+                    [timing-section "other int." (:timing/event-interceptors event-processing-time)]
+                    [:span "+"]
+                    [timing-section "misc" (:timing/event-misc event-processing-time)]
 
                     ]]
                   (doall

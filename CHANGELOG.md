@@ -3,13 +3,17 @@ All notable changes to this project will be documented in this file. This change
 
 ## [0.1.20] - Unreleased
 
+### Upgrade notes
+
+To take advantage of the more granular timing info, you will need to upgrade to re-frame 0.10.5.
+
 ### Improved
 
 * Improve Timing panel to show more granular timing info.
 
-### Fixed 
+### Fixed
 
-* View and subscription runtime now only measures self time instead of elapsed time, i.e. we subtract the time of any child subcriptions/renders. 
+* View and subscription runtime now only measures self time instead of elapsed time, i.e. we subtract the time of any child subcriptions/renders.
 
 ## [0.1.19] - 2018-02-09
 
@@ -19,14 +23,14 @@ All notable changes to this project will be documented in this file. This change
   * Subscriptions that exist but weren't run, now show up in the subscription panel.
   * Subscription creations and disposals that happen during figwheel reloads or otherwise outside of the re-frame event domino cycle are now correctly handled. If any of these happen, they show up in the new section Inter-Epoch Subscriptions.
   * All of the actions that happen to a subscription within an epoch are now shown. This lets you spot unusual behaviour like a subscription being created but not-run, or a subscription running multiple times.
-  * Present better explanation messages when viewing the diff section for a sub where the value is unchanged, not run yet, or only run once. 
+  * Present better explanation messages when viewing the diff section for a sub where the value is unchanged, not run yet, or only run once.
 
 ### Fixed
 
 * Garden source dependencies are now working if you don't have your own dependency on Garden.
 * New app-db path inspectors default to `"""` instead of `"[]"` so you can see the help text.
 
-## [0.1.18] - 2018-01-31 
+## [0.1.18] - 2018-01-31
 
 ### Fixed
 
