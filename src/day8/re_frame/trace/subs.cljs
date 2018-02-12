@@ -358,9 +358,7 @@
           render-time (transduce (comp
                                    (filter metam/render?)
                                    (map :duration))
-                                 +nil af-traces)
-          ]
-      ;; TODO: where should rounding happen? In metam/elapsed-time?
+                                 +nil af-traces)]
       {:timing/animation-frame-total  total-time
        :timing/animation-frame-subs   subs-time
        :timing/animation-frame-render render-time
@@ -371,12 +369,20 @@
   :timing/event-processing-time
   :<- [:epochs/current-match-state]
   (fn [match]
-    (utils/spy
-      "eventtiming"
-      {:timing/event-total   (get-in match [:timing :re-frame/event-time])
-       ;;; TODO: calculate handler and effects timing separately
-       :timing/event-handler (get-in match [:timing :re-frame/event-handler-time])
-       :timing/event-effects nil})))
+    (let [{:re-frame/keys [event-time event-handler-time event-dofx-time event-run-time]} (get match :timing)
+          ;; The scope of tracing is:
+          ;; event-run-time
+          ;;   event-time
+          ;;     event-handler-time
+          ;;     event-dofx-time
+          ;;     <other stuff>
+          ;;   <other stuff>
+          remaining-interceptors (- event-time event-handler-time event-dofx-time)]
+      {:timing/event-total        event-run-time
+       :timing/event-handler      event-handler-time
+       :timing/event-effects      event-dofx-time
+       :timing/event-interceptors remaining-interceptors
+       :timing/event-misc         (- event-run-time event-time)})))
 
 (rf/reg-sub
   :timing/render-time

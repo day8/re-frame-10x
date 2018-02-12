@@ -25,8 +25,8 @@
                            (get-in context [:effects :db])
                            (get-in context [:coeffects :db]))
                    event (get-in context [:coeffects :event])]
-               (f db event)    ;; call f for side effects
-               context))))     ;; context is unchanged
+               (f db event)                                 ;; call f for side effects
+               context))))                                  ;; context is unchanged
 
 (defn log-trace? [trace]
   (let [render-operation? (or (= (:op-type trace) :render)
@@ -544,16 +544,21 @@
             new-sub-state              (last subscription-match-state)
             timing                     (mapv (fn [match]
                                                ;; TODO: this isn't quite correct, shouldn't be using filtered-traces here
-                                               (let [epoch-traces   (into []
-                                                                          (comp
-                                                                            (utils/id-between-xf (:id (first match)) (:id (last match))))
-                                                                          filtered-traces)
-                                                     start-of-epoch (nth epoch-traces 0)
-                                                     event-handler-trace (utils/spy (first (filter metam/event-handler? epoch-traces)))
-                                                     finish-run     (or (first (filter metam/finish-run? epoch-traces))
-                                                                        (utils/last-in-vec epoch-traces))]
-                                                 {:re-frame/event-time (metam/elapsed-time start-of-epoch finish-run)
-                                                  :re-frame/event-handler-time (:duration event-handler-trace)}))
+                                               (let [epoch-traces        (into []
+                                                                               (comp
+                                                                                 (utils/id-between-xf (:id (first match)) (:id (last match))))
+                                                                               filtered-traces)
+                                                     start-of-epoch      (nth epoch-traces 0)
+                                                     ;; TODO: optimise trace searching
+                                                     event-handler-trace (first (filter metam/event-handler? epoch-traces))
+                                                     dofx-trace          (first (filter metam/event-dofx? epoch-traces))
+                                                     event-trace         (first (filter metam/event-run? epoch-traces))
+                                                     finish-run          (or (first (filter metam/finish-run? epoch-traces))
+                                                                             (utils/last-in-vec epoch-traces))]
+                                                 {:re-frame/event-run-time      (metam/elapsed-time start-of-epoch finish-run)
+                                                  :re-frame/event-time         (:duration event-trace)
+                                                  :re-frame/event-handler-time (:duration event-handler-trace)
+                                                  :re-frame/event-dofx-time    (:duration dofx-trace)}))
                                              new-matches)
 
             new-matches                (map (fn [match sub-match t] {:match-info match
