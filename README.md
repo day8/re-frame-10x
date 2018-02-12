@@ -1,8 +1,8 @@
 # re-frame-trace
 
-`re-frame-trace` let's you look at the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination. Because you know more, your capacity to debug will increase.
+`re-frame-trace` let's you inspect the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination. A 10x programmer is the one with 10x more knowledge and insight.
 
-### It Is Epoch Oriented 
+### It Is Epoch Oriented
 
 `re-frame` applications are computationally regular. First an event happens,
 and then boom, boom, boom go a series of known computational steps (aka dominoes), 
@@ -19,10 +19,9 @@ And, yes, it has "time travel debugger" capabilities - you can go
 
 ### It Is About Trace Data
 
-As it runs, `re-frame` logs "trace" as data (not strings). 
-And this data trace provides an x-ray of your app's functioning.
-
-`re-frame-trace` is essentially a consumer, processor and displayer of this x-ray trace data.
+As it runs, `re-frame` logs "trace" as data, and this provides an x-ray (MRI?) of your app's inner
+functioning. At its most basic level, `re-frame-trace` is a consumer, processor and presenter
+of trace data.
 
 ### It Is About The Data Flow
 
@@ -30,24 +29,39 @@ While re-frame is a functional framework, it is
 strongly defined by its "data oriented" design. `re-frame`
 "flows" data, in a loop, through the functions you provide.
 To understand what is happening in a `re-frame` app, you must understand
-what data is "happening".     
+what data is "happening".
 
-### It is Just About Data
+### It Is Always About The Data
 
-So, data is at the core of `re-frame-trace` in both of the ways just described, 
-and that should not be the slightest bit surprising.
+So, clearly, data is at the core of `re-frame-trace` for both of the reasons 
+just outlined, but its importance is even more base and fundamental than that.
 
-Each time you put a `println` into your program, 
-you are printing out what? And why?  Data is the fuel of your debugging investigation.
+Each time you put a `println` into your program, you are printing out what? 
+And why? Invariably, it is data which fuels your debugging investigation, 
+confirming your current hypothesis, or not.
 
-Have you seen LightTable?  It was attractive because it co-renders data and 
-code. The data presented is the "paper trail" by which you can better percieve 
-the dynamics of the code.
+And when you write your unittests, you represent your expections as what? Correct
+data is the very definition of success.
+
+So, for debugging and understanding activities, more data, more easily is winning. Going back 
+and adding a `println` shouldn't be necessary. All the data you need should already
+be captured and readily available in your REPL for further experimentation.
+
+### Data Brings Code To Life
+
+Perhaps you have seen LightTable in action?  
+
+In the small, it is a delightfully productive debugging environment because it co-renders 
+data and code. The "paper trail" provided by the data 
+brings the code to life, revieling its dyanmics and enriching 
+the programmer's understandings. 
+
+`re-frame-trace` has a similar goal, although the method is different.
 
 ### It Is A Data Dashboard 
 
-Observing raw data is certaintly interesting, but it isn't enough. Data is the substrate
-we want to leverage.  Apart from anything else, there's often too much data - you 
+Observing raw data trace is certaintly interesting and valuable, but it isn't enough. 
+First, we want to leverage this data for insights. And, second, there's often too much data - you 
 can drown in the detail.
 
 So, `re-frame-trace` tries to be a "dashboard" which curates this
@@ -75,17 +89,21 @@ Four ways:
      
   4. It helps you to find performance problems and/or detect where there is 
      unnecessary computation occurring.
-
-Deeper knowledge is the goal. Easier debugging is the symptom.
+     
+Point 3, is primary. But Point 2 is almost as important because we all spend a 
+lot of our time groking unfamiliar codebases. Actually observing the inner 
+workings of a running app is a great way to bring code to life, reveal key 
+features, and map how the code is structured. 
 
 ### Temporary Warning 
 
 > Some of the claims above are aspirational. `re-frame-trace` [remains a WIP](https://github.com/Day8/re-frame-trace/issues/118).
 
+## Sausage
 
-## The Sausage, Not The Sizzle
+We debated internally about the name `re-frame-trace`.  While `-trace` is accurate, it is 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.  Anyway, `-insight` and `-illumination` are the benefits, but they made the name waaaay too long.  Naming things - it's just a nightmare!  As is inertia.  So, `-trace` it remains. 
 
-We debated internally about the name `re-frame-trace`.  While `-trace` is accurate, it is also 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a pretentious Latin name??  Philistines.  Anyway, `-insight` and `-illumination` are the benefits, but they made the name waaaay too long.  Naming things - it's just a nightmare!  As is inertia.  So, `-trace` it remains. 
+**Update:**  a change to `re-frame-10x` is on the cards.
 
 ## A Visual Sampler
 
