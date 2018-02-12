@@ -103,7 +103,7 @@ features, and build a cognative map of how the code is structured.
 
 We debated internally about the name `re-frame-trace`.  While `-trace` is accurate, it is 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.  Anyway, `-insight` and `-illumination` are the benefits, but they made the name waaaay too long.  Naming things - it's just a nightmare!  As is inertia.  So, `-trace` it remains. 
 
-**Update:**  a change to the name `re-frame-10x` is on the cards.
+**Update:**  a name change to `re-frame-10x` is on the cards.  Disapointingly, my latest suggestion, `TenMinutesByTractor`, was also  rejected. I shake my head. Why can noone see that we're all "code farmers" by profession? 
 
 ## A Visual Sampler
 
