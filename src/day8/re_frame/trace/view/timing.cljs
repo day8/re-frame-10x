@@ -45,7 +45,14 @@
    :gap "3px"
    ;; TODO: detect <1 ms timing here, to distinguish between none at all, and rounding to 0.
    :children [[rc/label :class "bm-textbox-label" :label label]
-              [timing-tag (str (js/Math.round time) "ms")]]])
+              [timing-tag (cond
+                            (nil? time) "-"
+                            (= time 0) (str "0ms")
+                            (< time 0.1) (str "<0.1ms")
+                            (< time 1) (str (.toFixed time 1) "ms")
+                            (some? time) (str (js/Math.round time) "ms")
+
+                            )]]])
 
 (defn render []
   (let [timing-data-available? @(rf/subscribe [:timing/data-available?])
