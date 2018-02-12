@@ -332,6 +332,14 @@
   (fn [frame-traces]
     (count (filter metam/request-animation-frame? frame-traces))))
 
+(defn ^number +nil
+  "Returns the sum of nums. (+) returns nil (not 0 like in cljs.core)."
+  ([] nil)
+  ([x] x)
+  ([x y] (cljs.core/+ x y))
+  ([x y & more]
+   (reduce + (cljs.core/+ x y) more)))
+
 (rf/reg-sub
   :timing/animation-frame-time
   :<- [:timing/animation-frame-traces]
@@ -346,15 +354,13 @@
           subs-time   (transduce (comp
                                    (filter metam/subscription?)
                                    (map :duration))
-                                 + af-traces)
+                                 +nil af-traces)
           render-time (transduce (comp
                                    (filter metam/render?)
                                    (map :duration))
-                                 + af-traces)
+                                 +nil af-traces)
           ]
       ;; TODO: where should rounding happen? In metam/elapsed-time?
-      ;(js/console.log "start" start "end" end af-traces)
-      (js/console.log "tsubs" subs-time "subs" subs-time)
       {:timing/animation-frame-total  total-time
        :timing/animation-frame-subs   subs-time
        :timing/animation-frame-render render-time
@@ -365,10 +371,12 @@
   :timing/event-processing-time
   :<- [:epochs/current-match-state]
   (fn [match]
-    {:timing/event-total (get-in match [:timing :re-frame/event-time])
-     ;;; TODO: calculate handler and effects timing separately
-     :timing/event-handler -1
-     :timing/event-effects -1}))
+    (utils/spy
+      "eventtiming"
+      {:timing/event-total   (get-in match [:timing :re-frame/event-time])
+       ;;; TODO: calculate handler and effects timing separately
+       :timing/event-handler (get-in match [:timing :re-frame/event-handler-time])
+       :timing/event-effects nil})))
 
 (rf/reg-sub
   :timing/render-time

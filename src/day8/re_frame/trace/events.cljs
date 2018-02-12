@@ -549,9 +549,11 @@
                                                                             (utils/id-between-xf (:id (first match)) (:id (last match))))
                                                                           filtered-traces)
                                                      start-of-epoch (nth epoch-traces 0)
+                                                     event-handler-trace (utils/spy (first (filter metam/event-handler? epoch-traces)))
                                                      finish-run     (or (first (filter metam/finish-run? epoch-traces))
                                                                         (utils/last-in-vec epoch-traces))]
-                                                 {:re-frame/event-time (metam/elapsed-time start-of-epoch finish-run)}))
+                                                 {:re-frame/event-time (metam/elapsed-time start-of-epoch finish-run)
+                                                  :re-frame/event-handler-time (:duration event-handler-trace)}))
                                              new-matches)
 
             new-matches                (map (fn [match sub-match t] {:match-info match

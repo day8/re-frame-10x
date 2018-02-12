@@ -168,13 +168,18 @@
        (= 2 (get sub :layer))))
 
 
-(defn finish-run? [event]
+(defn finish-run?
+  "Marks the end of event processing running."
+  [event]
   (and (fsm-trigger? event)
        (= (:operation event)
           [:running :finish-run])))
 
 (defn event-run? [event]
   (= :event (:op-type event)))
+
+(defn event-handler? [trace]
+  (= :event/handler (:op-type trace)))
 
 (defn start-of-epoch?
   "Detects the start of a re-frame epoch
