@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Upgrade notes
 
-To take advantage of the more granular timing info, you will need to upgrade to re-frame 0.10.5.
+To take advantage of the more granular timing info in this version, you will need to upgrade to re-frame 0.10.5.
 
 ### Improved
 

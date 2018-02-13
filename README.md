@@ -98,7 +98,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
 
-- Update your re-frame dependency to at least `0.10.4` - `[re-frame "0.10.4"]`.
+- Update your re-frame dependency to at least `0.10.5` - `[re-frame "0.10.5"]`.
 
 - Add re-frame-trace as a dev dependency by placing `[day8.re-frame/trace "VERSION"]` within `:profiles :dev :dependencies`. For example:
 
