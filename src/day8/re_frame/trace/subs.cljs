@@ -382,7 +382,10 @@
        :timing/event-handler      event-handler-time
        :timing/event-effects      event-dofx-time
        :timing/event-interceptors remaining-interceptors
-       :timing/event-misc         (- event-run-time event-time)})))
+       ;; TODO: look at splitting out interceptors from misc, there was a suspiciously high amount of time
+       ;; in misc on some events, so that needs to be investigated.
+       ; :timing/event-misc (- event-run-time event-time)
+       :timing/event-misc         (- event-run-time event-handler-time event-dofx-time)})))
 
 (rf/reg-sub
   :timing/render-time
