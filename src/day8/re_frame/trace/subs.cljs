@@ -68,6 +68,12 @@
   (fn [settings]
     (:debug? settings)))
 
+(rf/reg-sub
+  :settings/app-db-follows-events?
+  :<- [:settings/root]
+  (fn [settings]
+    (:app-db-follows-events? settings)))
+
 ;; App DB
 
 (rf/reg-sub

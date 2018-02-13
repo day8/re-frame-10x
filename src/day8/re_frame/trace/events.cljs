@@ -112,13 +112,14 @@
   (fn [db _]
     (assoc-in db [:settings :paused?] true)))
 
-(rf/reg-event-db
+(rf/reg-event-fx
   :settings/play
-  (fn [db _]
-    (-> db
-        (assoc-in [:settings :paused?] false)
-        (assoc-in [:epochs :current-epoch-index] nil)
-        (assoc-in [:epochs :current-epoch-id] nil))))
+  (fn [{db :db} _]
+    {:db       (-> db
+                   (assoc-in [:settings :paused?] false)
+                   (assoc-in [:epochs :current-epoch-index] nil)
+                   (assoc-in [:epochs :current-epoch-id] nil))
+     :dispatch [:snapshot/reset-current-epoch-app-db nil]}))
 
 (rf/reg-event-db
   :settings/set-number-of-retained-epochs
@@ -217,6 +218,12 @@
   :settings/debug?
   (fn [db [_ debug?]]
     (assoc-in db [:settings :debug?] debug?)))
+
+(rf/reg-event-db
+  :settings/app-db-follows-events?
+  [(rf/path [:settings :app-db-follows-events?]) (fixed-after #(localstorage/save! "app-db-follows-events?" %))]
+  (fn [db [_ follows-events?]]
+    follows-events?))
 
 ;; Global
 
@@ -505,6 +512,22 @@
     (reset! re-frame.db/app-db new-db)
     db))
 
+(rf/reg-event-db
+  :snapshot/reset-current-epoch-app-db
+  (fn [db [_ new-id]]
+    (let [follows-events? (get-in db [:settings :app-db-follows-events?])
+          epochs          (:epochs db)
+          match-id        (or new-id
+                              ;; new-id may be nil when we call this event from :settings/play
+                              (utils/last-in-vec (get epochs :match-ids)))
+          match           (get-in epochs [:matches-by-id match-id])
+          event           (metam/matched-event (:match-info match))]
+      (when follows-events?
+        ;; Don't mess up the users app if there is a problem getting app-db-after.
+        (when-some [new-db (get-in event [:tags :app-db-after])]
+          (reset! re-frame.db/app-db new-db))))
+    db))
+
 ;;;
 
 (defn first-match-id
@@ -555,7 +578,7 @@
                                                      event-trace         (first (filter metam/event-run? epoch-traces))
                                                      finish-run          (or (first (filter metam/finish-run? epoch-traces))
                                                                              (utils/last-in-vec epoch-traces))]
-                                                 {:re-frame/event-run-time      (metam/elapsed-time start-of-epoch finish-run)
+                                                 {:re-frame/event-run-time     (metam/elapsed-time start-of-epoch finish-run)
                                                   :re-frame/event-time         (:duration event-trace)
                                                   :re-frame/event-handler-time (:duration event-handler-trace)
                                                   :re-frame/event-dofx-time    (:duration dofx-trace)}))
@@ -593,10 +616,12 @@
       (let [match-ids         (:match-ids db)
             match-array-index (utils/find-index-in-vec (fn [x] (= current-id x)) match-ids)
             new-id            (nth match-ids (dec match-array-index))]
-        {:db       (assoc db :current-epoch-id new-id)
-         :dispatch [:settings/pause]})
-      {:db       (assoc db :current-epoch-id (nth (:match-ids db) (- (count (:match-ids db)) 2)))
-       :dispatch [:settings/pause]})))
+        {:db         (assoc db :current-epoch-id new-id)
+         :dispatch-n [[:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]})
+      (let [new-id (nth (:match-ids db)
+                        (- (count (:match-ids db)) 2))]
+        {:db         (assoc db :current-epoch-id new-id )
+         :dispatch-n [[:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]}))))
 
 (rf/reg-event-fx
   :epochs/next-epoch
@@ -606,10 +631,11 @@
       (let [match-ids         (:match-ids db)
             match-array-index (utils/find-index-in-vec (fn [x] (= current-id x)) match-ids)
             new-id            (nth match-ids (inc match-array-index))]
-        {:db       (assoc db :current-epoch-id new-id)
-         :dispatch [:settings/pause]})
-      {:db       (assoc db :current-epoch-id (last (:match-ids db)))
-       :dispatch [:settings/pause]})))
+        {:db         (assoc db :current-epoch-id new-id)
+         :dispatch-n [[:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]})
+      (let [new-id (last (:match-ids db))]
+        {:db         (assoc db :current-epoch-id new-id)
+         :dispatch-n [[:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]}))))
 
 (rf/reg-event-db
   :epochs/reset

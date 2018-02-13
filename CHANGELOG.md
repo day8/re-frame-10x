@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file. This change
 
 To take advantage of the more granular timing info in this version, you will need to upgrade to re-frame 0.10.5.
 
+### Added
+
+* A time-travelling debugger. Navigating forwards and backwards through the event history updates app-db to match. Be careful when using this with a stateful backend; as in the movies if you change too much or go too far back, the future can become unpredictable.
+
 ### Improved
 
 * Improve Timing panel to show more granular timing info.
