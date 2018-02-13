@@ -14,6 +14,7 @@ To take advantage of the more granular timing info in this version, you will nee
 ### Fixed
 
 * View and subscription runtime now only measures self time instead of elapsed time, i.e. we subtract the time of any child subcriptions/renders.
+* Settings panel has a scroll bar if your screen height is too small.
 
 ## [0.1.19] - 2018-02-09
 
