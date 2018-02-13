@@ -24,7 +24,8 @@
     {:background-color common/disabled-background-color
      :border           (str "1px solid " common/border-line-color)
      :font-weight      "normal"
-     :font-size        "14px"}]
+     :font-size        "14px"
+     :width            "63px"}]
 
    [".timing-elapsed-panel"
     {:padding "12px"
@@ -73,15 +74,19 @@
                   [rc/h-box
                    :gap common/gs-12s
                    :class "timing-part-panel"
+                   :align :center
                    :children
-                   [[:p "event" [:br] "processing"]
+                   [[rc/v-box
+                     :align :center
+                     :width common/gs-81s
+                     :children [[:span "event"] [:span "processing"]]]
                     [timing-section "total" (:timing/event-total event-processing-time)]
                     [:span "="]
                     [timing-section "handler" (:timing/event-handler event-processing-time)]
                     [:span "+"]
                     [timing-section "effects" (:timing/event-effects event-processing-time)]
-                    [:span "+"]
-                    [timing-section "other int." (:timing/event-interceptors event-processing-time)]
+                    #_[:span "+"]
+                    #_[timing-section "other int." (:timing/event-interceptors event-processing-time)]
                     [:span "+"]
                     [timing-section "misc" (:timing/event-misc event-processing-time)]
 
@@ -98,7 +103,10 @@
                          :class "timing-part-panel"
                          :gap common/gs-12s
                          :children
-                         [[:p "Animation" [:br] "frame" [:br] (str "#" frame)]
+                         [[rc/v-box
+                           :align :center
+                           :width common/gs-81s
+                           :children [[:span "animation"] [:span "frame"] [:span "#" frame]]]
                           [timing-section "total" (:timing/animation-frame-total frame-time)]
                           [:span "="]
                           [timing-section "subs" (:timing/animation-frame-subs frame-time)]
