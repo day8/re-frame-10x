@@ -28,7 +28,7 @@
      :width            "63px"}]
 
    [".timing-elapsed-panel"
-    {:padding "12px"
+    {:padding "12px 12px 12px 0"
      :margin  common/gs-7s}]
    [".timing-part-panel"
     (merge (common/panel-style "3px")
