@@ -7,6 +7,8 @@
             [day8.re-frame.trace.view.subs :as subs]
             [day8.re-frame.trace.view.views :as views]
             [day8.re-frame.trace.view.traces :as traces]
+            [day8.re-frame.trace.view.code :as code]
+            [day8.re-frame.trace.view.parts :as parts]
             [day8.re-frame.trace.view.timing :as timing]
             [day8.re-frame.trace.view.debug :as debug]
             [day8.re-frame.trace.view.settings :as settings]
@@ -83,9 +85,12 @@
    [right-hand-buttons external-window?]])
 
 (defn standard-header [external-window?]
-  (let [current-event @(rf/subscribe [:epochs/current-event])
+  (let [current-event           @(rf/subscribe [:epochs/current-event])
         older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])
-        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])]
+        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])
+        event-str               (if (some? current-event)
+                                  (subs (prn-str current-event) 0 400)
+                                  "No event")]
     [[rc/h-box
       :align    :center
       :size     "auto"
@@ -98,8 +103,9 @@
                   :style    {:max-height       "42px" ;42 is exactly 2 lines which is perhaps neater than common/gs-50s (which would allow 3 lines to be seen)
                              :overflow-x       "hidden"
                              :overflow-y       "auto"
-                             :background-color "white"}
-                  :children [[:span.event-header (subs (prn-str current-event) 0 400)]]]
+                             :background-color "white"
+                             :font-style       (if (some? current-event) "normal" "italic")}
+                  :children [[:span.event-header event-str]]]
                  [:span.arrow (if newer-epochs-available?
                                 {:on-click #(rf/dispatch [:epochs/next-epoch])}
                                 {:class "arrow__disabled"})
@@ -136,6 +142,10 @@
                     :children [(tab-button :event "Event")
                                (tab-button :app-db "app-db")
                                (tab-button :subs "Subs")
+                               (when (:debug? opts)
+                                 (tab-button :code "Code"))
+                               (when (:debug? opts)
+                                 (tab-button :parts "Parts"))
                                ;(tab-button :views "Views")
                                (tab-button :traces "Trace")
                                (tab-button :timing "Timing")
@@ -149,7 +159,7 @@
      [rc/v-box
       :size "auto"
       :style {:margin-left common/gs-19s
-              :overflow-y  (if (contains? #{:timing :debug :event :subs} @selected-tab)
+              :overflow-y  (if (contains? #{:timing :debug :event :subs :settings :code :parts} @selected-tab)
                              "auto" "initial")
               ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
               }
@@ -158,8 +168,10 @@
                    :app-db   [app-db/render db/app-db]
                    :subs     [subs/render]
                    :views    [views/render]
-                   :traces   [traces/render]
+                   :code    [code/render]
+                   :parts [parts/render]
                    :timing   [timing/render]
+                   :traces [traces/render]
                    :debug    [debug/render]
                    :settings [settings/render]
                    [app-db/render db/app-db])]]]))

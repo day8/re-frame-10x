@@ -73,8 +73,7 @@
   (let [start-of-epoch (:start ev1)
         end-of-epoch   (:end ev2)]
     (when (and (some? start-of-epoch) (some? end-of-epoch))
-      #?(:cljs (js/Math.round (- end-of-epoch start-of-epoch))
-         :clj  (Math/round ^double (- end-of-epoch start-of-epoch))))))
+      (- end-of-epoch start-of-epoch))))
 
 (defn run-queue? [event]
   (and (fsm-trigger? event)
@@ -131,6 +130,7 @@
 
 (defn subscription? [trace]
   (and (= "sub" (namespace (:op-type trace)))
+       ;; TODO: should we remove cached checks?
        (not (get-in trace [:tags :cached?]))))
 
 (defn subscription-created? [trace]
@@ -167,13 +167,21 @@
        (= 2 (get sub :layer))))
 
 
-(defn finish-run? [event]
+(defn finish-run?
+  "Marks the end of event processing running."
+  [event]
   (and (fsm-trigger? event)
        (= (:operation event)
           [:running :finish-run])))
 
 (defn event-run? [event]
   (= :event (:op-type event)))
+
+(defn event-handler? [trace]
+  (= :event/handler (:op-type trace)))
+
+(defn event-dofx? [trace]
+  (= :event/do-fx (:op-type trace)))
 
 (defn start-of-epoch?
   "Detects the start of a re-frame epoch

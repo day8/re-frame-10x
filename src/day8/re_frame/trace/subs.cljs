@@ -68,6 +68,12 @@
   (fn [settings]
     (:debug? settings)))
 
+(rf/reg-sub
+  :settings/app-db-follows-events?
+  :<- [:settings/root]
+  (fn [settings]
+    (:app-db-follows-events? settings)))
+
 ;; App DB
 
 (rf/reg-sub
@@ -332,19 +338,60 @@
   (fn [frame-traces]
     (count (filter metam/request-animation-frame? frame-traces))))
 
+(defn ^number +nil
+  "Returns the sum of nums. (+) returns nil (not 0 like in cljs.core)."
+  ([] nil)
+  ([x] x)
+  ([x y] (cljs.core/+ x y))
+  ([x y & more]
+   (reduce + (cljs.core/+ x y) more)))
+
 (rf/reg-sub
   :timing/animation-frame-time
   :<- [:timing/animation-frame-traces]
-  (fn [frame-traces [_ frame-number]]
-    (let [frames (partition 2 frame-traces)
-          [start end] (first (drop (dec frame-number) frames))]
-      (metam/elapsed-time start end))))
+  :<- [:traces/current-event-traces]
+  (fn [[af-start-end epoch-traces] [_ frame-number]]
+    (let [frame-pairs (partition 2 af-start-end)
+          [start end] (nth frame-pairs (dec frame-number))
+          af-traces   (into [] (metam/id-between-xf (:id start) (:id end)) epoch-traces)
+          total-time  (metam/elapsed-time start end)
+          ;; TODO: these times double count renders/subs that happened as a child of another
+          ;; need to fix either here, at ingestion point, or most preferably in re-frame at tracing point.
+          subs-time   (transduce (comp
+                                   (filter metam/subscription?)
+                                   (map :duration))
+                                 +nil af-traces)
+          render-time (transduce (comp
+                                   (filter metam/render?)
+                                   (map :duration))
+                                 +nil af-traces)]
+      {:timing/animation-frame-total  total-time
+       :timing/animation-frame-subs   subs-time
+       :timing/animation-frame-render render-time
+       ;; TODO: handle rounding weirdness here, make sure it is never below 0.
+       :timing/animation-frame-misc   (- total-time subs-time render-time)})))
 
 (rf/reg-sub
   :timing/event-processing-time
   :<- [:epochs/current-match-state]
   (fn [match]
-    (get-in match [:timing :re-frame/event-time])))
+    (let [{:re-frame/keys [event-time event-handler-time event-dofx-time event-run-time]} (get match :timing)
+          ;; The scope of tracing is:
+          ;; event-run-time
+          ;;   event-time
+          ;;     event-handler-time
+          ;;     event-dofx-time
+          ;;     <other stuff>
+          ;;   <other stuff>
+          remaining-interceptors (- event-time event-handler-time event-dofx-time)]
+      {:timing/event-total        event-run-time
+       :timing/event-handler      event-handler-time
+       :timing/event-effects      event-dofx-time
+       :timing/event-interceptors remaining-interceptors
+       ;; TODO: look at splitting out interceptors from misc, there was a suspiciously high amount of time
+       ;; in misc on some events, so that needs to be investigated.
+       ; :timing/event-misc (- event-run-time event-time)
+       :timing/event-misc         (- event-run-time event-handler-time event-dofx-time)})))
 
 (rf/reg-sub
   :timing/render-time

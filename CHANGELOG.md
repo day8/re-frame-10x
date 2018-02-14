@@ -1,9 +1,31 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## Unreleased
+## [0.1.21] - Unreleased
 
-## [0.1.18] - 2018-01-31
+### Fixed
+
+* Avoid throwing an error `No item 0 in vector of length 0` under certain circumstances.
+
+## [0.1.20] - 2018-02-14
+
+### Upgrade notes
+
+To take advantage of the more granular timing info in this version, you will need to upgrade to re-frame 0.10.5.
+
+### Added
+
+* A time-travelling debugger. Navigating forwards and backwards through the event history updates app-db to match. Be careful when using this with a stateful backend; as in the movies if you change too much or go too far back, the future can become unpredictable.
+
+### Improved
+
+* Improve Timing panel to show more granular timing info.
+
+### Fixed
+
+* Settings panel has a scroll bar if your screen height is too small.
+
+## [0.1.19] - 2018-02-09
 
 ### Changed
 
@@ -11,12 +33,18 @@ All notable changes to this project will be documented in this file. This change
   * Subscriptions that exist but weren't run, now show up in the subscription panel.
   * Subscription creations and disposals that happen during figwheel reloads or otherwise outside of the re-frame event domino cycle are now correctly handled. If any of these happen, they show up in the new section Inter-Epoch Subscriptions.
   * All of the actions that happen to a subscription within an epoch are now shown. This lets you spot unusual behaviour like a subscription being created but not-run, or a subscription running multiple times.
-  * Present better explanation messages when viewing the diff section for a sub where the value is unchanged, not run yet, or only run once. 
+  * Present better explanation messages when viewing the diff section for a sub where the value is unchanged, not run yet, or only run once.
 
 ### Fixed
 
 * Garden source dependencies are now working if you don't have your own dependency on Garden.
 * New app-db path inspectors default to `"""` instead of `"[]"` so you can see the help text.
+
+## [0.1.18] - 2018-01-31
+
+### Fixed
+
+* Garden source dependencies now work if you don't have your own dependency on Garden.
 
 
 ## [0.1.17] - 2018-01-31

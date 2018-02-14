@@ -19,6 +19,7 @@
                                                                       {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
                                                                        id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}}))
         num-epochs (localstorage/get "retained-epochs" 5)
+        follows-events? (localstorage/get "app-db-follows-events?" true)
         categories (localstorage/get "categories" #{:event :sub/run :sub/create :sub/dispose})]
     (when using-trace?
       (rf/dispatch [:global/enable-tracing]))
@@ -29,6 +30,7 @@
     (rf/dispatch [:settings/set-filtered-view-trace filtered-view-trace])
     (rf/dispatch [:settings/set-low-level-trace low-level-trace])
     (rf/dispatch [:settings/set-number-of-retained-epochs num-epochs])
+    (rf/dispatch [:settings/app-db-follows-events? follows-events?])
     (rf/dispatch [:settings/debug? debug?])
     (when external-window?
       (rf/dispatch [:global/launch-external]))
