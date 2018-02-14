@@ -41,6 +41,7 @@
          :margin    "0.67em 0"}]
    [:div :nav :h1 :h2 :h3 :h4 :h5 :h6 {:display "block"}]
    [:pre {:font-family "monospace"
+          :white-space "pre"
           :font-size   (em 1)}]
 
    ;; Text-level semantics

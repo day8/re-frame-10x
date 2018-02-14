@@ -608,3 +608,16 @@
   :<- [:subs/root]
   (fn [subs _]
     (:expansions subs)))
+
+
+;;
+
+(rf/reg-sub
+  :code/current-code
+  :<- [:traces/current-event-traces]
+  (fn [traces _]
+    (keep-indexed (fn [i trace] (when-some [code (get-in trace [:tags :code])]
+                                  {:title (pr-str (:op-type trace)) :id i :code code}))
+                  traces)
+
+    #_[{:title "Event" :id 1 :code "ABC\nDEF"}]))
