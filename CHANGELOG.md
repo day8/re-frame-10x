@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## Unreleased
+## [0.1.21] - Unreleased
+
+### Fixed
+
+* Avoid throwing an error `No item 0 in vector of length 0` under certain circumstances.
 
 ## [0.1.20] - 2018-02-14
 

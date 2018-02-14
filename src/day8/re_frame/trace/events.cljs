@@ -566,11 +566,10 @@
 
             new-sub-state              (last subscription-match-state)
             timing                     (mapv (fn [match]
-                                               ;; TODO: this isn't quite correct, shouldn't be using filtered-traces here
                                                (let [epoch-traces        (into []
                                                                                (comp
                                                                                  (utils/id-between-xf (:id (first match)) (:id (last match))))
-                                                                               filtered-traces)
+                                                                               all-traces)
                                                      start-of-epoch      (nth epoch-traces 0)
                                                      ;; TODO: optimise trace searching
                                                      event-handler-trace (first (filter metam/event-handler? epoch-traces))
