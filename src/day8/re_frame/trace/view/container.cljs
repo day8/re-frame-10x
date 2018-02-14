@@ -7,6 +7,8 @@
             [day8.re-frame.trace.view.subs :as subs]
             [day8.re-frame.trace.view.views :as views]
             [day8.re-frame.trace.view.traces :as traces]
+            [day8.re-frame.trace.view.code :as code]
+            [day8.re-frame.trace.view.parts :as parts]
             [day8.re-frame.trace.view.timing :as timing]
             [day8.re-frame.trace.view.debug :as debug]
             [day8.re-frame.trace.view.settings :as settings]
@@ -136,6 +138,10 @@
                     :children [(tab-button :event "Event")
                                (tab-button :app-db "app-db")
                                (tab-button :subs "Subs")
+                               (when (:debug? opts)
+                                 (tab-button :code "Code"))
+                               (when (:debug? opts)
+                                 (tab-button :parts "Parts"))
                                ;(tab-button :views "Views")
                                (tab-button :traces "Trace")
                                (tab-button :timing "Timing")
@@ -149,7 +155,7 @@
      [rc/v-box
       :size "auto"
       :style {:margin-left common/gs-19s
-              :overflow-y  (if (contains? #{:timing :debug :event :subs :settings} @selected-tab)
+              :overflow-y  (if (contains? #{:timing :debug :event :subs :settings :code :parts} @selected-tab)
                              "auto" "initial")
               ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
               }
@@ -158,8 +164,10 @@
                    :app-db   [app-db/render db/app-db]
                    :subs     [subs/render]
                    :views    [views/render]
-                   :traces   [traces/render]
+                   :code    [code/render]
+                   :parts [parts/render]
                    :timing   [timing/render]
+                   :traces [traces/render]
                    :debug    [debug/render]
                    :settings [settings/render]
                    [app-db/render db/app-db])]]]))
