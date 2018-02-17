@@ -9,7 +9,7 @@ Two reasons:
     takes 10ms, and you’ll never know why. Noisy.
 
     So, don't ever base decisions on one set of timings.
-    Click the "rerun" button ([#115](https://github.com/Day8/re-frame-trace/issues/155)) a few times to see if you 
+    Click the "replay" button ([#115](https://github.com/Day8/re-frame-trace/issues/155)) a few times to see if you 
     get stable numbers. 
     
 2.  Don't freak out about any apparent slowness just yet.
