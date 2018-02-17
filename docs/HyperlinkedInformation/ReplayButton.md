@@ -1,14 +1,19 @@
 This document explains the operation of the "Replay" button, and how to use a **HotPlay Loop**.
 
+
+### Epoch Navigation 
+
 By using the backwards and forwards arrows, `re-frame-trace` allows you to navigate through Epochs.
 At any one time, you can be inspecting a single Epoch, which we'll term "The Observed Epoch". 
+
+### Click
 
 When you click the "Replay" button, you are asking `re-frame-trace` to perform
 an "Action Replay" of "The Observed Epoch", and this happens in two Steps: 
 1. the value in `app-db` is reset to the value it had immediately prior to "The Observed Epoch"
 2. the event which caused "The Observed Epoch" is re-dispatched
 
-Further Notes:
+### Further Notes:
   - In Step 1, the reset of `app-db` will trigger dominoes 4,5,6, causing
     subscriptions and views to rerun, as the application returns to the "prior state" 
     but none of this trace is captured. It is all ignored.
@@ -26,6 +31,9 @@ Hell, yes, massively. There's a productive development process we call "A HotPla
   - C. Figwheel will re-compile and **Hotload** your correction
   - D: You click the **Replay** button
   - E: Back to A
+
+
+### Process Name
 
 The initials of this process are OEHR, which doesn't exactly roll off the tounge like REPL.
 So we just call it "The HotPlay Loop" (Hotload and Replay).
