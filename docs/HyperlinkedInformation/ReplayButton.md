@@ -18,7 +18,7 @@ Further Notes:
   - The user is auto-navigated to view this new epoch. So the user 
     immediately sees the results for this new Epoch - the timings etc.
 
-## Useful? 
+### Useful? 
 
 Hell, yes, massively. There's a productive development process we call "A HotPlay Loop" which works like this:
   - A. You **observe** an Epoch (in `re-frame-trace`) to see if an event was correctly processed 
