@@ -10,7 +10,7 @@ between `layer 2` and `layer 3` subscriptions:
     trivial in nature, which is to say there should be no computation in them beyond
     what is necessary to extract a value from `app-db`
   - **`layer 3` subscriptions never take values from `app-db`**. Instead, they have 
-    `layer 2` nodes as inputs, and they do the more serious CPU work of computing
+    `layer 2` nodes as inputs (or other `layer 3`), and they do the more serious CPU work of computing
     a materialised view of those values.  
     
     
