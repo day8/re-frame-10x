@@ -1,22 +1,24 @@
-This document briefly explains why `re-frame-trace` gives you an option to
-ignore unchanged layer 2 subscriptions.
+In the "subs" tab, you have the option to
+ignore unchanged layer 2 subscriptions. This document explains why. 
 
 ### Background
 
-The `re-frame` docs
-[make a distinction](https://github.com/Day8/re-frame/blob/master/docs/SubscriptionInfographic.md)
+`re-frame`
+[makes a distinction](https://github.com/Day8/re-frame/blob/master/docs/SubscriptionInfographic.md)
 between `layer 2` and `layer 3` subscriptions:
-  - `layer 2` subscriptions extract data directly from `app-db` and should be
-    trivial in nature. There should be no computation in them beyond
+  - **`layer 2` subscriptions extract data directly from `app-db`**. They should be
+    trivial in nature, which is to say there should be no computation in them beyond
     what is necessary to extract a value from `app-db`
-  - `layer 3` subscriptions take values from `layer 2` nodes as inputs, and
-    compute a materialised view of those values. Just to repeat: they never directly
-    extract values from `app-db`.  They create new values where necessary, and because of it
-    they to do more serious CPU work. So we never want to run a
-    `layer 3` subscriptions unless it is necessary.
+  - **`layer 3` subscriptions never take values from `app-db`**. Instead, they have 
+    `layer 2` nodes as inputs, and they do the more serious CPU work of computing
+    a materialised view of those values.  
+    
+    
+We never want to run a `layer 3` subscriptions unless it is necessary, whereas `layer 2` 
+subscriptions are so trivial that we don't mind running them unnecessarily. 
 
 This structure delivers efficiency. You see, **all** (currently instantiated) `layer 2` subscriptions
-will run **every** time `app-db` changes in any way. All of them. Every time.
+**will run every time `app-db` changes in any way**. All of them. Every time.
 And `app-db` changes on almost every event, so we want them to be computationally
 trivial.
 
@@ -25,7 +27,7 @@ propagation of values through the signal graph will be pruned.
 The more computationally intensive `layer 3` subscriptions, and ultimately
 the views, will only recompute if and when there has been a change in their data inputs.
 
-We don't want your app recomputing views only to find that nothing has changed. Inefficient.
+We don't want your app recomputing views only to find that nothing has changed. That would be inefficient.
 
 ### Back To Tracing
 
