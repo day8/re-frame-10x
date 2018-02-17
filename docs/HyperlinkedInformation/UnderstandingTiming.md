@@ -1,15 +1,15 @@
-A few notes on the "Timing" tab in `re-frame-trace`.
+Some notes on the "Timing" tab in `re-frame-trace`.
 
-### Be Cautious And Sceptical
+## Be Sceptical Of The Numbers
 
-There are two issues with the displayed numbers: 
+Two reasons:
 
 1.  Accurately timing something in the browser is almost
     a fool's errand. One moment it takes 1ms and the next it 
     takes 10ms, and you’ll never know why. Noisy.
 
-    So, don't ever base your decisions on one set of timings.   
-    Click the "rerun" button (#115) a few times to see if you 
+    So, don't ever base decisions on one set of timings.
+    Click the "rerun" button ([#115](https://github.com/Day8/re-frame-trace/issues/155)) a few times to see if you 
     get stable numbers. 
     
 2.  Don't freak out about any apparent slowness just yet.
@@ -31,7 +31,7 @@ There are two issues with the displayed numbers:
     reason, compared to others?
     And, even then, remember point 1 (above). 
     
-### Know Your Epoch Timeline
+## Know Your Epoch Timeline
 
 The Timing Tab is easier to understand once you have internalised the 
 following graphic which shows how, operationally, the six dominoes play out, 
@@ -39,7 +39,7 @@ over time, within the browser.
 
 <img src="https://raw.githubusercontent.com/Day8/re-frame/master/images/epoch.png">
 
-### Other Tips 
+## Other Tips 
 
 You should probably have [React DevTools](https://github.com/facebook/react-devtools)
 installed because it is useful. But, it can also add drag and noise to timing results, 
