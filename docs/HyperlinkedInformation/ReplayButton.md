@@ -14,7 +14,7 @@ an "Action Replay" of "The Observed Epoch", and this happens in two Steps:
  
 So, Step 1 is "reestablish initial conditions" and Step 2 is "do it all again".
 
-### Further Notes:
+#### Further Notes:
   - In Step 1, the reset of `app-db` will trigger computation and trace.
     Subscriptions and views are run as the application returns to the "prior state", 
     but none of the associated trace is captured. It is all ignored.
@@ -33,17 +33,17 @@ It facilitates "The HotPlay Workflow":
   - D: You click the `Replay` button
   - E: Back to A
 
-Because of `Replay's` "Step 1", you effortlessly get identical "initial conditions" for
+Because of `Replay's` "Step 1", you get identical "initial conditions" for
 each iteration of the workflow, and this is true blessing. It removes the nagging 
-cognative load of "allowing for" slightly shifting state. Or the effort of manually 
-reestablishing identical application state before each iteration. 
+cognative load of "allowing for" slightly shifting state and its consequences, or
+the effort of manually reestablishing identical application state before each iteration.
 
-WARNING: obviously this only works when the state is contained in your SPA. When 
-there's remote state (a remote database?) it is more effort to return to initial conditions
-each iteration.
+WARNING: obviously this only works when the state is contained within your SPA. When 
+there's authorative remote state (a remote database?) there'll be more involved in 
+returning to initial conditions each iteration.
 
 ### The Workflow Name
 
-The initials of this Observe/Edit/Hotload/Replay process are OEHR, which, will, it doesn't exactly roll off the tounge like REPL.
+The initials of this Observe/Edit/Hotload/Replay process are OEHR, which, well, doesn't exactly roll off the tounge like REPL.
 So we call it "HotPlay" because "Hotload" and "Replay" are the two central pieces of tech. We love you Figwheel.
 
