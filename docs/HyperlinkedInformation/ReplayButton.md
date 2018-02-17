@@ -9,11 +9,11 @@ an "Action Replay" of "The Observed Epoch", and this happens in two Steps:
 2. the event which caused "The Observed Epoch" is re-dispatched
 
 Further Notes:
-  - In Step 1, the reset of `app-db` will trigger 
+  - In Step 1, the reset of `app-db` will trigger dominoes 4,5,6, causing
     subscriptions and views to rerun, as the application returns to the "prior state" 
     but none of this trace is captured. It is all ignored.
   - All trace arising in Step 2 forms a normal, new Epoch. The (original) Observed Epoch is 
-    still there untouched.
+    still there, untouched.
   - The new Epoch (Step 2) is added to the end of the existing Epoch list. It is the newest, most recent Epoch. 
   - The user is auto-navigated to view this new epoch. So the user 
     immediately sees the results for this new Epoch - the timings etc.
