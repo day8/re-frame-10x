@@ -101,11 +101,11 @@ features, and build a cognative map of how the code is structured.
 
 ## Of Sausage And Sizzle
 
-Internal discussion about a name meandered unproductively for a while.  Initially, it was `re-frame-trace`, which is accurate, sure, but it is also 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  Side stepping the issue, I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.  
+Internal discussion about a name meandered for a while.  Initially, it was `re-frame-trace`, which is accurate, sure, but it is also 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  Side stepping the issue, I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.
 
 Now, the benifits are `-insight` and `-illumination`, but adding either made the name waaaay too long.  Naming things - it's just a nightmare! Who knew?
 
-Finally, `-10x` cheekily materialised, delivering over 100 decibels of audacious sizzle, and consequently an expectation for us to live up to. A 10x programmer starts by having 10x more knowledge and insight - so make that tool, smarty pants.
+Finally, `-10x` cheekily materialised, delivering 100 decibels of audacious sizzle, and consequently a challenge for us to live up to. A 10x programmer starts by having 10x more knowledge and insight - so make that tool, smarty pants.
 
 ## A 1000 words
 
