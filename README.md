@@ -107,7 +107,7 @@ Now, the benifits are `-insight` and `-illumination`, but adding either made the
 
 Finally, `-10x` cheekily materialised, delivering over 100 decibels of audacious sizzle, and consequently an expectation for us to live up to. A 10x programmer starts by having 10x more knowledge and insight - so make that tool, smarty pants.
 
-## A Visual Sampler
+## A 1000 words
 
 Slightly out of date, but indicative ...  
 
