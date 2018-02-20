@@ -10,11 +10,9 @@
 > But we do genuinely care about the efforts of "regular" programmers to work around their limitations, so it is my great pleasure to
 write this letter of recommendation for re-frame-10x. Yes, the name is crazy overreach, but it does deliver
 insight into the inner workings of your program which is a superpower
-for debugging and understanding. Wear those X-ray glasses and be free of your false assumptions faster!! 
-
+for debugging and understanding. Wear those X-ray glasses and be free of your false assumptions faster!! <br><br>
 > Sincerely, <br>
-> Deca Liaison Officer
-
+> Deca Liaison Officer <br><br>
 > Update: so there's been some confusion. Obviously, when we use it, we're at 100x. Please stop with all the new membership applications.
 
 ### It Is Epoch Oriented
