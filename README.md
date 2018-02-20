@@ -4,6 +4,8 @@
 
 `re-frame-10x` lets you instrument, and then inspect, the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination.
 
+Correct your false assumptions faster.
+
 
 ### It Is Epoch Oriented
 
