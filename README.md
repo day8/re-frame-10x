@@ -1,6 +1,6 @@
 # re-frame-10x
 
-`re-frame-10x` let's you instrument, and then inspect, the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination.
+`re-frame-10x` lets you instrument, and then inspect, the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination.
 
 ### It Is Epoch Oriented
 
@@ -117,20 +117,20 @@ Slightly out of date, but indicative ...
 
 If you are using leiningen, modify `project.clj` in the following ways. When puzzling over the various possible leiningen configurations, it's often helpful to look at a sample [project.clj](https://github.com/technomancy/leiningen/blob/stable/sample.project.clj).
 
-[![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/trace.svg)](https://clojars.org/day8.re-frame/trace)
+[![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
 
 - Update your re-frame dependency to at least `0.10.5` - `[re-frame "0.10.5"]`.
 
-- Add re-frame-10x as a dev dependency by placing `[day8.re-frame/trace "VERSION"]` within `:profiles :dev :dependencies`. For example:
+- Add re-frame-10x as a dev dependency by placing `[day8.re-frame/re-frame-10x "VERSION"]` within `:profiles :dev :dependencies`. For example:
 
   ```cljs
   :profiles
      {:dev
         {:dependencies [[some-other-package  "0.0.0"]
-                        [day8.re-frame/trace "0.0.0 (see version above)"]] }}
+                        [day8.re-frame/re-frame-10x "0.0.0 (see version above)"]] }}
   ```
   
-  If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/trace "0.0.0-react16"]`.
+  If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "0.0.0-react16"]`.
 
 - Locate the `:compiler` map under `:dev` and add:
 
