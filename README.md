@@ -1,6 +1,6 @@
 # re-frame-trace
 
-`re-frame-trace` let's you inspect the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination. A 10x programmer is the one with 10x more knowledge and insight.
+`re-frame-trace` let's you instrument, and then inspect, the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination.
 
 ### It Is Epoch Oriented
 
@@ -99,13 +99,15 @@ features, and build a cognative map of how the code is structured.
 
 > Some of the claims above are aspirational. `re-frame-trace` [remains a WIP](https://github.com/Day8/re-frame-trace/issues/118).
 
-## Sausage
+## Of Sausage And Sizzle
 
-We debated internally about the name `re-frame-trace`.  While `-trace` is accurate, it is 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.  Anyway, `-insight` and `-illumination` are the benefits, but they made the name waaaay too long.  Naming things - it's just a nightmare!  As is inertia.  So, `-trace` it remains. 
+Internal discussion about a name meandered for a while.  Initially, it was `re-frame-trace`, which is accurate, sure, but it is also 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  Side stepping the issue, I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.
 
-**Update:**  a name change to `re-frame-10x` is on the cards.  Disapointingly, my latest suggestion, `TenMinutesByTractor`, was also  rejected. I shake my head. Why can noone see that we're all "code farmers" by profession? 
+Now, the tool's benifits are `-insight` and `-illumination`, but adding either made the name waaaay too long.  Naming things - it really is a nightmare!
 
-## A Visual Sampler
+Finally, `-10x` cheekily materialised, delivering 100 decibels of audacious sizzle, and consequently a challenge for us to live up to. A 10x programmer starts by having 10x more knowledge and insight - so go make that tool, smarty pants.
+
+## A 1000 words
 
 Slightly out of date, but indicative ...  
 
