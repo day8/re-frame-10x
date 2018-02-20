@@ -32,7 +32,7 @@
 (def animation-duration 150)
 
 (def app-db-styles
-  [:#--re-frame-trace--
+  [:#--re-frame-10x--
    #_[:.app-db-path
     {:background-color           common/white-background-color
      :border-bottom-left-radius  border-radius

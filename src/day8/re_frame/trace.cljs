@@ -213,7 +213,7 @@
 
 
 (defn panel-div []
-  (let [id    "--re-frame-trace--"
+  (let [id    "--re-frame-10x--"
         panel (.getElementById js/document id)]
     (if panel
       panel

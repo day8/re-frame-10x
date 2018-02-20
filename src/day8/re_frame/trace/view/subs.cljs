@@ -96,7 +96,7 @@
                              :model ignore-unchanged-l2-subs?
                              :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br]
                                      [rc/link {:label (str "layer 2 " (utils/pluralize- @ignore-unchanged-l2-count "sub"))
-                                               :href  "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
+                                               :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
                              :style {:margin-top "6px"}
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-l2-subs? %])]]]]]))
 
@@ -147,7 +147,7 @@
               [rc/label :label (if (some? layer)
                                  (str "Layer " layer)
                                  [rc/link {:label "Layer ?"
-                                           :href  "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]
+                                           :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]
 
               [rc/gap-f :size common/gs-12s]
               [rc/box
@@ -301,7 +301,7 @@
                     [:h2 {:class "bm-heading-text"
                           :style {:margin "19px 0px"}}
                      [rc/link
-                      {:href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/InterEpoch.md"
+                      {:href "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/InterEpoch.md"
                        :label "Inter-Epoch Subscriptions"}]]
 
                     (for [p inter-epoch-subs]

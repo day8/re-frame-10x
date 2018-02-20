@@ -11,7 +11,7 @@
 (def border-radius "3px")
 
 (def event-styles
-  [:#--re-frame-trace--
+  [:#--re-frame-10x--
    [:.event-panel
     {:padding "39px 19px 0px 0px"}]
    [:.event-section]

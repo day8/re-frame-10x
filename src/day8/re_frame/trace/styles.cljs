@@ -28,7 +28,7 @@
 
 
 (def css-reset
-  [:#--re-frame-trace--
+  [:#--re-frame-10x--
    {:all "initial"}
    [:* "*:before" "*:after"
     {:all "unset"}]
@@ -169,7 +169,7 @@
                   :z-index        1000})
 
 (def re-frame-trace-styles
-  [:#--re-frame-trace--
+  [:#--re-frame-10x--
    {:background-color common/background-gray
     :font-family      common/font-stack
     :color            text-color}
@@ -405,7 +405,7 @@
                        :opacity    "0.3"}]
    [:.active {:opacity 1}]
 
-   [:.re-frame-trace--object
+   [:.re-frame-10x--object
     [:.toggle {:color       text-color-muted
                :cursor      "pointer"
                :line-height 1}]
@@ -430,7 +430,7 @@
 
 
 (def panel-styles (apply garden/css [css-reset
-                                     [:#--re-frame-trace-- rc/re-com-css]
+                                     [:#--re-frame-10x-- rc/re-com-css]
                                      common/blue-modern
                                      re-frame-trace-styles
                                      app-db/app-db-styles
@@ -455,4 +455,4 @@
         new-styles-el))))
 
 (defn inject-trace-styles [document]
-  (inject-style document "--re-frame-trace-styles--" panel-styles))
+  (inject-style document "--re-frame-10x-styles--" panel-styles))

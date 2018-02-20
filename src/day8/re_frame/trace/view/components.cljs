@@ -126,7 +126,7 @@
   (let [expanded? (rf/subscribe [:app-db/node-expanded? path])]
     (fn [jsonml path]
       [:span
-       {:class (str "re-frame-trace--object" (when @expanded? " expanded"))}
+       {:class (str "re-frame-10x--object" (when @expanded? " expanded"))}
        [:span {:class    "toggle"
                :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
         [:button.expansion-button (if @expanded? "▼" "▶")]]
@@ -172,7 +172,7 @@
        :children
        [[rc/h-box
          :align :center
-         :class (str/join " " ["re-frame-trace--object"
+         :class (str/join " " ["re-frame-10x--object"
                                (when @expanded? "expanded")])
          :children
          [[:span {:class    "toggle"
@@ -193,7 +193,7 @@
   (let [expanded? (r/atom true) #_(rf/subscribe [:app-db/node-expanded? path])]
     (fn [data]
       [:div
-       {:class (str/join " " ["re-frame-trace--object"
+       {:class (str/join " " ["re-frame-10x--object"
                               (when @expanded? "expanded")])}
        #_[:span {:class    "toggle"
                  :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
@@ -212,7 +212,7 @@
   (let [expanded? (r/atom true) #_(rf/subscribe [:app-db/node-expanded? path])]
     (fn [data]
       [:div
-       {:class (str/join " " ["re-frame-trace--object"
+       {:class (str/join " " ["re-frame-10x--object"
                               (when @expanded? "expanded")
                               class])}
        #_[:span {:class    "toggle"

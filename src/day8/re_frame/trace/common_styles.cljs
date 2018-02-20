@@ -150,7 +150,7 @@
 (def blue-modern
 
   [;; ========== Specific blue-modern styles (must be added to :class arg)
-   :#--re-frame-trace--
+   :#--re-frame-10x--
    [:.bm-white-background {:background-color white-background-color
                            :border           (str "1px solid " white-background-border-color)}]
    [:.bm-standard-background {:background-color standard-background-color

@@ -7,7 +7,7 @@
             [day8.re-frame.trace.view.components :as components]))
 
 (def timing-styles
-  [:#--re-frame-trace--
+  [:#--re-frame-10x--
    [:.timing-details
     {:margin-top common/gs-31s}]
    [:.timing-details--line
@@ -70,7 +70,7 @@
                                :style {:margin-left common/gs-19s}
                                :attr {:rel "noopener noreferrer"}
                                :target "_blank"
-                               :href "https://github.com/Day8/re-frame-trace/blob/master/docs/HyperlinkedInformation/UnderstandingTiming.md"]]]
+                               :href "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnderstandingTiming.md"]]]
                   [rc/h-box
                    :gap common/gs-12s
                    :class "timing-part-panel"

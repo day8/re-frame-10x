@@ -15,7 +15,7 @@
 (def settings-box-131 (render-css (units/px- common/gs-131 (units/px* 2 settings-box-vertical-padding))))
 
 (def settings-styles
-  [:#--re-frame-trace--
+  [:#--re-frame-10x--
    [:.settings
     {:background-color common/white-background-color}]
    ])

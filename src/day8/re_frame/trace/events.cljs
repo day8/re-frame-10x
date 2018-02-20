@@ -228,7 +228,7 @@
 ;; Global
 
 (defn mount [popup-window popup-document]
-  (let [app (.getElementById popup-document "--re-frame-trace--")
+  (let [app (.getElementById popup-document "--re-frame-10x--")
         doc js/document]
     (styles/inject-trace-styles popup-document)
     (goog.object/set popup-window "onunload" #(rf/dispatch [:global/external-closed]))
@@ -248,7 +248,7 @@
 
         d (.-document w)]
     (.open d)
-    (.write d "<head></head><body style=\"margin: 0px;\"><div id=\"--re-frame-trace--\" class=\"external-window\"></div></body>")
+    (.write d "<head></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
     (goog.object/set w "onload" #(mount w d))
     (.close d)))
 

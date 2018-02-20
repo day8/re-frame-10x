@@ -2,12 +2,12 @@ This document explains the operation of the "Replay" button, and how to use **Th
 
 ### Epoch Navigation 
 
-By using the backwards and forwards arrows, `re-frame-trace` allows you to navigate through Epochs.
+By using the backwards and forwards arrows, `re-frame-10x` allows you to navigate through Epochs.
 At any one moment, you are inspecting a single Epoch, for which we'll use the term "The Observed Epoch".
 
 ### On Click
 
-When you click the "Replay" button, you are asking `re-frame-trace` to perform
+When you click the "Replay" button, you are asking `re-frame-10x` to perform
 an "Action Replay" of "The Observed Epoch", and this happens in two Steps: 
  - **Step 1** - the value in `app-db` is reset to the value it contained immediately prior to "The Observed Epoch"
  - **Step 2** - the event which caused "The Observed Epoch" is re-dispatched
@@ -27,7 +27,7 @@ So, Step 1 is "reestablish initial conditions" and Step 2 is "do it all again".
 ### Useful? 
 
 It facilitates "The HotPlay Workflow": 
-  - A. You `Observe` an Epoch (in `re-frame-trace`) to see if an event was correctly processed 
+  - A. You `Observe` an Epoch (in `re-frame-10x`) to see if an event was correctly processed 
   - B. You notice a problem, and you `Edit` (fix) the event handler (or subs handler, view, etc) via Cursive, Emacs, etc.
   - C. Figwheel will re-compile and `Hotload` your correction
   - D: You click the `Replay` button

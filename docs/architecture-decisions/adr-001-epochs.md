@@ -8,7 +8,7 @@
 
 Conceptually, re-frame is built around an event loop. The user makes an action, which causes an event to be dispatched, which changes app-db, which causes subscriptions to rerun, which causes the UI to update. We will refer to this cycle as an epoch. A user developing a re-frame application will want to be able to debug from this perspective.
 
-Currently, re-frame-trace offers three panels: app-db, subs, and traces. Each of these offers a view into the application state and allows the programmer to build up a mental model of what is happening. They are not going to go away, but there is room for a more integrated and holistic panel.
+Currently, re-frame-10x offers three panels: app-db, subs, and traces. Each of these offers a view into the application state and allows the programmer to build up a mental model of what is happening. They are not going to go away, but there is room for a more integrated and holistic panel.
 
 ### Requirements
 
