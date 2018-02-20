@@ -17,7 +17,7 @@
 ;(s/def ::query-cache (s/map-of ::query-cache-params ::deref))
 ;(assert (s/valid? ::query-cache (rc/deref-or-value-peek subs/query->reaction)))
 
-(def copy (macros/slurp-macro "day8/re_frame_10x/trace/images/copy.svg"))
+(def copy (macros/slurp-macro "day8/re_frame_10x/images/copy.svg"))
 
 (defn sub-tag-class [type]
   (case type

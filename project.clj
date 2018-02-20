@@ -27,11 +27,6 @@
                   ["vcs" "commit"]
                   ["vcs" "push"]]
 
-  :figwheel {:css-dirs ["resources/day8/re_frame_10x/trace"]}
-
-  :less {:source-paths ["resources/day8/re_frame_10x/trace"]
-         :target-path  "resources/day8/re_frame_10x/trace"}
-
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
              :mranderson {:dependencies ^:replace [^:source-dep [re-frame "0.10.2"
                                                                  :exclusions [org.clojure/clojurescript

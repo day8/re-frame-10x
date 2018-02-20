@@ -18,7 +18,7 @@
             [day8.re-frame-10x.utils.re-com :as rc]
             [day8.re-frame-10x.common-styles :as common]))
 
-(def triangle-down (macros/slurp-macro "day8/re_frame_10x/trace/images/triangle-down.svg"))
+(def triangle-down (macros/slurp-macro "day8/re_frame_10x/images/triangle-down.svg"))
 (defn tab-button [panel-id title]
   (let [selected-tab @(rf/subscribe [:settings/selected-tab])]
     [rc/v-box
@@ -29,11 +29,11 @@
                 [:img {:src   (str "data:image/svg+xml;utf8," triangle-down)
                        :style {:opacity (if (= selected-tab panel-id) "1" "0")}}]]]))
 
-(def open-external (macros/slurp-macro "day8/re_frame_10x/trace/images/logout.svg"))
-(def settings-svg (macros/slurp-macro "day8/re_frame_10x/trace/images/wrench.svg"))
-(def orange-settings-svg (macros/slurp-macro "day8/re_frame_10x/trace/images/orange-wrench.svg"))
-(def pause-svg (macros/slurp-macro "day8/re_frame_10x/trace/images/pause.svg"))
-(def play-svg (macros/slurp-macro "day8/re_frame_10x/trace/images/play.svg"))
+(def open-external (macros/slurp-macro "day8/re_frame_10x/images/logout.svg"))
+(def settings-svg (macros/slurp-macro "day8/re_frame_10x/images/wrench.svg"))
+(def orange-settings-svg (macros/slurp-macro "day8/re_frame_10x/images/orange-wrench.svg"))
+(def pause-svg (macros/slurp-macro "day8/re_frame_10x/images/pause.svg"))
+(def play-svg (macros/slurp-macro "day8/re_frame_10x/images/play.svg"))
 
 (def outer-margins {:margin (str "0px " common/gs-19s)})
 

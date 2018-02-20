@@ -4,7 +4,8 @@
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [clojure.string :as str]
             [day8.re-frame-10x.utils.re-com :as rc]
-            [mranderson047.reagent.v0v7v0.reagent.core :as r])
+            [mranderson047.reagent.v0v7v0.reagent.core :as r]
+            [devtools.prefs])
   (:require-macros [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]]))
 
 (defn search-input [{:keys [title placeholder on-save on-change on-stop]}]
