@@ -6,6 +6,15 @@
 
 Correct your false assumptions faster.
 
+
+## Show Me
+
+Slightly out of date, but indicative ...  
+
+<img src="docs/images/re-frame-trace-demo.gif" height="500px">
+
+## Describe It To Me
+
 ### It Is Epoch Oriented
 
 `re-frame` applications are computationally regular. First an event happens,
@@ -73,7 +82,7 @@ So, `re-frame-10x` tries to be a "dashboard" which curates this
 and "roll ups". It should deliver insight "at a glance", while still allowing 
 you to drill down into the detail.
 
-### Which Is Helpful How?
+## Helps Me How? 
 
 Four ways:
 
@@ -111,11 +120,6 @@ Now, the tool's benifits are `-insight` and `-illumination`, but adding either m
 
 Finally, `-10x` cheekily materialised, delivering 100 decibels of audacious sizzle, and consequently a challenge for us to live up to. A 10x programmer starts by having 10x more knowledge and insight - so go make that tool, smarty pants.
 
-## A 1000 words
-
-Slightly out of date, but indicative ...  
-
-<img src="docs/images/re-frame-trace-demo.gif" height="500px">
 
 ## Installation
 
