@@ -6,7 +6,6 @@
 
 Correct your false assumptions faster.
 
-
 ### It Is Epoch Oriented
 
 `re-frame` applications are computationally regular. First an event happens,
