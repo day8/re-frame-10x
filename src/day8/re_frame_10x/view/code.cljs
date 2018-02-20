@@ -18,16 +18,16 @@
   [rc/v-box
    :children
          [[:h2 (:title code-execution)]
-          ;[:pre (str (:form code-execution))]
-          [:pre (n/string (cljfmt/reformat-form (:form code-execution)))]
+          [:pre (str (:form code-execution))]
+          ;[:pre (n/string (cljfmt/reformat-form (:form code-execution)))]
 
           [:br]
 
           ;[:pre "(->> db\n   (update))"]
           (map-indexed
             (fn [i line]
-              (js/console.log (:form line) (str (:form line)))
-              (js/console.log (str (cljfmt/reformat-form (:form line))))
+              ;(js/console.log (:form line) (str (:form line)))
+              ;(js/console.log (str (cljfmt/reformat-form (:form line))))
 
               ^{:key i}
               [rc/v-box
