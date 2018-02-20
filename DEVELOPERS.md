@@ -37,14 +37,14 @@ You need both the re-frame-10x project _and_ a test project to develop it agains
   :cljsbuild {:builds {:client {:source-paths ["checkouts/re-frame-10x/src"]}}}
   ```
 
-- re-frame-10x has a debug panel useful when developing it. You can enable it by adding the :closure-define `"day8.re_frame.trace.debug_QMARK_" true` to your compiler settings.
+- re-frame-10x has a debug panel useful when developing it. You can enable it by adding the :closure-define `"day8.re_frame_10x.trace.debug_QMARK_" true` to your compiler settings.
 
 - Now run your test project however you usually run it, and re-frame-10x should be in there. \o/
 
 
 ### Developing CSS
 
-The styles for the trace panel are defined both inline and in Garden styles in `day8.re-frame.trace.styles`.
+The styles for the trace panel are defined both inline and in Garden styles in `day8.re-frame-10x.styles`.
 
 We are using CSS preprocessing to isolate the panel styles, by namespacing the panel styles with the id `#--re-frame-10x--`.
 

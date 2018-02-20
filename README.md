@@ -135,7 +135,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 - Locate the `:compiler` map under `:dev` and add:
 
   - `:closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}`
-  - `:preloads             [day8.re-frame.trace.preload]`
+  - `:preloads             [day8.re-frame-10x.preload]`
 
   For example:
 
@@ -145,7 +145,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
        :source-paths ["src" "dev"]
        :compiler     {...
                       :closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}
-                      :preloads             [day8.re-frame.trace.preload]
+                      :preloads             [day8.re-frame-10x.preload]
                       }}]}
   ```
 
@@ -182,7 +182,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 ### If re-frame-10x throws an exception on startup
 
 * Reset the settings to factory defaults in the settings panel
-* If you can't load the settings panel, run `day8.re_frame.trace.factory_reset_BANG_()` in the JavaScript console.
+* If you can't load the settings panel, run `day8.re_frame_10x.trace.factory_reset_BANG_()` in the JavaScript console.
 * If neither of those work, remove all of the keys with the prefix `day8.re-frame.trace` from your browser's Local Storage.
 
 ## How does it work?
@@ -193,7 +193,7 @@ re-frame is instrumented - all important activity generates trace data.
 
 By default, re-frame tracing is "compiled out", so it won't impose a performance cost in production. The trade-off here is that you need to explicitly enable it in development.
 
-The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#preloads) option (`:preloads [day8.re-frame.trace.preload]`) has to be set in order to automatically monkeypatch Reagent to add appropriate lifecycle hooks. Yes this is gross, and yes we will [make a PR to reagent to add proper hooks](https://github.com/Day8/re-frame-10x/issues/115), once we know exactly what we need. The preload namespace also injects a div containing the devtools panel into the DOM.
+The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#preloads) option (`:preloads [day8.re-frame-10x.preload]`) has to be set in order to automatically monkeypatch Reagent to add appropriate lifecycle hooks. Yes this is gross, and yes we will [make a PR to reagent to add proper hooks](https://github.com/Day8/re-frame-10x/issues/115), once we know exactly what we need. The preload namespace also injects a div containing the devtools panel into the DOM.
 
 ## Developing/Contributing
 
