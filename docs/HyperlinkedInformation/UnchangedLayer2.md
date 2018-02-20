@@ -35,7 +35,7 @@ Because `layer 2` subs run on every single modification of `app-db`, and because
 very often nothing has changed, their trace can be a bit noisy.  Yes, it happened,
 but it just isn't that interesting.
 
-So `re-frame-trace` gives you the option of filtering out trace for
+So `re-frame-10x` gives you the option of filtering out trace for
 the `layer 2` subscriptions where the value "this time" is the same as the
 value "last time".
 
@@ -45,7 +45,7 @@ be told all about it. :-)
 
 ### Why do I sometimes see "Layer ?" when viewing a subscription?
 
-To determine whether a subscription is a layer 2 or layer 3, re-frame-trace
+To determine whether a subscription is a layer 2 or layer 3, re-frame-10x
 looks at the input signals to a subscription. If one of the input signals is
 app-db then the subscription is a layer 2 sub, otherwise it is a layer 3. If
 a subscription hasn't run yet, then we can't know if it is a layer 2 or 3.

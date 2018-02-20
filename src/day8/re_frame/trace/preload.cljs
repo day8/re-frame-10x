@@ -1,12 +1,5 @@
 (ns day8.re-frame.trace.preload
-  (:require [day8.re-frame.trace :as trace]
-            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]))
+  (:require [day8.re-frame-10x.preload]))
 
-
-;; Use this namespace with the :preloads compiler option to perform the necessary setup for enabling tracing:
-;; {:compiler {:preloads [day8.re-frame.trace.preload] ...}}
-(js/console.warn "re-frame-trace has been renamed to re-frame-10x: (https://clojars.org/day8.re-frame/re-frame-10x). Update to newer versions of this library by using the `day8.re-frame/re-frame-10x` artifact ID. Thanks!")
-(rf/clear-subscription-cache!)
-(trace/init-db!)
-(defonce _ (trace/init-tracing!))
-(trace/inject-devtools!)
+(js/console.warn
+  "The preload at day8.re-frame.trace.preload is deprecated. Update your `:preloads` to use `day8.re-frame-10x.preload` instead. See https://github.com/Day8/re-frame-10x#installation for more details.")

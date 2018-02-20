@@ -1,1 +1,1 @@
-The `re-frame-trace` UI contains hyperlinks to the various documents in this directory.  Within the UI, these hyperlinks have text like "guide me to greatness" and "why?", which indicates the purpose of the docs herein. 
+The `re-frame-10x` UI contains hyperlinks to the various documents in this directory.  Within the UI, these hyperlinks have text like "guide me to greatness" and "why?", which indicates the purpose of the docs herein. 

@@ -1,6 +1,6 @@
-(defproject day8.re-frame/trace "0.1.22-react16"
-  :description "Tracing and developer tools for re-frame apps"
-  :url "https://github.com/Day8/re-frame-trace"
+(defproject day8.re-frame/re-frame-10x "0.2.0-react16"
+  :description "Become 10x more productive when developing and debugging re-frame applications."
+  :url "https://github.com/Day8/re-frame-10x"
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.671"]
@@ -26,11 +26,6 @@
                   ["change" "version" "leiningen.release/bump-version"]
                   ["vcs" "commit"]
                   ["vcs" "push"]]
-
-  :figwheel {:css-dirs ["resources/day8/re_frame/trace"]}
-
-  :less {:source-paths ["resources/day8/re_frame/trace"]
-         :target-path  "resources/day8/re_frame/trace"}
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
              :mranderson {:dependencies ^:replace [^:source-dep [re-frame "0.10.2"
