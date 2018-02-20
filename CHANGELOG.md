@@ -1,9 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.2.0] - Unreleased
+## [0.2.0] - 2018-02-20
 
-* re-frame-trace has been renamed to re-frame-10x. You will need to update your dependency from `day8.re-frame/trace "0.1.21` to `day8.re-frame/re-frame-10x "0.2.0` 
+### Upgrade notes
+
+* re-frame-trace has been renamed to re-frame-10x! To upgrade you need to do two things:
+  * Update your dependency from `day8.re-frame/trace "0.1.21` to `day8.re-frame/re-frame-10x "0.2.0`
+  * Update your preload from `day8.re-frame.trace.preload` to `day8.re-frame-10x.preload`. If you don't update the preload you will get a deprecation warning, reminding you to update it. 
 
 ## [0.1.22] - 2018-02-20
 
