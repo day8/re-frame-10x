@@ -8,7 +8,7 @@ It helps you find false assumptions faster.
 
 ## Show Me
 
-![Timing Panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/subs-10x.png)
+<img src="https://re-demo.s3.amazonaws.com/re-frame-10x-images/subs-10x.png" height="500px">
 
 ## Describe It To Me
 
@@ -172,7 +172,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ### app-db
 
-![app-db panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/app-db-10x.png)
+<img alt="app-db-panel" src="https://re-demo.s3.amazonaws.com/re-frame-10x-images/app-db-10x.png" height="500px">
 
 * Inspect a portion of app-db's state with the path inspector, allowing you to focus on just the parts you care about.
 * Reset app-db to before an event was run to run it again, instead of resetting the whole application
@@ -180,7 +180,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ### Subs
 
-![Subs Panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/subs-10x.png)
+<img alt="subs-panel" src="https://re-demo.s3.amazonaws.com/re-frame-10x-images/subs-10x.png" height="500px">
 
 * See the output and diff of a subscription running
 * Spot [layer 2 subscriptions](docs/HyperlinkedInformation/UnchangedLayer2.md) that should really be layer 3's.
@@ -189,14 +189,14 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ### Timing
 
-![Timing Panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/timing-10x.png)
+<img alt="timing-panel" src="https://re-demo.s3.amazonaws.com/re-frame-10x-images/timing-10x.png" height="500px">
 
 * Answer the question "Why is my app slow when it runs this event?"
 * See whether time is spent in processing an event, running the subscriptions, or rendering the changes
 
 ### Event
 
-![Event Panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/event-10x.png)
+<img alt="event-panel" src="https://re-demo.s3.amazonaws.com/re-frame-10x-images/event-10x.png" height="500px">
 
 * See the coeffects given to an event handler
 * See the effects produced by an event handler
@@ -204,7 +204,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ### Trace
 
-![Trace Panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/trace-10x.png)
+<img alt="trace-panel" src="https://re-demo.s3.amazonaws.com/re-frame-10x-images/trace-10x.png" height="500px">
 
 * Dig into the low level execution details of an epoch. We've tried to surface the useful information in the other panels, so if you're constantly referring to this panel, open an issue with your use case.
 
