@@ -91,7 +91,7 @@ Four ways:
      
   2. It helps you to explore and learn an unfamiliar `re-frame` codebase.
      When I click, over here, on this "X" button, it shows me what event is `dispatch`-ed 
-     and in what namespace the associated event handler is registered.  And, 
+     and in which namespace the associated event handler is registered.  And, 
      "oh look, that's interesting - four subscriptions recalculated". Etc.
      
   3. It helps you with debugging. You see an x-ray of your app's functioning. 
@@ -105,7 +105,7 @@ Four ways:
 Point 3, is primary, of course. But Point 2 is almost as important because we all spend a 
 lot of our time groking unfamiliar codebases. Being able to observe the inner 
 workings of a running app is a great way to bring code to life, reveal key 
-features, and build a cognative map of how the code is structured.
+features, and build a cognitive map of how the code is structured.
 
 ### Temporary Warning 
 
@@ -115,7 +115,7 @@ features, and build a cognative map of how the code is structured.
 
 Internal discussion about a name meandered for a while.  Initially, it was `re-frame-trace`, which is accurate, sure, but it is also 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  Side stepping the issue, I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.
 
-Now, the tool's benifits are `-insight` and `-illumination`, but adding either made the name waaaay too long.  Naming things - it really is a nightmare!
+Now, the tool's benefits are `-insight` and `-illumination`, but adding either made the name waaaay too long.  Naming things - it really is a nightmare!
 
 Finally, `-10x` cheekily materialised, delivering 100 decibels of audacious sizzle, and consequently a challenge for us to live up to. A 10x programmer starts by having 10x more knowledge and insight - so go make that tool, smarty pants.
 
