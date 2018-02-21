@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.2.1] - Unreleased
+
+### Fixed
+
+* Bug where under certain rare circumstances relating to the structure of your app-db, the Event panel could throw an error when transitioning from one epoch to another.
+
 ## [0.2.0] - 2018-02-20
 
 ### Upgrade notes
