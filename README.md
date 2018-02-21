@@ -8,9 +8,7 @@ It helps you find false assumptions faster.
 
 ## Show Me
 
-Slightly out of date, but indicative ...  
-
-<img src="docs/images/re-frame-trace-demo.gif" height="500px">
+![Timing Panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/subs-10x.png)
 
 ## Describe It To Me
 
@@ -174,14 +172,41 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ### app-db
 
+![app-db panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/app-db-10x.png)
+
 * Inspect a portion of app-db's state with the path inspector, allowing you to focus on just the parts you care about.
 * Reset app-db to before an event was run to run it again, instead of resetting the whole application
 * Toggle app-db before and after states for running an event, to inspect UI changes. 
 
+### Subs
+
+![Subs Panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/subs-10x.png)
+
+* See the output and diff of a subscription running
+* Spot [layer 2 subscriptions](docs/HyperlinkedInformation/UnchangedLayer2.md) that should really be layer 3's.
+* Spot subscriptions that are running when they shouldn't
+* Spot subscriptions that are being destroyed and recreated unnecessarily
+
 ### Timing
 
+![Timing Panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/timing-10x.png)
+
 * Answer the question "Why is my app slow when it runs this event?"
-* See whether time is spent in processing an event, or rendering the changes 
+* See whether time is spent in processing an event, running the subscriptions, or rendering the changes
+
+### Event
+
+![Event Panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/event-10x.png)
+
+* See the coeffects given to an event handler
+* See the effects produced by an event handler
+* See the interceptors involved in handling an event.
+
+### Trace
+
+![Trace Panel](https://re-demo.s3.amazonaws.com/re-frame-10x-images/trace-10x.png)
+
+* Dig into the low level execution details of an epoch. We've tried to surface the useful information in the other panels, so if you're constantly referring to this panel, open an issue with your use case.
 
 ## Troubleshooting
 
