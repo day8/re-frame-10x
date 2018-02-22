@@ -128,7 +128,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 ### IMPORTANT PREREQUISITES 
 
 * You **must** have a [`:main`](https://clojurescript.org/reference/compiler-options#main) specified in your `:compiler` config for the `:preloads` and `:closure-defines` to take effect
-* You **must** be running with the Closure define `goog.DEBUG` as false. This is the default under `:optimizations :none`.
+* You **must** be running with the Closure define `goog.DEBUG` as `true`. This is the default under `:optimizations :none`.
 * You **must** be using `:optimizations :none`.
 
 If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/Advanced-Setup.md) for other ways to install re-frame-10x.
