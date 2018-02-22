@@ -129,6 +129,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 * You **must** have a [`:main`](https://clojurescript.org/reference/compiler-options#main) specified in your `:compiler` config for the `:preloads` and `:closure-defines` to take effect
 * You **must** be running with the Closure define `goog.DEBUG` as false. This is the default under `:optimizations :none`.
+* You **must** be using `:optimizations :none`.
 
 If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/Advanced-Setup.md) for other ways to install re-frame-10x.
 
@@ -149,7 +150,7 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
   
   If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`.
 
-- Locate the `:compiler` map under `:dev` and add `:closure-defines` and `:preloads`:
+- Locate the `:compiler` map under `:dev` and add `:closure-defines` and `:preloads`.
 
   For example:
 
