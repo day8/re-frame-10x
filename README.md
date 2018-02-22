@@ -125,6 +125,13 @@ re-frame-10x configuration is per-project, only one person in your team needs to
 
 If you are using leiningen, modify `project.clj` in the following ways. When puzzling over the various possible leiningen configurations, it's often helpful to look at a sample [project.clj](https://github.com/technomancy/leiningen/blob/stable/sample.project.clj).
 
+### IMPORTANT PREREQUISITES 
+
+* You **must** have a [`:main`](https://clojurescript.org/reference/compiler-options#main) specified in your `:compiler` config for the `:preloads` and `:closure-defines` to take effect
+* You **must** be running with the Closure define `goog.DEBUG` as false. This is the default under `:optimizations :none`.
+
+If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/Advanced-Setup.md) for other ways to install re-frame-10x.
+
 [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
 
 - Update your re-frame dependency to at least `0.10.5` - `[re-frame "0.10.5"]`.
@@ -213,6 +220,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 * Try a `lein clean`
 * Make sure you have followed all the installation steps.
+* Make sure you have checked the [prerequisites](#important-prerequisites)
 
 ### If re-frame-10x throws an exception on startup
 
