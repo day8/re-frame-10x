@@ -134,6 +134,8 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
 
 [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
 
+### Easy setup
+
 - Update your re-frame dependency to at least `0.10.5` - `[re-frame "0.10.5"]`.
 
 - Add re-frame-10x as a dev dependency by placing `[day8.re-frame/re-frame-10x "VERSION"]` within `:profiles :dev :dependencies`, where `"VERSION"` is the version shown above. For example:
@@ -147,10 +149,7 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
   
   If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`.
 
-- Locate the `:compiler` map under `:dev` and add:
-
-  - `:closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}`
-  - `:preloads             [day8.re-frame-10x.preload]`
+- Locate the `:compiler` map under `:dev` and add `:closure-defines` and `:preloads`:
 
   For example:
 
@@ -161,8 +160,13 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
        :compiler     {...
                       :closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}
                       :preloads             [day8.re-frame-10x.preload]
+                      :main                 "myapp.core" ;; You must specify a :main or follow the advanced setup ^^^
                       }}]}
   ```
+
+  - `:closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}`
+  - `:preloads             [day8.re-frame-10x.preload]`
+
 
 [cljs-devtools](https://github.com/binaryage/cljs-devtools) is not required to use re-frame-10x, but it is highly recommended.
 
