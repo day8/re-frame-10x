@@ -4,7 +4,7 @@
 
 `re-frame-10x` lets you instrument, and then inspect, the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination.
 
-It helps you to find false assumptions faster.
+It helps you find false assumptions faster.
 
 ## Show Me
 
