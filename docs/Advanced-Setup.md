@@ -2,13 +2,27 @@
 
 If your project [does not use a `:main` config](../README.md#important-prerequisites) then you will need to do more work to setup your project.
 
-You will need this JavaScript to be included on your page before you initialize your application:
+You will need to manually set the Closure defines, and require `day8.re-frame-10x.preload` on your page before you initialize your application. An example:
+
+```html
+<script>var CLOSURE_UNCOMPILED_DEFINES = {"re_frame.trace.trace_enabled_QMARK_":true};</script> <!--Make this come first-->
+<script src="/cljs/goog/base.js" type="text/javascript"></script>
+<script src="/cljs/main-dev.js" type="text/javascript"></script>
+<script>goog.require("day8.re_frame_10x.preload");</script> <!--Add this before the app's goog.require-->
+<script type="text/javascript">goog.require("todomvc.core");</script>
+
+<script>
+        window.onload = function () {
+            todomvc.core.main();
+        }
+</script>
+```
+
+These are the two key lines that need to be added to your bootstrap process.
 
 ```js
 var CLOSURE_UNCOMPILED_DEFINES = {"re_frame.trace.trace_enabled_QMARK_":true};
 document.write('<script>goog.require("day8.re_frame_10x.preload");</script>');
-
-// Must come before you initialize your application, but after `goog` and your other dependencies have been loaded.
 ```
 
 This setup is inherently project specific, so open an issue if you have trouble, and we'll try and figure it out. Or if possible switch to using a `:main`.
