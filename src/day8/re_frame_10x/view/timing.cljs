@@ -116,4 +116,4 @@
                           [timing-section "react, etc" (:timing/animation-frame-misc frame-time)]]])))]]
       [rc/v-box
        :class "timing-details"
-       :children [[:h1 "No timing data available currently."]]])))
+       :children [[:h1 "No timing data currently available."]]])))
