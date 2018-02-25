@@ -132,7 +132,7 @@
            [rc/checkbox
             :model show-epoch-traces?
             :on-change #(rf/dispatch [:trace-panel/update-show-epoch-traces? %])
-            :label "Show only traces for this epoch?"]
+            :label "Only show traces for this epoch?"]
            [:div.filter-fields
             [:select {:value     @filter-type
                       :on-change #(reset! filter-type (keyword (.. % -target -value)))}
