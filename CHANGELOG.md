@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## [0.2.1] - Unreleased
 
+### Changed
+
+* Set default behaviour on first launch to show the re-frame-10x panel instead of keeping it hidden. This will help people better debug their setup when they are configuring re-frame-10x.
+
 ### Fixed
 
 * Bug where under certain rare circumstances relating to the structure of your app-db, the Event panel could throw an error when transitioning from one epoch to another.
