@@ -227,6 +227,10 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
 * Make sure you have followed all the installation steps.
 * Make sure you have checked the [prerequisites](#important-prerequisites)
 
+### If the re-frame-10x window won't show up when pressing Ctrl-H
+
+* Make sure that your browser window doesn't have focus in a text-box or something else that is intercepting keyboard events.
+
 ### If re-frame-10x throws an exception on startup
 
 * Reset the settings to factory defaults in the settings panel
