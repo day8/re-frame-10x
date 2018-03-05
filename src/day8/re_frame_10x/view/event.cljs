@@ -42,7 +42,6 @@
 (defn render []
   (let [event-trace @(rf/subscribe [:epochs/current-event-trace])
         epoch-id    @(rf/subscribe [:epochs/current-match-state])]
-    (js/console.log epoch-id)
     ;; Create a new id on each panel because Reagent can throw an exception if
     ;; the data provided in successive renders is sufficiently different.
     ^{:key epoch-id}

@@ -10,7 +10,7 @@
                  [cljsjs/react-flip-move "2.9.17-0"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
                  [philoskim/debux "0.4.2"]
-                 [cljfmt "0.5.7"]
+                 [zprint "0.4.7"]
                  ;[expound "0.4.0"]
                  ]
   :plugins [[thomasa/mranderson "0.4.7"]
