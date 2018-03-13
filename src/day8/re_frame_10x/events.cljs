@@ -662,3 +662,19 @@
   [(rf/path [:subs :expansions])]
   (fn [expansions [_ id diff?]]
     (assoc-in expansions [id :diff?] diff?)))
+
+;;
+
+(rf/reg-event-db
+  :code/hover-form
+  [(rf/path [:code :highlighted-form])]
+  (fn [form [_ new-form]]
+    new-form))
+
+(rf/reg-event-db
+  :code/exit-hover-form
+  [(rf/path [:code :highlighted-form])]
+  (fn [form [_ new-form]]
+    (if (= form new-form)
+      nil
+      new-form)))

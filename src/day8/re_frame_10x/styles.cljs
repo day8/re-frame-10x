@@ -8,7 +8,8 @@
             [day8.re-frame-10x.view.app-db :as app-db]
             [day8.re-frame-10x.view.timing :as timing]
             [day8.re-frame-10x.view.settings :as settings]
-            [day8.re-frame-10x.view.event :as event]))
+            [day8.re-frame-10x.view.event :as event]
+            [day8.re-frame-10x.view.code :as code]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -436,7 +437,8 @@
                                      app-db/app-db-styles
                                      timing/timing-styles
                                      event/event-styles
-                                     settings/settings-styles]))
+                                     settings/settings-styles
+                                     code/code-styles]))
 
 (defn inject-style [document id style]
   (let [styles-el     (.getElementById document id)

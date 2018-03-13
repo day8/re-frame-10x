@@ -613,6 +613,11 @@
 ;;
 
 (rf/reg-sub
+  :code/root
+  (fn [db _]
+    (:code db)))
+
+(rf/reg-sub
   :code/current-code
   :<- [:traces/current-event-traces]
   (fn [traces _]
@@ -621,3 +626,9 @@
                   traces)
 
     #_[{:title "Event" :id 1 :code "ABC\nDEF"}]))
+
+(rf/reg-sub
+  :code/highlighted-form
+  :<- [:code/root]
+  (fn [code _]
+    (:highlighted-form code)))
