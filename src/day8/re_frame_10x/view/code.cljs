@@ -68,23 +68,26 @@
                :style {:overflow-y "scroll"}
                :children
                (doall
-                 (map-indexed
-                   (fn [i line]
-                     (list
-                       ;; See https://github.com/reagent-project/reagent/issues/350 for why we use random-uuid here
-                       ^{:key (random-uuid)}
-                       [rc/v-box
-                        :class "code-fragment"
-                        :style {:margin-left (str (* 50 (dec (:indent-level line))) "px")}
-                        :attr {:on-mouse-enter #(do (println "Enter" (:form line))
-                                                    (rf/dispatch [:code/hover-form (:form line)])
-                                                    true)
-                               :on-mouse-leave #(do (println "Leave" (:form line))
-                                                    (rf/dispatch [:code/exit-hover-form (:form line)])
-                                                    true)}
-                        :children [[:pre (zp/zprint-str (:form line))]
-                                   ;; TODO: disable history expansion, or at least storing of it in ls.
-                                   [components/simple-render (:result line) [(:id code-execution) i]]]]
-                       ^{:key (random-uuid)}
-                       [rc/gap-f :size "5px"]))
-                   (:code code-execution)))]])]))]]))
+                 (->> (:code code-execution)
+                      ;; Remove traced function values, these are usually not very interesting in and of themselves.
+                      (remove (fn [line] (fn? (:result line))))
+                      (map-indexed
+                        (fn [i line]
+                          (list
+                            ;; See https://github.com/reagent-project/reagent/issues/350 for why we use random-uuid here
+                            ^{:key (random-uuid)}
+                            [rc/v-box
+                             :class "code-fragment"
+                             :style {:margin-left (str (* 50 (dec (:indent-level line))) "px")}
+                             :attr {:on-mouse-enter #(do (println "Enter" (:form line))
+                                                         (rf/dispatch [:code/hover-form (:form line)])
+                                                         true)
+                                    :on-mouse-leave #(do (println "Leave" (:form line))
+                                                         (rf/dispatch [:code/exit-hover-form (:form line)])
+                                                         true)}
+                             :children [[:pre (zp/zprint-str (:form line))]
+                                        ;; TODO: disable history expansion, or at least storing of it in ls.
+                                        [components/simple-render (:result line) [(:id code-execution) i]]]]
+                            ^{:key (random-uuid)}
+                            [rc/gap-f :size "5px"]))
+                        )))]])]))]]))
