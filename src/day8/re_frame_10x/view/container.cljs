@@ -155,7 +155,9 @@
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
      (when-not (re-frame.trace/is-trace-enabled?)
-       [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set " [:pre "{\"re_frame_10x.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
+       [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set "
+        ;; Note this Closure define is in re-frame, not re-frame-10x
+        [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
      [rc/v-box
       :size "auto"
       :style {:margin-left common/gs-19s

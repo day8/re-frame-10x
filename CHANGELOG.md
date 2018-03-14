@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. This change
 ### Fixed
 
 * Bug where under certain rare circumstances relating to the structure of your app-db, the Event panel could throw an error when transitioning from one epoch to another.
+* Refer to the correct Closure define to enable tracing [#170](https://github.com/Day8/re-frame-10x/issues/170).
 
 ## [0.2.0] - 2018-02-20
 
