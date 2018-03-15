@@ -51,4 +51,5 @@
      :gap common/gs-19s
      :children [[event-section "Coeffects" (get-in event-trace [:tags :coeffects])]
                 [event-section "Effects" (get-in event-trace [:tags :effects])]
-                [event-section "Interceptors" (get-in event-trace [:tags :interceptors])]]]))
+                [event-section "Interceptors" (get-in event-trace [:tags :interceptors])]
+                [rc/gap-f :size "0px"]]]))

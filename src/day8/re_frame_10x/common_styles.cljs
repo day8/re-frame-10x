@@ -48,7 +48,7 @@
 (def sub-create-color "#9b51e0")
 (def sub-destroy-color "#f2994a")
 (def sub-re-run-color "#219653")
-(def sub-not-run-color "#bdbdbd")
+(def sub-not-run-color "#636a6f")
 
 (def expansion-button-horizontal-padding (px 2))
 

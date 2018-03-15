@@ -255,11 +255,10 @@
    [:.rft-tag
     {:background-color common/white-background-color
      :color            common/text-color
-     :width            "48px"                               ;common/gs-50s
-     :height           "19px"                               ;common/gs-19s
+     :width            common/gs-50s
+     :height           common/gs-19s
      :font-size        "10px"
      :font-weight      "bold"
-     :border           "1px solid #bdbdbd"
      :border-radius    "3px"}]
 
    [".rft-tag__subscription_created"

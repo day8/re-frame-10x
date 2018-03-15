@@ -1,5 +1,6 @@
 (ns day8.re-frame-10x.view.subs
-  (:require [day8.re-frame-10x.view.app-db :refer [pod-gap pod-padding border-radius]]
+  (:require [day8.re-frame-10x.view.app-db :refer [pod-gap pod-padding border-radius pod-border-edge
+                                                   header-section cljs-dev-tools-background]]
             [day8.re-frame-10x.utils.utils :as utils]
             [day8.re-frame-10x.utils.animated :as animated]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
@@ -102,27 +103,20 @@
 
 (defn pod-header [{:keys [id layer path open? diff? run-times order]}]
   [rc/h-box
-   :class (str "app-db-path--header " (when-not open? "rounded-bottom"))
-   :align :center
-   :height common/gs-31s
-   :children [[rc/box
-               :width "36px"
-               :height common/gs-31s
-               :class "noselect"
-               :style {:cursor "pointer"}
-               :attr {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                      :on-click #(rf/dispatch [:subs/open-pod? id (not open?)])}
-               :child [rc/box
-                       :margin "auto"
-                       :child [:span.arrow (if open? "▼" "▶")]]]
-              [rc/h-box
-               :width "75px"
-               :gap common/gs-5s
-               :children (into []
-                               (comp
-                                 (take 3)
-                                 (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
-                               order)]
+   :class    (str "app-db-path--header")
+   :align    :center
+   :height   common/gs-31s
+   :children [[header-section
+               :children [[rc/box
+                           :width  common/gs-31s
+                           :height common/gs-31s
+                           :class  "noselect"
+                           :style  {:cursor "pointer"}
+                           :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
+                                    :on-click #(rf/dispatch [:subs/open-pod? id (not open?)])}
+                           :child  [rc/box
+                                    :margin "auto"
+                                    :child [:span.arrow (if open? "▼" "▶")]]]]]
 
               #_[rc/box
                  ;:width "64px"                                ;; (100-36)px from box above
@@ -131,34 +125,63 @@
               ;; TODO: report if a sub was run multiple times
               #_(when run-times
                   [:span "Warning: run " run-times " times"])
+
               [rc/h-box
                :class "app-db-path--path-header"
                :size "auto"
+               :style {:height common/gs-31s
+                       :border-right pod-border-edge}
+               :background-color "white"
+               :align :center
                :children [[rc/input-text
                            :style {:height  "25px"
+                                   :border "none"
                                    :padding (css-join "0px" common/gs-7s)
                                    :width   "-webkit-fill-available"} ;; This took a bit of finding!
                            :width "100%"
                            :model path
                            :disabled? true]]]
-              (when @(rf/subscribe [:settings/debug?])
-                [rc/label :label (str id)])
-              [rc/gap-f :size common/gs-12s]
-              [rc/label :label (if (some? layer)
-                                 (str "Layer " layer)
-                                 [rc/link {:label "Layer ?"
-                                           :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]
 
-              [rc/gap-f :size common/gs-12s]
-              [rc/box
-               :class "bm-muted-button app-db-path--button noselect"
-               :attr {:title    "Show diff"
-                      :on-click #(when open? (rf/dispatch [:subs/diff-pod? id (not diff?)]))}
-               :child [:img
-                       {:src   (str "data:image/svg+xml;utf8," copy)
-                        :style {:width  "19px"
-                                :margin "0px 3px"}}]]
-              [rc/gap-f :size common/gs-12s]]])
+              (when @(rf/subscribe [:settings/debug?])
+                [header-section
+                 :min-width "50px"
+                 :children [[rc/label :label (str id)]]])
+
+              [header-section
+               :min-width "106px" ;; common/gs-131s - (2 * 12px padding) - (1px border)
+               :gap       common/gs-12s
+               :style     {:padding "0px 12px"}
+               :children  (into []
+                                (comp
+                                  (take 3)
+                                  (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
+                                order)]
+
+              [header-section
+               :width    common/gs-31s
+               :children [[rc/box
+                           :style {:width            common/gs-19s
+                                   :height           common/gs-19s
+                                   :border           pod-border-edge
+                                   :border-radius    "50%"
+                                   :margin "auto"
+                                   :background-color "white"}
+                           :child (if (some? layer)
+                                    [:div {:style {:margin "auto"}} layer]
+                                    [rc/link {:label "?"
+                                              :style {:margin "auto"}
+                                              :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]]]
+
+              [header-section
+               :width "50px"
+               :last?    true
+               :children [[rc/box
+                           :style {:margin "auto"}
+                           :child [rc/checkbox
+                                   :model diff?
+                                   :label ""
+                                   :style {:margin-left "6px"}
+                                   :on-change #(when open? (rf/dispatch [:subs/diff-pod? id (not diff?)]))]]]]]])
 
 (def no-prev-value-msg [:p {:style {:font-style "italic"}} "No previous value exists to diff"])
 (def unchanged-value-msg [:p {:style {:font-style "italic"}} "Subscription value is unchanged"])
@@ -185,7 +208,7 @@
                                              previous-value? (:previous-value pod-info)
                                              :else nil)]
                                  [rc/v-box
-                                  :class (str "data-viewer" (when-not diff? " rounded-bottom"))
+                                  :class "data-viewer"
                                   :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
                                           :overflow-x "auto"
                                           :overflow-y "hidden"}
@@ -208,8 +231,9 @@
                                      [diff-before diff-after _] (clojure.data/diff previous-value value)]
                                  [rc/v-box
                                   :children [[rc/v-box
-                                              :class "app-db-path--link"
-                                              :justify :end
+                                              :class    "app-db-path--link"
+                                              :style    {:background-color cljs-dev-tools-background}
+                                              :justify  :end
                                               :children [[rc/hyperlink-href
                                                           ;:class  "app-db-path--label"
                                                           :label "ONLY BEFORE"
@@ -229,17 +253,19 @@
                                                                       ["app-db-diff" path]]
                                                            :else no-prev-value-msg)]]
                                              [rc/v-box
-                                              :class "app-db-path--link"
-                                              :justify :end
+                                              :class    "app-db-path--link"
+                                              :style    {:background-color cljs-dev-tools-background}
+                                              :justify  :end
                                               :children [[rc/hyperlink-href
                                                           ;:class  "app-db-path--label"
                                                           :label "ONLY AFTER"
-                                                          :style {:margin-left common/gs-7s}
+                                                          :style {:margin-left      common/gs-7s
+                                                                  :background-color cljs-dev-tools-background}
                                                           :attr {:rel "noopener noreferrer"}
                                                           :target "_blank"
                                                           :href utils/diff-link]]]
                                              [rc/v-box
-                                              :class "data-viewer data-viewer--top-rule rounded-bottom"
+                                              :class "data-viewer data-viewer--top-rule"
                                               :style {:overflow-x "auto"
                                                       :overflow-y "hidden"}
                                               :children [(cond
@@ -281,9 +307,29 @@
                   [no-pods]
                   [rc/box :width "0px" :height "0px"])
 
+                [rc/h-box
+                 :height common/gs-19s
+                 :align :center
+                 :style {:margin-right "1px"}
+                 :children [[rc/box
+                             :size "1"
+                             :child ""]
+                            [rc/box
+                             :width "132px" ;; common/gs-131s + 1 border
+                             :justify :center
+                             :child [rc/label :style {:font-size "9px"} :label "ACTIVITY"]]
+                            [rc/box
+                             :width "32px" ;; common/gs-31s + 1 border
+                             :justify :center
+                             :child [rc/label :style {:font-size "9px"} :label "LAYER"]]
+                            [rc/box
+                             :width "51px" ;;  50px + 1 border
+                             :justify :center
+                             :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]]]
+
                 (for [p all-subs]
                   ^{:key (:id p)}
-                  [pod (merge p (get sub-expansions (:id p)))])
+                  [pod (merge p (get sub-expansions (:id p)))] )
                 #_[animated/component
                    (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
                                             :duration  animation-duration
@@ -330,5 +376,5 @@
            }
    :children [[panel-header]
               [pod-section]
-              [rc/gap-f :size pod-gap]]])
+              [rc/gap-f :size common/gs-19s]]])
 

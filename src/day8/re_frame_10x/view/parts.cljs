@@ -4,7 +4,8 @@
             [re-frame.events]
             [re-frame.subs]
             [re-frame.fx]
-            [re-frame.cofx]))
+            [re-frame.cofx]
+            [day8.re-frame-10x.common-styles :as common]))
 
 (defn render-registered [kind]
   (for [[k v] (sort-by key (get @re-frame.registrar/kind->id->handler kind))]
@@ -31,4 +32,4 @@
               (render-registered re-frame.fx/kind)
               [:h1 "co-fx"]
               (render-registered re-frame.cofx/kind)
-              ]])
+              [rc/gap-f :size common/gs-19s]]])

@@ -510,10 +510,11 @@
          :align :start
          :child the-button]))))
 
-(defn link [{:keys [label href]}]
+(defn link [{:keys [label href style]}]
   [:a
    {:rel    "noopener noreferrer"
     :class  "rc-hyperlink-href noselect "
+    :style  style
     :href   href
     :target "_blank"}
    label])
