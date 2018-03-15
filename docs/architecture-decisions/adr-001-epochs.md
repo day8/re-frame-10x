@@ -23,7 +23,7 @@ There are several ways of defining an epoch:
 * Starting when an event was dispatched, and ending when there is a period of no traces being fired. - This is based on heuristics, rather than actually measuring.
 * Starting when an event was dispatched, including all subscriptions and renders that happened, and ending when there is no re-render scheduled in Reagent. - What about events that trigger a dispatch to run in 50 ms, or other async callbacks?
 
-We also have an additional wrinkle. Traces which are produced outside of an epoch are added to a mini epoch. This is for collecting traces which occur when Reagent re-renders, like when a local ratom hover state changes. No events are dispatched, so it is not a real epoch, but it is still useful information. We also have Figwheel re-renders which don't dispatch an event, but do cause a re-render and subscription creations and deletions. Epoch's will need to have a source property that can distinguish between user clicks, callbacks, figwheel re-renders, inter-epoch renders, and possibly other sources.
+We also have an additional wrinkle. Traces which are produced outside of an epoch are added to a mini epoch. This is for collecting traces which occur when Reagent re-renders, like when a local ratom hover state changes. No events are dispatched, so it is not a real epoch, but it is still useful information. We also have Figwheel re-renders which don't dispatch an event, but do cause a re-render and subscription creations and deletions. Epoch's will need to have a source property that can distinguish between user clicks, callbacks, figwheel re-renders, intra-epoch renders, and possibly other sources.
 
 ### Capturing epochs
 

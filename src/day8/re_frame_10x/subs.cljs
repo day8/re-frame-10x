@@ -500,7 +500,7 @@
 (defn prepare-pod-info
   "Returns sub info prepared for rendering in pods"
   [[sub-info sub-state] [subscription]]
-  (let [remove-fn (if (= subscription :subs/inter-epoch-subs)
+  (let [remove-fn (if (= subscription :subs/intra-epoch-subs)
                     (fn [me] (nil? (:order (val me))))
                     (constantly false))
         subx      (->> sub-state
@@ -539,7 +539,7 @@
     (:reaction-state sub-state)))
 
 (rf/reg-sub
-  :subs/inter-epoch-subs
+  :subs/intra-epoch-subs
   :<- [:subs/subscription-info]
   :<- [:subs/pre-epoch-state]
   prepare-pod-info)

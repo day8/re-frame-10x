@@ -56,7 +56,7 @@ To take advantage of the more granular timing info in this version, you will nee
 
 * Massive overhaul to how subscriptions are processed.
   * Subscriptions that exist but weren't run, now show up in the subscription panel.
-  * Subscription creations and disposals that happen during figwheel reloads or otherwise outside of the re-frame event domino cycle are now correctly handled. If any of these happen, they show up in the new section Inter-Epoch Subscriptions.
+  * Subscription creations and disposals that happen during figwheel reloads or otherwise outside of the re-frame event domino cycle are now correctly handled. If any of these happen, they show up in the new section Intra-Epoch Subscriptions.
   * All of the actions that happen to a subscription within an epoch are now shown. This lets you spot unusual behaviour like a subscription being created but not-run, or a subscription running multiple times.
   * Present better explanation messages when viewing the diff section for a sub where the value is unchanged, not run yet, or only run once.
 

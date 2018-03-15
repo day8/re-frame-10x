@@ -18,7 +18,7 @@
     [:h2 "Subscriptions"]
     [components/simple-render @(rf/subscribe [:subs/current-epoch-sub-state]) ["debug-subs"]]
     [:h2 "pre epoch"]
-    [components/simple-render @(rf/subscribe [:subs/inter-epoch-subs]) ["pre-epoch-subs"]]
+    [components/simple-render @(rf/subscribe [:subs/intra-epoch-subs]) ["pre-epoch-subs"]]
     [:h2 "match state"]
     [components/simple-render @(rf/subscribe [:epochs/current-match-state]) ["match-state"]]
 

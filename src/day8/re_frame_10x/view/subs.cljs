@@ -288,7 +288,7 @@
 
 (defn pod-section []
   (let [visible-subs     @(rf/subscribe [:subs/visible-subs])
-        inter-epoch-subs @(rf/subscribe [:subs/inter-epoch-subs])
+        intra-epoch-subs @(rf/subscribe [:subs/intra-epoch-subs])
         sub-expansions   @(rf/subscribe [:subs/sub-expansions])
         all-subs         (if @(rf/subscribe [:settings/debug?])
                            (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
@@ -338,19 +338,19 @@
                                                         :overflow-y "auto"}})
 
                    ]
-                (when (seq inter-epoch-subs)
+                (when (seq intra-epoch-subs)
                   (list
-                    ^{:key "inter-epoch-line"}
+                    ^{:key "intra-epoch-line"}
                     [rc/line :size "5px"
                      :style {:margin "19px 0px"}]
-                    ^{:key "inter-epoch-title"}
+                    ^{:key "intra-epoch-title"}
                     [:h2 {:class "bm-heading-text"
                           :style {:margin "19px 0px"}}
                      [rc/link
-                      {:href "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/InterEpoch.md"
-                       :label "Inter-Epoch Subscriptions"}]]
+                      {:href "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
+                       :label "Intra-Epoch Subscriptions"}]]
 
-                    (for [p inter-epoch-subs]
+                    (for [p intra-epoch-subs]
                       ^{:key (:id p)}
                       [pod (merge p (get sub-expansions (:id p)))])))
 
