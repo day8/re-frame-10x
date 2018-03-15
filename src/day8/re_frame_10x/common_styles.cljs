@@ -89,6 +89,7 @@
 
 (def white-background-color "white")
 (def white-background-border-color "#E3E9ED")               ;; Light grey
+(def white-background-border-style [["1px" "solid" white-background-border-color]])
 
 (def standard-background-color "#F3F6F7")                   ;; Light grey
 (def standard-background-border-color "transparent")

@@ -69,21 +69,21 @@
                                                     6 {:id 6, :title "abc", :done false},
                                                     7 {:id 7, :title "add", :done false}}
                                      :indent-level 4}
-                                    {:form   '(vals todos)
-                                     :result '({:id 3, :title "abc", :done false},
-                                                {:id 4, :title "abc", :done true},
-                                                {:id 5, :title "def", :done true},
-                                                {:id 6, :title "abc", :done false},
-                                                {:id 7, :title "add", :done false})
+                                    {:form         '(vals todos)
+                                     :result       '({:id 3, :title "abc", :done false},
+                                                      {:id 4, :title "abc", :done true},
+                                                      {:id 5, :title "def", :done true},
+                                                      {:id 6, :title "abc", :done false},
+                                                      {:id 7, :title "add", :done false})
                                      :indent-level 3}
-                                    {:form '(filter :done)
-                                     :result '({:id 4 :title "abc" :done true}
-                                                {:id 5 :title "def" :done true})
+                                    {:form         '(filter :done)
+                                     :result       '({:id 4 :title "abc" :done true}
+                                                      {:id 5 :title "def" :done true})
                                      :indent-level 2}
-                                    {:form '(map :id)
-                                     :result '(4 5)
+                                    {:form         '(map :id)
+                                     :result       '(4 5)
                                      :indent-level 1}
-                                    {:form '(reduce dissoc todos)
+                                    {:form   '(reduce dissoc todos)
                                      :result {3 {:id 3, :title "abc", :done false},
                                               6 {:id 6, :title "abc", :done false},
                                               7 {:id 7, :title "add", :done false}}}]
@@ -92,6 +92,7 @@
                                          (map :id)
                                          (reduce dissoc todos))})
         highlighted-form @(rf/subscribe [:code/highlighted-form])
+        ;highlighted-form '(filter :done)
         debug?           @(rf/subscribe [:settings/debug?])]
     [rc/v-box
      :size "1 1 auto"
@@ -116,10 +117,19 @@
                  end-index  (+ start length)
                  highlight  (subs form-str start end-index)
                  after      (subs form-str end-index)]
-             [[:pre.code-listing
-               (list ^{:key "before"} before
-                     ^{:key "hl"} [:span.code-listing--highlighted highlight]
-                     ^{:key "after"} after)]
+             [
+              ;; We get lots of React errors if we don't force a creation of a new element
+              ;; when the highlight changes. Not really sure why...
+              ^{:key (pr-str highlighted-form)}
+              [:div
+               (if (some? highlighted-form)
+                 [components/highlight {:language "clojure"}
+                  (list ^{:key "before"} before
+                        ^{:key "hl"} [:span.code-listing--highlighted highlight]
+                        ^{:key "after"} after)]
+                 [components/highlight {:language "clojure"}
+                  form-str])]
+
               [:br]
               [rc/v-box
                :size "1 1 auto"
@@ -137,10 +147,12 @@
                             [rc/v-box
                              :class "code-fragment"
                              :style {:margin-left (str (* 9 (:indent-level line)) "px")}
-                             :attr {:on-mouse-enter #(do (rf/dispatch [:code/hover-form (:form line)])
-                                                         true)
-                                    :on-mouse-leave #(do (rf/dispatch [:code/exit-hover-form (:form line)])
-                                                         true)}
+                             ;; on-mouse enter/leave fires fewer events (only on enter/leave of outer form)
+                             ;; but the events don't seem to be reliably sent in order.
+                             ;; Instead we use pointer-events: none on the children of the code fragments
+                             ;; to prevent lots of redundant events.
+                             :attr {:on-mouse-over #(rf/dispatch [:code/hover-form (:form line)])
+                                    :on-mouse-out  #(rf/dispatch [:code/exit-hover-form (:form line)])}
                              :children [[:pre (zp/zprint-str (:form line))]
                                         ;; TODO: disable history expansion, or at least storing of it in ls.
                                         [components/simple-render (:result line) [(:id code-execution) i]]]]
