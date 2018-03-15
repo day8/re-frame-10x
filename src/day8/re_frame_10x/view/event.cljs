@@ -49,6 +49,48 @@
 
 (defn event-code []
   (let [code-traces      @(rf/subscribe [:code/current-code])
+        code-traces      (list
+                           {:title ":event/handler",
+                            :id    1,
+                            :code  [{:form         'dissoc
+                                     :result       dissoc
+                                     :indent-level 1}
+                                    {:form         'todos
+                                     :result       {3 {:id 3, :title "abc", :done false},
+                                                    4 {:id 4, :title "abc", :done true},
+                                                    5 {:id 5, :title "def", :done true},
+                                                    6 {:id 6, :title "abc", :done false},
+                                                    7 {:id 7, :title "add", :done false}}
+                                     :indent-level 1}
+                                    {:form         'todos
+                                     :result       {3 {:id 3, :title "abc", :done false},
+                                                    4 {:id 4, :title "abc", :done true},
+                                                    5 {:id 5, :title "def", :done true},
+                                                    6 {:id 6, :title "abc", :done false},
+                                                    7 {:id 7, :title "add", :done false}}
+                                     :indent-level 4}
+                                    {:form   '(vals todos)
+                                     :result '({:id 3, :title "abc", :done false},
+                                                {:id 4, :title "abc", :done true},
+                                                {:id 5, :title "def", :done true},
+                                                {:id 6, :title "abc", :done false},
+                                                {:id 7, :title "add", :done false})
+                                     :indent-level 3}
+                                    {:form '(filter :done)
+                                     :result '({:id 4 :title "abc" :done true}
+                                                {:id 5 :title "def" :done true})
+                                     :indent-level 2}
+                                    {:form '(map :id)
+                                     :result '(4 5)
+                                     :indent-level 1}
+                                    {:form '(reduce dissoc todos)
+                                     :result {3 {:id 3, :title "abc", :done false},
+                                              6 {:id 6, :title "abc", :done false},
+                                              7 {:id 7, :title "add", :done false}}}]
+                            :form  '(->> (vals todos)
+                                         (filter :done)
+                                         (map :id)
+                                         (reduce dissoc todos))})
         highlighted-form @(rf/subscribe [:code/highlighted-form])
         debug?           @(rf/subscribe [:settings/debug?])]
     [rc/v-box
@@ -94,7 +136,7 @@
                             ^{:key (random-uuid)}
                             [rc/v-box
                              :class "code-fragment"
-                             :style {:margin-left (str (* 9 (dec (:indent-level line))) "px")}
+                             :style {:margin-left (str (* 9 (:indent-level line)) "px")}
                              :attr {:on-mouse-enter #(do (rf/dispatch [:code/hover-form (:form line)])
                                                          true)
                                     :on-mouse-leave #(do (rf/dispatch [:code/exit-hover-form (:form line)])
