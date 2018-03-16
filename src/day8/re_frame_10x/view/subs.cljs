@@ -317,7 +317,8 @@
               [rc/box
                :width "51px" ;;  50px + 1 border
                :justify :center
-               :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]]])
+               :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]
+              [rc/gap-f :size "6px"]]]) ;; Add extra space to look better when there is/aren't scrollbars
 
 
 (defn pod-section []
@@ -332,24 +333,27 @@
      :children [(if (and (empty? all-subs) @*finished-animation?)
                   [no-pods]
                   [pod-header-column-titles])
-                (for [p all-subs]
-                  ^{:key (:id p)}
-                  [pod (merge p (get sub-expansions (:id p)))])
-                (when (seq intra-epoch-subs)
-                  (list
-                    ^{:key "intra-epoch-line"}
-                    [rc/line :size "5px"
-                     :style {:margin "19px 0px"}]
-                    ^{:key "intra-epoch-title"}
-                    [:h2 {:class "bm-heading-text"
-                          :style {:margin "19px 0px"}}
-                     [rc/link
-                      {:href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
-                       :label "Intra-Epoch Subscriptions"}]]
-                    (for [p intra-epoch-subs]
-                      ^{:key (:id p)}
-                      [pod (merge p (get sub-expansions (:id p)))])))
-                ]]))
+                [rc/v-box
+                 :size     "auto"
+                 :style    {:overflow-x "hidden"
+                            :overflow-y "auto"}
+                 :children [(for [p all-subs]
+                              ^{:key (:id p)}
+                              [pod (merge p (get sub-expansions (:id p)))])
+                            (when (seq intra-epoch-subs)
+                              (list
+                                ^{:key "intra-epoch-line"}
+                                [rc/line :size "5px"
+                                 :style {:margin "19px 0px"}]
+                                ^{:key "intra-epoch-title"}
+                                [:h2 {:class "bm-heading-text"
+                                      :style {:margin "19px 0px"}}
+                                 [rc/link
+                                  {:href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
+                                   :label "Intra-Epoch Subscriptions"}]]
+                                (for [p intra-epoch-subs]
+                                  ^{:key (:id p)}
+                                  [pod (merge p (get sub-expansions (:id p)))])))]]]]))
 
 
 (defn render []

@@ -334,7 +334,8 @@
               [rc/box
                :width "51px" ;;  50px + 1 border
                :justify :center
-               :child [rc/label :style {:font-size "9px"} :label "DELETE"]]]])
+               :child [rc/label :style {:font-size "9px"} :label "DELETE"]]
+              [rc/gap-f :size "6px"]]]) ;; Add extra space to look better when there is/aren't scrollbars
 
 
 (defn pod-section []

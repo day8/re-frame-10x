@@ -161,7 +161,7 @@
      [rc/v-box
       :size "auto"
       :style {:margin-left common/gs-19s
-              :overflow-y  (if (contains? #{:timing :debug :event :subs :settings :parts} @selected-tab)
+              :overflow-y  (if (contains? #{:event :parts :timing :debug :settings} @selected-tab)
                              "auto" "initial")
               ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
               }
@@ -170,10 +170,10 @@
                    :app-db   [app-db/render db/app-db]
                    :subs     [subs/render]
                    :views    [views/render]
-                   :code    [code/render]
-                   :parts [parts/render]
+                   :code     [code/render]
+                   :parts    [parts/render]
                    :timing   [timing/render]
-                   :traces [traces/render]
+                   :traces   [traces/render]
                    :debug    [debug/render]
                    :settings [settings/render]
                    [app-db/render db/app-db])]]]))
