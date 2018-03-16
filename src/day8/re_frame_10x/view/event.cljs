@@ -156,8 +156,7 @@
                              :children [[:pre (zp/zprint-str (:form line))]
                                         ;; TODO: disable history expansion, or at least storing of it in ls.
                                         [components/simple-render (:result line) [(:id code-execution) i]]]]
-                            ^{:key (random-uuid)}
-                            [rc/gap-f :size "5px"])))))]])]))]]))
+                            )))))]])]))]]))
 
 
 (defn render []
