@@ -6,11 +6,10 @@
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [zprint.core :as zp]
             [clojure.string :as str])
-  (:require-macros [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]]))
+  (:require-macros [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]]
+                   [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
-(def pod-border-color "#daddde")
-(def pod-border-edge (str "1px solid " pod-border-color))
-(def border-radius "3px")
+(def code-border (str "1px solid " common/white-background-border-color))
 
 (def event-styles
   [:#--re-frame-10x--
@@ -146,17 +145,26 @@
                             ^{:key (random-uuid)}
                             [rc/v-box
                              :class "code-fragment"
-                             :style {:margin-left (str (* 9 (:indent-level line)) "px")}
+                             :style {:margin-left (str (* 9 (:indent-level line)) "px")
+                                     :margin-top  (when (pos? i) "-1px")}
                              ;; on-mouse enter/leave fires fewer events (only on enter/leave of outer form)
                              ;; but the events don't seem to be reliably sent in order.
                              ;; Instead we use pointer-events: none on the children of the code fragments
                              ;; to prevent lots of redundant events.
-                             :attr {:on-mouse-over #(rf/dispatch [:code/hover-form (:form line)])
-                                    :on-mouse-out  #(rf/dispatch [:code/exit-hover-form (:form line)])}
-                             :children [[:pre (zp/zprint-str (:form line))]
+                             :attr {:on-mouse-over (handler-fn (rf/dispatch [:code/hover-form (:form line)]))
+                                    :on-mouse-out  (handler-fn (rf/dispatch [:code/exit-hover-form (:form line)]))}
+                             :children [[:div
+                                         {:style {:border  code-border
+                                                  :height  common/gs-19s
+                                                  :padding "0px 6px"}}
+                                         [:pre (zp/zprint-str (:form line))]]
                                         ;; TODO: disable history expansion, or at least storing of it in ls.
-                                        [components/simple-render (:result line) [(:id code-execution) i]]]]
-                            )))))]])]))]]))
+                                        [:div
+                                         {:style {:background-color "rgba(100, 255, 100, 0.08)"
+                                                  :border           code-border
+                                                  :margin-top       "-1px"
+                                                  :padding          "0px 3px"}}
+                                         [components/simple-render (:result line) [(:id code-execution) i]]]]])))))]])]))]]))
 
 
 (defn render []

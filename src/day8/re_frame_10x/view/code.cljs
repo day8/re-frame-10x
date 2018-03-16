@@ -19,7 +19,6 @@
     {:font-weight      "bold"
      :background-color "rgba(100, 100, 255, 0.08)"}]
    [:.code-fragment {:background-color common/white-background-color
-                     :padding          "5px"
                      :margin-right     "19px"
                      :cursor           "pointer"}
     [:&:hover {:background-color "rgba(100, 100, 255, 0.08)"}]]
