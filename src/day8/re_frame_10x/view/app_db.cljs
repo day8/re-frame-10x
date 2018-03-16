@@ -6,10 +6,11 @@
             [day8.re-frame-10x.view.components :as components]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v7v0.reagent.core :as r]
-            [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
+            [day8.re-frame-10x.utils.re-com :as rc :refer [close-button css-join]]
             [day8.re-frame-10x.common-styles :as common]
             [clojure.data])
-  (:require-macros [day8.re-frame-10x.utils.macros :as macros]))
+  (:require-macros [day8.re-frame-10x.utils.macros :as macros]
+                   [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
 (def delete (macros/slurp-macro "day8/re_frame_10x/images/delete.svg"))
 (def reload (macros/slurp-macro "day8/re_frame_10x/images/reload.svg"))
@@ -132,9 +133,12 @@
                              :on-click #(rf/dispatch [:snapshot/load-snapshot @app-db-after])]]]]]))
 
 (defn header-section
-  [& {:keys [style gap width min-width background-color children last?]}]
+  [& {:keys [size justify align gap width min-width background-color children style attr last?]
+      :or   {size "none" justify :center align :stretch}}]
   [rc/h-box
-   :align     :center
+   :size      size
+   :justify   justify
+   :align     align
    :gap       gap
    :width     width
    :min-width min-width
@@ -142,6 +146,7 @@
    :style     (merge {:border-right     (when-not last? pod-border-edge)
                       :background-color background-color}
                      style)
+   :attr      attr
    :children  children])
 
 (defn pod-header [{:keys [id path path-str open? diff?]}]
@@ -183,27 +188,27 @@
                            :placeholder "Showing all of app-db. Try entering a path like [:todos 1]"]]]
               [header-section
                :width "50px"
+               :attr     {:on-click (handler-fn (rf/dispatch [:app-db/set-diff-visibility id (not diff?)]))}
                :children [[rc/box
                            :style {:margin "auto"}
                            :child [rc/checkbox
                                    :model     diff?
                                    :label     ""
-                                   :style     {:margin-left "6px"}
-                                   :on-change #(when open? (rf/dispatch [:app-db/set-diff-visibility id (not diff?)]))]]]]
-
+                                   :style     {:margin-left "6px"
+                                               :margin-top  "1px"}
+                                   :on-change #(rf/dispatch [:app-db/set-diff-visibility id (not diff?)])]]]]
               [header-section
-               :width "50px"
-               :last? true
-               :children [[rc/box
-                           :class "bm-muted-button app-db-path--button noselect"
-                           :style {:margin "auto"}
-                           :attr  {:title    "Remove this pod"
-                                   :on-click #(do (reset! *finished-animation? false)
-                                                  (rf/dispatch [:app-db/remove-path id]))}
-                           :child [:img
-                                   {:src   (str "data:image/svg+xml;utf8," trash)
-                                    :style {:width  "13px"
-                                            :margin "0px 6px"}}]]]]]])
+               :width    "50px"
+               :justify  :center
+               :last?    true
+               :children [[close-button
+                           :div-size    31
+                           :font-size   31
+                           :left-offset 3
+                           :top-offset  -4
+                           :tooltip     "Remove this pod"
+                           :on-click    #(do (reset! *finished-animation? false)
+                                             (rf/dispatch [:app-db/remove-path id]))]]]]])
 
 (defn pod [{:keys [id path open? diff?] :as pod-info}]
   (let [render-diff?  (and open? diff?)
