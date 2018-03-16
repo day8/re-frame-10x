@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.view.subs
   (:require [day8.re-frame-10x.view.app-db :refer [pod-gap pod-padding border-radius pod-border-edge
-                                                   header-section cljs-dev-tools-background]]
+                                                   pod-header-section cljs-dev-tools-background]]
             [day8.re-frame-10x.utils.utils :as utils]
             [day8.re-frame-10x.utils.animated :as animated]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
@@ -9,7 +9,8 @@
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.view.components :as components]
             [mranderson047.garden.v1v3v3.garden.units :as units])
-  (:require-macros [day8.re-frame-10x.utils.macros :as macros]))
+  (:require-macros [day8.re-frame-10x.utils.macros :as macros]
+                   [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
 ;(s/def ::query-v any?)
 ;(s/def ::dyn-v any?)
@@ -57,6 +58,7 @@
    :children [[:span {:style {:font-size "9px"}} title]
               [components/tag (sub-tag-class type) label]]])
 
+
 (defn panel-header []
   (let [created-count             (rf/subscribe [:subs/created-count])
         re-run-count              (rf/subscribe [:subs/re-run-count])
@@ -101,12 +103,13 @@
                              :style {:margin-top "6px"}
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-l2-subs? %])]]]]]))
 
+
 (defn pod-header [{:keys [id layer path open? diff? run-times order]}]
   [rc/h-box
    :class    (str "app-db-path--header")
    :align    :center
    :height   common/gs-31s
-   :children [[header-section
+   :children [[pod-header-section
                :children [[rc/box
                            :width  common/gs-31s
                            :height common/gs-31s
@@ -143,11 +146,11 @@
                            :disabled? true]]]
 
               (when @(rf/subscribe [:settings/debug?])
-                [header-section
+                [pod-header-section
                  :min-width "50px"
                  :children [[rc/label :label (str id)]]])
 
-              [header-section
+              [pod-header-section
                :min-width "106px" ;; common/gs-131s - (2 * 12px padding) - (1px border)
                :gap       common/gs-12s
                :style     {:padding "0px 12px"}
@@ -157,7 +160,7 @@
                                   (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
                                 order)]
 
-              [header-section
+              [pod-header-section
                :width    common/gs-31s
                :children [[rc/box
                            :style {:width            common/gs-19s
@@ -172,21 +175,25 @@
                                               :style {:margin "auto"}
                                               :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]]]
 
-              [header-section
+              [pod-header-section
                :width "50px"
+               :attr     {:on-click (handler-fn (rf/dispatch [:subs/set-diff-visibility id (not diff?)]))}
                :last?    true
                :children [[rc/box
                            :style {:margin "auto"}
                            :child [rc/checkbox
                                    :model diff?
                                    :label ""
-                                   :style {:margin-left "6px"}
-                                   :on-change #(when open? (rf/dispatch [:subs/diff-pod? id (not diff?)]))]]]]]])
+                                   :style {:margin-left "6px"
+                                           :margin-top  "1px"}
+                                   :on-change #(rf/dispatch [:subs/set-diff-visibility id (not diff?)])]]]]]])
+
 
 (def no-prev-value-msg [:p {:style {:font-style "italic"}} "No previous value exists to diff"])
 (def unchanged-value-msg [:p {:style {:font-style "italic"}} "Subscription value is unchanged"])
 (def sub-not-run-msg [:p {:style {:font-style "italic"}} "Subscription not run, so no diff is available"])
 (def not-run-yet-msg [rc/label :style {:font-style "italic"} :label "Subscription not run yet, so no value is available"])
+
 
 (defn pod [{:keys [id layer path open? diff?] :as pod-info}]
   (let [render-diff?    (and open? diff?)
@@ -199,9 +206,10 @@
                 [rc/v-box
                  :class (when open? "app-db-path--pod-border")
                  :children [[animated/component
-                             (animated/v-box-options {:enter-animation "accordionVertical"
-                                                      :leave-animation "accordionVertical"
-                                                      :duration        animation-duration})
+                             (animated/v-box-options
+                               {:enter-animation "accordionVertical"
+                                :leave-animation "accordionVertical"
+                                :duration        animation-duration})
                              (when open?
                                (let [main-value (:value pod-info)
                                      #_(cond value? (:value pod-info)
@@ -219,9 +227,10 @@
                                                not-run-yet-msg
                                                )]]))]
                             [animated/component
-                             (animated/v-box-options {:enter-animation "accordionVertical"
-                                                      :leave-animation "accordionVertical"
-                                                      :duration        animation-duration})
+                             (animated/v-box-options
+                               {:enter-animation "accordionVertical"
+                                :leave-animation "accordionVertical"
+                                :duration        animation-duration})
                              (when render-diff?
                                (let [diffable?        (and value? previous-value?)
                                      not-run?         (= (:order pod-info) [:sub/not-run])
@@ -278,6 +287,7 @@
                             (when open?
                               [rc/gap-f :size pod-padding])]]]]))
 
+
 (defn no-pods []
   [rc/h-box
    :margin (css-join "0px 0px 0px" common/gs-19s)
@@ -285,6 +295,30 @@
    :align :start
    :align-self :start
    :children [[rc/label :label "There are no subscriptions to show"]]])
+
+
+(defn pod-header-column-titles
+  []
+  [rc/h-box
+   :height common/gs-19s
+   :align :center
+   :style {:margin-right "1px"}
+   :children [[rc/box
+               :size "1"
+               :child ""]
+              [rc/box
+               :width "132px" ;; common/gs-131s + 1 border
+               :justify :center
+               :child [rc/label :style {:font-size "9px"} :label "ACTIVITY"]]
+              [rc/box
+               :width "32px" ;; common/gs-31s + 1 border
+               :justify :center
+               :child [rc/label :style {:font-size "9px"} :label "LAYER"]]
+              [rc/box
+               :width "51px" ;;  50px + 1 border
+               :justify :center
+               :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]]])
+
 
 (defn pod-section []
   (let [visible-subs     @(rf/subscribe [:subs/visible-subs])
@@ -294,50 +328,13 @@
                            (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
                            visible-subs)]
     [rc/v-box
-     ;:size "1"
-     ;:gap pod-gap
-
-     ;:children (if (empty? all-subs)
-     ;            [[no-pods]]
-     ;            (doall (for [p all-subs]
-     ;                     ^{:key (:id p)}
-     ;                     [pod (merge p (get sub-expansions (:id p)))])))
-
+     :size     "1"
      :children [(if (and (empty? all-subs) @*finished-animation?)
                   [no-pods]
-                  [rc/box :width "0px" :height "0px"])
-
-                [rc/h-box
-                 :height common/gs-19s
-                 :align :center
-                 :style {:margin-right "1px"}
-                 :children [[rc/box
-                             :size "1"
-                             :child ""]
-                            [rc/box
-                             :width "132px" ;; common/gs-131s + 1 border
-                             :justify :center
-                             :child [rc/label :style {:font-size "9px"} :label "ACTIVITY"]]
-                            [rc/box
-                             :width "32px" ;; common/gs-31s + 1 border
-                             :justify :center
-                             :child [rc/label :style {:font-size "9px"} :label "LAYER"]]
-                            [rc/box
-                             :width "51px" ;;  50px + 1 border
-                             :justify :center
-                             :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]]]
-
+                  [pod-header-column-titles])
                 (for [p all-subs]
                   ^{:key (:id p)}
-                  [pod (merge p (get sub-expansions (:id p)))] )
-                #_[animated/component
-                   (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
-                                            :duration  animation-duration
-                                            :style     {:flex       "1 1 0px"
-                                                        :overflow-x "hidden"
-                                                        :overflow-y "auto"}})
-
-                   ]
+                  [pod (merge p (get sub-expansions (:id p)))])
                 (when (seq intra-epoch-subs)
                   (list
                     ^{:key "intra-epoch-line"}
@@ -347,25 +344,13 @@
                     [:h2 {:class "bm-heading-text"
                           :style {:margin "19px 0px"}}
                      [rc/link
-                      {:href "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
+                      {:href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
                        :label "Intra-Epoch Subscriptions"}]]
-
                     (for [p intra-epoch-subs]
                       ^{:key (:id p)}
                       [pod (merge p (get sub-expansions (:id p)))])))
+                ]]))
 
-
-                #_[animated/component
-                   (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
-                                            :duration  animation-duration
-                                            :style     {:flex       "1 1 0px"
-                                                        :overflow-x "hidden"
-                                                        :overflow-y "auto"}})
-
-                   ]
-                ]
-
-     ]))
 
 (defn render []
   []
@@ -377,4 +362,3 @@
    :children [[panel-header]
               [pod-section]
               [rc/gap-f :size common/gs-19s]]])
-

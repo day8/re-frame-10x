@@ -32,6 +32,7 @@
 (def *finished-animation? (r/atom false))
 (def animation-duration 150)
 
+
 (def app-db-styles
   [:#--re-frame-10x--
    #_[:.app-db-path
@@ -88,6 +89,7 @@
    [:.data-viewer--top-rule
     {#_#_:border-top  pod-border-edge}]])
 
+
 (defn panel-header []
   (let [app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
         app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])]
@@ -132,9 +134,10 @@
                                      :children ["end epoch state"]]
                              :on-click #(rf/dispatch [:snapshot/load-snapshot @app-db-after])]]]]]))
 
-(defn header-section
+
+(defn pod-header-section
   [& {:keys [size justify align gap width min-width background-color children style attr last?]
-      :or   {size "none" justify :center align :stretch}}]
+      :or   {size "none" justify :start align :center}}]
   [rc/h-box
    :size      size
    :justify   justify
@@ -149,12 +152,13 @@
    :attr      attr
    :children  children])
 
+
 (defn pod-header [{:keys [id path path-str open? diff?]}]
   [rc/h-box
    :class (str "app-db-path--header")
    :align :center
    :height common/gs-31s
-   :children [[header-section
+   :children [[pod-header-section
                :children [[rc/box
                            :width  common/gs-31s
                            :height common/gs-31s
@@ -186,7 +190,7 @@
                            :on-submit #()                   ;; #(rf/dispatch [:app-db/add-path %])
                            :change-on-blur? false
                            :placeholder "Showing all of app-db. Try entering a path like [:todos 1]"]]]
-              [header-section
+              [pod-header-section
                :width "50px"
                :attr     {:on-click (handler-fn (rf/dispatch [:app-db/set-diff-visibility id (not diff?)]))}
                :children [[rc/box
@@ -197,7 +201,7 @@
                                    :style     {:margin-left "6px"
                                                :margin-top  "1px"}
                                    :on-change #(rf/dispatch [:app-db/set-diff-visibility id (not diff?)])]]]]
-              [header-section
+              [pod-header-section
                :width    "50px"
                :justify  :center
                :last?    true
@@ -210,6 +214,7 @@
                            :on-click    #(do (reset! *finished-animation? false)
                                              (rf/dispatch [:app-db/remove-path id]))]]]]])
 
+
 (defn pod [{:keys [id path open? diff?] :as pod-info}]
   (let [render-diff?  (and open? diff?)
         app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])]
@@ -220,9 +225,10 @@
                 [rc/v-box
                  :class    (when open? "app-db-path--pod-border")
                  :children [[animated/component
-                             (animated/v-box-options {:enter-animation "accordionVertical"
-                                                      :leave-animation "accordionVertical"
-                                                      :duration        animation-duration})
+                             (animated/v-box-options
+                               {:enter-animation "accordionVertical"
+                                :leave-animation "accordionVertical"
+                                :duration        animation-duration})
                              (when open?
                                [rc/v-box
                                 :class "data-viewer"
@@ -249,9 +255,10 @@
 
                                            #_"---main-section---"]])]
                             [animated/component
-                             (animated/v-box-options {:enter-animation "accordionVertical"
-                                                      :leave-animation "accordionVertical"
-                                                      :duration        animation-duration})
+                             (animated/v-box-options
+                               {:enter-animation "accordionVertical"
+                                :leave-animation "accordionVertical"
+                                :duration        animation-duration})
                              (when render-diff?
                                (let [app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
                                      [diff-before diff-after _] (when render-diff?
@@ -311,34 +318,39 @@
                :label "add inspectors to show what happened to app-db"]]])
 
 
+(defn pod-header-column-titles
+  []
+  [rc/h-box
+   :height common/gs-19s
+   :align :center
+   :style {:margin-right "1px"}
+   :children [[rc/box
+               :size "1"
+               :child ""]
+              [rc/box
+               :width "51px" ;;  50px + 1 border
+               :justify :center
+               :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]
+              [rc/box
+               :width "51px" ;;  50px + 1 border
+               :justify :center
+               :child [rc/label :style {:font-size "9px"} :label "DELETE"]]]])
+
+
 (defn pod-section []
   (let [pods @(rf/subscribe [:app-db/paths])]
     [rc/v-box
-     :size "1"
-     ;:gap pod-gap
+     :size     "1"
      :children [(if (and (empty? pods) @*finished-animation?)
                   [no-pods]
-                  [rc/h-box
-                   :height common/gs-19s
-                   :align :center
-                   :style {:margin-right "1px"}
-                   :children [[rc/box
-                               :size "1"
-                               :child ""]
-                              [rc/box
-                               :width "51px" ;;  50px + 1 border
-                               :justify :center
-                               :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]
-                              [rc/box
-                               :width "51px" ;;  50px + 1 border
-                               :justify :center
-                               :child [rc/label :style {:font-size "9px"} :label "DELETE"]]]])
+                  [pod-header-column-titles])
                 [animated/component
-                 (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
-                                          :duration  animation-duration
-                                          :style     {:flex     "1 1 0px"
-                                                      :overflow-x "hidden"
-                                                      :overflow-y "auto"}})
+                 (animated/v-box-options
+                   {:on-finish #(reset! *finished-animation? true)
+                    :duration  animation-duration
+                    :style     {:flex       "1 1 0px"
+                                :overflow-x "hidden"
+                                :overflow-y "auto"}})
                  (for [p pods]
                    ^{:key (:id p)}
                    [pod p])]]]))

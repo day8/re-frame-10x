@@ -658,10 +658,16 @@
     (assoc-in expansions [id :open?] open?)))
 
 (rf/reg-event-db
-  :subs/diff-pod?
+  :subs/set-diff-visibility
   [(rf/path [:subs :expansions])]
   (fn [expansions [_ id diff?]]
-    (assoc-in expansions [id :diff?] diff?)))
+    (let [open? (if diff?
+                  true
+                  (get-in expansions [id :open?]))]
+      (-> expansions
+          (assoc-in [id :diff?] diff?)
+          ;; If we turn on diffing then we want to also expand the path
+          (assoc-in [id :open?] open?)))))
 
 ;;
 
