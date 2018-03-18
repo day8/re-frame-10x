@@ -570,6 +570,7 @@
                                                                                (comp
                                                                                  (utils/id-between-xf (:id (first match)) (:id (last match))))
                                                                                all-traces)
+                                                     ;; TODO: handle case when there are no epoch-traces
                                                      start-of-epoch      (nth epoch-traces 0)
                                                      ;; TODO: optimise trace searching
                                                      event-handler-trace (first (filter metam/event-handler? epoch-traces))

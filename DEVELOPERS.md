@@ -29,6 +29,8 @@ You need both the re-frame-10x project _and_ a test project to develop it agains
 
   ```
   ln -s ../relative/path/to/your/local/re-frame-10x re-frame-10x
+
+  mklink /d /j re-frame-10x ..\relative\path\to\your\local\re-frame-10x [Windows]
   ```
 
 - If you're using figwheel in the test project, you need to add the checkouts folder (`checkouts/re-frame-10x/src`) to `:cljsbuild :source-paths` in the `project.clj` file. If you're having trouble locating the right place to put this, it might help to look to a sample [project.clj](https://github.com/technomancy/leiningen/blob/stable/sample.project.clj) for inspiration. For example:
@@ -37,7 +39,7 @@ You need both the re-frame-10x project _and_ a test project to develop it agains
   :cljsbuild {:builds {:client {:source-paths ["checkouts/re-frame-10x/src"]}}}
   ```
 
-- re-frame-10x has a debug panel useful when developing it. You can enable it by adding the :closure-define `"day8.re_frame_10x.trace.debug_QMARK_" true` to your compiler settings.
+- re-frame-10x has a debug panel useful when developing it. You can enable it by adding the :closure-define `"day8.re_frame_10x.debug_QMARK_" true` to your compiler settings.
 
 - Now run your test project however you usually run it, and re-frame-10x should be in there. \o/
 

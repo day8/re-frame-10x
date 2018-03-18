@@ -1,9 +1,24 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.2.0] - Unreleased
+## [0.2.1] - Unreleased
 
-* re-frame-trace has been renamed to re-frame-10x. You will need to update your dependency from `day8.re-frame/trace "0.1.21` to `day8.re-frame/re-frame-10x "0.2.0` 
+### Changed
+
+* Set default behaviour on first launch to show the re-frame-10x panel instead of keeping it hidden. This will help people better debug their setup when they are configuring re-frame-10x.
+
+### Fixed
+
+* Bug where under certain rare circumstances relating to the structure of your app-db, the Event panel could throw an error when transitioning from one epoch to another.
+* Refer to the correct Closure define to enable tracing [#170](https://github.com/Day8/re-frame-10x/issues/170).
+
+## [0.2.0] - 2018-02-20
+
+### Upgrade notes
+
+* re-frame-trace has been renamed to re-frame-10x! To upgrade you need to do two things:
+  * Update your dependency from `day8.re-frame/trace "0.1.21` to `day8.re-frame/re-frame-10x "0.2.0`
+  * Update your preload from `day8.re-frame.trace.preload` to `day8.re-frame-10x.preload`. If you don't update the preload you will get a deprecation warning, reminding you to update it. 
 
 ## [0.1.22] - 2018-02-20
 

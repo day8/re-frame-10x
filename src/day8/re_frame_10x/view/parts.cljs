@@ -1,7 +1,10 @@
 (ns day8.re-frame-10x.view.parts
   (:require [day8.re-frame-10x.utils.re-com :as rc]
             [re-frame.registrar]
-            [re-frame.events]))
+            [re-frame.events]
+            [re-frame.subs]
+            [re-frame.fx]
+            [re-frame.cofx]))
 
 (defn render-registered [kind]
   (for [[k v] (sort-by key (get @re-frame.registrar/kind->id->handler kind))]
