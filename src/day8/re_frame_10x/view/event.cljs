@@ -24,7 +24,7 @@
                    :indent-level 1}
                 2 {:id           2
                    :open?        false
-                   :form         "todos\n blah\n  crap"
+                   :form         'todos
                    :result       {3 {:id 3, :title "abc", :done false},
                                   4 {:id 4, :title "abc", :done true},
                                   5 {:id 5, :title "def", :done true},
@@ -60,9 +60,18 @@
                    :form         '(map :id)
                    :result       '(4 5)
                    :indent-level 1}
-                7 {:id           7
-                   :open?        false
+                7 {:id     7
+                   :open?  false
                    :form   '(reduce dissoc todos)
+                   :result {3 {:id 3, :title "abc", :done false},
+                            6 {:id 6, :title "abc", :done false},
+                            7 {:id 7, :title "add", :done false}}}
+                8 {:id     8
+                   :open?  false
+                   :form   '(->> (vals todos)
+                                 (filter :done)
+                                 (map :id)
+                                 (reduce dissoc todos))
                    :result {3 {:id 3, :title "abc", :done false},
                             6 {:id 6, :title "abc", :done false},
                             7 {:id 7, :title "add", :done false}}}}
@@ -123,7 +132,7 @@
                 [:pre
                  {:style {:margin-left "2px"
                           :margin-top  "2px"}}
-                 (str (:form line))]]])) ;; Was (zp/zprint-str (:form line))
+                 (zp/zprint-str (:form line))]]]))
 
 
 (defn code-block
