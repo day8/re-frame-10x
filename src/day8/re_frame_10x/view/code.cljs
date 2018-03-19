@@ -9,7 +9,7 @@
 (def code-styles
   [:#--re-frame-10x--
    [:.code-panel
-    {:padding-bottom common/gs-31}]
+    #_{:padding-bottom common/gs-31}] ;; Leaving the empty def here for now
    ;; We rely on highlight JS for our background now.
    #_[:.code-listing
     {:background-color common/white-background-color

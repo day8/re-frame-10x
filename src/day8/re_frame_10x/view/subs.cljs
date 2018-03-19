@@ -116,7 +116,7 @@
                            :class  "noselect"
                            :style  {:cursor "pointer"}
                            :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                                    :on-click #(rf/dispatch [:subs/open-pod? id (not open?)])}
+                                    :on-click (handler-fn (rf/dispatch [:subs/open-pod? id (not open?)]))}
                            :child  [rc/box
                                     :margin "auto"
                                     :child [:span.arrow (if open? "▼" "▶")]]]]]
