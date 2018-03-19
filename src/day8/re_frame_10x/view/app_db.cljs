@@ -210,7 +210,7 @@
                            :font-size   31
                            :left-offset 3
                            :top-offset  -4
-                           :tooltip     "Remove this pod"
+                           :tooltip     "Remove this inspector"
                            :on-click    #(do (reset! *finished-animation? false)
                                              (rf/dispatch [:app-db/remove-path id]))]]]]])
 

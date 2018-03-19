@@ -132,39 +132,39 @@
               [:br]
               [rc/v-box
                :size "1 1 auto"
-               :style {:overflow-y "scroll"}
-               :children
-               (doall
-                 (->> (:code code-execution)
-                      ;; Remove traced function values, these are usually not very interesting in and of themselves.
-                      (remove (fn [line] (fn? (:result line))))
-                      (map-indexed
-                        (fn [i line]
-                          (list
-                            ;; See https://github.com/reagent-project/reagent/issues/350 for why we use random-uuid here
-                            ^{:key (random-uuid)}
-                            [rc/v-box
-                             :class "code-fragment"
-                             :style {:margin-left (str (* 9 (:indent-level line)) "px")
-                                     :margin-top  (when (pos? i) "-1px")}
-                             ;; on-mouse enter/leave fires fewer events (only on enter/leave of outer form)
-                             ;; but the events don't seem to be reliably sent in order.
-                             ;; Instead we use pointer-events: none on the children of the code fragments
-                             ;; to prevent lots of redundant events.
-                             :attr {:on-mouse-over (handler-fn (rf/dispatch [:code/hover-form (:form line)]))
-                                    :on-mouse-out  (handler-fn (rf/dispatch [:code/exit-hover-form (:form line)]))}
-                             :children [[:div
-                                         {:style {:border  code-border
-                                                  :height  common/gs-19s
-                                                  :padding "0px 6px"}}
-                                         [:pre (zp/zprint-str (:form line))]]
-                                        ;; TODO: disable history expansion, or at least storing of it in ls.
-                                        [:div
-                                         {:style {:background-color "rgba(100, 255, 100, 0.08)"
-                                                  :border           code-border
-                                                  :margin-top       "-1px"
-                                                  :padding          "0px 3px"}}
-                                         [components/simple-render (:result line) [(:id code-execution) i]]]]])))))]])]))]]))
+               :children (doall
+                           (->> (:code code-execution)
+                                ;; Remove traced function values, these are usually not very interesting in and of themselves.
+                                (remove (fn [line] (fn? (:result line))))
+                                (map-indexed
+                                  (fn [i line]
+                                    (list
+                                      ;; See https://github.com/reagent-project/reagent/issues/350 for why we use random-uuid here
+                                      ^{:key (random-uuid)}
+                                      [rc/v-box
+                                       :class "code-fragment"
+                                       :style {:margin-left (str (* 9 (:indent-level line)) "px")
+                                               :margin-top  (when (pos? i) "-1px")}
+                                       ;; on-mouse enter/leave fires fewer events (only on enter/leave of outer form)
+                                       ;; but the events don't seem to be reliably sent in order.
+                                       ;; Instead we use pointer-events: none on the children of the code fragments
+                                       ;; to prevent lots of redundant events.
+                                       :attr {:on-mouse-over (handler-fn (rf/dispatch [:code/hover-form (:form line)]))
+                                              :on-mouse-out  (handler-fn (rf/dispatch [:code/exit-hover-form (:form line)]))}
+                                       :children [[:div
+                                                   {:style {:border  code-border
+                                                            :height  "17px" ;; common/gs-19s - 2
+                                                            :padding "1px 6px"}}
+                                                   [:pre {:style {:margin-top "2px"}} (zp/zprint-str (:form line))]]
+                                                  ;; TODO: disable history expansion, or at least storing of it in ls.
+                                                  [:div
+                                                   {:style {:background-color "rgba(100, 255, 100, 0.08)"
+                                                            :border           code-border
+                                                            :margin-top       "-1px"
+                                                            :overflow-x       "auto"
+                                                            :overflow-y       "hidden"
+                                                            :padding          "0px 3px"}}
+                                                   [components/simple-render (:result line) [(:id code-execution) i]]]]])))))]])]))]]))
 
 
 (defn render []

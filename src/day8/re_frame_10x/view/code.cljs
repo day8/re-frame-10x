@@ -18,12 +18,8 @@
    [:.code-listing--highlighted
     {:font-weight      "bold"
      :background-color "rgba(100, 100, 255, 0.08)"}]
-   [:.code-fragment {:background-color common/white-background-color
-                     :margin-right     "19px"
-                     :cursor           "pointer"}
-    [:&:hover {:background-color "rgba(100, 100, 255, 0.08)"}]]
-   ;; Prevent multiple events firing on mouse-over/out
-   [".code-fragment>*" {:pointer-events "none"}]])
+   [:.code-fragment {:background-color common/white-background-color}
+    [:&:hover {:background-color "rgba(100, 100, 255, 0.08)"}]]])
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
