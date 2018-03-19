@@ -24,7 +24,7 @@
                    :indent-level 1}
                 2 {:id           2
                    :open?        false
-                   :form         'todos
+                   :form         "todos\n blah\n  crap"
                    :result       {3 {:id 3, :title "abc", :done false},
                                   4 {:id 4, :title "abc", :done true},
                                   5 {:id 5, :title "def", :done true},
@@ -107,7 +107,6 @@
   (let [open? (:open? line)]
     [rc/h-box
      :style {:border  code-border
-             :height  "17px" ;; common/gs-19s - 2
              :padding "1px 6px"}
      :children [[rc/box
                  :width  "17px"
@@ -124,7 +123,7 @@
                 [:pre
                  {:style {:margin-left "2px"
                           :margin-top  "2px"}}
-                 (zp/zprint-str (:form line))]]]))
+                 (str (:form line))]]])) ;; Was (zp/zprint-str (:form line))
 
 
 (defn code-block
