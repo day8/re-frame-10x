@@ -206,8 +206,8 @@
                           [components/highlight {:language "clojure"}
                            form-str])]
                 [rc/v-box
-                 :size     "1 1 auto"
-                 :style    {:margin-bottom common/gs-31s}
+                 :size     "1"
+                 :style    {:overflow-y "auto"}
                  :children (doall
                              (->> (:code code-execution)
                                   ;; Remove traced function values, these are usually not very interesting in and of themselves.
@@ -239,7 +239,9 @@
     ;; the data provided in successive renders is sufficiently different.
     ^{:key epoch-id}
     [rc/v-box
-     :class "event-panel"
-     :gap common/gs-19s
+     :size     "1"
+     :class    "event-panel"
+     ;:style    {:margin-right common/gs-19s}
+     :gap      common/gs-19s
      :children [[event-code]
                 [rc/gap-f :size "0px"]]]))

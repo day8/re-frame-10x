@@ -359,10 +359,8 @@
 (defn render []
   []
   [rc/v-box
-   :size "1"
-   :style {:margin-right common/gs-19s
-           ;:overflow     "hidden"
-           }
+   :size     "1"
+   :style    {:margin-right common/gs-19s}
    :children [[panel-header]
               [pod-section]
               [rc/gap-f :size common/gs-19s]]])
