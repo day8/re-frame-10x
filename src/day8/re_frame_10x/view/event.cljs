@@ -134,17 +134,23 @@
    :child [components/simple-render (:result line) [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id i]]])
 
 
-(defn event-panel-instructions []
-  [rc/v-box
-   :children [[:span.bm-heading-text.light-heading "Event Panel"]
-              [rc/p "TODO: Need some big love here"]
-              [rc/p "This amazing panel can contain the actual code of the event along with all of it's intermediate values"]
-              [rc/p "But to get to this magic, you need to manually mark up your project:"]
-              [rc/p "1) Add " [:span.bold "[day8.re-frame/debux \"0.5.0-SNAPSHOT\"]"] " to the :dev :dependencies section in project.clj"]
-              [rc/p "2) Add " [:span.bold "\"debux.cs.core.trace_enabled_QMARK_\" true"] " to the :closure-defines section in project.clj"]
-              [rc/p "3) Add " [:span.bold "[debux.cs.core :refer-macros [fn-traced]]"] " to the :require section of the event code file(s)"]
-              [rc/p "4) Replace " [:span.bold "fn"] " with " [:span.bold "fn-traced"] " in the events to be traced in this panel"]
-              ]])
+(defn event-panel-instructions
+  []
+  (let [current-event @(rf/subscribe [:epochs/current-event])
+        event-str     (if (some? current-event)
+                        (subs (prn-str current-event) 0 400)
+                        "No event")]
+    [rc/v-box
+     :children [[:span.bm-heading-text.light-heading event-str]
+                [rc/p {:style {:font-style "italic"}} "Code trace is not currently available for this event"]
+                [:br]
+                [rc/p "This panel can show the actual code of the event along with all of it's intermediate values."]
+                [rc/p "To get to this magic going, you need to make a few adjustments to your project:"]
+                [:ol
+                 [:li [rc/p "Add " [:span.bold "[day8.re-frame/debux \"0.5.0-SNAPSHOT\"]"] " to the :dev :dependencies section in project.clj"]]
+                 [:li [rc/p "Add " [:span.bold "\"debux.cs.core.trace_enabled_QMARK_\" true"] " to the :closure-defines section in project.clj"]]
+                 [:li [rc/p "Add " [:span.bold "[debux.cs.core :refer-macros [fn-traced]]"] " to the :require section of the event code file(s)"]]
+                 [:li [rc/p "Replace " [:span.bold "fn"] " with " [:span.bold "fn-traced"] " in the events to be traced in this panel"]]]]]))
 
 
 ;; Terminology:
