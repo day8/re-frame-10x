@@ -15,76 +15,71 @@
 
 (def current-code
   (reagent/atom
-    {1 {:title ":event/handler",
-        :id    1,
-        :code  {1 {:id           1
-                   :open?        false
-                   :form         'dissoc
-                   :result       dissoc
-                   :indent-level 1}
-                2 {:id           2
-                   :open?        false
-                   :form         'todos
-                   :result       {3 {:id 3, :title "abc", :done false},
-                                  4 {:id 4, :title "abc", :done true},
-                                  5 {:id 5, :title "def", :done true},
-                                  6 {:id 6, :title "abc", :done false},
-                                  7 {:id 7, :title "add", :done false}}
-                   :indent-level 1}
-                3 {:id           3
-                   :open?        false
-                   :form         'todos
-                   :result       {3 {:id 3, :title "abc", :done false},
-                                  4 {:id 4, :title "abc", :done true},
-                                  5 {:id 5, :title "def", :done true},
-                                  6 {:id 6, :title "abc", :done false},
-                                  7 {:id 7, :title "add", :done false}}
-                   :indent-level 4}
-                4 {:id           4
-                   :open?        false
-                   :form         '(vals todos)
-                   :result       '({:id 3, :title "abc", :done false},
-                                    {:id 4, :title "abc", :done true},
-                                    {:id 5, :title "def", :done true},
-                                    {:id 6, :title "abc", :done false},
-                                    {:id 7, :title "add", :done false})
-                   :indent-level 3}
-                5 {:id           5
-                   :open?        false
-                   :form         '(filter :done)
-                   :result       '({:id 4 :title "abc" :done true}
-                                    {:id 5 :title "def" :done true})
-                   :indent-level 2}
-                6 {:id           6
-                   :open?        false
-                   :form         '(map :id)
-                   :result       '(4 5)
-                   :indent-level 1}
-                7 {:id     7
-                   :open?  false
-                   :form   '(reduce dissoc todos)
-                   :result {3 {:id 3, :title "abc", :done false},
-                            6 {:id 6, :title "abc", :done false},
-                            7 {:id 7, :title "add", :done false}}}
-                8 {:id     8
-                   :open?  false
-                   :form   '(->> (vals todos)
-                                 (filter :done)
-                                 (map :id)
-                                 (reduce dissoc todos))
-                   :result {3 {:id 3, :title "abc", :done false},
-                            6 {:id 6, :title "abc", :done false},
-                            7 {:id 7, :title "add", :done false}}}}
-        :form  '(->> (vals todos)
-                     (filter :done)
-                     (map :id)
-                     (reduce dissoc todos))}}))
+    (list
+      {:title ":event/handler",
+       :id    1,
+       :code  [{:id           0
+                :form         'dissoc
+                :result       dissoc
+                :indent-level 1}
+               {:id           1
+                :form         'todos
+                :result       {3 {:id 3, :title "abc", :done false},
+                               4 {:id 4, :title "abc", :done true},
+                               5 {:id 5, :title "def", :done true},
+                               6 {:id 6, :title "abc", :done false},
+                               7 {:id 7, :title "add", :done false}}
+                :indent-level 1}
+               {:id           2
+                :form         'todos
+                :result       {3 {:id 3, :title "abc", :done false},
+                               4 {:id 4, :title "abc", :done true},
+                               5 {:id 5, :title "def", :done true},
+                               6 {:id 6, :title "abc", :done false},
+                               7 {:id 7, :title "add", :done false}}
+                :indent-level 4}
+               {:id           3
+                :form         '(vals todos)
+                :result       '({:id 3, :title "abc", :done false},
+                                 {:id 4, :title "abc", :done true},
+                                 {:id 5, :title "def", :done true},
+                                 {:id 6, :title "abc", :done false},
+                                 {:id 7, :title "add", :done false})
+                :indent-level 3}
+               {:id           4
+                :form         '(filter :done)
+                :result       '({:id 4 :title "abc" :done true}
+                                 {:id 5 :title "def" :done true})
+                :indent-level 2}
+               {:id           5
+                :form         '(map :id)
+                :result       '(4 5)
+                :indent-level 1}
+               {:id           6
+                :form         '(reduce dissoc todos)
+                :result       {3 {:id 3, :title "abc", :done false},
+                               6 {:id 6, :title "abc", :done false},
+                               7 {:id 7, :title "add", :done false}}
+                :indent-level 1}
+               {:id           7
+                :form         '(->> (vals todos)
+                                    (filter :done)
+                                    (map :id)
+                                    (reduce dissoc todos))
+                :result       {3 {:id 3, :title "abc", :done false},
+                               6 {:id 6, :title "abc", :done false},
+                               7 {:id 7, :title "add", :done false}}
+                :indent-level 1}]
+       :form  '(->> (vals todos)
+                    (filter :done)
+                    (map :id)
+                    (reduce dissoc todos))})))
 
 
 (def event-styles
   [:#--re-frame-10x--
    [:.event-panel
-    {:padding "39px 19px 0px 0px"}]
+    {:padding "19px 19px 0px 0px"}]
    [:.event-section]
    [:.event-section--header
     {:background-color common/navbar-tint-lighter
@@ -112,31 +107,31 @@
 
 
 (defn code-header
-  [code-execution line]
-  (let [open? (:open? line)]
+  [code-execution-id line]
+  (let [open?-path [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]
+        open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)]
     [rc/h-box
-     :style {:border  code-border
-             :padding "1px 6px"}
+     :style {:border   code-border
+             :overflow "hidden"
+             :padding  "1px 6px"}
      :children [[rc/box
                  :width  "17px"
                  :height "17px"
                  :class  "noselect"
                  :style  {:cursor "pointer"
                           :color  "#b0b2b4"}
-                 :attr   {:on-click (handler-fn
-                                      #_#(rf/dispatch [:subs/open-pod? id (not open?)])
-                                      (swap! current-code #(update-in % [(:id code-execution) :code (:id line) :open?] not)))}
+                 :attr   {:on-click (handler-fn (rf/dispatch [:code/set-code-visibility open?-path (not open?)]))}
                  :child  [rc/box
                           :margin "auto"
                           :child  [:span.arrow (if open? "▼" "▶")]]]
                 [:pre
                  {:style {:margin-left "2px"
                           :margin-top  "2px"}}
-                 (zp/zprint-str (:form line))]]]))
+                 (str (:form line))]]]))
 
 
 (defn code-block
-  [code-execution line i]
+  [code-execution-id line i] ;; TODO: can remove i and use () instead but left here for now in case DC removes that in the :code/current-code sub
   [rc/box
    :style {:background-color "rgba(100, 255, 100, 0.08)"
            :border           code-border
@@ -144,7 +139,7 @@
            :overflow-x       "auto"
            :overflow-y       "hidden"
            :padding          "0px 3px"}
-   :child [components/simple-render (:result line) [(:id code-execution) i]]])
+   :child [components/simple-render (:result line) [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id i]]])
 
 
 ;; Terminology:
@@ -154,17 +149,17 @@
 ;; Listing: a block of traced Clojure code, e.g. an event handler function
 
 (defn event-code []
-  (let [code-traces      @current-code ;; @(rf/subscribe [:code/current-code])
+  (let [code-traces      @(rf/subscribe [:code/current-code]) ;; TODO: Try @current-code to see indents, then delete when real indents implemented
+        code-open?       @(rf/subscribe [:code/code-open?])
         highlighted-form @(rf/subscribe [:code/highlighted-form])
-        ;highlighted-form '(filter :done)
         debug?           @(rf/subscribe [:settings/debug?])]
     [rc/v-box
      :size "1 1 auto"
      :class "code-panel"
      :children
-     [(when debug? [:pre "Hover " (pr-str highlighted-form) "\n"])
+     [#_(when debug? [:pre "Hover " (pr-str highlighted-form) "\n"])
       (doall
-        (for [code-execution (vals code-traces)]
+        (for [code-execution code-traces]
           ^{:key (:id code-execution)}
           [rc/v-box
            :size "1 1 auto"
@@ -184,14 +179,18 @@
               ;; We get lots of React errors if we don't force a creation of a new element
               ;; when the highlight changes. Not really sure why...
               ^{:key (pr-str highlighted-form)}
-              [:div
-               (if (some? highlighted-form)
-                 [components/highlight {:language "clojure"}
-                  (list ^{:key "before"} before
-                        ^{:key "hl"} [:span.code-listing--highlighted highlight]
-                        ^{:key "after"} after)]
-                 [components/highlight {:language "clojure"}
-                  form-str])]
+              [rc/box
+               :style {:max-height (str (* 10 17) "px") ;; Add scrollbar after 10 lines
+                       ;:overflow-x "auto"
+                       :overflow-y "auto" ;; TODO: Need to overwrite some CSS in the components/highlight React component to get the horizontal scrollbar working properly
+                       }
+               :child (if (some? highlighted-form)
+                        [components/highlight {:language "clojure"}
+                         (list ^{:key "before"} before
+                               ^{:key "hl"} [:span.code-listing--highlighted highlight]
+                               ^{:key "after"} after)]
+                        [components/highlight {:language "clojure"}
+                         form-str])]
 
               [:br]
               [rc/v-box
@@ -199,17 +198,16 @@
                :style    {:margin-bottom common/gs-31s}
                :children (doall
                            (->> (:code code-execution)
-                                vals ;; TODO: Now that this is a map, the order is not guaranteed
                                 ;; Remove traced function values, these are usually not very interesting in and of themselves.
                                 (remove (fn [line] (fn? (:result line))))
-                                (map-indexed
+                                (map-indexed ;; TODO: Can remove map-indexed because we insert :id in the :code/current-code sub (but DC may change that so left it here for now)
                                   (fn [i line]
                                     (list
                                       ;; See https://github.com/reagent-project/reagent/issues/350 for why we use random-uuid here
                                       ^{:key (random-uuid)}
                                       [rc/v-box
                                        :class "code-fragment"
-                                       :style {:margin-left (str (* 9 (:indent-level line)) "px")
+                                       :style {:margin-left (str (* 9 (dec (:indent-level line))) "px")
                                                :margin-top  (when (pos? i) "-1px")}
                                        ;; on-mouse enter/leave fires fewer events (only on enter/leave of outer form)
                                        ;; but the events don't seem to be reliably sent in order.
@@ -217,10 +215,10 @@
                                        ;; to prevent lots of redundant events.
                                        :attr {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form (:form line)]))
                                               :on-mouse-leave  (handler-fn (rf/dispatch [:code/exit-hover-form (:form line)]))}
-                                       :children [[code-header code-execution line]
+                                       :children [[code-header (:id code-execution) line]
                                                   ;; TODO: disable history expansion, or at least storing of it in ls.
-                                                  (when (:open? line)
-                                                    [code-block code-execution line i])]])))))]])]))]]))
+                                                  (when (get-in code-open? [@(rf/subscribe [:epochs/current-epoch-id]) (:id code-execution) (:id line)])
+                                                    [code-block (:id code-execution) line i])]])))))]])]))]]))
 
 
 (defn render []

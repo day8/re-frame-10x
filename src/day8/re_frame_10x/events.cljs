@@ -672,6 +672,12 @@
 ;;
 
 (rf/reg-event-db
+  :code/set-code-visibility
+  [(rf/path [:code :code-open?])]
+  (fn [code-open? [_ open?-path open?]]
+    (assoc-in code-open? open?-path open?)))
+
+(rf/reg-event-db
   :code/hover-form
   [(rf/path [:code :highlighted-form])]
   (fn [form [_ new-form]]

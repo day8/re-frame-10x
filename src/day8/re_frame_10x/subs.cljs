@@ -621,11 +621,19 @@
   :code/current-code
   :<- [:traces/current-event-traces]
   (fn [traces _]
-    (keep-indexed (fn [i trace] (when-some [code (get-in trace [:tags :code])]
-                                  {:title (pr-str (:op-type trace)) :id i :code code :form (get-in trace [:tags :form])}))
-                  traces)
+    (keep-indexed (fn [i trace]
+                    (when-some [code (get-in trace [:tags :code])]
+                      {:id    i
+                       :title (pr-str (:op-type trace))
+                       :code  (->> code (map-indexed (fn [i code] (assoc code :id i))) vec) ;; Add index
+                       :form  (get-in trace [:tags :form])}))
+                  traces)))
 
-    #_[{:title "Event" :id 1 :code "ABC\nDEF"}]))
+(rf/reg-sub
+  :code/code-open?
+  :<- [:code/root]
+  (fn [code _]
+    (:code-open? code)))
 
 (rf/reg-sub
   :code/highlighted-form
