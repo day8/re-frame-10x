@@ -9,7 +9,7 @@
             [day8.re-frame-10x.view.timing :as timing]
             [day8.re-frame-10x.view.settings :as settings]
             [day8.re-frame-10x.view.event :as event]
-            [day8.re-frame-10x.view.code :as code]))
+            [day8.re-frame-10x.view.fx :as fx]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -480,7 +480,7 @@
                                      timing/timing-styles
                                      event/event-styles
                                      settings/settings-styles
-                                     code/code-styles]))
+                                     fx/fx-styles]))
 
 (defn inject-inline-style [document id style]
   (let [styles-el     (.getElementById document id)

@@ -415,11 +415,12 @@
         [m children] (if (map? child1)
                        [child1 (rest children)]
                        [{} children])
-        m      (deep-merge {:style {:flex      "none"
-                                    :width     "450px"
-                                    :min-width "450px"}}
+        m      (deep-merge {:style {:flex          "none"
+                                    :width         "450px"
+                                    :min-width     "450px"
+                                    :margin-bottom "10px"}}
                            m)]
-    [:span.rc-p
+    [:span
      m
      (into [:p] children)]))    ;; the wrapping span allows children to contain [:ul] etc
 

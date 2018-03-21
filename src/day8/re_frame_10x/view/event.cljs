@@ -80,6 +80,9 @@
   [:#--re-frame-10x--
    [:.event-panel
     {:padding "19px 19px 0px 0px"}]
+   [:.light-heading {:font-weight "300"
+                     :margin-bottom common/gs-19s}]
+   [:.bold {:font-weight "bold"}]
    [:.event-section]
    [:.event-section--header
     {:background-color common/navbar-tint-lighter
@@ -93,17 +96,6 @@
      :padding-left     (units/px- common/gs-12 common/expansion-button-horizontal-padding)
      :overflow-x       "auto"}]
    ])
-
-
-(defn event-section [title data]
-  [rc/v-box
-   :class "event-section"
-   :children
-   [[rc/h-box
-     :class "event-section--header app-db-path--header"
-     :align :center
-     :children [[:h2 title]]]
-    [components/simple-render data [title] "event-section--data app-db-path--pod-border"]]])
 
 
 (defn code-header
@@ -142,6 +134,19 @@
    :child [components/simple-render (:result line) [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id i]]])
 
 
+(defn event-panel-instructions []
+  [rc/v-box
+   :children [[:span.bm-heading-text.light-heading "Event Panel"]
+              [rc/p "TODO: Need some big love here"]
+              [rc/p "This amazing panel can contain the actual code of the event along with all of it's intermediate values"]
+              [rc/p "But to get to this magic, you need to manually mark up your project:"]
+              [rc/p "1) Add " [:span.bold "[day8.re-frame/debux \"0.5.0-SNAPSHOT\"]"] " to the :dev :dependencies section in project.clj"]
+              [rc/p "2) Add " [:span.bold "\"debux.cs.core.trace_enabled_QMARK_\" true"] " to the :closure-defines section in project.clj"]
+              [rc/p "3) Add " [:span.bold "[debux.cs.core :refer-macros [fn-traced]]"] " to the :require section of the event code file(s)"]
+              [rc/p "4) Replace " [:span.bold "fn"] " with " [:span.bold "fn-traced"] " in the events to be traced in this panel"]
+              ]])
+
+
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
 ;; Result: the result of execution of a single form
@@ -153,77 +158,77 @@
         code-open?       @(rf/subscribe [:code/code-open?])
         highlighted-form @(rf/subscribe [:code/highlighted-form])
         debug?           @(rf/subscribe [:settings/debug?])]
-    [rc/v-box
-     :size "1 1 auto"
-     :class "code-panel"
-     :children
-     [#_(when debug? [:pre "Hover " (pr-str highlighted-form) "\n"])
-      (doall
-        (for [code-execution code-traces]
-          ^{:key (:id code-execution)}
-          [rc/v-box
-           :size "1 1 auto"
-           :children
-           (let [form       (:form code-execution)
-                 form-str   (zp/zprint-str form)
-                 search-str highlighted-form
-                 start      (str/index-of form-str search-str)
-                 length     (if (some? search-str)
-                              (count (pr-str search-str))
-                              0)
-                 before     (subs form-str 0 start)
-                 end-index  (+ start length)
-                 highlight  (subs form-str start end-index)
-                 after      (subs form-str end-index)]
-             [
-              ;; We get lots of React errors if we don't force a creation of a new element
-              ;; when the highlight changes. Not really sure why...
-              ^{:key (pr-str highlighted-form)}
-              [rc/box
-               :style {:max-height (str (* 10 17) "px") ;; Add scrollbar after 10 lines
-                       ;:overflow-x "auto"
-                       :overflow-y "auto" ;; TODO: Need to overwrite some CSS in the components/highlight React component to get the horizontal scrollbar working properly
-                       }
-               :child (if (some? highlighted-form)
-                        [components/highlight {:language "clojure"}
-                         (list ^{:key "before"} before
-                               ^{:key "hl"} [:span.code-listing--highlighted highlight]
-                               ^{:key "after"} after)]
-                        [components/highlight {:language "clojure"}
-                         form-str])]
-
-              [:br]
-              [rc/v-box
-               :size     "1 1 auto"
-               :style    {:margin-bottom common/gs-31s}
-               :children (doall
-                           (->> (:code code-execution)
-                                ;; Remove traced function values, these are usually not very interesting in and of themselves.
-                                (remove (fn [line] (fn? (:result line))))
-                                (map-indexed ;; TODO: Can remove map-indexed because we insert :id in the :code/current-code sub (but DC may change that so left it here for now)
-                                  (fn [i line]
-                                    (list
-                                      ;; See https://github.com/reagent-project/reagent/issues/350 for why we use random-uuid here
-                                      ^{:key (random-uuid)}
-                                      [rc/v-box
-                                       :class "code-fragment"
-                                       :style {:margin-left (str (* 9 (dec (:indent-level line))) "px")
-                                               :margin-top  (when (pos? i) "-1px")}
-                                       ;; on-mouse enter/leave fires fewer events (only on enter/leave of outer form)
-                                       ;; but the events don't seem to be reliably sent in order.
-                                       ;; Instead we use pointer-events: none on the children of the code fragments
-                                       ;; to prevent lots of redundant events.
-                                       :attr {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form (:form line)]))
-                                              :on-mouse-leave  (handler-fn (rf/dispatch [:code/exit-hover-form (:form line)]))}
-                                       :children [[code-header (:id code-execution) line]
-                                                  ;; TODO: disable history expansion, or at least storing of it in ls.
-                                                  (when (get-in code-open? [@(rf/subscribe [:epochs/current-epoch-id]) (:id code-execution) (:id line)])
-                                                    [code-block (:id code-execution) line i])]])))))]])]))]]))
+    (if (empty? code-traces)
+      [event-panel-instructions]
+      [rc/v-box
+       :size "1 1 auto"
+       :class "code-panel"
+       :children
+       [#_(when debug? [:pre "Hover " (pr-str highlighted-form) "\n"])
+        (doall
+          (for [code-execution code-traces]
+            ^{:key (:id code-execution)}
+            [rc/v-box
+             :size "1 1 auto"
+             :gap common/gs-19s
+             :children
+             (let [form       (:form code-execution)
+                   form-str   (zp/zprint-str form)
+                   search-str highlighted-form
+                   start      (str/index-of form-str search-str)
+                   length     (if (some? search-str)
+                                (count (pr-str search-str))
+                                0)
+                   before     (subs form-str 0 start)
+                   end-index  (+ start length)
+                   highlight  (subs form-str start end-index)
+                   after      (subs form-str end-index)]
+               [
+                ;; We get lots of React errors if we don't force a creation of a new element
+                ;; when the highlight changes. Not really sure why...
+                ^{:key (pr-str highlighted-form)}
+                [rc/box
+                 :style {:max-height (str (* 10 17) "px") ;; Add scrollbar after 10 lines
+                         ;:overflow-x "auto"
+                         :overflow-y "auto" ;; TODO: Need to overwrite some CSS in the components/highlight React component to get the horizontal scrollbar working properly
+                         }
+                 :child (if (some? highlighted-form)
+                          [components/highlight {:language "clojure"}
+                           (list ^{:key "before"} before
+                                 ^{:key "hl"} [:span.code-listing--highlighted highlight]
+                                 ^{:key "after"} after)]
+                          [components/highlight {:language "clojure"}
+                           form-str])]
+                [rc/v-box
+                 :size     "1 1 auto"
+                 :style    {:margin-bottom common/gs-31s}
+                 :children (doall
+                             (->> (:code code-execution)
+                                  ;; Remove traced function values, these are usually not very interesting in and of themselves.
+                                  (remove (fn [line] (fn? (:result line))))
+                                  (map-indexed ;; TODO: Can remove map-indexed because we insert :id in the :code/current-code sub (but DC may change that so left it here for now)
+                                    (fn [i line]
+                                      (list
+                                        ;; See https://github.com/reagent-project/reagent/issues/350 for why we use random-uuid here
+                                        ^{:key (random-uuid)}
+                                        [rc/v-box
+                                         :class "code-fragment"
+                                         :style {:margin-left (str (* 9 (dec (:indent-level line))) "px")
+                                                 :margin-top  (when (pos? i) "-1px")}
+                                         ;; on-mouse enter/leave fires fewer events (only on enter/leave of outer form)
+                                         ;; but the events don't seem to be reliably sent in order.
+                                         ;; Instead we use pointer-events: none on the children of the code fragments
+                                         ;; to prevent lots of redundant events.
+                                         :attr {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form (:form line)]))
+                                                :on-mouse-leave  (handler-fn (rf/dispatch [:code/exit-hover-form (:form line)]))}
+                                         :children [[code-header (:id code-execution) line]
+                                                    ;; TODO: disable history expansion, or at least storing of it in ls.
+                                                    (when (get-in code-open? [@(rf/subscribe [:epochs/current-epoch-id]) (:id code-execution) (:id line)])
+                                                      [code-block (:id code-execution) line i])]])))))]])]))]])))
 
 
 (defn render []
-  (let [event-trace @(rf/subscribe [:epochs/current-event-trace])
-        epoch-id    @(rf/subscribe [:epochs/current-match-state])]
+  (let [epoch-id @(rf/subscribe [:epochs/current-match-state])]
     ;; Create a new id on each panel because Reagent can throw an exception if
     ;; the data provided in successive renders is sufficiently different.
     ^{:key epoch-id}
@@ -231,7 +236,4 @@
      :class "event-panel"
      :gap common/gs-19s
      :children [[event-code]
-                [event-section "Coeffects" (get-in event-trace [:tags :coeffects])]
-                [event-section "Effects" (get-in event-trace [:tags :effects])]
-                [event-section "Interceptors" (get-in event-trace [:tags :interceptors])]
                 [rc/gap-f :size "0px"]]]))

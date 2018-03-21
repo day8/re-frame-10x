@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.view.code
+(ns day8.re-frame-10x.view.fx
   (:require [day8.re-frame-10x.utils.re-com :as rc]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame-10x.common-styles :as common]
@@ -6,7 +6,7 @@
             [zprint.core :as zp]
             [clojure.string :as str]))
 
-(def code-styles
+(def fx-styles
   [:#--re-frame-10x--
    [:.code-panel
     #_{:padding-bottom common/gs-31}] ;; Leaving the empty def here for now
@@ -27,9 +27,23 @@
 ;; Fragment: the combination of a form and result
 ;; Listing: a block of traced Clojure code, e.g. an event handler function
 
-(defn render []
+(defn event-section [title data]
   [rc/v-box
-   :size "1 1 auto"
-   :class "code-panel"
+   :class "event-section"
    :children
-   [[:h1 "Code moved to Events"]]])
+   [[rc/h-box
+     :class "event-section--header app-db-path--header"
+     :align :center
+     :children [[:h2 title]]]
+    [components/simple-render data [title] "event-section--data app-db-path--pod-border"]]])
+
+
+(defn render []
+  (let [event-trace @(rf/subscribe [:epochs/current-event-trace])]
+    [rc/v-box
+     :class "event-panel"
+     :gap common/gs-19s
+     :children [[event-section "Coeffects" (get-in event-trace [:tags :coeffects])]
+                [event-section "Effects" (get-in event-trace [:tags :effects])]
+                [event-section "Interceptors" (get-in event-trace [:tags :interceptors])]
+                [rc/gap-f :size "0px"]]]))
