@@ -6,6 +6,7 @@
             [day8.re-frame-10x.utils.re-com :as rc]
             [mranderson047.reagent.v0v7v0.reagent.core :as r]
             [devtools.prefs]
+            [devtools.formatters.core]
             [cljsjs.react-highlight]
             [cljsjs.highlight.langs.clojure])
   (:require-macros [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]]))
@@ -236,4 +237,3 @@
    :child [:span {:style {:margin "auto"}} label]])
 
 (def highlight (r/adapt-react-class js/Highlight))
-
