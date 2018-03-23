@@ -1,4 +1,4 @@
-### Event Hancler Tracing
+### Event Handler Tracing
 
 This panel shows detailed, form-by-form trace for the (ClojureScript) code in the `event handler`.  The (data) result for each `form` can be inspected.
 
