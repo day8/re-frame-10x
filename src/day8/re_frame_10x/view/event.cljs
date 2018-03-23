@@ -93,10 +93,8 @@
 (defn find-bounds
   "Try and find the bounds of the form we are searching for. Uses some heuristics to
   try and avoid matching partial forms, e.g. 'default-|weeks| for the form 'weeks."
-  [form search-form]
-  (let [search-str (zp/zprint-str search-form)
-        form-str   (zp/zprint-str form)
-        re         (re-pattern (str "(\\s|\\(|\\[|\\{)" "(" (goog.string.regExpEscape search-str) ")"))
+  [form-str search-str]
+  (let [re         (re-pattern (str "(\\s|\\(|\\[|\\{)" "(" (goog.string.regExpEscape search-str) ")"))
         result     (.exec re form-str)]
     (if (some? result)
       (let [index        (.-index result)
@@ -116,7 +114,7 @@
   (let [scroll-pos (rf/subscribe [:code/scroll-pos])]
     (reagent/create-class
       {:component-did-update
-       (fn [this]
+       (fn event-expression-component-did-update [this]
          (let [node (reagent/dom-node this)]
            (set! (.-scrollTop node) (:top @scroll-pos))
            (set! (.-scrollLeft node) (:left @scroll-pos))))
@@ -126,10 +124,10 @@
 
        :reagent-render
        (fn
-         [form]
+         []
          (let [highlighted-form @(rf/subscribe [:code/highlighted-form])
-               form-str         (zp/zprint-str form)
-               [start-index end-index] (find-bounds form highlighted-form)
+               form-str         @(rf/subscribe [:code/current-zprint-form])
+               [start-index end-index] (find-bounds form-str (zp/zprint-str highlighted-form))
                before           (subs form-str 0 start-index)
                highlight        (subs form-str start-index end-index)
                after            (subs form-str end-index)]
@@ -141,7 +139,7 @@
                     :overflow         "auto"
                     :border           "1px solid #e3e9ed"
                     :background-color common/white-background-color}
-            :attr  {:on-scroll (handler-fn (rf/dispatch [:code/save-scroll-pos (-> event .-target .-scrollTop) (-> event .-target .-scrollLeft)]))}
+            :attr {:on-scroll (handler-fn (rf/dispatch [:code/save-scroll-pos (-> event .-target .-scrollTop) (-> event .-target .-scrollLeft)]))}
             :child (if (some? highlighted-form)
                      [components/highlight {:language "clojure"}
                       (list ^{:key "before"} before
@@ -186,7 +184,7 @@
        :size "1 1 auto"
        :class "code-panel"
        :children [#_(when debug? [:pre "Hover " (pr-str @highlighted-form) "\n"])
-                  [event-expression (:form code-execution)]
+                  [event-expression]
                   [rc/gap-f :size common/gs-19s]
                   [event-fragments (->> (:code code-execution)
                                         (remove (fn [line] (fn? (:result line)))))

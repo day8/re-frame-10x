@@ -3,7 +3,8 @@
             [day8.re-frame-10x.metamorphic :as metam]
             [day8.re-frame-10x.utils.utils :as utils]
             [clojure.string :as str]
-            [cljs.spec.alpha :as s]))
+            [cljs.spec.alpha :as s]
+            [zprint.core :as zp]))
 
 (rf/reg-sub
   :settings/root
@@ -628,6 +629,18 @@
                        :code  (->> code (map-indexed (fn [i code] (assoc code :id i))) vec) ;; Add index
                        :form  (get-in trace [:tags :form])}))
                   traces)))
+
+(rf/reg-sub
+  :code/current-form
+  :<- [:code/current-code]
+  (fn [code _]
+    (:form (first code))))
+
+(rf/reg-sub
+  :code/current-zprint-form
+  :<- [:code/current-form]
+  (fn [form _]
+    (zp/zprint-str form)))
 
 (rf/reg-sub
   :code/code-open?
