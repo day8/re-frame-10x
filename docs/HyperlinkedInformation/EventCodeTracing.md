@@ -16,6 +16,6 @@ Then, within the namespace of yours which contains the events to be traced (perh
  ```clj
  (reg-event-db 
     :some-id
-    (fn-traced [db event]   ;; <-- noite the use of `fn-traced` instead of `fn`
+    (fn-traced [db event]   ;; <-- notice the use of `fn-traced` instead of `fn`
        ... code in here)))
  ```
