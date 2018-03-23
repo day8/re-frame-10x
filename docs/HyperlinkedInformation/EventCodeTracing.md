@@ -1,6 +1,6 @@
 ### Event Handler Tracing
 
-This panel shows detailed, form-by-form trace for the (ClojureScript) code in the `event handler`.  The (data) result for each `form` can be inspected.
+This panel provides an interactive, explorative UI through which you can browse the form-by-form execution trace of the ClojureScript code in your event handlers.  You can inspect the data produced by every ClojureScript form, while retaining overall context. 
 
 <!-- good indicative screenshot of the panel in here -->
 
