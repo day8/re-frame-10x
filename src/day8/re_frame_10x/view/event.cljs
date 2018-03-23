@@ -112,30 +112,43 @@
         [start (+ start length)]))))
 
 (defn event-expression
-  [form]
-  (let [highlighted-form @(rf/subscribe [:code/highlighted-form])
-        form-str         (zp/zprint-str form)
-        [start-index end-index] (find-bounds form highlighted-form)
-        before           (subs form-str 0 start-index)
-        highlight        (subs form-str start-index end-index)
-        after            (subs form-str end-index)]
-    ;(println ">> event-expression:" (pr-str (subs (pr-str highlighted-form) 0 30)))
-    ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
-    ^{:key (pr-str highlighted-form)}
-    [rc/box
-     :style {:max-height       (str (* 10 17) "px")  ;; Add scrollbar after 10 lines
-             :overflow         "auto"
-             :border           "1px solid #e3e9ed"
-             :background-color common/white-background-color}
-     :child (if (some? highlighted-form)
-              [components/highlight {:language "clojure"}
-               (list ^{:key "before"} before
-                     ^{:key "hl"} [:span.code-listing--highlighted highlight]
-                     ^{:key "after"} after)]
-              [components/highlight {:language "clojure"}
-               form-str])
-     #_#_:child [:pre form-str]
-     ]))
+  []
+  (let [scroll-pos (rf/subscribe [:code/scroll-pos])]
+    (reagent/create-class
+      {:component-did-update
+       (fn [this]
+         (let [node (reagent/dom-node this)]
+           (set! (.-scrollTop node) (:top @scroll-pos))
+           (set! (.-scrollLeft node) (:left @scroll-pos))))
+
+       :display-name
+       "event-expression"
+
+       :reagent-render
+       (fn
+         [form]
+         (let [highlighted-form @(rf/subscribe [:code/highlighted-form])
+               form-str         (zp/zprint-str form)
+               [start-index end-index] (find-bounds form highlighted-form)
+               before           (subs form-str 0 start-index)
+               highlight        (subs form-str start-index end-index)
+               after            (subs form-str end-index)]
+           ;(println ">> event-expression:" (pr-str (subs (pr-str highlighted-form) 0 30)))
+           ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
+           ^{:key (pr-str highlighted-form)}
+           [rc/box
+            :style {:max-height       (str (* 10 17) "px")  ;; Add scrollbar after 10 lines
+                    :overflow         "auto"
+                    :border           "1px solid #e3e9ed"
+                    :background-color common/white-background-color}
+            :attr  {:on-scroll (handler-fn (rf/dispatch [:code/save-scroll-pos (-> event .-target .-scrollTop) (-> event .-target .-scrollLeft)]))}
+            :child (if (some? highlighted-form)
+                     [components/highlight {:language "clojure"}
+                      (list ^{:key "before"} before
+                            ^{:key "hl"} [:span.code-listing--highlighted highlight]
+                            ^{:key "after"} after)]
+                     [components/highlight {:language "clojure"}
+                      form-str])]))})))
 
 
 (defn event-fragments

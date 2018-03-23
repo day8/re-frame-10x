@@ -640,3 +640,9 @@
   :<- [:code/root]
   (fn [code _]
     (:highlighted-form code)))
+
+(rf/reg-sub
+  :code/scroll-pos
+  :<- [:code/root]
+  (fn [code _]
+    (:scroll-pos code)))
