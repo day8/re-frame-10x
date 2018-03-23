@@ -17,5 +17,5 @@ This panel provides an interactive, explorative UI through which you can browse 
  (reg-event-db 
     :some-id
     (fn-traced [db event]   ;; <-- notice the use of `fn-traced` instead of `fn`
-       ... code in here)))
+       ... code in here))
  ```
