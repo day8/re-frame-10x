@@ -13,69 +13,6 @@
 (def code-border (str "1px solid " common/white-background-border-color))
 
 
-(def current-code
-  (reagent/atom
-    (list
-      {:title ":event/handler",
-       :id    1,
-       :code  [{:id           0
-                :form         'dissoc
-                :result       dissoc
-                :indent-level 1}
-               {:id           1
-                :form         'todos
-                :result       {3 {:id 3, :title "abc", :done false},
-                               4 {:id 4, :title "abc", :done true},
-                               5 {:id 5, :title "def", :done true},
-                               6 {:id 6, :title "abc", :done false},
-                               7 {:id 7, :title "add", :done false}}
-                :indent-level 1}
-               {:id           2
-                :form         'todos
-                :result       {3 {:id 3, :title "abc", :done false},
-                               4 {:id 4, :title "abc", :done true},
-                               5 {:id 5, :title "def", :done true},
-                               6 {:id 6, :title "abc", :done false},
-                               7 {:id 7, :title "add", :done false}}
-                :indent-level 4}
-               {:id           3
-                :form         '(vals todos)
-                :result       '({:id 3, :title "abc", :done false},
-                                 {:id 4, :title "abc", :done true},
-                                 {:id 5, :title "def", :done true},
-                                 {:id 6, :title "abc", :done false},
-                                 {:id 7, :title "add", :done false})
-                :indent-level 3}
-               {:id           4
-                :form         '(filter :done)
-                :result       '({:id 4 :title "abc" :done true}
-                                 {:id 5 :title "def" :done true})
-                :indent-level 2}
-               {:id           5
-                :form         '(map :id)
-                :result       '(4 5)
-                :indent-level 1}
-               {:id           6
-                :form         '(reduce dissoc todos)
-                :result       {3 {:id 3, :title "abc", :done false},
-                               6 {:id 6, :title "abc", :done false},
-                               7 {:id 7, :title "add", :done false}}
-                :indent-level 1}
-               {:id           7
-                :form         '(->> (vals todos)
-                                    (filter :done)
-                                    (map :id)
-                                    (reduce dissoc todos))
-                :result       {3 {:id 3, :title "abc", :done false},
-                               6 {:id 6, :title "abc", :done false},
-                               7 {:id 7, :title "add", :done false}}
-                :indent-level 1}]
-       :form  '(->> (vals todos)
-                    (filter :done)
-                    (map :id)
-                    (reduce dissoc todos))})))
-
-
 (def event-styles
   [:#--re-frame-10x--
    [:.event-panel
@@ -98,8 +35,31 @@
    ])
 
 
+;; Terminology:
+;; Form: a single Clojure form (may have nested children)
+;; Result: the result of execution of a single form
+;; Fragment: the combination of a form and result
+;; Listing: a block of traced Clojure code, e.g. an event handler function
+
+
+(defn no-event-instructions
+  []
+  [rc/v-box
+   :children [#_[:span.bm-heading-text.light-heading event-str]
+              [rc/p {:style {:font-style "italic"}} "Code trace is not currently available for this event"]
+              [:br]
+              [rc/p "This panel can show the actual code of the event along with all of it's intermediate values."]
+              [rc/p "To get to this magic going, you need to make a few adjustments to your project:"]
+              [:ol
+               [:li [rc/p "Add " [:span.bold "[day8.re-frame/debux \"0.5.0-SNAPSHOT\"]"] " to the :dev :dependencies section in project.clj"]]
+               [:li [rc/p "Add " [:span.bold "\"debux.cs.core.trace_enabled_QMARK_\" true"] " to the :closure-defines section in project.clj"]]
+               [:li [rc/p "Add " [:span.bold "[debux.cs.core :refer-macros [fn-traced]]"] " to the :require section of the event code file(s)"]]
+               [:li [rc/p "Replace " [:span.bold "fn"] " with " [:span.bold "fn-traced"] " in the events to be traced in this panel"]]]]])
+
+
 (defn code-header
   [code-execution-id line]
+  (println ">>>>>> code-header:" (:id line))
   (let [open?-path [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]
         open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)]
     [rc/h-box
@@ -123,7 +83,8 @@
 
 
 (defn code-block
-  [code-execution-id line i] ;; TODO: can remove i and use () instead but left here for now in case DC removes that in the :code/current-code sub
+  [code-execution-id line]
+  ;(println ">>>>>> code-block:" (:id line))
   [rc/box
    :style {:background-color "rgba(100, 255, 100, 0.08)"
            :border           code-border
@@ -131,106 +92,84 @@
            :overflow-x       "auto"
            :overflow-y       "hidden"
            :padding          "0px 3px"}
-   :child [components/simple-render (:result line) [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id i]]])
+   :child [components/simple-render (:result line) [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]]])
 
 
-(defn event-panel-instructions
-  []
-  (let [current-event @(rf/subscribe [:epochs/current-event])
-        event-str     (if (some? current-event)
-                        (subs (prn-str current-event) 0 400)
-                        "No event")]
+(defn event-expression
+  [form]
+  (let [highlighted-form @(rf/subscribe [:code/highlighted-form])
+        form-str         (zp/zprint-str form)
+        search-str       highlighted-form
+        start            (str/index-of form-str search-str)
+        length           (if (some? search-str)
+                           (count (pr-str search-str))
+                           0)
+        before           (subs form-str 0 start)
+        end-index        (+ start length)
+        highlight        (subs form-str start end-index)
+        after            (subs form-str end-index)]
+    ;(println ">> event-expression:" (pr-str (subs (pr-str highlighted-form) 0 30)))
+    ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
+    ^{:key (pr-str highlighted-form)}
+    [rc/box
+     :style {:max-height (str (* 10 17) "px") ;; Add scrollbar after 10 lines
+             ;:overflow-x "auto"
+             :overflow-y "auto" ;; TODO: Need to overwrite some CSS in the components/highlight React component to get the horizontal scrollbar working properly
+             ;:border     "1px solid #e3e9ed"
+             ;:background-color "white"
+             }
+
+     :child (if (some? highlighted-form)
+              [components/highlight {:language "clojure"}
+               (list ^{:key "before"} before
+                     ^{:key "hl"} [:span.code-listing--highlighted highlight]
+                     ^{:key "after"} after)]
+              [components/highlight {:language "clojure"}
+               form-str])
+     #_#_:child [:pre form-str]
+     ]))
+
+
+(defn event-fragments
+  [fragments code-exec-id]
+  ;(println ">> event-fragments - count:" (count fragments))
+  (let [code-open? @(rf/subscribe [:code/code-open?])]
     [rc/v-box
-     :children [[:span.bm-heading-text.light-heading event-str]
-                [rc/p {:style {:font-style "italic"}} "Code trace is not currently available for this event"]
-                [:br]
-                [rc/p "This panel can show the actual code of the event along with all of it's intermediate values."]
-                [rc/p "To get to this magic going, you need to make a few adjustments to your project:"]
-                [:ol
-                 [:li [rc/p "Add " [:span.bold "[day8.re-frame/debux \"0.5.0-SNAPSHOT\"]"] " to the :dev :dependencies section in project.clj"]]
-                 [:li [rc/p "Add " [:span.bold "\"debux.cs.core.trace_enabled_QMARK_\" true"] " to the :closure-defines section in project.clj"]]
-                 [:li [rc/p "Add " [:span.bold "[debux.cs.core :refer-macros [fn-traced]]"] " to the :require section of the event code file(s)"]]
-                 [:li [rc/p "Replace " [:span.bold "fn"] " with " [:span.bold "fn-traced"] " in the events to be traced in this panel"]]]]]))
+     :size     "1"
+     :style    {:overflow-y "auto"}
+     :children (doall
+                 (for [frag fragments]
+                   (let [id (:id frag)]
+                     ^{:key id}
+                     [rc/v-box
+                      :class    "code-fragment"
+                      :style    {:margin-left (str (* 9 (dec (:indent-level frag))) "px")
+                                 :margin-top  (when (pos? id) "-1px")}
+                      :attr     {:on-mouse-enter (handler-fn #_(println "OVER:" (:id frag)) (rf/dispatch [:code/hover-form (:form frag)]))
+                                 :on-mouse-leave (handler-fn #_(println " OUT:" (:id frag)) (rf/dispatch [:code/exit-hover-form (:form frag)]))}
+                      :children [[code-header code-exec-id frag]
+                                 (when (get-in code-open? [@(rf/subscribe [:epochs/current-epoch-id]) code-exec-id id])
+                                   [code-block code-exec-id frag id])]])))]))
 
 
-;; Terminology:
-;; Form: a single Clojure form (may have nested children)
-;; Result: the result of execution of a single form
-;; Fragment: the combination of a form and result
-;; Listing: a block of traced Clojure code, e.g. an event handler function
-
-(defn event-code []
-  (let [code-traces      @(rf/subscribe [:code/current-code]) ;; TODO: Try @current-code to see indents, then delete when real indents implemented
-        code-open?       @(rf/subscribe [:code/code-open?])
-        highlighted-form @(rf/subscribe [:code/highlighted-form])
+(defn event-code
+  []
+  (let [code-traces      @(rf/subscribe [:code/current-code])
+        code-execution   (first code-traces) ;; Ignore multiple code executions for now
+        highlighted-form (rf/subscribe [:code/highlighted-form])
         debug?           @(rf/subscribe [:settings/debug?])]
-    (if (empty? code-traces)
-      [event-panel-instructions]
+    ;(println "EVENT-CODE")
+    (if-not code-execution
+      [no-event-instructions]
       [rc/v-box
        :size "1 1 auto"
        :class "code-panel"
-       :children
-       [#_(when debug? [:pre "Hover " (pr-str highlighted-form) "\n"])
-        (doall
-          (for [code-execution code-traces]
-            ^{:key (:id code-execution)}
-            [rc/v-box
-             :size "1 1 auto"
-             :gap common/gs-19s
-             :children
-             (let [form       (:form code-execution)
-                   form-str   (zp/zprint-str form)
-                   search-str highlighted-form
-                   start      (str/index-of form-str search-str)
-                   length     (if (some? search-str)
-                                (count (pr-str search-str))
-                                0)
-                   before     (subs form-str 0 start)
-                   end-index  (+ start length)
-                   highlight  (subs form-str start end-index)
-                   after      (subs form-str end-index)]
-               [
-                ;; We get lots of React errors if we don't force a creation of a new element
-                ;; when the highlight changes. Not really sure why...
-                ^{:key (pr-str highlighted-form)}
-                [rc/box
-                 :style {:max-height (str (* 10 17) "px") ;; Add scrollbar after 10 lines
-                         ;:overflow-x "auto"
-                         :overflow-y "auto" ;; TODO: Need to overwrite some CSS in the components/highlight React component to get the horizontal scrollbar working properly
-                         }
-                 :child (if (some? highlighted-form)
-                          [components/highlight {:language "clojure"}
-                           (list ^{:key "before"} before
-                                 ^{:key "hl"} [:span.code-listing--highlighted highlight]
-                                 ^{:key "after"} after)]
-                          [components/highlight {:language "clojure"}
-                           form-str])]
-                [rc/v-box
-                 :size     "1"
-                 :style    {:overflow-y "auto"}
-                 :children (doall
-                             (->> (:code code-execution)
-                                  ;; Remove traced function values, these are usually not very interesting in and of themselves.
-                                  (remove (fn [line] (fn? (:result line))))
-                                  (map-indexed ;; TODO: Can remove map-indexed because we insert :id in the :code/current-code sub (but DC may change that so left it here for now)
-                                    (fn [i line]
-                                      (list
-                                        ;; See https://github.com/reagent-project/reagent/issues/350 for why we use random-uuid here
-                                        ^{:key (random-uuid)}
-                                        [rc/v-box
-                                         :class "code-fragment"
-                                         :style {:margin-left (str (* 9 (dec (:indent-level line))) "px")
-                                                 :margin-top  (when (pos? i) "-1px")}
-                                         ;; on-mouse enter/leave fires fewer events (only on enter/leave of outer form)
-                                         ;; but the events don't seem to be reliably sent in order.
-                                         ;; Instead we use pointer-events: none on the children of the code fragments
-                                         ;; to prevent lots of redundant events.
-                                         :attr {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form (:form line)]))
-                                                :on-mouse-leave  (handler-fn (rf/dispatch [:code/exit-hover-form (:form line)]))}
-                                         :children [[code-header (:id code-execution) line]
-                                                    ;; TODO: disable history expansion, or at least storing of it in ls.
-                                                    (when (get-in code-open? [@(rf/subscribe [:epochs/current-epoch-id]) (:id code-execution) (:id line)])
-                                                      [code-block (:id code-execution) line i])]])))))]])]))]])))
+       :children [(when debug? [:pre "Hover " (pr-str @highlighted-form) "\n"])
+                  [event-expression (:form code-execution)]
+                  [rc/gap-f :size common/gs-19s]
+                  [event-fragments (->> (:code code-execution)
+                                        (remove (fn [line] (fn? (:result line)))))
+                   (:id code-execution)]]])))
 
 
 (defn render []
