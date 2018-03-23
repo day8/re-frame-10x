@@ -6,6 +6,7 @@
             [mranderson047.reagent.v0v7v0.reagent.core :as reagent]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [zprint.core :as zp]
+            [goog.string]
             [clojure.string :as str])
   (:require-macros [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]]
                    [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
@@ -94,19 +95,34 @@
            :padding          "0px 3px"}
    :child [components/simple-render (:result line) [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]]])
 
+(defn find-bounds
+  "Try and find the bounds of the form we are searching for. Uses some heuristics to
+  try and avoid matching partial forms, e.g. 'default-|weeks| for the form 'weeks."
+  [form search-form]
+  (let [search-str (zp/zprint-str search-form)
+        form-str   (zp/zprint-str form)
+        re         (re-pattern (str "(\\s|\\(|\\[|\\{)" "(" (goog.string.regExpEscape search-str) ")"))
+        result     (.exec re form-str)]
+    (if (some? result)
+      (let [index        (.-index result)
+            pre-match    (aget result 1)
+            matched-form (aget result 2)
+            index        (+ index (count pre-match))]
+        [index (+ index (count matched-form))])
+      ;; If the regex fails, fall back to string index just in case.
+      (let [start  (str/index-of form-str search-str)
+            length (if (and (some? search-str) (some? start))
+                     (count (pr-str search-str))
+                     0)]
+        [start (+ start length)]))))
 
 (defn event-expression
   [form]
   (let [highlighted-form @(rf/subscribe [:code/highlighted-form])
         form-str         (zp/zprint-str form)
-        search-str       highlighted-form
-        start            (str/index-of form-str search-str)
-        length           (if (some? search-str)
-                           (count (pr-str search-str))
-                           0)
-        before           (subs form-str 0 start)
-        end-index        (+ start length)
-        highlight        (subs form-str start end-index)
+        [start-index end-index] (find-bounds form highlighted-form)
+        before           (subs form-str 0 start-index)
+        highlight        (subs form-str start-index end-index)
         after            (subs form-str end-index)]
     ;(println ">> event-expression:" (pr-str (subs (pr-str highlighted-form) 0 30)))
     ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
