@@ -6,7 +6,7 @@ This panel shows detailed, form-by-form trace for the (ClojureScript) code in th
 
 ### Setup
 
-**First**, adjust your `project.clj` by following [these instructions](https://github.com/Day8/re-frame-debux/tree/2537b7e0818bb147d5da326b865ea2f9d93f5c73#3-installation) to add `day8.re-frame/debux` to the `:dev` `:dependencies`. 
+**First**, adjust your `project.clj` by following [these instructions](https://github.com/Day8/re-frame-debux/blob/master/README.md#installation) to add `day8.re-frame/debux` to the `:dev` `:dependencies`. 
  
 **Then**, within the namespace of yours which contains the event handlers to be traced (perhaps called `events.cljs`):
 
