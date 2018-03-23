@@ -432,10 +432,7 @@
 (def highlight-js-solarized
   ;; From https://github.com/isagalaev/highlight.js/blob/master/src/styles/solarized-light.css
   [[:.hljs {"display"    "block"
-            "overflow-x" "auto"
             "padding"    "0.5em"
-            "background" common/white-background-color
-            "border"     common/white-background-border-style
             "color"      "#657b83"}]
    [:.hljs-comment :.hljs-quote
     {"color" "#93a1a1"}]
@@ -466,9 +463,7 @@
     {"font-style" "italic"}]
    [".hljs-strong"
     {"font-weight" "bold"}]
-
-   ]
-  )
+   ])
 
 
 (def panel-styles (apply garden/css [css-reset

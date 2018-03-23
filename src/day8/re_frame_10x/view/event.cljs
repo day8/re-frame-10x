@@ -123,13 +123,10 @@
     ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
     ^{:key (pr-str highlighted-form)}
     [rc/box
-     :style {:max-height (str (* 10 17) "px") ;; Add scrollbar after 10 lines
-             ;:overflow-x "auto"
-             :overflow-y "auto" ;; TODO: Need to overwrite some CSS in the components/highlight React component to get the horizontal scrollbar working properly
-             ;:border     "1px solid #e3e9ed"
-             ;:background-color "white"
-             }
-
+     :style {:max-height       (str (* 10 17) "px")  ;; Add scrollbar after 10 lines
+             :overflow         "auto"
+             :border           "1px solid #e3e9ed"
+             :background-color common/white-background-color}
      :child (if (some? highlighted-form)
               [components/highlight {:language "clojure"}
                (list ^{:key "before"} before
