@@ -18,8 +18,6 @@
   [:#--re-frame-10x--
    [:.event-panel
     {:padding "19px 19px 0px 0px"}]
-   [:.light-heading {:font-weight "300"
-                     :margin-bottom common/gs-19s}]
    [:.bold {:font-weight "bold"}]
    [:.event-section]
    [:.event-section--header
@@ -46,21 +44,18 @@
 (defn no-event-instructions
   []
   [rc/v-box
-   :children [#_[:span.bm-heading-text.light-heading event-str]
-              [rc/p {:style {:font-style "italic"}} "Code trace is not currently available for this event"]
+   :children [[rc/p {:style {:font-style "italic"}} "Code trace is not currently available for this event"]
               [:br]
-              [rc/p "This panel can show the actual code of the event along with all of it's intermediate values."]
-              [rc/p "To get to this magic going, you need to make a few adjustments to your project:"]
-              [:ol
-               [:li [rc/p "Add " [:span.bold "[day8.re-frame/debux \"0.5.0-SNAPSHOT\"]"] " to the :dev :dependencies section in project.clj"]]
-               [:li [rc/p "Add " [:span.bold "\"debux.cs.core.trace_enabled_QMARK_\" true"] " to the :closure-defines section in project.clj"]]
-               [:li [rc/p "Add " [:span.bold "[debux.cs.core :refer-macros [fn-traced]]"] " to the :require section of the event code file(s)"]]
-               [:li [rc/p "Replace " [:span.bold "fn"] " with " [:span.bold "fn-traced"] " in the events to be traced in this panel"]]]]])
+              [rc/hyperlink-href
+               :label  "Instructions for enabling Event Code Tracing"
+               :attr   {:rel "noopener noreferrer"}
+               :target "_blank"
+               :href   "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/EventCodeTracing.md"]]])
 
 
 (defn code-header
   [code-execution-id line]
-  (println ">>>>>> code-header:" (:id line))
+  ;(println ">>>>>> code-header:" (:id line))
   (let [open?-path [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]
         open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)]
     [rc/h-box
@@ -173,14 +168,14 @@
   (let [code-traces      @(rf/subscribe [:code/current-code])
         code-execution   (first code-traces) ;; Ignore multiple code executions for now
         highlighted-form (rf/subscribe [:code/highlighted-form])
-        debug?           @(rf/subscribe [:settings/debug?])]
+        #_#_debug?           @(rf/subscribe [:settings/debug?])]
     ;(println "EVENT-CODE")
     (if-not code-execution
       [no-event-instructions]
       [rc/v-box
        :size "1 1 auto"
        :class "code-panel"
-       :children [(when debug? [:pre "Hover " (pr-str @highlighted-form) "\n"])
+       :children [#_(when debug? [:pre "Hover " (pr-str @highlighted-form) "\n"])
                   [event-expression (:form code-execution)]
                   [rc/gap-f :size common/gs-19s]
                   [event-fragments (->> (:code code-execution)
