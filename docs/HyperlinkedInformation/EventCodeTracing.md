@@ -2,7 +2,11 @@
 
 This panel provides an interactive, explorative UI through which you can browse the form-by-form execution trace of the ClojureScript code in your event handlers.  You can inspect the data produced by every ClojureScript form, while retaining overall context. 
 
-<!-- good indicative screenshot of the panel in here -->
+### Show Me
+
+Here's what it would look like if you had it setup:
+
+![Estim8 demo](/docs/images/estim8-demo.png)
 
 ### Setup
 
