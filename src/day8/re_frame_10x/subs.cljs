@@ -3,7 +3,8 @@
             [day8.re-frame-10x.metamorphic :as metam]
             [day8.re-frame-10x.utils.utils :as utils]
             [clojure.string :as str]
-            [cljs.spec.alpha :as s]))
+            [cljs.spec.alpha :as s]
+            [zprint.core :as zp]))
 
 (rf/reg-sub
   :settings/root
@@ -500,7 +501,7 @@
 (defn prepare-pod-info
   "Returns sub info prepared for rendering in pods"
   [[sub-info sub-state] [subscription]]
-  (let [remove-fn (if (= subscription :subs/inter-epoch-subs)
+  (let [remove-fn (if (= subscription :subs/intra-epoch-subs)
                     (fn [me] (nil? (:order (val me))))
                     (constantly false))
         subx      (->> sub-state
@@ -539,7 +540,7 @@
     (:reaction-state sub-state)))
 
 (rf/reg-sub
-  :subs/inter-epoch-subs
+  :subs/intra-epoch-subs
   :<- [:subs/subscription-info]
   :<- [:subs/pre-epoch-state]
   prepare-pod-info)
@@ -608,3 +609,53 @@
   :<- [:subs/root]
   (fn [subs _]
     (:expansions subs)))
+
+
+;;
+
+(rf/reg-sub
+  :code/root
+  (fn [db _]
+    (:code db)))
+
+(rf/reg-sub
+  :code/current-code
+  :<- [:traces/current-event-traces]
+  (fn [traces _]
+    (keep-indexed (fn [i trace]
+                    (when-some [code (get-in trace [:tags :code])]
+                      {:id    i
+                       :title (pr-str (:op-type trace))
+                       :code  (->> code (map-indexed (fn [i code] (assoc code :id i))) vec) ;; Add index
+                       :form  (get-in trace [:tags :form])}))
+                  traces)))
+
+(rf/reg-sub
+  :code/current-form
+  :<- [:code/current-code]
+  (fn [code _]
+    (:form (first code))))
+
+(rf/reg-sub
+  :code/current-zprint-form
+  :<- [:code/current-form]
+  (fn [form _]
+    (zp/zprint-str form)))
+
+(rf/reg-sub
+  :code/code-open?
+  :<- [:code/root]
+  (fn [code _]
+    (:code-open? code)))
+
+(rf/reg-sub
+  :code/highlighted-form
+  :<- [:code/root]
+  (fn [code _]
+    (:highlighted-form code)))
+
+(rf/reg-sub
+  :code/scroll-pos
+  :<- [:code/root]
+  (fn [code _]
+    (:scroll-pos code)))

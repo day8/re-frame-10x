@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.2.1] - Unreleased
+## [0.2.2] - Unreleased
+
+
+
+## [0.2.1] - 2018-03-19
 
 ### Changed
 
@@ -11,6 +15,7 @@ All notable changes to this project will be documented in this file. This change
 
 * Bug where under certain rare circumstances relating to the structure of your app-db, the Event panel could throw an error when transitioning from one epoch to another.
 * Refer to the correct Closure define to enable tracing [#170](https://github.com/Day8/re-frame-10x/issues/170).
+* Add missing requires in parts panel [#164](https://github.com/Day8/re-frame-10x/pull/164)
 
 ## [0.2.0] - 2018-02-20
 
@@ -56,7 +61,7 @@ To take advantage of the more granular timing info in this version, you will nee
 
 * Massive overhaul to how subscriptions are processed.
   * Subscriptions that exist but weren't run, now show up in the subscription panel.
-  * Subscription creations and disposals that happen during figwheel reloads or otherwise outside of the re-frame event domino cycle are now correctly handled. If any of these happen, they show up in the new section Inter-Epoch Subscriptions.
+  * Subscription creations and disposals that happen during figwheel reloads or otherwise outside of the re-frame event domino cycle are now correctly handled. If any of these happen, they show up in the new section Intra-Epoch Subscriptions.
   * All of the actions that happen to a subscription within an epoch are now shown. This lets you spot unusual behaviour like a subscription being created but not-run, or a subscription running multiple times.
   * Present better explanation messages when viewing the diff section for a sub where the value is unchanged, not run yet, or only run once.
 

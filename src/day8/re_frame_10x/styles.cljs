@@ -8,7 +8,8 @@
             [day8.re-frame-10x.view.app-db :as app-db]
             [day8.re-frame-10x.view.timing :as timing]
             [day8.re-frame-10x.view.settings :as settings]
-            [day8.re-frame-10x.view.event :as event]))
+            [day8.re-frame-10x.view.event :as event]
+            [day8.re-frame-10x.view.fx :as fx]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -41,6 +42,7 @@
          :margin    "0.67em 0"}]
    [:div :nav :h1 :h2 :h3 :h4 :h5 :h6 {:display "block"}]
    [:pre {:font-family "monospace"
+          :white-space "pre"
           :font-size   (em 1)}]
 
    ;; Text-level semantics
@@ -255,25 +257,24 @@
    [:.rft-tag
     {:background-color common/white-background-color
      :color            common/text-color
-     :width            "48px"                               ;common/gs-50s
-     :height           "19px"                               ;common/gs-19s
+     :width            common/gs-50s
+     :height           common/gs-19s
      :font-size        "10px"
      :font-weight      "bold"
-     :border           "1px solid #bdbdbd"
      :border-radius    "3px"}]
 
    [".rft-tag__subscription_created"
     {:background-color common/sub-create-color
-     :color "white"}]
+     :color            "white"}]
    [".rft-tag__subscription_re_run"
     {:background-color common/sub-re-run-color
-     :color "white"}]
+     :color            "white"}]
    [".rft-tag__subscription_destroyed"
     {:background-color common/sub-destroy-color
-     :color "white"}]
+     :color            "white"}]
    [".rft-tag__subscription_not_run"
     {:background-color common/sub-not-run-color
-     :color "white"}]
+     :color            "white"}]
    [".rft-tag__short"
     {:width common/gs-19}]
 
@@ -428,17 +429,55 @@
                 :user-select           "none"}]
    ])
 
+(def highlight-js-solarized
+  ;; From https://github.com/isagalaev/highlight.js/blob/master/src/styles/solarized-light.css
+  [[:.hljs {"display"    "block"
+            "padding"    "0.5em"
+            "color"      "#657b83"}]
+   [:.hljs-comment :.hljs-quote
+    {"color" "#93a1a1"}]
+   [:.hljs-keyword :.hljs-selector-tag :.hljs-addition
+    {"color" "#859900"}]
+   ;; Solarized Cyan
+   [".hljs-number",
+    ".hljs-string",
+    ".hljs-meta .hljs-meta-string",
+    ".hljs-literal",
+    ".hljs-doctag",
+    ".hljs-regexp"
+    {"color" "#2aa198"}]
+   ;; Solarized Blue
+   [".hljs-title" ".hljs-section" ".hljs-name" ".hljs-selector-id" ".hljs-selector-class"
+    {"color" "#268bd2"}]
+   ;; Solarized Blue
+   [".hljs-attribute" ".hljs-attr" ".hljs-variable" ".hljs-template-variable" ".hljs-class .hljs-title" ".hljs-type"
+    {"color" "#b58900"}]
+   ;;Solarized Orange
+   [".hljs-symbol" ".hljs-bullet" ".hljs-subst" ".hljs-meta" ".hljs-meta .hljs-keyword"]
+   {"color" "#cb4b16"}
+   [".hljs-built_in" ".hljs-deletion"
+    {"color" "#dc322f"}]
+   [".hljs-formula"
+    {"background" "#eee8d5"}]
+   [".hljs-emphasis"
+    {"font-style" "italic"}]
+   [".hljs-strong"
+    {"font-weight" "bold"}]
+   ])
+
 
 (def panel-styles (apply garden/css [css-reset
                                      [:#--re-frame-10x-- rc/re-com-css]
+                                     [:#--re-frame-10x-- highlight-js-solarized]
                                      common/blue-modern
                                      re-frame-trace-styles
                                      app-db/app-db-styles
                                      timing/timing-styles
                                      event/event-styles
-                                     settings/settings-styles]))
+                                     settings/settings-styles
+                                     fx/fx-styles]))
 
-(defn inject-style [document id style]
+(defn inject-inline-style [document id style]
   (let [styles-el     (.getElementById document id)
         new-styles-el (.createElement document "style")]
     (.setAttribute new-styles-el "id" id)
@@ -455,4 +494,4 @@
         new-styles-el))))
 
 (defn inject-trace-styles [document]
-  (inject-style document "--re-frame-10x-styles--" panel-styles))
+  (inject-inline-style document "--re-frame-10x-styles--" panel-styles))

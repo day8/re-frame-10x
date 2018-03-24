@@ -5,7 +5,10 @@
             [clojure.string :as str]
             [day8.re-frame-10x.utils.re-com :as rc]
             [mranderson047.reagent.v0v8v0-alpha2.reagent.core :as r]
-            [devtools.prefs])
+            [devtools.prefs]
+            [devtools.formatters.core]
+            [cljsjs.react-highlight]
+            [cljsjs.highlight.langs.clojure])
   (:require-macros [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]]))
 
 (defn search-input [{:keys [title placeholder on-save on-change on-stop]}]
@@ -232,3 +235,5 @@
   [rc/box
    :class (str "rft-tag noselect " class)
    :child [:span {:style {:margin "auto"}} label]])
+
+(def highlight (r/adapt-react-class js/Highlight))

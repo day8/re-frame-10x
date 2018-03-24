@@ -6,10 +6,11 @@
             [day8.re-frame-10x.view.components :as components]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [mranderson047.reagent.v0v8v0-alpha2.reagent.core :as r]
-            [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
+            [day8.re-frame-10x.utils.re-com :as rc :refer [close-button css-join]]
             [day8.re-frame-10x.common-styles :as common]
             [clojure.data])
-  (:require-macros [day8.re-frame-10x.utils.macros :as macros]))
+  (:require-macros [day8.re-frame-10x.utils.macros :as macros]
+                   [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
 (def delete (macros/slurp-macro "day8/re_frame_10x/images/delete.svg"))
 (def reload (macros/slurp-macro "day8/re_frame_10x/images/reload.svg"))
@@ -22,9 +23,9 @@
 (def trash (macros/slurp-macro "day8/re_frame_10x/images/trash.svg"))
 
 (def cljs-dev-tools-background "#e8ffe8")
-(def pod-gap common/gs-19s)
+(def pod-gap "-1px") ;; Overlap pods by 1px to avoid adjoining borders causing 2px borders
 (def pod-padding "0px")
-(def pod-border-color "#daddde")
+(def pod-border-color "#e3e9ed")
 (def pod-border-edge (str "1px solid " pod-border-color))
 (def border-radius "3px")
 
@@ -41,22 +42,19 @@
    [:.app-db-path--pod-border
     {:border-left                pod-border-edge
      :border-right               pod-border-edge
-     :border-bottom              pod-border-edge
-     :border-bottom-left-radius  border-radius
-     :border-bottom-right-radius border-radius}]
+     :border-bottom              pod-border-edge}]
 
    [:.app-db-path--header
-    {:background-color        common/navbar-tint-lighter
-     :color                   "white"
-     :height                  common/gs-31
-     :border-top-left-radius  border-radius
-     :border-top-right-radius border-radius}]
+    {:background-color        "#fafbfc"
+     :color                   "#b0b2b4"
+     :border                  pod-border-edge
+     :height                  common/gs-31}]
 
    [:.app-db-path--button
     {:width         "25px"
      :height        "25px"
      :padding       "0px"
-     :border-radius border-radius
+     :border-radius "50%"
      :cursor        "pointer"}]
 
    [:.app-db-path--path-header
@@ -70,8 +68,7 @@
     {:font-size "11px"
      :margin    (css-join "0px" pod-padding)
      :min-width "100px"
-     :height    common/gs-19s
-     :background-color common/white-background-color}]
+     :height    common/gs-19s}]
    #_[:.app-db-path--label
     {:color           "#2D9CDB"
      :text-decoration "underline"
@@ -83,22 +80,14 @@
    [:.app-db-panel-button
     {:width   "129px"
      :padding "0px"}]
-
-   [:.app-db-panel-button
-    {:width   "129px"
-     :padding "0px"}]
-
-   [:.rounded-bottom
-    {:border-bottom-left-radius  border-radius
-     :border-bottom-right-radius border-radius}]
-
    [:.data-viewer
     {:background-color cljs-dev-tools-background
-     :padding          common/gs-7s
+     :padding          "0px 2px"
      :margin           (css-join "0px" pod-padding)
      :min-width        "100px"}]
    [:.data-viewer--top-rule
-    {:border-top  pod-border-edge}]])
+    {#_#_:border-top  pod-border-edge}]])
+
 
 (defn panel-header []
   (let [app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
@@ -144,27 +133,53 @@
                                      :children ["end epoch state"]]
                              :on-click #(rf/dispatch [:snapshot/load-snapshot @app-db-after])]]]]]))
 
+
+(defn pod-header-section
+  [& {:keys [size justify align gap width min-width background-color children style attr last?]
+      :or   {size "none" justify :start align :center}}]
+  [rc/h-box
+   :size      size
+   :justify   justify
+   :align     align
+   :gap       gap
+   :width     width
+   :min-width min-width
+   :height    common/gs-31s
+   :style     (merge {:border-right     (when-not last? pod-border-edge)
+                      :background-color background-color}
+                     style)
+   :attr      attr
+   :children  children])
+
+
 (defn pod-header [{:keys [id path path-str open? diff?]}]
   [rc/h-box
-   :class (str "app-db-path--header " (when-not open? "rounded-bottom"))
+   :class (str "app-db-path--header")
    :align :center
    :height common/gs-31s
+   :children [[pod-header-section
    :children [[rc/box
-               :width  "36px"
+                           :width  common/gs-31s
                :height common/gs-31s
                :class  "noselect"
                :style  {:cursor "pointer"}
                :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                        :on-click #(rf/dispatch [:app-db/set-path-visibility id (not open?)])}
+                                    :on-click (handler-fn (rf/dispatch [:app-db/set-path-visibility id (not open?)]))}
                :child  [rc/box
                         :margin "auto"
-                        :child [:span.arrow (if open? "▼" "▶")]]]
+                                    :child [:span.arrow (if open? "▼" "▶")]]]]]
+
               [rc/h-box
-               :class "app-db-path--path-header"
-               :size "auto"
+               :background-color "white"
+               :class    "app-db-path--path-header"
+               :size     "auto"
+               :style    {:height       common/gs-31s
+                          :border-right pod-border-edge}
+               :align    :center
                :children [[rc/input-text
                            :class (when (empty? path-str) "app-db-path--path-text__empty")
                            :style {:height  "25px"
+                                   :border  "none"
                                    :padding (css-join "0px" common/gs-7s)
                                    :width   "-webkit-fill-available"} ;; This took a bit of finding!
                            :attr {:on-blur (fn [e] (rf/dispatch [:app-db/update-path-blur id]))}
@@ -174,26 +189,30 @@
                            :on-submit #()                   ;; #(rf/dispatch [:app-db/add-path %])
                            :change-on-blur? false
                            :placeholder "Showing all of app-db. Try entering a path like [:todos 1]"]]]
-              [rc/gap-f :size common/gs-12s]
-              [rc/box
-               :class "bm-muted-button app-db-path--button noselect"
-               :attr {:title    "Show diff"
-                      :on-click #(when open? (rf/dispatch [:app-db/set-diff-visibility id (not diff?)]))}
-               :child [:img
-                       {:src   (str "data:image/svg+xml;utf8," copy)
-                        :style {:width  "19px"
-                                :margin "0px 3px"}}]]
-              [rc/gap-f :size common/gs-12s]
-              [rc/box
-               :class "bm-muted-button app-db-path--button noselect"
-               :attr {:title    "Remove this pod"
-                      :on-click #(do (reset! *finished-animation? false)
-                                     (rf/dispatch [:app-db/remove-path id]))}
-               :child [:img
-                       {:src   (str "data:image/svg+xml;utf8," trash)
-                        :style {:width  "13px"
-                                :margin "0px 6px"}}]]
-              [rc/gap-f :size common/gs-12s]]])
+              [pod-header-section
+               :width "50px"
+               :attr     {:on-click (handler-fn (rf/dispatch [:app-db/set-diff-visibility id (not diff?)]))}
+               :children [[rc/box
+                           :style {:margin "auto"}
+                           :child [rc/checkbox
+                                   :model     diff?
+                                   :label     ""
+                                   :style     {:margin-left "6px"
+                                               :margin-top  "1px"}
+                                   :on-change #(rf/dispatch [:app-db/set-diff-visibility id (not diff?)])]]]]
+              [pod-header-section
+               :width    "50px"
+               :justify  :center
+               :last?    true
+               :children [[close-button
+                           :div-size    31
+                           :font-size   31
+                           :left-offset 3
+                           :top-offset  -4
+                           :tooltip     "Remove this inspector"
+                           :on-click    #(do (reset! *finished-animation? false)
+                                             (rf/dispatch [:app-db/remove-path id]))]]]]])
+
 
 (defn pod [{:keys [id path open? diff?] :as pod-info}]
   (let [render-diff?  (and open? diff?)
@@ -205,12 +224,13 @@
                 [rc/v-box
                  :class    (when open? "app-db-path--pod-border")
                  :children [[animated/component
-                             (animated/v-box-options {:enter-animation "accordionVertical"
+                             (animated/v-box-options
+                               {:enter-animation "accordionVertical"
                                                       :leave-animation "accordionVertical"
                                                       :duration        animation-duration})
                              (when open?
                                [rc/v-box
-                                :class (str "data-viewer" (when-not diff? " rounded-bottom"))
+                                :class "data-viewer"
                                 :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
                                         :overflow-x "auto"
                                         :overflow-y "hidden"}
@@ -234,7 +254,8 @@
 
                                            #_"---main-section---"]])]
                             [animated/component
-                             (animated/v-box-options {:enter-animation "accordionVertical"
+                             (animated/v-box-options
+                               {:enter-animation "accordionVertical"
                                                       :leave-animation "accordionVertical"
                                                       :duration        animation-duration})
                              (when render-diff?
@@ -244,8 +265,9 @@
                                                                                      (get-in @app-db-after path)))]
                                  [rc/v-box
                                   :children [[rc/v-box
-                                              :class "app-db-path--link"
-                                              :justify :end
+                                              :class    "app-db-path--link"
+                                              :style    {:background-color cljs-dev-tools-background}
+                                              :justify  :end
                                               :children [[rc/hyperlink-href
                                                           ;:class  "app-db-path--label"
                                                           :label "ONLY BEFORE"
@@ -261,8 +283,9 @@
                                                           diff-before
                                                           ["app-db-diff" path]]]]
                                              [rc/v-box
-                                              :class "app-db-path--link"
-                                              :justify :end
+                                              :class    "app-db-path--link"
+                                              :style    {:background-color cljs-dev-tools-background}
+                                              :justify  :end
                                               :children [[rc/hyperlink-href
                                                           ;:class  "app-db-path--label"
                                                           :label "ONLY AFTER"
@@ -271,14 +294,15 @@
                                                           :target "_blank"
                                                           :href utils/diff-link]]]
                                              [rc/v-box
-                                              :class "data-viewer data-viewer--top-rule rounded-bottom"
-                                              :style {:overflow-x "auto"
+                                              :class    "data-viewer data-viewer--top-rule"
+                                              :style    {:overflow-x "auto"
                                                       :overflow-y "hidden"}
                                               :children [[components/simple-render
                                                           diff-after
                                                           ["app-db-diff" path]]]]]]))]
                             (when open?
                               [rc/gap-f :size pod-padding])]]]]))
+
 
 (defn no-pods []
   [rc/h-box
@@ -292,73 +316,45 @@
                        :margin-top "22px"}
                :label "add inspectors to show what happened to app-db"]]])
 
+
+(defn pod-header-column-titles
+  []
+  [rc/h-box
+   :height common/gs-19s
+   :align :center
+   :style {:margin-right "1px"}
+   :children [[rc/box
+               :size "1"
+               :child ""]
+              [rc/box
+               :width "51px" ;;  50px + 1 border
+               :justify :center
+               :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]
+              [rc/box
+               :width "51px" ;;  50px + 1 border
+               :justify :center
+               :child [rc/label :style {:font-size "9px"} :label "DELETE"]]
+              [rc/gap-f :size "6px"]]]) ;; Add extra space to look better when there is/aren't scrollbars
+
+
 (defn pod-section []
   (let [pods @(rf/subscribe [:app-db/paths])]
     [rc/v-box
-     :size "1"
-     ;:gap pod-gap
+     :size     "1"
      :children [(if (and (empty? pods) @*finished-animation?)
                   [no-pods]
-                  [rc/box :width "0px" :height "0px"])
+                  [pod-header-column-titles])
                 [animated/component
-                 (animated/v-box-options {:on-finish #(reset! *finished-animation? true)
+                 (animated/v-box-options
+                   {:on-finish #(reset! *finished-animation? true)
                                           :duration  animation-duration
-                                          :style     {:flex     "1 1 0px"
+                    :style     {:flex       "1 1 0px"
                                                       :overflow-x "hidden"
                                                       :overflow-y "auto"}})
                  (for [p pods]
                    ^{:key (:id p)}
                    [pod p])]]]))
 
-;; TODO: OLD UI - REMOVE
-(defn original-render [app-db]
-  (let [subtree-input   (r/atom "")
-        subtree-paths   (rf/subscribe [:app-db/paths])
-        search-string   (rf/subscribe [:app-db/search-string])
-        input-error     (r/atom false)
-        snapshot-ready? (rf/subscribe [:snapshot/snapshot-ready?])]
-    (fn []
-      [:div
-       {:style {:flex           "1 1 auto"
-                :display        "flex"
-                :flex-direction "column"
-                :border         "1px solid lightgrey"}}
-       [:div.panel-content-scrollable
-        [rc/input-text
-         :model search-string
-         :on-change (fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
-         :on-submit #(rf/dispatch [:app-db/add-path %])
-         :change-on-blur? false
-         :placeholder ":path :into :app-db"]
-        ;; TODO: check for input errors
-        ; (if @input-error
-        ;   [:div.input-error {:style {:color "red" :margin-top 5}}
-        ;    "Please enter a valid path."])]]
-
-
-
-        [:div.subtrees {:style {:margin "20px 0"}}
-         (doall
-           (map (fn [path]
-                  ^{:key path}
-                  [:div.subtree-wrapper {:style {:margin "10px 0"}}
-                   [:div.subtree
-                    [components/subtree
-                     (get-in @app-db path)
-                     [rc/h-box
-                      :align :center
-                      :children [[:button.subtree-button
-                                  [:span.subtree-button-string
-                                   (str path)]]
-                                 [:img
-                                  {:src      (str "data:image/svg+xml;utf8," delete)
-                                   :style    {:cursor "pointer"
-                                              :height "10px"}
-                                   :on-click #(rf/dispatch [:app-db/remove-path path])}]]]
-                     [path]]]])
-                @subtree-paths))]
-        [:div {:style {:margin-bottom "20px"}}
-         [components/subtree @app-db [:span.label "app-db"] [:app-db]]]]])))
 
 (defn render [app-db]
   [rc/v-box
@@ -368,4 +364,4 @@
            }
    :children [[panel-header]
               [pod-section]
-              [rc/gap-f :size pod-gap]]])
+              [rc/gap-f :size common/gs-19s]]])
