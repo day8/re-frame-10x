@@ -13,6 +13,7 @@ Branch | React Version | Status | Artifact
 `react-16` | React 16 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16) | `[day8.re-frame/re-frame-10x "0.3.1-react16"]`
 
 ## Show Me
+[Conduit demo with re-frame-10x](https://jacekschae.github.io/conduit-re-frame-10x-demo/)
 
 <img src="docs/images/subs-10x.png" height="500px">
 
