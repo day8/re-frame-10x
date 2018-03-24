@@ -169,7 +169,11 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
   - `:preloads             [day8.re-frame-10x.preload]`
 
 
-[cljs-devtools](https://github.com/binaryage/cljs-devtools) is not required to use re-frame-10x, but it is highly recommended.
+[cljs-devtools](https://github.com/binaryage/cljs-devtools) is not required to use re-frame-10x, but it is highly recommended.https://github.com/Day8/re-frame-debux
+
+### Code Tracing
+
+re-frame-10x includes an experimental code tracing feature for tracing the code in your event handlers. See [Day8/re-frame-debux](https://github.com/Day8/re-frame-debux) for instructions on how to set it up. 
 
 ## Usage
 
