@@ -1,9 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.2.2] - Unreleased
+## [0.3.0] - 2018-03-24
 
+### Added
 
+* Form level code tracing. This lets you inspect all of the intermediate results of an event handlers execution. More info on how to set it up at https://github.com/Day8/re-frame-debux.
+
+### Changed
+
+* New visual style for app-db and subs panels
 
 ## [0.2.1] - 2018-03-19
 
