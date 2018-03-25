@@ -10,9 +10,7 @@
                  [cljsjs/react-flip-move "2.9.17-0"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
                  [zprint "0.4.7"]
-                 ;; Update to 1.0.7 once it is released in CLJSJS
-                 ;; https://github.com/cljsjs/packages/pull/1512
-                 [cljsjs/react-highlight "1.0.5-0"]
+                 [cljsjs/react-highlight "1.0.7-0"]
                  ;[expound "0.4.0"]
                  ]
   :plugins [[thomasa/mranderson "0.4.7"]
