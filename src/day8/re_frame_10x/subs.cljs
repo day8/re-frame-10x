@@ -83,6 +83,18 @@
     (get db :app-db)))
 
 (rf/reg-sub
+  :app-db/current-epoch-app-db-after
+  :<- [:epochs/current-event-trace]
+  (fn [trace _]
+    (get-in trace [:tags :app-db-after])))
+
+(rf/reg-sub
+  :app-db/current-epoch-app-db-before
+  :<- [:epochs/current-event-trace]
+  (fn [trace _]
+    (get-in trace [:tags :app-db-before])))
+
+(rf/reg-sub
   :app-db/paths
   :<- [:app-db/root]
   (fn [app-db-settings _]
