@@ -61,9 +61,10 @@
         open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)
         debug?     @(rf/subscribe [:settings/debug?])]
     [rc/h-box
-     :style {:border   code-border
-             :overflow "hidden"
-             :padding  "1px 6px"}
+     :align    :center
+     :style    {:border   code-border
+                :overflow "hidden"
+                :padding  "1px 6px"}
      :children [[rc/box
                  :width  "17px"
                  :height "17px"
@@ -75,8 +76,7 @@
                           :margin "auto"
                           :child  [:span.arrow (if open? "▼" "▶")]]]
                 [:pre
-                 {:style {:margin-left "2px"
-                          :margin-top  "2px"}}
+                 {:style {:margin-left "2px"}}
                  (str (:form line))
                  (when debug?
                    [:span {:class "code-fragment__result"} " " (pp/truncate-string 100 (pr-str (:result line)))])]]]))
@@ -179,6 +179,7 @@
   []
   (let [code-traces      @(rf/subscribe [:code/current-code])
         code-execution   (first code-traces) ;; Ignore multiple code executions for now
+        debug?           @(rf/subscribe [:settings/debug?])
         highlighted-form (rf/subscribe [:code/highlighted-form])]
     ;(println "EVENT-CODE")
     (if-not code-execution
@@ -186,7 +187,7 @@
       [rc/v-box
        :size "1 1 auto"
        :class "code-panel"
-       :children [#_(when debug? [:pre "Hover " (pr-str @highlighted-form) "\n"])
+       :children [(when debug? [:pre "Hover " (pr-str @highlighted-form) "\n"])
                   [event-expression]
                   [rc/gap-f :size common/gs-19s]
                   [event-fragments (->> (:code code-execution)
