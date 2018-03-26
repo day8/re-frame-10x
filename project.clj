@@ -1,4 +1,4 @@
-(defproject day8.re-frame/re-frame-10x "0.3.0-react16"
+(defproject day8.re-frame/re-frame-10x "0.3.0-1-react16"
   :description "Become 10x more productive when developing and debugging re-frame applications."
   :url "https://github.com/Day8/re-frame-10x"
   :license {:name "MIT"}
