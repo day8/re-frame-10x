@@ -9,7 +9,8 @@
             [day8.re-frame-10x.view.timing :as timing]
             [day8.re-frame-10x.view.settings :as settings]
             [day8.re-frame-10x.view.event :as event]
-            [day8.re-frame-10x.view.fx :as fx]))
+            [day8.re-frame-10x.view.fx :as fx]
+            [day8.re-frame-10x.view.container :as container]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -471,11 +472,12 @@
                                      [:#--re-frame-10x-- highlight-js-solarized]
                                      common/blue-modern
                                      re-frame-trace-styles
+                                     container/container-styles
+                                     event/event-styles
+                                     fx/fx-styles
                                      app-db/app-db-styles
                                      timing/timing-styles
-                                     event/event-styles
-                                     settings/settings-styles
-                                     fx/fx-styles]))
+                                     settings/settings-styles]))
 
 (defn inject-inline-style [document id style]
   (let [styles-el     (.getElementById document id)

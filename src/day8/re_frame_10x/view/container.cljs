@@ -34,9 +34,22 @@
 (def orange-settings-svg (macros/slurp-macro "day8/re_frame_10x/images/orange-wrench.svg"))
 (def pause-svg (macros/slurp-macro "day8/re_frame_10x/images/pause.svg"))
 (def play-svg (macros/slurp-macro "day8/re_frame_10x/images/play.svg"))
+(def reload (macros/slurp-macro "day8/re_frame_10x/images/reload.svg"))
+(def reload-disabled (macros/slurp-macro "day8/re_frame_10x/images/reload-disabled.svg"))
 
 (def outer-margins {:margin (str "0px " common/gs-19s)})
 
+
+(def container-styles
+  [:#--re-frame-10x--
+   [:.container--replay-button
+    {:width  "65px"   ;; common/gs-81s - 2 * (7px padding + 1px border)
+     :height "29px"}] ;; common/gs-31s - 2 * 1px border
+   [:.container--info-button
+    {:border-radius    "50%"
+     :color            "white"
+     :background-color common/blue-modern-color}]
+   ])
 
 
 (defn right-hand-buttons [external-window?]
@@ -69,8 +82,8 @@
                    {:title    "Pop out"
                     :src      (str "data:image/svg+xml;utf8,"
                                    open-external)
-                    :on-click #(rf/dispatch-sync [:global/launch-external])}])]])
-  )
+                    :on-click #(rf/dispatch-sync [:global/launch-external])}])]]))
+
 
 (defn settings-header [external-window?]
   [[rc/h-box
@@ -121,7 +134,10 @@
         unloading?        (rf/subscribe [:global/unloading?])
         showing-settings? (= @selected-tab :settings)]
     [:div.panel-content
-     {:style {:width "100%" :display "flex" :flex-direction "column" :background-color common/standard-background-color}}
+     {:style {:width            "100%"
+              :display          "flex"
+              :flex-direction   "column"
+              :background-color common/standard-background-color}}
      (if showing-settings?
        [rc/h-box
         :class    "panel-content-top nav"
@@ -149,7 +165,34 @@
                                (tab-button :traces "Trace")
                                (tab-button :timing "Timing")
                                (when (:debug? opts)
-                                 (tab-button :debug "Debug"))]]]])
+                                 (tab-button :debug "Debug"))]]
+                   [rc/h-box
+                    :align    :center
+                    :padding  "0px 19px 0px 7px"
+                    :gap      "4px"
+                    :children [[rc/button
+                                :class "bm-muted-button container--replay-button"
+                                :label [rc/h-box
+                                        :align    :center
+                                        :gap      "3px"
+                                        :children [[:img
+                                                    {:src      (str "data:image/svg+xml;utf8," reload)
+                                                     :style    {:cursor "pointer"
+                                                                :height "23px"}
+                                                     :on-click #(rf/dispatch [])}]
+                                                   "replay"]]
+                                :on-click #(rf/dispatch [])]
+                               [rc/hyperlink-href           ;; TODO: Could make this a component if we decide to standardise on using this for all hyperlinks
+                                :label  [rc/box
+                                         :class "container--info-button"
+                                         :justify :center
+                                         :align   :center
+                                         :width   common/gs-12s
+                                         :height  common/gs-12s
+                                         :child   "?"]
+                                :attr   {:rel "noopener noreferrer"}
+                                :target "_blank"
+                                :href   "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]]]])
      [rc/line :color "#EEEEEE"]
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
