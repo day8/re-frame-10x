@@ -2,14 +2,15 @@
   (:require [devtools.prefs]
             [devtools.formatters.core]
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
-            [day8.re-frame-10x.utils.re-com :as rc]
+            [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.view.components :as components]))
 
 (def timing-styles
   [:#--re-frame-10x--
    [:.timing-details
-    {:margin-top common/gs-31s}]
+    {:margin-top   common/gs-31s
+     :margin-right common/gs-19s}]
    [:.timing-details--line
     {:margin "1em 0"}]
 
@@ -28,12 +29,13 @@
      :width            "63px"}]
 
    [".timing-elapsed-panel"
-    {:padding "12px 12px 12px 0"
-     :margin  common/gs-7s}]
+    {:padding "12px 12px 12px 0px"
+     :margin  (css-join common/gs-7s "0px")}]
    [".timing-part-panel"
     (merge (common/panel-style "3px")
-           {:padding "12px"
-            :margin  common/gs-7s})]
+           {:padding  common/gs-12s
+            :margin   (css-join common/gs-7s "0px")
+            :overflow "hidden"})]
    ])
 
 (defn timing-tag [label]
@@ -51,9 +53,7 @@
                             (= time 0) (str "0ms")
                             (< time 0.1) (str "<0.1ms")
                             (< time 1) (str (.toFixed time 1) "ms")
-                            (some? time) (str (js/Math.round time) "ms")
-
-                            )]]])
+                            (some? time) (str (js/Math.round time) "ms"))]]])
 
 (defn render []
   (let [timing-data-available? @(rf/subscribe [:timing/data-available?])
@@ -75,22 +75,19 @@
                    :gap common/gs-12s
                    :class "timing-part-panel"
                    :align :center
-                   :children
-                   [[rc/v-box
-                     :align :center
-                     :width common/gs-81s
-                     :children [[:span "event"] [:span "processing"]]]
-                    [timing-section "total" (:timing/event-total event-processing-time)]
-                    [:span "="]
-                    [timing-section "handler" (:timing/event-handler event-processing-time)]
-                    [:span "+"]
-                    [timing-section "effects" (:timing/event-effects event-processing-time)]
-                    #_[:span "+"]
-                    #_[timing-section "other int." (:timing/event-interceptors event-processing-time)]
-                    [:span "+"]
-                    [timing-section "misc" (:timing/event-misc event-processing-time)]
-
-                    ]]
+                   :children [[rc/v-box
+                               :align :center
+                               :width common/gs-81s
+                               :children [[:span "event"] [:span "processing"]]]
+                              [timing-section "total" (:timing/event-total event-processing-time)]
+                              [:span "="]
+                              [timing-section "handler" (:timing/event-handler event-processing-time)]
+                              [:span "+"]
+                              [timing-section "effects" (:timing/event-effects event-processing-time)]
+                              #_[:span "+"]
+                              #_[timing-section "other int." (:timing/event-interceptors event-processing-time)]
+                              [:span "+"]
+                              [timing-section "misc" (:timing/event-misc event-processing-time)]]]
                   (doall
                     (for [frame (range 1 (inc @(rf/subscribe [:timing/animation-frame-count])))
                           :let [frame-time @(rf/subscribe [:timing/animation-frame-time frame])]]
