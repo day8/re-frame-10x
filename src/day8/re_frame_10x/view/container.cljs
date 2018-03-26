@@ -54,24 +54,12 @@
 
 (defn right-hand-buttons [external-window?]
   (let [selected-tab      (rf/subscribe [:settings/selected-tab])
-        paused?           (rf/subscribe [:settings/paused?])
         showing-settings? (= @selected-tab :settings)]
     [rc/h-box
      :align    :center
      :children [(when showing-settings?
                   [:button {:class    "bm-active-button"
                             :on-click #(rf/dispatch [:settings/toggle-settings])} "Done"])
-                (if @paused?
-                  [:img.nav-icon.noselect
-                   {:title    "Play"
-                    :src      (str "data:image/svg+xml;utf8,"
-                                   play-svg)
-                    :on-click #(rf/dispatch [:settings/play])}]
-                  [:img.nav-icon.noselect
-                   {:title    "Pause"
-                    :src      (str "data:image/svg+xml;utf8,"
-                                   pause-svg)
-                    :on-click #(rf/dispatch [:settings/pause])}])
                 [:img.nav-icon.noselect
                  {:title    "Settings"
                   :src      (str "data:image/svg+xml;utf8,"
@@ -122,7 +110,11 @@
                  [:span.arrow (if newer-epochs-available?
                                 {:on-click #(rf/dispatch [:epochs/next-epoch])}
                                 {:class "arrow__disabled"})
-                  "▶"]]]
+                  "▶"]
+                 [:span.arrow (if newer-epochs-available?
+                                {:on-click #(rf/dispatch [:epochs/most-recent-epoch])}
+                                {:class "arrow__disabled"})
+                  "⏩"]]]
      [rc/gap-f :size common/gs-12s]
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))

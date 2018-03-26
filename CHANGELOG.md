@@ -1,6 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.3.1] - Unreleased
+
+### Added
+
+* Popout windows are now titled "re-frame-10x | <parent window title>"
+* Popout windows preserve their previous dimensions and screen position (note that Chrome won't let us reposition windows across displays).
+
+### Fixed
+
+* Added syntax highlighting for more elements in the Event code blocks
+
 ## [0.3.0] - 2018-03-24
 
 ### Added

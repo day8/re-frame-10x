@@ -4,8 +4,10 @@
             [cljs.tools.reader.edn]
             [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
             [day8.re-frame-10x.utils.localstorage :as localstorage]
+            [reagent.impl.batching :as batching]
             [clojure.string :as str]
             [goog.object]
+            [goog.string]
             [re-frame.db]
             [re-frame.interop]
             [day8.re-frame-10x.view.container :as container]
@@ -228,34 +230,80 @@
 ;; Global
 
 (defn mount [popup-window popup-document]
-  (let [app (.getElementById popup-document "--re-frame-10x--")
-        doc js/document]
+  ;; When programming here, we need to be careful about which document and window
+  ;; we are operating on, and keep in mind that the window can close without going
+  ;; through standard react lifecycle, so we hook the beforeunload event.
+  (let [app                      (.getElementById popup-document "--re-frame-10x--")
+        resize-update-scheduled? (atom false)
+        handle-window-resize     (fn [e]
+                                   (when-not @resize-update-scheduled?
+                                     (batching/next-tick
+                                       (fn []
+                                         (let [width  (.-innerWidth popup-window)
+                                               height (.-innerHeight popup-window)]
+                                           (rf/dispatch [:settings/external-window-resize {:width width :height height}]))
+                                         (reset! resize-update-scheduled? false)))
+                                     (reset! resize-update-scheduled? true)))
+        handle-window-position   (let [pos (atom {})]
+                                   (fn []
+                                     ;; Only update re-frame if the windows position has changed.
+                                     (let [{:keys [left top]} @pos
+                                           screen-left (.-screenLeft popup-window)
+                                           screen-top (.-screenTop popup-window)]
+                                       (when (or (not= left screen-left)
+                                               (not= top screen-top))
+                                         (rf/dispatch [:settings/external-window-position {:left screen-left :top screen-top}])
+                                         (reset! pos {:left screen-left :top screen-top})))))
+        window-position-interval (atom nil)
+        unmount                  (fn [_]
+                                   (.removeEventListener popup-window "resize" handle-window-resize)
+                                   (some-> @window-position-interval js/clearInterval)
+                                   nil)]
+
+
     (styles/inject-trace-styles popup-document)
     (goog.object/set popup-window "onunload" #(rf/dispatch [:global/external-closed]))
     (r/render
       [(r/create-class
-         {:display-name   "devtools outer external"
-          :reagent-render (fn []
-                            [container/devtools-inner {:panel-type :popup}])})]
+         {:display-name           "devtools outer external"
+          :component-did-mount    (fn []
+                                    (.addEventListener popup-window "resize" handle-window-resize)
+                                    (.addEventListener popup-window "beforeunload" unmount)
+                                    ;; Check the window position every 10 seconds
+                                    (reset! window-position-interval
+                                            (js/setInterval
+                                              handle-window-position
+                                              10000)))
+          :component-will-unmount unmount
+          :reagent-render         (fn [] [container/devtools-inner {:panel-type :popup}])})]
       app)))
 
 (defn open-debugger-window
-  "Copied from re-frisk.devtool/open-debugger-window"
-  []
-  (let [{:keys [ext_height ext_width]} (:prefs {})
-        w (js/window.open "" "Debugger" (str "width=" (or ext_width 800) ",height=" (or ext_height 800)
-                                             ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
+  "Originally copied from re-frisk.devtool/open-debugger-window"
+  [{:keys [width height top left] :as dimensions}]
+  (let [doc-title        js/document.title
+        new-window-title (goog.string/escapeString (str "re-frame-10x | " doc-title))
+        new-window-html  (str "<head><title>"
+                              new-window-title
+                              "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
+        ;; We would like to set the windows left and top positions to match the monitor that it was on previously, but Chrome doesn't give us
+        ;; control over this, it will only position it within the same display that it was popped out on.
+        w                (js/window.open "" "re-frame-10x-popout"
+                                         (str "width=" width ",height=" height ",left=" left ",top=" top
+                                              ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
 
-        d (.-document w)]
+        d                (.-document w)]
+    (when-let [el (.getElementById d "--re-frame-10x--")]
+      (r/unmount-component-at-node el))
     (.open d)
-    (.write d "<head><title>re-frame-10x</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
+    (.write d new-window-html)
     (goog.object/set w "onload" #(mount w d))
     (.close d)))
 
 (rf/reg-event-fx
   :global/launch-external
   (fn [ctx _]
-    (open-debugger-window)
+    (open-debugger-window (get-in ctx [:db :settings :external-window-dimensions]))
     (localstorage/save! "external-window?" true)
     {:db             (assoc-in (:db ctx) [:settings :external-window?] true)
      ;; TODO: capture the intent that the user is still interacting with devtools, to persist between reloads.
@@ -267,6 +315,24 @@
     (localstorage/save! "external-window?" false)
     {:db             (assoc-in (:db ctx) [:settings :external-window?] false)
      :dispatch-later [{:ms 400 :dispatch [:settings/show-panel? true]}]}))
+
+(rf/reg-event-db
+  :settings/external-window-dimensions
+  [(rf/path [:settings :external-window-dimensions]) (rf/after #(localstorage/save! "external-window-dimensions" %))]
+  (fn [dim [_ new-dim]]
+    new-dim))
+
+(rf/reg-event-db
+  :settings/external-window-resize
+  [(rf/path [:settings :external-window-dimensions]) (rf/after #(localstorage/save! "external-window-dimensions" %))]
+  (fn [dim [_ {width :width height :height}]]
+    (assoc dim :width width :height height)))
+
+(rf/reg-event-db
+  :settings/external-window-position
+  [(rf/path [:settings :external-window-dimensions]) (rf/after #(localstorage/save! "external-window-dimensions" %))]
+  (fn [dim [_ {left :left top :top}]]
+    (assoc dim :left left :top top)))
 
 (rf/reg-event-fx
   :global/enable-tracing
@@ -620,7 +686,7 @@
          :dispatch-n [[:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]})
       (let [new-id (nth (:match-ids db)
                         (- (count (:match-ids db)) 2))]
-        {:db         (assoc db :current-epoch-id new-id )
+        {:db         (assoc db :current-epoch-id new-id)
          :dispatch-n [[:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]}))))
 
 (rf/reg-event-fx
@@ -636,6 +702,12 @@
       (let [new-id (last (:match-ids db))]
         {:db         (assoc db :current-epoch-id new-id)
          :dispatch-n [[:code/clear-scroll-pos] [:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]}))))
+
+(rf/reg-event-fx
+  :epochs/most-recent-epoch
+  [(rf/path [:epochs])]
+  (fn [{:keys [db]}]
+    {:dispatch [:settings/play]}))
 
 (rf/reg-event-db
   :epochs/reset
