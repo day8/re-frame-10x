@@ -27,7 +27,7 @@
 (def pod-border-edge (str "1px solid " pod-border-color))
 (def border-radius "3px")
 
-(def *finished-animation? (r/atom false))
+(def *finished-animation? (r/atom true))
 (def animation-duration 150)
 
 
@@ -272,15 +272,15 @@
 
 (defn no-pods []
   [rc/h-box
-   :margin (css-join "0px 0px 0px" common/gs-19s)
-   :gap common/gs-7s
+   :margin (css-join common/gs-19s " 0px 0px 50px")
+   :gap common/gs-12s
    :align :start
    :align-self :start
    :children [[:img {:src (str "data:image/svg+xml;utf8," round-arrow)}]
               [rc/label
-               :style {:width      "150px"
+               :style {:width      "160px"
                        :margin-top "22px"}
-               :label "add inspectors to show what happened to app-db"]]])
+               :label "see the values in app-db by adding one or more inspectors"]]])
 
 
 (defn pod-header-column-titles
