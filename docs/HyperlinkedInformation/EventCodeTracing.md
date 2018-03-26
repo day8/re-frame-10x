@@ -10,11 +10,11 @@ Here's what it would look like if you had it setup:
 
 ### Setup
 
-**First**, adjust your `project.clj` by following [these instructions](https://github.com/Day8/re-frame-debux/blob/master/README.md#installation) to add `day8.re-frame/debux` to the `:dev` `:dependencies`. 
+**First**, adjust your `project.clj` by following [these instructions](https://github.com/Day8/re-frame-debux/blob/master/README.md#installation) to add `day8.re-frame/tracing` to the `:dev` `:dependencies`. 
  
 **Then**, within the namespace of yours which contains the event handlers to be traced (perhaps called `events.cljs`):
 
- 1. Add the following `:require` to the `ns`:  `[debux.cs.core :refer-macros [fn-traced]]`
+ 1. Add the following `:require` to the `ns`:  `[day8.re-frame.tracing :refer-macros [fn-traced]]`
  2. When you register your event handler, use `fn-traced` instead of `fn`, like this: 
  
  ```clj
