@@ -248,8 +248,8 @@
                                    (fn []
                                      ;; Only update re-frame if the windows position has changed.
                                      (let [{:keys [left top]} @pos
-                                           screen-left (.-screenLeft popup-window)
-                                           screen-top (.-screenTop popup-window)]
+                                           screen-left (.-screenX popup-window)
+                                           screen-top (.-screenY popup-window)]
                                        (when (or (not= left screen-left)
                                                (not= top screen-top))
                                          (rf/dispatch [:settings/external-window-position {:left screen-left :top screen-top}])
