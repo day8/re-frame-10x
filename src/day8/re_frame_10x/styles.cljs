@@ -454,9 +454,9 @@
    [".hljs-attribute" ".hljs-attr" ".hljs-variable" ".hljs-template-variable" ".hljs-class .hljs-title" ".hljs-type"
     {"color" "#b58900"}]
    ;;Solarized Orange
-   [".hljs-symbol" ".hljs-bullet" ".hljs-subst" ".hljs-meta" ".hljs-meta .hljs-keyword"]
-   {"color" "#cb4b16"}
-   [".hljs-built_in" ".hljs-deletion"
+   [".hljs-symbol" ".hljs-bullet" ".hljs-subst" ".hljs-meta" ".hljs-meta .hljs-keyword"
+    {"color" "#cb4b16"}]
+   [".hljs-builtin-name" ".hljs-deletion"
     {"color" "#dc322f"}]
    [".hljs-formula"
     {"background" "#eee8d5"}]
