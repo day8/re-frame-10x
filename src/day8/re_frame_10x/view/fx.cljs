@@ -19,7 +19,13 @@
     {:font-weight      "bold"
      :background-color "rgba(100, 100, 255, 0.08)"}]
    [:.code-fragment {:background-color common/white-background-color}
-    [:&:hover {:background-color "rgba(100, 100, 255, 0.08)"}]]])
+    [:.code-fragment__result {:visibility "hidden"
+                              :color common/medium-gray}]
+    [:&:hover
+     {:background-color "rgba(100, 100, 255, 0.08)"}
+     [:.code-fragment__result
+      {:visibility "visible"}]
+     ]]])
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)

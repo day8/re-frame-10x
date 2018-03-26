@@ -7,7 +7,8 @@
             [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
             [zprint.core :as zp]
             [goog.string]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [day8.re-frame-10x.utils.pretty-print-condensed :as pp])
   (:require-macros [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]]
                    [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
@@ -57,7 +58,8 @@
   [code-execution-id line]
   ;(println ">>>>>> code-header:" (:id line))
   (let [open?-path [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]
-        open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)]
+        open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)
+        debug?     @(rf/subscribe [:settings/debug?])]
     [rc/h-box
      :style {:border   code-border
              :overflow "hidden"
@@ -75,7 +77,9 @@
                 [:pre
                  {:style {:margin-left "2px"
                           :margin-top  "2px"}}
-                 (str (:form line))]]]))
+                 (str (:form line))
+                 (when debug?
+                   [:span {:class "code-fragment__result"} " " (pp/truncate-string 100 (pr-str (:result line)))])]]]))
 
 
 (defn code-block
@@ -175,8 +179,7 @@
   []
   (let [code-traces      @(rf/subscribe [:code/current-code])
         code-execution   (first code-traces) ;; Ignore multiple code executions for now
-        highlighted-form (rf/subscribe [:code/highlighted-form])
-        #_#_debug?           @(rf/subscribe [:settings/debug?])]
+        highlighted-form (rf/subscribe [:code/highlighted-form])]
     ;(println "EVENT-CODE")
     (if-not code-execution
       [no-event-instructions]
