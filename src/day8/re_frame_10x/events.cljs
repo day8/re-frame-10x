@@ -248,7 +248,7 @@
 
         d (.-document w)]
     (.open d)
-    (.write d "<head></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
+    (.write d "<head><title>re-frame-10x</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
     (goog.object/set w "onload" #(mount w d))
     (.close d)))
 
