@@ -273,7 +273,7 @@
                                     (reset! window-position-interval
                                             (js/setInterval
                                               handle-window-position
-                                              10000)))
+                                              2000)))
           :component-will-unmount unmount
           :reagent-render         (fn [] [container/devtools-inner {:panel-type :popup}])})]
       app)))
