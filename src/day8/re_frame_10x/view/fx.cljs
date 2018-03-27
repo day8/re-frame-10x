@@ -38,8 +38,8 @@
    :class "event-section"
    :children
    [[rc/h-box
-     :class "event-section--header app-db-path--header"
-     :align :center
+     :class    "event-section--header app-db-path--header"
+     :align    :center
      :children [[:h2 title]]]
     [components/simple-render data [title] "event-section--data app-db-path--pod-border"]]])
 

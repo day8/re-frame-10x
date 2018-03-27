@@ -25,13 +25,13 @@
     {:background-color common/navbar-tint-lighter
      :color            common/navbar-text-color
      :height           common/gs-19
-     :font-size        "14px"
      :padding          [[0 common/gs-12]]
-     }]
+     :overflow         "hidden"}]
    [:.event-section--data
     {:background-color "rgba(100, 255, 100, 0.08)"
      :padding-left     (units/px- common/gs-12 common/expansion-button-horizontal-padding)
-     :overflow-x       "auto"}]
+     :overflow-x       "auto"
+     :overflow-y       "hidden"}]
    ])
 
 
