@@ -34,6 +34,8 @@
 (def orange-settings-svg (macros/slurp-macro "day8/re_frame_10x/images/orange-wrench.svg"))
 (def reload (macros/slurp-macro "day8/re_frame_10x/images/reload.svg"))
 (def reload-disabled (macros/slurp-macro "day8/re_frame_10x/images/reload-disabled.svg"))
+(def skip-to-end (macros/slurp-macro "day8/re_frame_10x/images/skip-to-end.svg"))
+(def skip-to-end-disabled (macros/slurp-macro "day8/re_frame_10x/images/skip-to-end-disabled.svg"))
 
 (def outer-margins {:margin (str "0px " common/gs-19s)})
 
@@ -95,8 +97,11 @@
       :size     "auto"
       :gap      common/gs-12s
       :children [[:span.arrow (if older-epochs-available?
-                                {:on-click #(rf/dispatch [:epochs/previous-epoch])}
-                                {:class "arrow__disabled"}) "◀"]
+                                {:on-click #(rf/dispatch [:epochs/previous-epoch])
+                                 :title    "Previous epoch"}
+                                {:class "arrow__disabled"
+                                 :title "There are no previous epochs"})
+                  "◀"]
                  [rc/v-box
                   :size     "auto"
                   :style    {:max-height       "42px" ;42 is exactly 2 lines which is perhaps neater than common/gs-50s (which would allow 3 lines to be seen)
@@ -106,13 +111,21 @@
                              :font-style       (if (some? current-event) "normal" "italic")}
                   :children [[:span.event-header event-str]]]
                  [:span.arrow (if newer-epochs-available?
-                                {:on-click #(rf/dispatch [:epochs/next-epoch])}
-                                {:class "arrow__disabled"})
+                                {:on-click #(rf/dispatch [:epochs/next-epoch])
+                                 :title    "Next epoch"}
+                                {:class "arrow__disabled"
+                                 :title "There are no later epochs"})
                   "▶"]
                  [:span.arrow (if newer-epochs-available?
-                                {:on-click #(rf/dispatch [:epochs/most-recent-epoch])}
-                                {:class "arrow__disabled"})
-                  "⏩"]]]
+                                {:on-click #(rf/dispatch [:epochs/most-recent-epoch])
+                                 :title    "Skip to latest epoch"}
+                                {:class "arrow__disabled"
+                                 :title "Already showing latest epoch"})
+                  [:img
+                   {:src      (str "data:image/svg+xml;utf8," (if newer-epochs-available? skip-to-end skip-to-end-disabled))
+                    :style    {:cursor        (if newer-epochs-available? "pointer" "default")
+                               :height        "12px"
+                               :margin-bottom "-1px"}}]]]]
      [rc/gap-f :size common/gs-12s]
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))

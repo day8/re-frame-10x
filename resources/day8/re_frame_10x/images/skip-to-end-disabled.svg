@@ -1,0 +1,14 @@
+<svg fill="#ECEDF0" viewBox="0 0 18 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Canvas" transform="translate(1083 -318)">
+        <g id="Polygon">
+            <use xlink:href="#path0_fill" transform="matrix(1.48319e-16 1 -1 1.48319e-16 -1065 318)"/>
+        </g>
+        <g id="Rectangle 3">
+            <use xlink:href="#path1_fill" transform="translate(-1068 318)"/>
+        </g>
+    </g>
+    <defs>
+        <path id="path0_fill" d="M 9.78788 0L 19 18L 0 18L 9.78788 0Z"/>
+        <path id="path1_fill" d="M 0 0L 3 0L 3 19L 0 19L 0 0Z"/>
+    </defs>
+</svg>
