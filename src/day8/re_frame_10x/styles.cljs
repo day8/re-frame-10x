@@ -368,6 +368,8 @@
                   :user-select      "none"}]
     [:span.arrow__disabled {:color  common/disabled-background-color
                             :cursor "auto"}]
+    [:span.arrow.epoch-nav {:min-width "16px"
+                            :max-width "16px"}]
     [:span.event-header {:color            common/text-color
                          :background-color common/standard-background-color
                          :padding          (px 5)

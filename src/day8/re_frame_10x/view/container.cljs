@@ -96,11 +96,12 @@
       :align    :center
       :size     "auto"
       :gap      common/gs-12s
-      :children [[:span.arrow (if older-epochs-available?
-                                {:on-click #(rf/dispatch [:epochs/previous-epoch])
-                                 :title    "Previous epoch"}
-                                {:class "arrow__disabled"
-                                 :title "There are no previous epochs"})
+      :children [[:span.arrow.epoch-nav
+                  (if older-epochs-available?
+                    {:on-click #(rf/dispatch [:epochs/previous-epoch])
+                     :title    "Previous epoch"}
+                    {:class "arrow__disabled"
+                     :title "There are no previous epochs"})
                   "◀"]
                  [rc/v-box
                   :size     "auto"
@@ -110,17 +111,19 @@
                              :background-color "white"
                              :font-style       (if (some? current-event) "normal" "italic")}
                   :children [[:span.event-header event-str]]]
-                 [:span.arrow (if newer-epochs-available?
-                                {:on-click #(rf/dispatch [:epochs/next-epoch])
-                                 :title    "Next epoch"}
-                                {:class "arrow__disabled"
-                                 :title "There are no later epochs"})
+                 [:span.arrow.epoch-nav
+                  (if newer-epochs-available?
+                    {:on-click #(rf/dispatch [:epochs/next-epoch])
+                     :title    "Next epoch"}
+                    {:class "arrow__disabled"
+                     :title "There are no later epochs"})
                   "▶"]
-                 [:span.arrow (if newer-epochs-available?
-                                {:on-click #(rf/dispatch [:epochs/most-recent-epoch])
-                                 :title    "Skip to latest epoch"}
-                                {:class "arrow__disabled"
-                                 :title "Already showing latest epoch"})
+                 [:span.arrow.epoch-nav
+                  (if newer-epochs-available?
+                    {:on-click #(rf/dispatch [:epochs/most-recent-epoch])
+                     :title    "Skip to latest epoch"}
+                    {:class "arrow__disabled"
+                     :title "Already showing latest epoch"})
                   [:img
                    {:src      (str "data:image/svg+xml;utf8," (if newer-epochs-available? skip-to-end skip-to-end-disabled))
                     :style    {:cursor        (if newer-epochs-available? "pointer" "default")
