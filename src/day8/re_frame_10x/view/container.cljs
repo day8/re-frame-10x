@@ -168,10 +168,9 @@
                                         :children [[:img
                                                     {:src      (str "data:image/svg+xml;utf8," reload)
                                                      :style    {:cursor "pointer"
-                                                                :height "23px"}
-                                                     :on-click #(rf/dispatch [])}]
+                                                                :height "23px"}}]
                                                    "replay"]]
-                                :on-click #(rf/dispatch [])]
+                                :on-click #(rf/dispatch [:epochs/replay])]
                                [rc/hyperlink-href           ;; TODO: Could make this a component if we decide to standardise on using this for all hyperlinks
                                 :label  [rc/box
                                          :class "container--info-button"

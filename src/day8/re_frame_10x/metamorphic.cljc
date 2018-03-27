@@ -262,6 +262,12 @@
        (filter event-run?)
        (first)))
 
+(defn app-db-after [event-trace]
+  (get-in event-trace [:tags :app-db-after]))
+
+(defn app-db-before [event-trace]
+  (get-in event-trace [:tags :app-db-before]))
+
 (defn subscription-info
   "Collect information about the subscription that we'd like
   to know, like its layer."

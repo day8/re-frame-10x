@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Added
 
+* Replay button. This lets you replay a previously run event, with the same app-db context that it had when it ran. See the docs on the [HotPlay Workflow](/docs/HyperlinkedInformation/ReplayButton.md) for ways you can use this button.
 * Popout windows are now titled "re-frame-10x | <parent window title>"
 * Popout windows preserve their previous dimensions and screen position (note that Chrome won't let us reposition windows across displays).
 

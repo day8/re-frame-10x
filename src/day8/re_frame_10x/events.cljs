@@ -10,11 +10,12 @@
             [goog.string]
             [re-frame.db]
             [re-frame.interop]
+            [re-frame.core]
+            [re-frame.trace]
             [day8.re-frame-10x.view.container :as container]
             [day8.re-frame-10x.styles :as styles]
             [clojure.set :as set]
-            [day8.re-frame-10x.metamorphic :as metam]
-            [re-frame.trace]))
+            [day8.re-frame-10x.metamorphic :as metam]))
 
 (defn fixed-after
   ;; Waiting on https://github.com/Day8/re-frame/issues/447
@@ -235,9 +236,9 @@
                                      ;; Only update re-frame if the windows position has changed.
                                      (let [{:keys [left top]} @pos
                                            screen-left (.-screenX popup-window)
-                                           screen-top (.-screenY popup-window)]
+                                           screen-top  (.-screenY popup-window)]
                                        (when (or (not= left screen-left)
-                                               (not= top screen-top))
+                                                 (not= top screen-top))
                                          (rf/dispatch [:settings/external-window-position {:left screen-left :top screen-top}])
                                          (reset! pos {:left screen-left :top screen-top})))))
         window-position-interval (atom nil)
@@ -559,24 +560,17 @@
     (re-frame.interop/reagent-id re-frame.db/app-db)))
 
 (rf/reg-event-db
-  :snapshot/load-snapshot
-  (fn [db [_ new-db]]
-    (reset! re-frame.db/app-db new-db)
-    db))
-
-(rf/reg-event-db
   :snapshot/reset-current-epoch-app-db
   (fn [db [_ new-id]]
-    (let [follows-events? (get-in db [:settings :app-db-follows-events?])
-          epochs          (:epochs db)
-          match-id        (or new-id
-                              ;; new-id may be nil when we call this event from :settings/play
-                              (utils/last-in-vec (get epochs :match-ids)))
-          match           (get-in epochs [:matches-by-id match-id])
-          event           (metam/matched-event (:match-info match))]
-      (when follows-events?
+    (when (get-in db [:settings :app-db-follows-events?])
+      (let [epochs   (:epochs db)
+            match-id (or new-id
+                         ;; new-id may be nil when we call this event from :settings/play
+                         (utils/last-in-vec (get epochs :match-ids)))
+            match    (get-in epochs [:matches-by-id match-id])
+            event    (metam/matched-event (:match-info match))]
         ;; Don't mess up the users app if there is a problem getting app-db-after.
-        (when-some [new-db (get-in event [:tags :app-db-after])]
+        (when-some [new-db (metam/app-db-after event)]
           (reset! re-frame.db/app-db new-db))))
     db))
 
@@ -586,9 +580,9 @@
   [m]
   (-> m :match-info first :id))
 
-(rf/reg-event-db
+(rf/reg-event-fx
   :epochs/receive-new-traces
-  (fn [db [_ new-traces]]
+  (fn [{:keys [db]} [_ new-traces]]
     (if-let [filtered-traces (->> (filter log-trace? new-traces)
                                   (sort-by :id))]
       (let [number-of-epochs-to-retain (get-in db [:settings :number-of-epochs])
@@ -640,6 +634,11 @@
                                                                      :sub-state  sub-match
                                                                      :timing     t})
                                             new-matches subscription-matches timing)
+            ;; If there are new matches found, then by definition, a quiescent trace must have been received
+            ;; However in cases where we reset the db in a replay, we won't get an event match.
+            ;; We short circuit here to avoid iterating over the traces when it's unnecessary.
+            quiescent?                 (or (seq new-matches)
+                                           (filter metam/quiescent? filtered-traces))
             all-matches                (reduce conj previous-matches new-matches)
             retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
             first-id-to-retain         (first-match-id (first retained-matches))
@@ -647,23 +646,24 @@
                                                       (remove (fn [trace]
                                                                 (or (when drop-reagent (metam/low-level-reagent-trace? trace))
                                                                     (when drop-re-frame (metam/low-level-re-frame-trace? trace)))))) all-traces)]
-        (-> db
-            (assoc-in [:traces :all-traces] retained-traces)
-            (update :epochs (fn [epochs]
-                              (let [current-index (:current-epoch-index epochs)
-                                    current-id    (:current-epoch-id epochs)]
-                                (assoc epochs
-                                  :matches retained-matches
-                                  :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
-                                  :match-ids (mapv first-match-id retained-matches)
-                                  :parse-state parse-state
-                                  :sub-state new-sub-state
-                                  :subscription-info subscription-info
-                                  ;; Reset current epoch to the head of the list if we got a new event in.
-                                  :current-epoch-id (if (seq new-matches) nil current-id)
-                                  :current-epoch-index (if (seq new-matches) nil current-index)))))))
+        {:db       (-> db
+                       (assoc-in [:traces :all-traces] retained-traces)
+                       (update :epochs (fn [epochs]
+                                         (let [current-index (:current-epoch-index epochs)
+                                               current-id    (:current-epoch-id epochs)]
+                                           (assoc epochs
+                                             :matches retained-matches
+                                             :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
+                                             :match-ids (mapv first-match-id retained-matches)
+                                             :parse-state parse-state
+                                             :sub-state new-sub-state
+                                             :subscription-info subscription-info
+                                             ;; Reset current epoch to the head of the list if we got a new event in.
+                                             :current-epoch-id (if (seq new-matches) nil current-id)
+                                             :current-epoch-index (if (seq new-matches) nil current-index))))))
+         :dispatch (when quiescent? [:epochs/quiescent])})
       ;; Else
-      db)))
+      {:db db})))
 
 (rf/reg-event-fx
   :epochs/previous-epoch
@@ -690,7 +690,7 @@
             new-id            (nth match-ids (inc match-array-index))]
         {:db         (assoc db :current-epoch-id new-id)
          :dispatch-n [[:code/clear-scroll-pos] [:snapshot/reset-current-epoch-app-db new-id]]})
-      (let [new-id (last (:match-ids db))]
+      (let [new-id (utils/last-in-vec (:match-ids db))]
         {:db         (assoc db :current-epoch-id new-id)
          :dispatch-n [[:code/clear-scroll-pos] [:snapshot/reset-current-epoch-app-db new-id]]}))))
 
@@ -698,10 +698,31 @@
   :epochs/most-recent-epoch
   [(rf/path [:epochs])]
   (fn [db _]
-    (-> db
-        #_(assoc-in [:settings :paused?] false)
-        (assoc-in [:epochs :current-epoch-index] nil)
-        (assoc-in [:epochs :current-epoch-id] nil))))
+    (assoc db :current-epoch-index nil
+              :current-epoch-id nil)))
+
+(rf/reg-event-db
+  :epochs/replay
+  [(rf/path [:epochs])]
+  (fn [epochs _]
+    (let [current-epoch-id (or (get epochs :current-epoch-id)
+                               (utils/last-in-vec (get epochs :match-ids)))
+          event-trace      (-> (get-in epochs [:matches-by-id current-epoch-id :match-info])
+                               (metam/matched-event))
+          app-db-before    (metam/app-db-before event-trace)
+          event            (get-in event-trace [:tags :event])]
+      (reset! re-frame.db/app-db app-db-before)
+      ;; Wait for quiescence
+      (assoc epochs :replay event))))
+
+(rf/reg-event-db
+  :epochs/quiescent
+  [(rf/path [:epochs])]
+  (fn [db _]
+    (if-some [event-to-replay (:replay db)]
+      (do (re-frame.core/dispatch event-to-replay)
+          (dissoc db :replay))
+      db)))
 
 (rf/reg-event-db
   :epochs/reset

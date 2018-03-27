@@ -1,5 +1,3 @@
-> There is currently no Replay button. This document is speculative. See https://github.com/Day8/re-frame-10x/issues/155
-
 This document explains the operation of the "Replay" button, and how to use **The HotPlay Workflow**.
 
 ### Epoch Navigation 
