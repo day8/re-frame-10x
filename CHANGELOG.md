@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file. This change
 * Popout windows are now titled "re-frame-10x | <parent window title>"
 * Popout windows preserve their previous dimensions and screen position (note that Chrome won't let us reposition windows across displays).
 
+### Changed
+
+* Removed the play/paused distinction. It was confusing for people and unclear what its purpose was. re-frame-10x will navigate to the most recent event that arrives if you were looking at a previous event.
+
 ### Fixed
 
 * Added syntax highlighting for more elements in the Event code blocks
@@ -40,7 +44,7 @@ All notable changes to this project will be documented in this file. This change
 
 * re-frame-trace has been renamed to re-frame-10x! To upgrade you need to do two things:
   * Update your dependency from `day8.re-frame/trace "0.1.21` to `day8.re-frame/re-frame-10x "0.2.0`
-  * Update your preload from `day8.re-frame.trace.preload` to `day8.re-frame-10x.preload`. If you don't update the preload you will get a deprecation warning, reminding you to update it. 
+  * Update your preload from `day8.re-frame.trace.preload` to `day8.re-frame-10x.preload`. If you don't update the preload you will get a deprecation warning, reminding you to update it.
 
 ## [0.1.22] - 2018-02-20
 

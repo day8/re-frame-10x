@@ -110,20 +110,6 @@
           (assoc-in [:settings :show-panel?] now-showing?)))))
 
 (rf/reg-event-db
-  :settings/pause
-  (fn [db _]
-    (assoc-in db [:settings :paused?] true)))
-
-(rf/reg-event-fx
-  :settings/play
-  (fn [{db :db} _]
-    {:db       (-> db
-                   (assoc-in [:settings :paused?] false)
-                   (assoc-in [:epochs :current-epoch-index] nil)
-                   (assoc-in [:epochs :current-epoch-id] nil))
-     :dispatch [:snapshot/reset-current-epoch-app-db nil]}))
-
-(rf/reg-event-db
   :settings/set-number-of-retained-epochs
   (fn [db [_ num-str]]
     ;; TODO: this is not perfect, there is an issue in re-com
@@ -664,13 +650,18 @@
         (-> db
             (assoc-in [:traces :all-traces] retained-traces)
             (update :epochs (fn [epochs]
-                              (assoc epochs
-                                :matches retained-matches
-                                :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
-                                :match-ids (mapv first-match-id retained-matches)
-                                :parse-state parse-state
-                                :sub-state new-sub-state
-                                :subscription-info subscription-info)))))
+                              (let [current-index (:current-epoch-index epochs)
+                                    current-id    (:current-epoch-id epochs)]
+                                (assoc epochs
+                                  :matches retained-matches
+                                  :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
+                                  :match-ids (mapv first-match-id retained-matches)
+                                  :parse-state parse-state
+                                  :sub-state new-sub-state
+                                  :subscription-info subscription-info
+                                  ;; Reset current epoch to the head of the list if we got a new event in.
+                                  :current-epoch-id (if (seq new-matches) nil current-id)
+                                  :current-epoch-index (if (seq new-matches) nil current-index)))))))
       ;; Else
       db)))
 
@@ -682,12 +673,12 @@
       (let [match-ids         (:match-ids db)
             match-array-index (utils/find-index-in-vec (fn [x] (= current-id x)) match-ids)
             new-id            (nth match-ids (dec match-array-index))]
-        {:db         (assoc db :current-epoch-id new-id)
-         :dispatch-n [[:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]})
+        {:db       (assoc db :current-epoch-id new-id)
+         :dispatch [:snapshot/reset-current-epoch-app-db new-id]})
       (let [new-id (nth (:match-ids db)
                         (- (count (:match-ids db)) 2))]
-        {:db         (assoc db :current-epoch-id new-id)
-         :dispatch-n [[:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]}))))
+        {:db       (assoc db :current-epoch-id new-id)
+         :dispatch [:snapshot/reset-current-epoch-app-db new-id]}))))
 
 (rf/reg-event-fx
   :epochs/next-epoch
@@ -698,16 +689,19 @@
             match-array-index (utils/find-index-in-vec (fn [x] (= current-id x)) match-ids)
             new-id            (nth match-ids (inc match-array-index))]
         {:db         (assoc db :current-epoch-id new-id)
-         :dispatch-n [[:code/clear-scroll-pos] [:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]})
+         :dispatch-n [[:code/clear-scroll-pos] [:snapshot/reset-current-epoch-app-db new-id]]})
       (let [new-id (last (:match-ids db))]
         {:db         (assoc db :current-epoch-id new-id)
-         :dispatch-n [[:code/clear-scroll-pos] [:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]}))))
+         :dispatch-n [[:code/clear-scroll-pos] [:snapshot/reset-current-epoch-app-db new-id]]}))))
 
-(rf/reg-event-fx
+(rf/reg-event-db
   :epochs/most-recent-epoch
   [(rf/path [:epochs])]
-  (fn [{:keys [db]}]
-    {:dispatch [:settings/play]}))
+  (fn [db _]
+    (-> db
+        #_(assoc-in [:settings :paused?] false)
+        (assoc-in [:epochs :current-epoch-index] nil)
+        (assoc-in [:epochs :current-epoch-id] nil))))
 
 (rf/reg-event-db
   :epochs/reset

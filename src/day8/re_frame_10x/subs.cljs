@@ -32,12 +32,6 @@
       (get settings :selected-tab))))
 
 (rf/reg-sub
-  :settings/paused?
-  :<- [:settings/root]
-  (fn [settings _]
-    (:paused? settings)))
-
-(rf/reg-sub
   :settings/number-of-retained-epochs
   :<- [:settings/root]
   (fn [settings]

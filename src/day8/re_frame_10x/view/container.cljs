@@ -32,8 +32,6 @@
 (def open-external (macros/slurp-macro "day8/re_frame_10x/images/logout.svg"))
 (def settings-svg (macros/slurp-macro "day8/re_frame_10x/images/wrench.svg"))
 (def orange-settings-svg (macros/slurp-macro "day8/re_frame_10x/images/orange-wrench.svg"))
-(def pause-svg (macros/slurp-macro "day8/re_frame_10x/images/pause.svg"))
-(def play-svg (macros/slurp-macro "day8/re_frame_10x/images/play.svg"))
 (def reload (macros/slurp-macro "day8/re_frame_10x/images/reload.svg"))
 (def reload-disabled (macros/slurp-macro "day8/re_frame_10x/images/reload-disabled.svg"))
 
@@ -211,4 +209,3 @@
                    :debug    [debug/render]
                    :settings [settings/render]
                    [app-db/render db/app-db])]]]))
-
