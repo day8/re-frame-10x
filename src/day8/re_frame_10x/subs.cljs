@@ -653,3 +653,17 @@
   :<- [:code/root]
   (fn [code _]
     (:scroll-pos code)))
+
+
+;;
+
+(rf/reg-sub
+  :component/root
+  (fn [db _]
+    (:component db)))
+
+(rf/reg-sub
+  :component/direction
+  :<- [:component/root]
+  (fn [component _]
+    (:direction component)))

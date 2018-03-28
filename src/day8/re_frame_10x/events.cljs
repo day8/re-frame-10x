@@ -789,3 +789,11 @@
   [(rf/path [:code :scroll-pos])]
   (fn [_scroll-pos _]
     {:top 0 :left 0}))
+
+;;
+
+(rf/reg-event-db
+  :component/set-direction
+  [(rf/path [:component])]
+  (fn [component [_ new-direction]]
+    (assoc component :direction new-direction)))

@@ -49,6 +49,12 @@
     {:border-radius    "50%"
      :color            "white"
      :background-color common/blue-modern-color}]
+   [:.pulse-previous
+    {:animation-duration "1000ms"
+     :animation-name     "pulse-previous-re-frame-10x"}] ;; Defined in day8.re-frame-10x.styles/at-keyframes
+   [:.pulse-next
+    {:animation-duration "1000ms"
+     :animation-name     "pulse-next-re-frame-10x"}]
    ])
 
 
@@ -85,42 +91,57 @@
    [rc/gap-f :size common/gs-12s]
    [right-hand-buttons external-window?]])
 
+
+(defn event-name
+  []
+  (let [direction          @(rf/subscribe [:component/direction])
+        current-event      @(rf/subscribe [:epochs/current-event])
+        beginning-trace-id @(rf/subscribe [:epochs/beginning-trace-id])
+        event-str          (if (some? current-event)
+                             (subs (prn-str current-event) 0 400)
+                             "No event")]
+    ^{:key beginning-trace-id}
+    [rc/v-box
+     :size "auto"
+     :style {:max-height       "42px"                       ;42 is exactly 2 lines which is perhaps neater than common/gs-50s (which would allow 3 lines to be seen)
+             :overflow-x       "hidden"
+             :overflow-y       "auto"
+             :background-color common/standard-background-color
+             :font-style       (if (some? current-event) "normal" "italic")}
+     :children [[:span
+                 {:class (str "event-header " (if (= :previous direction) "pulse-previous" "pulse-next"))
+                  :style {:position "relative"}}
+                 event-str]]]))
+
+
 (defn standard-header [external-window?]
-  (let [current-event           @(rf/subscribe [:epochs/current-event])
-        older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])
-        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])
-        event-str               (if (some? current-event)
-                                  (subs (prn-str current-event) 0 400)
-                                  "No event")]
+  (let [older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])
+        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])]
     [[rc/h-box
       :align    :center
       :size     "auto"
       :gap      common/gs-12s
       :children [[:span.arrow.epoch-nav
                   (if older-epochs-available?
-                    {:on-click #(rf/dispatch [:epochs/previous-epoch])
+                    {:on-click #(do (rf/dispatch [:component/set-direction :previous])
+                                    (rf/dispatch [:epochs/previous-epoch]))
                      :title    "Previous epoch"}
                     {:class "arrow__disabled"
                      :title "There are no previous epochs"})
                   "◀"]
-                 [rc/v-box
-                  :size     "auto"
-                  :style    {:max-height       "42px" ;42 is exactly 2 lines which is perhaps neater than common/gs-50s (which would allow 3 lines to be seen)
-                             :overflow-x       "hidden"
-                             :overflow-y       "auto"
-                             :background-color "white"
-                             :font-style       (if (some? current-event) "normal" "italic")}
-                  :children [[:span.event-header event-str]]]
+                 [event-name]
                  [:span.arrow.epoch-nav
                   (if newer-epochs-available?
-                    {:on-click #(rf/dispatch [:epochs/next-epoch])
+                    {:on-click #(do (rf/dispatch [:component/set-direction :next])
+                                    (rf/dispatch [:epochs/next-epoch]))
                      :title    "Next epoch"}
                     {:class "arrow__disabled"
                      :title "There are no later epochs"})
                   "▶"]
                  [:span.arrow.epoch-nav
                   (if newer-epochs-available?
-                    {:on-click #(rf/dispatch [:epochs/most-recent-epoch])
+                    {:on-click #(do (rf/dispatch [:component/set-direction :next])
+                                    (rf/dispatch [:epochs/most-recent-epoch]))
                      :title    "Skip to latest epoch"}
                     {:class "arrow__disabled"
                      :title "Already showing latest epoch"})
@@ -186,7 +207,8 @@
                                                      :style    {:cursor "pointer"
                                                                 :height "23px"}}]
                                                    "replay"]]
-                                :on-click #(rf/dispatch [:epochs/replay])]
+                                :on-click #(do (rf/dispatch [:component/set-direction :next])
+                                               (rf/dispatch [:epochs/replay]))]
                                [rc/hyperlink-href           ;; TODO: Could make this a component if we decide to standardise on using this for all hyperlinks
                                 :label  [rc/box
                                          :class "container--info-button"

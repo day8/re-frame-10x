@@ -22,7 +22,7 @@
     {:margin "0 0 1em 0"}]
 
    [".rft-tag__timing"
-    {:background-color common/disabled-background-color
+    {:background-color "#ECEDF0"
      :border           (str "1px solid " common/border-line-color)
      :font-weight      "normal"
      :font-size        "14px"

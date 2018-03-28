@@ -3,6 +3,7 @@
             [mranderson047.garden.v1v3v3.garden.units :as units :refer [em px percent]]
             [mranderson047.garden.v1v3v3.garden.color :as color]
             [mranderson047.garden.v1v3v3.garden.selectors :as s]
+            [mranderson047.garden.v1v3v3.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.utils.re-com :as rc]
             [day8.re-frame-10x.view.app-db :as app-db]
@@ -366,7 +367,7 @@
                   :padding          (px 5)
                   :cursor           "pointer"
                   :user-select      "none"}]
-    [:span.arrow__disabled {:color  common/disabled-background-color
+    [:span.arrow__disabled {:color  "#cfd8de"
                             :cursor "auto"}]
     [:span.arrow.epoch-nav {:min-width "16px"
                             :max-width "16px"}]
@@ -469,17 +470,31 @@
    ])
 
 
-(def panel-styles (apply garden/css [css-reset
-                                     [:#--re-frame-10x-- rc/re-com-css]
-                                     [:#--re-frame-10x-- highlight-js-solarized]
-                                     common/blue-modern
-                                     re-frame-trace-styles
-                                     container/container-styles
-                                     event/event-styles
-                                     fx/fx-styles
-                                     app-db/app-db-styles
-                                     timing/timing-styles
-                                     settings/settings-styles]))
+(def at-keyframes-styles
+  (let [slide? false]
+    [(at-keyframes :pulse-previous-re-frame-10x
+                   [:from {:color "white"
+                           :left  (when slide? "-100%")}]
+                   [:to   {:left  (when slide? "0%")}])
+     (at-keyframes :pulse-next-re-frame-10x
+                   [:from {:color "white"
+                           :left  (when slide? "100%")}]
+                   [:to   {:left  (when slide? "0%")}])]))
+
+
+(def panel-styles
+  (apply garden/css [css-reset
+                     [:#--re-frame-10x-- rc/re-com-css]
+                     [:#--re-frame-10x-- highlight-js-solarized]
+                     common/blue-modern
+                     re-frame-trace-styles
+                     container/container-styles
+                     event/event-styles
+                     fx/fx-styles
+                     app-db/app-db-styles
+                     timing/timing-styles
+                     settings/settings-styles]))
+
 
 (defn inject-inline-style [document id style]
   (let [styles-el     (.getElementById document id)
@@ -498,4 +513,5 @@
         new-styles-el))))
 
 (defn inject-trace-styles [document]
+  (inject-inline-style document "--re-frame-10x-key-frames--" (garden/css at-keyframes-styles))
   (inject-inline-style document "--re-frame-10x-styles--" panel-styles))
