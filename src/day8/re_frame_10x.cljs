@@ -44,13 +44,15 @@
       n
       "")))
 
+(def operation-name (memoize (fn [component] (last (str/split (component-path component) #" > ")))))
+
 (def static-fns
   {:render
    (fn mp-render []                                         ;; Monkeypatched render
      (this-as c
        (trace/with-trace {:op-type   :render
                           :tags      {:component-path (component-path c)}
-                          :operation (last (str/split (component-path c) #" > "))}
+                          :operation (operation-name c)}
                          (if util/*non-reactive*
                            (reagent.impl.component/do-render c)
                            (let [rat        ($ c :cljsRatom)
