@@ -20,12 +20,24 @@
      :background-color "rgba(100, 100, 255, 0.08)"}]
    [:.code-fragment {:background-color common/white-background-color}
     [:.code-fragment__result {:visibility "hidden"
-                              :color common/medium-gray}]
+                              :color "#b4b4b4"}] ;; Was common/medium-gray
     [:&:hover
      {:background-color "rgba(100, 100, 255, 0.08)"}
      [:.code-fragment__result
-      {:visibility "visible"}]
-     ]]])
+      {:visibility "visible"}]]
+    [:.code-fragment__button {:visibility   "hidden"
+                              :height       "19px"
+                              :padding-left "6px"
+                              :margin-left  "6px"
+                              :border-left  "1px solid #cdd8df"
+                              :cursor       "pointer"
+                              :color        common/blue-modern-color}]
+    [:&:hover
+     {:background-color "rgba(100, 100, 255, 0.08)"}
+     [:.code-fragment__button
+      {:visibility "visible"
+       #_#_:color "blue"}]]
+    ]])
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)

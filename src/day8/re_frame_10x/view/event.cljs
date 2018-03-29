@@ -56,15 +56,13 @@
 
 (defn code-header
   [code-execution-id line]
-  ;(println ">>>>>> code-header:" (:id line))
   (let [open?-path [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]
-        open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)
-        debug?     @(rf/subscribe [:settings/debug?])]
+        open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)]
     [rc/h-box
      :align    :center
      :style    {:border   code-border
                 :overflow "hidden"
-                :padding  "1px 6px"}
+                :padding  "0px 6px"}
      :children [[rc/box
                  :width  "17px"
                  :height "17px"
@@ -75,16 +73,30 @@
                  :child  [rc/box
                           :margin "auto"
                           :child  [:span.arrow (if open? "▼" "▶")]]]
-                [:pre
-                 {:style {:margin-left "2px"}}
-                 (str (:form line))
-                 (when debug?
-                   [:span {:class "code-fragment__result"} " " (pp/truncate-string 100 (pr-str (:result line)))])]]]))
+                [rc/h-box
+                 :size     "1"
+                 :style    {:overflow "hidden"}
+                 :children [[rc/box
+                             :style {:margin-left      "2px"
+                                     :white-space      "nowrap"}
+                             :child [:code (str (:form line))]]
+                            [rc/box
+                             :class "code-fragment__result"
+                             :style {:flex             "1"
+                                     :margin-left      "8px"
+                                     :white-space      "nowrap"}
+                             :child [:code "=> " (pp/truncate-string 200 (pr-str (:result line)))]]]]
+                [rc/box
+                 :class "code-fragment__button"
+                 :attr  {:title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
+                         :on-click (handler-fn (println (pp/truncate-string 100 (pr-str (:form line)))
+                                                        "=>"
+                                                        (pp/truncate-string 200 (pr-str (:result line)))))}
+                 :child "repl"]]]))
 
 
 (defn code-block
   [code-execution-id line]
-  ;(println ">>>>>> code-block:" (:id line))
   [rc/box
    :style {:background-color "rgba(100, 255, 100, 0.08)"
            :border           code-border
@@ -131,20 +143,21 @@
          []
          (let [highlighted-form @(rf/subscribe [:code/highlighted-form])
                form-str         @(rf/subscribe [:code/current-zprint-form])
+               show-all-code?   @(rf/subscribe [:code/show-all-code?])
                [start-index end-index] (find-bounds form-str (zp/zprint-str highlighted-form))
                before           (subs form-str 0 start-index)
                highlight        (subs form-str start-index end-index)
                after            (subs form-str end-index)]
-           ;(println ">> event-expression:" (pr-str (subs (pr-str highlighted-form) 0 30)))
            ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
            ;; Possibly relevant? https://stackoverflow.com/questions/21926083/failed-to-execute-removechild-on-node
            ^{:key (pr-str highlighted-form)}
            [rc/box
-            :style {:max-height       (str (* 10 17) "px")  ;; Add scrollbar after 10 lines
+            :style {:max-height       (when-not show-all-code? (str (* 10 17) "px")) ;; Add scrollbar after 10 lines
                     :overflow         "auto"
                     :border           "1px solid #e3e9ed"
                     :background-color common/white-background-color}
-            :attr {:on-scroll (handler-fn (rf/dispatch [:code/save-scroll-pos (-> event .-target .-scrollTop) (-> event .-target .-scrollLeft)]))}
+            :attr {:on-scroll       (handler-fn (rf/dispatch [:code/save-scroll-pos (-> event .-target .-scrollTop) (-> event .-target .-scrollLeft)]))
+                   :on-double-click (handler-fn (rf/dispatch [:code/set-show-all-code? (not show-all-code?)]))}
             :child (if (some? highlighted-form)
                      [components/highlight {:language "clojure"}
                       (list ^{:key "before"} before
@@ -156,7 +169,6 @@
 
 (defn event-fragments
   [fragments code-exec-id]
-  ;(println ">> event-fragments - count:" (count fragments))
   (let [code-open? @(rf/subscribe [:code/code-open?])]
     [rc/v-box
      :size     "1"
@@ -182,7 +194,6 @@
         code-execution   (first code-traces) ;; Ignore multiple code executions for now
         debug?           @(rf/subscribe [:settings/debug?])
         highlighted-form (rf/subscribe [:code/highlighted-form])]
-    ;(println "EVENT-CODE")
     (if-not code-execution
       [no-event-instructions]
       [rc/v-box

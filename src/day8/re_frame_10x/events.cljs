@@ -779,6 +779,12 @@
       new-form)))
 
 (rf/reg-event-db
+  :code/set-show-all-code?
+  [(rf/path [:code :show-all-code?])]
+  (fn [_show-all-code? [_ new-show-all-code?]]
+    new-show-all-code?))
+
+(rf/reg-event-db
   :code/save-scroll-pos
   [(rf/path [:code :scroll-pos])]
   (fn [_scroll-pos [_ top left]]
