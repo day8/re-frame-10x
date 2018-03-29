@@ -166,8 +166,8 @@
                      ^{:key id}
                      [rc/v-box
                       :class    "code-fragment"
-                      :style    {:margin-left (str (* 9 (dec (:indent-level frag))) "px")
-                                 :margin-top  (when (pos? id) "-1px")}
+                      :style {:margin-left (str (* 9 (:indent-level frag)) "px")
+                              :margin-top  (when (pos? id) "-1px")}
                       :attr     {:on-mouse-enter (handler-fn #_(println "OVER:" (:id frag)) (rf/dispatch [:code/hover-form (:form frag)]))
                                  :on-mouse-leave (handler-fn #_(println " OUT:" (:id frag)) (rf/dispatch [:code/exit-hover-form (:form frag)]))}
                       :children [[code-header code-exec-id frag]
