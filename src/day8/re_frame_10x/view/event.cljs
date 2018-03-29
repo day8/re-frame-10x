@@ -137,6 +137,7 @@
                after            (subs form-str end-index)]
            ;(println ">> event-expression:" (pr-str (subs (pr-str highlighted-form) 0 30)))
            ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
+           ;; Possibly relevant? https://stackoverflow.com/questions/21926083/failed-to-execute-removechild-on-node
            ^{:key (pr-str highlighted-form)}
            [rc/box
             :style {:max-height       (str (* 10 17) "px")  ;; Add scrollbar after 10 lines
