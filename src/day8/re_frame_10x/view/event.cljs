@@ -187,7 +187,7 @@
       [rc/v-box
        :size "1 1 auto"
        :class "code-panel"
-       :children [(when debug? [:pre "Hover " (pr-str @highlighted-form) "\n"])
+       :children [(when debug? [:pre "Hover " (subs (pr-str @highlighted-form) 0 50) "\n"])
                   [event-expression]
                   [rc/gap-f :size common/gs-19s]
                   [event-fragments (->> (:code code-execution)
