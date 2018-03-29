@@ -689,10 +689,10 @@
             match-array-index (utils/find-index-in-vec (fn [x] (= current-id x)) match-ids)
             new-id            (nth match-ids (inc match-array-index))]
         {:db         (assoc db :current-epoch-id new-id)
-         :dispatch-n [[:code/clear-scroll-pos] [:snapshot/reset-current-epoch-app-db new-id]]})
+         :dispatch   [:snapshot/reset-current-epoch-app-db new-id]})
       (let [new-id (utils/last-in-vec (:match-ids db))]
         {:db         (assoc db :current-epoch-id new-id)
-         :dispatch-n [[:code/clear-scroll-pos] [:snapshot/reset-current-epoch-app-db new-id]]}))))
+         :dispatch   [:snapshot/reset-current-epoch-app-db new-id]}))))
 
 (rf/reg-event-db
   :epochs/most-recent-epoch
@@ -783,18 +783,6 @@
   [(rf/path [:code :show-all-code?])]
   (fn [_show-all-code? [_ new-show-all-code?]]
     new-show-all-code?))
-
-(rf/reg-event-db
-  :code/save-scroll-pos
-  [(rf/path [:code :scroll-pos])]
-  (fn [_scroll-pos [_ top left]]
-    {:top top :left left}))
-
-(rf/reg-event-db
-  :code/clear-scroll-pos
-  [(rf/path [:code :scroll-pos])]
-  (fn [_scroll-pos _]
-    {:top 0 :left 0}))
 
 ;;
 

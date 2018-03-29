@@ -127,9 +127,14 @@
 
 (defn event-expression
   []
-  (let [scroll-pos (rf/subscribe [:code/scroll-pos])]
+  (let [scroll-pos (atom {:top 0 :left 0})]
     (reagent/create-class
-      {:component-did-update
+      {:component-will-update
+       (fn event-expression-component-will-update [this]
+         (let [node (reagent/dom-node this)]
+           (reset! scroll-pos {:top (.-scrollTop node) :left (.-scrollLeft node)})))
+
+       :component-did-update
        (fn event-expression-component-did-update [this]
          (let [node (reagent/dom-node this)]
            (set! (.-scrollTop node) (:top @scroll-pos))
@@ -156,8 +161,7 @@
                     :overflow         "auto"
                     :border           "1px solid #e3e9ed"
                     :background-color common/white-background-color}
-            :attr {:on-scroll       (handler-fn (rf/dispatch [:code/save-scroll-pos (-> event .-target .-scrollTop) (-> event .-target .-scrollLeft)]))
-                   :on-double-click (handler-fn (rf/dispatch [:code/set-show-all-code? (not show-all-code?)]))}
+            :attr {:on-double-click (handler-fn (rf/dispatch [:code/set-show-all-code? (not show-all-code?)]))}
             :child (if (some? highlighted-form)
                      [components/highlight {:language "clojure"}
                       (list ^{:key "before"} before

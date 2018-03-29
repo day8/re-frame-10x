@@ -649,12 +649,6 @@
     (:highlighted-form code)))
 
 (rf/reg-sub
-  :code/scroll-pos
-  :<- [:code/root]
-  (fn [code _]
-    (:scroll-pos code)))
-
-(rf/reg-sub
   :code/show-all-code?
   :<- [:code/root]
   (fn [code _]
