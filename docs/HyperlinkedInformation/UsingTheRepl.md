@@ -1,13 +1,11 @@
 
 `re-frame-10x` captures trace data and, sometimes when debugging, 
-you'd like to experiment with this data in your browser-connected 
-REPL. 
+you'd like to experiment with this data in your REPL. This document 
+explains how to make that happen.
 
-This document explains how to make that happen.
+## The Concepts
 
-### Concepts
-
-We're talking here about the kind of 
+Justto be clear, we're talking here about the kind of 
 REPL offered by figwheel - one that is connected to the browser running your app.  
 
 At such a REPL, if you were to
@@ -32,7 +30,7 @@ or maybe
 **For Step 3**, when the code is executing in the browser, it can access any 
 part of your running app. 
 
-### The Running App
+## The Running App
 
 Until this moment, it may not have occured to you that `re-frame-10x` is 
 a part of your app. Yes, it may look seperate, but it is running in the same VM 
@@ -55,7 +53,7 @@ Of course, previously you would have `required` this `tenX` namespace so you had
 WARNING: there's no `get-trace` or `tenX` - they are just my teching aid
 to explain the concept. 
 
-### How re-frame-10x Helps You 
+## The Method 
 
 To facilitate REPL use, `re-frame-10x` writes (ClojureScript) code into the clipboard.
 You then paste this code into your REPL to obtain trace data.
@@ -85,7 +83,7 @@ from the clipboard.
 <!-- put screenshots/gif in here -->
 
 
-### Why This Way?
+## Why This Way?
 
 This approach carefully avoids the often-problematic need to 
 serialise trace data held by `re-frame-10x` in the browser and then 
