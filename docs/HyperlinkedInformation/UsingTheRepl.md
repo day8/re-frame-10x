@@ -32,8 +32,8 @@ part of your running app.
 
 ## The Running App
 
-Until this moment, it may not have occured to you that `re-frame-10x` is 
-a part of your app. Yes, it may look seperate, but it is running in the same browser VM 
+Until this moment, it may not have occurred to you that `re-frame-10x` is
+a part of your app. Yes, it may look separate, but it is running in the same browser VM
 as your app, and it is a code dependency of your app, which means it can 
 be accessed from the REPL like any other part of your app.
 
@@ -50,7 +50,7 @@ and this call would return the trace data you wanted.
 
 Of course, previously you would have `required` this `tenX` namespace so you had access to the API.
 
-WARNING: there's no `get-trace` or `tenX` - they are just my teching aid
+WARNING: there's no `get-trace` or `tenX` - they are just our teaching aid
 to explain the concept, so don't try to type them in at a REPL. 
 
 ## The Method 
@@ -74,7 +74,7 @@ So, you might execute something this at the REPL:
 (count (tenX/get-trace [:some :identifing :path]))
 ```
 
-That `(tenX/get-trace [:some :identifing :path])` part would be what you pasted in
+That `(tenX/get-trace [:some :identifying :path])` part would be what you pasted in
 from the clipboard. 
 
 Or maybe you'd do this
