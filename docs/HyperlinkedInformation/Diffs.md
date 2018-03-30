@@ -1,3 +1,5 @@
+## Diffs
+
 This document explains what you are seeing in sections
 labelled "Only Before" and "Only After".
 

@@ -1,4 +1,4 @@
-# Intra Epoch Traces
+## Intra Epoch Traces
 
 > "Music is the space between the notes." - Claude Debussy
 

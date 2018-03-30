@@ -1,3 +1,5 @@
+## The Replay Button
+
 This document explains the operation of the "Replay" button, and how to use **The HotPlay Workflow**.
 
 ### Epoch Navigation 
