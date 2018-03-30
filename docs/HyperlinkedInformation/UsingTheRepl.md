@@ -1,18 +1,18 @@
 ## Using The REPL
 
-`re-frame-10x` captures trace data and, sometimes when debugging, 
-you'd like to experiment with this data in your REPL. This document 
+`re-frame-10x` captures trace data. When debugging,
+it can be useful to experiment with this trace data in your REPL. This document 
 explains how to make that happen.
 
 ### The Concepts
 
 Just to be clear, we're talking about the kind of 
-REPL offered by figwheel - a browser-connected REPL, where code execution happens in a browser-VM running your app. 
+REPL offered by figwheel - a browser-connected REPL, where code execution happens in the browser-VM running your app. 
 
 At such a REPL, if you were to
 type in `(my-ns/some-fn  "blah" 2)` and hit return, 
 then:
- 1. this code will compiled within the context of the REPL's "current namespace" 
+ 1. this code will compiled within the context of the REPL's *current namespace*
  2. the resulting (javascript) code will be shipped across to the browser 
  3. the code will be run by the VM also running your app 
 
@@ -33,16 +33,16 @@ part of your running app.
 
 ### The Running App
 
-Until this moment, it may not have occurred to you that `re-frame-10x` is
-a part of your app. Yes, it may look separate, but it is running in the same browser VM
-as your app, and it is a code dependency of your app, which means it can 
+Until this moment, it may not have occurred to you that `re-frame-10x` is effectively
+a part of your app. Yes, it certainly looks separate, but it is running alongside your app 
+in the same browser VM, and it is a code dependency of your app, which means it can 
 be accessed from the REPL like any other part of your app.
 
 So, if we knew enough about the way `re-frame-10x` stored
-trace data, we could use the REPL to reach into `re-frame-10x's` 
-data structures and access any trace data we wanted.
+trace data, we could use the REPL to reach into the 
+data structures whch store trace and access anythink we wanted.
 
-Imagine that `re-frame-10x` supplied an API function called, say, `get-trace` 
+Let's flesh this concept out a bit. Imagine that `re-frame-10x` supplied an API function called, say, `get-trace` 
 in a namespace called, say, `tenX`, then you could evaluate the following at the REPL: 
 ``` 
 (tenX/get-trace [:some :identifing :path :to :the :trace :you :want 1234])
