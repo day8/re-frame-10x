@@ -37,7 +37,7 @@ a part of your app. Yes, it may look seperate, but it is running in the same bro
 as your app, and it is a code dependency of your app, and so it can 
 be accessed from the REPL like any other part of your app.
 
-So, if we knew enough about the way `re-frame-10x` stores
+So, if we knew enough about the way `re-frame-10x` stored
 trace data, we could use the REPL to reach into `re-frame-10x's` 
 data structures and access any trace data we wanted.
 
