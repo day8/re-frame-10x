@@ -58,14 +58,13 @@ to explain the concept, so don't try to type them in at a REPL.
 To facilitate REPL use, `re-frame-10x` writes (ClojureScript) code into the clipboard.
 You then paste this code into your REPL to obtain access to trace data.
 
-So, initially, you click on the "XXXX" hyperlink, and `re-frame-10x` will 
+So, initially, you click on the "repl requires" hyperlink, and `re-frame-10x` will 
 put into the clipboard the `require` code needed to access the `re-frame-10x` API.  
-You then paste that code into your REPL and execute it. 
+You then paste this code into your REPL and execute it. 
  
 Then, later, in the `re-frame-10x` UI you'll notice a small "repl" 
-button and, again, if you click it, `re-frame-10x` will put code into 
-the clipboard which uses its own API and a "path" to 
-to access that specific bit of trace data.  
+button against each piece of trace and, again, if you click it, `re-frame-10x` will put code into 
+the clipboard which uses its own API and the "path" specific to the trace data you are interested in. 
 
 When you paste this code into the REPL, you get access to the exact 
 piece of trace data you want.
@@ -88,6 +87,8 @@ Or:
 (def tmp  (tenX/get-trace [:some :identifing :path]))
 (count tmp)
 ```
+
+WARNING: use of `tenX/get-trace` in these examples is indicative. The clipboard will contain the true code. 
 
 <!-- put screenshots/gif in here -->
 
