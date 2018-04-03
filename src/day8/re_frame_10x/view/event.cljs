@@ -8,7 +8,8 @@
             [zprint.core :as zp]
             [goog.string]
             [clojure.string :as str]
-            [day8.re-frame-10x.utils.pretty-print-condensed :as pp])
+            [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
+            [day8.re-frame-10x.utils.utils :as utils])
   (:require-macros [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]]
                    [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
@@ -90,10 +91,13 @@
                              :child [:code "=> " (pp/truncate-string 200 (pr-str (:result line)))]]]]
                 [rc/box
                  :class "code-fragment__button"
-                 :attr  {:title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
-                         :on-click (handler-fn (println (pp/truncate-string 100 (pr-str (:form line)))
-                                                        "=>"
-                                                        (pp/truncate-string 200 (pr-str (:result line)))))}
+                 :attr {:title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
+                        :on-click (handler-fn (let [result      (pr-str (:result line))
+                                                    for-console (str (pp/truncate-string 100 (pr-str (:form line)))
+                                                                     " => "
+                                                                     (pp/truncate-string 200 result))]
+                                                (println for-console)
+                                                (utils/copy-to-clipboard result)))}
                  :child "repl"]]]))
 
 
