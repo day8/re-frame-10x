@@ -1,10 +1,12 @@
-
-
 # re-frame-10x
 
 `re-frame-10x` lets you instrument, and then inspect, the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination.
 
 It helps you find false assumptions faster.
+
+
+react-15 (master): [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x)
+react-16: [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16)
 
 ## Show Me
 
