@@ -2,7 +2,8 @@
   "Shameless pilfered from re-com."
   (:require-macros [day8.re-frame-10x.utils.re-com :refer [handler-fn]])
   (:require [mranderson047.reagent.v0v7v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [day8.re-frame-10x.common-styles :as common]))
 
 (defn px
   "takes a number (and optional :negative keyword to indicate a negative value) and returns that number as a string with 'px' at the end"
@@ -510,6 +511,21 @@
          :class "rc-hyperlink-href-wrapper display-inline-flex"
          :align :start
          :child the-button]))))
+
+(defn hyperlink-info
+  [url]
+  [hyperlink-href
+   :label  [box
+            :class   "container--info-button"
+            :justify :center
+            :align   :center
+            :width   common/gs-12s
+            :height  common/gs-12s
+            :child   "?"]
+   :attr   {:rel "noopener noreferrer"}
+   :target "_blank"
+   :href   url])
+
 
 (defn link [{:keys [label href style]}]
   [:a

@@ -97,7 +97,8 @@
                                                                      " => "
                                                                      (pp/truncate-string 200 result))]
                                                 (println for-console)
-                                                (utils/copy-to-clipboard result)))}
+                                                (utils/copy-to-clipboard result)
+                                                (rf/dispatch [:code/repl-msg "Copied REPL text onto the clipboard"])))}
                  :child "repl"]]]))
 
 
@@ -178,6 +179,32 @@
                       form-str])]))})))
 
 
+(defn repl-section
+  []
+  (let [msg @(rf/subscribe [:code/repl-msg])]
+    [rc/h-box
+     :height "23px"
+     :align :end
+     :style {:margin-bottom "2px"}
+     :children [^{:key msg}
+                [:div
+                 {:style {:opacity            "0"
+                          :white-space        "nowrap"
+                          :overflow           "hidden"
+                          :animation-duration "10000ms"
+                          :animation-name     "fade-clipboard-msg-re-frame-10x"}}
+                 msg]
+                [rc/box
+                 :size "1"
+                 :child ""]
+                [rc/hyperlink
+                 :label "repl requires"
+                 :style {:margin-right common/gs-7s}
+                 :on-click #(do (utils/copy-to-clipboard "(require '[some-app.mine :as my-ns])")
+                                (rf/dispatch [:code/repl-msg "Copied require text onto the clipboard"]))]
+                [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]]))
+
+
 (defn indent-block
   [indent-level first?]
   [rc/h-box
@@ -228,7 +255,7 @@
        :class "code-panel"
        :children [(when debug? [:pre "Hover " (subs (pr-str @highlighted-form) 0 50) "\n"])
                   [event-expression]
-                  [rc/gap-f :size common/gs-19s]
+                  [repl-section]
                   [event-fragments (->> (:code code-execution)
                                         (remove (fn [line] (fn? (:result line)))))
                    (:id code-execution)]]])))
@@ -242,7 +269,6 @@
     [rc/v-box
      :size     "1"
      :class    "event-panel"
-     ;:style    {:margin-right common/gs-19s}
      :gap      common/gs-19s
      :children [[event-code]
                 [rc/gap-f :size "0px"]]]))

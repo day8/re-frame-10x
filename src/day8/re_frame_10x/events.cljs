@@ -784,6 +784,12 @@
   (fn [_show-all-code? [_ new-show-all-code?]]
     new-show-all-code?))
 
+(rf/reg-event-db
+  :code/repl-msg
+  [(rf/path [:code :repl-msg])]
+  (fn [_show-all-code? [_ repl-msg]]
+    repl-msg))
+
 ;;
 
 (rf/reg-event-db

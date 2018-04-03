@@ -479,7 +479,11 @@
      (at-keyframes :pulse-next-re-frame-10x
                    [:from {:color "white"
                            :left  (when slide? "100%")}]
-                   [:to   {:left  (when slide? "0%")}])]))
+                   [:to   {:left  (when slide? "0%")}])
+     (at-keyframes :fade-clipboard-msg-re-frame-10x
+                   [:10%  {:opacity "1"}
+                    :90%  {:opacity "1"}]
+                   )]))
 
 
 (def panel-styles

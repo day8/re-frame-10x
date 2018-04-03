@@ -654,6 +654,12 @@
   (fn [code _]
     (:show-all-code? code)))
 
+(rf/reg-sub
+  :code/repl-msg
+  :<- [:code/root]
+  (fn [code _]
+    (:repl-msg code)))
+
 
 ;;
 

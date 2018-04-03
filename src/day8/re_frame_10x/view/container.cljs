@@ -209,17 +209,7 @@
                                                    "replay"]]
                                 :on-click #(do (rf/dispatch [:component/set-direction :next])
                                                (rf/dispatch [:epochs/replay]))]
-                               [rc/hyperlink-href           ;; TODO: Could make this a component if we decide to standardise on using this for all hyperlinks
-                                :label  [rc/box
-                                         :class "container--info-button"
-                                         :justify :center
-                                         :align   :center
-                                         :width   common/gs-12s
-                                         :height  common/gs-12s
-                                         :child   "?"]
-                                :attr   {:rel "noopener noreferrer"}
-                                :target "_blank"
-                                :href   "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]]]])
+                               [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]]]])
      [rc/line :color "#EEEEEE"]
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
