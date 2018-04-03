@@ -6,37 +6,52 @@
             [zprint.core :as zp]
             [clojure.string :as str]))
 
+(def code-hover-background-color "rgba(100, 100, 255, 0.08)")
+
 (def fx-styles
   [:#--re-frame-10x--
    [:.code-panel
     #_{:padding-bottom common/gs-31}] ;; Leaving the empty def here for now
    ;; We rely on highlight JS for our background now.
-   #_[:.code-listing
-    {:background-color common/white-background-color
-     :padding          "5px"
-     :margin-right     "19px"}]
+   ;[:.code-listing
+   ; {:background-color common/white-background-color
+   ;  :padding          "5px"
+   ;  :margin-right     "19px"}]
    [:.code-listing--highlighted
     {:font-weight      "bold"
-     :background-color "rgba(100, 100, 255, 0.08)"}]
-   [:.code-fragment {:background-color common/white-background-color}
-    [:.code-fragment__result {:visibility "hidden"
-                              :color "#b4b4b4"}] ;; Was common/medium-gray
+     :background-color code-hover-background-color}]
+   [:.code-fragment
+
+    ;; ---------------
+    ;; 1 (white indent blocks (not ideal), hover correct)
+    ;{:background-color common/white-background-color}
+    ;; ---------------
+    ;; OR 2 (grey indent blocks (correct), hover bad)
+    [:.code-fragment__content
+     {:background-color common/white-background-color}
+     [:&:hover
+      {:background-color "transparent"}]]
+    ;; ---------------
+
+
+    [:.code-fragment__result
+     {:visibility "hidden"
+      :color "#b4b4b4"}] ;; Was common/medium-gray
     [:&:hover
-     {:background-color "rgba(100, 100, 255, 0.08)"}
+     {:background-color code-hover-background-color}
      [:.code-fragment__result
       {:visibility "visible"}]]
-    [:.code-fragment__button {:visibility   "hidden"
-                              :height       "19px"
-                              :padding-left "6px"
-                              :margin-left  "6px"
-                              :border-left  "1px solid #cdd8df"
-                              :cursor       "pointer"
-                              :color        common/blue-modern-color}]
+    [:.code-fragment__button
+     {:visibility   "hidden"
+      :height       "19px"
+      :padding-left "6px"
+      :margin-left  "6px"
+      :border-left  "1px solid #cdd8df"
+      :cursor       "pointer"
+      :color        common/blue-modern-color}]
     [:&:hover
-     {:background-color "rgba(100, 100, 255, 0.08)"}
      [:.code-fragment__button
-      {:visibility "visible"
-       #_#_:color "blue"}]]
+      {:visibility "visible"}]]
     ]])
 
 ;; Terminology:

@@ -59,6 +59,8 @@
   (let [open?-path [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]
         open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)]
     [rc/h-box
+     :class    "code-fragment__content"
+     :size     "1"
      :align    :center
      :style    {:border   code-border
                 :overflow "hidden"
@@ -98,6 +100,7 @@
 (defn code-block
   [code-execution-id line]
   [rc/box
+   :size  "1"
    :style {:background-color "rgba(100, 255, 100, 0.08)"
            :border           code-border
            :margin-top       "-1px"
@@ -159,7 +162,7 @@
            [rc/box
             :style {:max-height       (when-not show-all-code? (str (* 10 17) "px")) ;; Add scrollbar after 10 lines
                     :overflow         "auto"
-                    :border           "1px solid #e3e9ed"
+                    :border           code-border
                     :background-color common/white-background-color}
             :attr {:on-double-click (handler-fn (rf/dispatch [:code/set-show-all-code? (not show-all-code?)]))}
             :child (if (some? highlighted-form)
@@ -171,6 +174,18 @@
                       form-str])]))})))
 
 
+(defn indent-block
+  [indent-level first?]
+  [rc/h-box
+   :children (doall
+               (for [num (range indent-level)]
+                 [rc/box
+                  :width "12px"
+                  :style {:border-top  (when first? code-border)
+                          :border-left code-border}
+                  :child ""]))])
+
+
 (defn event-fragments
   [fragments code-exec-id]
   (let [code-open? @(rf/subscribe [:code/code-open?])]
@@ -179,17 +194,21 @@
      :style    {:overflow-y "auto"}
      :children (doall
                  (for [frag fragments]
-                   (let [id (:id frag)]
+                   (let [id     (:id frag)
+                         first? (zero? id)]
                      ^{:key id}
                      [rc/v-box
                       :class    "code-fragment"
-                      :style {:margin-left (str (* 9 (:indent-level frag)) "px")
-                              :margin-top  (when (pos? id) "-1px")}
+                      :style    {:margin-top  (when-not first? "-1px")}
                       :attr     {:on-mouse-enter (handler-fn #_(println "OVER:" (:id frag)) (rf/dispatch [:code/hover-form (:form frag)]))
                                  :on-mouse-leave (handler-fn #_(println " OUT:" (:id frag)) (rf/dispatch [:code/exit-hover-form (:form frag)]))}
-                      :children [[code-header code-exec-id frag]
+                      :children [[rc/h-box
+                                  :children [[indent-block (:indent-level frag) first?]
+                                             [code-header code-exec-id frag]]]
                                  (when (get-in code-open? [@(rf/subscribe [:epochs/current-epoch-id]) code-exec-id id])
-                                   [code-block code-exec-id frag id])]])))]))
+                                   [rc/h-box
+                                    :children [[indent-block (:indent-level frag) first?]
+                                               [code-block code-exec-id frag id]]])]])))]))
 
 
 (defn event-code
