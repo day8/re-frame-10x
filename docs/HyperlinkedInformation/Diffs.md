@@ -1,6 +1,6 @@
 ## Diffs
 
-While it is useful to inspect values like `app-db`,  
+While it is useful to inspect values like `app-db`,
 you are sometimes interested to see how a value has changed.  What are the `diffs`? 
 During this Epoch, what got added or removed, and what was modified? 
 
