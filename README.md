@@ -219,7 +219,7 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 
 ### Event
 
-<img alt="event-panel" src="docs/images/event-10x.png" height="500px">
+<img alt="event-panel" src="docs/images/fx-10x.png" height="500px">
 
 * See the coeffects given to an event handler
 * See the effects produced by an event handler
