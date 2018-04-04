@@ -1,4 +1,4 @@
-## Diffs
+## Showing Diffs
 
 While it is useful to inspect values like `app-db`,
 you are sometimes interested to see how a value has changed.  What are the `diffs`? 
