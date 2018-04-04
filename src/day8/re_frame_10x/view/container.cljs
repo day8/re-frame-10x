@@ -19,7 +19,9 @@
             [day8.re-frame-10x.common-styles :as common]))
 
 (def triangle-down (macros/slurp-macro "day8/re_frame_10x/images/triangle-down.svg"))
-(defn tab-button [panel-id title]
+
+(defn tab-button
+  [panel-id title]
   (let [selected-tab @(rf/subscribe [:settings/selected-tab])]
     [rc/v-box
      :style    {:margin-bottom "-8px"
@@ -182,17 +184,17 @@
                     :gap      "7px"
                     :align    :end
                     :height   "50px"
-                    :children [(tab-button :event "Event")
-                               (tab-button :fx "fx")
-                               (tab-button :app-db "app-db")
-                               (tab-button :subs "Subs")
+                    :children [[tab-button :event "Event"]
+                               [tab-button :fx "fx"]
+                               [tab-button :app-db "app-db"]
+                               [tab-button :subs "Subs"]
                                (when (:debug? opts)
-                                 (tab-button :parts "Parts"))
-                               ;(tab-button :views "Views")
-                               (tab-button :traces "Trace")
-                               (tab-button :timing "Timing")
+                                 [tab-button :parts "Parts"])
+                               ;[tab-button :views "Views"]
+                               [tab-button :traces "Trace"]
+                               [tab-button :timing "Timing"]
                                (when (:debug? opts)
-                                 (tab-button :debug "Debug"))]]
+                                 [tab-button :debug "Debug"])]]
                    [rc/h-box
                     :align    :center
                     :padding  "0px 19px 0px 7px"
