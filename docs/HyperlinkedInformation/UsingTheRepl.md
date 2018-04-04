@@ -79,8 +79,8 @@ from the clipboard.
 
 Or maybe you'd do this
 ```clj
-(let [trace-data  (day8.re-frame-10x/traced-result 80 4)]
-    (count trace-data))
+(let [trace-data (day8.re-frame-10x/traced-result 80 4)]
+  (count trace-data))
 ```
 Or:
 ```cljs
