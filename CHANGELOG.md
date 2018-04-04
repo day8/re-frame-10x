@@ -9,9 +9,12 @@ All notable changes to this project will be documented in this file. This change
 * Popout windows are now titled "re-frame-10x | \<parent window title\>"
 * Popout windows preserve their previous dimensions and screen position (note that Chrome won't let us reposition windows across displays).
 * Code tracing now adds indentation, so you can visualise the call stack of a function and more easily understand how the pieces come together.
+* Hovering over a code trace shows a preview of the value so you can easily scan it.
+* Double clicking on the code section toggles show the full captured function, or just 10 lines.
 
 ### Changed
 
+* Improved the vertical space and visual design of the 'pods' in the subs and app-db panels.
 * Removed the play/paused distinction. It was confusing for people and unclear what its purpose was. re-frame-10x will navigate to the most recent event that arrives if you were looking at a previous event.
 
 ### Fixed
