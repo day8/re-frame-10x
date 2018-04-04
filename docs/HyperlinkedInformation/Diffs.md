@@ -16,7 +16,7 @@ to do a calculation best explained by this pseudo code:
 
 By [looking at the docs](https://clojuredocs.org/clojure.data/diff) for `clojure.data/diff`, you'll see
 that it calculates how two values differ, and returns a triple of values. `re-frame-10x`
-captures and displays to you the first two elements of this triple as "only before" and "only after"
+captures and displays the first two elements of this triple as "only before" and "only after"
 respectively. The 3rd element is ignored because it's what hasn't changed, which isn't interesting.
 
 So, to correctly interpret "Only Before" and "Only after", you'll need to spend 
