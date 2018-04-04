@@ -92,11 +92,8 @@
                 [rc/box
                  :class "code-fragment__button"
                  :attr {:title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
-                        :on-click (handler-fn (let [form   (pr-str (:form line))
-                                                    result (pr-str (:result line))]
-                                                (println (str (pp/truncate-string 100 form) " => " (pp/truncate-string 200 result)))
-                                                (utils/copy-to-clipboard result)
-                                                (rf/dispatch [:code/repl-msg-state :start])))}
+                        :on-click (handler-fn (do (utils/copy-to-clipboard (pr-str (:result line)))
+                                                  (rf/dispatch [:code/repl-msg-state :start])))}
                  :child "repl"]]]))
 
 
@@ -180,7 +177,6 @@
 (defn repl-msg-area
   []
   (let [repl-msg-state @(rf/subscribe [:code/repl-msg-state])]
-    (println "RENDER" repl-msg-state)
     (when (get #{:running :re-running} repl-msg-state)
       ^{:key (gensym)}
       [:div
@@ -241,8 +237,8 @@
                      [rc/v-box
                       :class    "code-fragment"
                       :style    {:margin-top  (when-not first? "-1px")}
-                      :attr     {:on-mouse-enter (handler-fn #_(println "OVER:" (:id frag)) (rf/dispatch [:code/hover-form (:form frag)]))
-                                 :on-mouse-leave (handler-fn #_(println " OUT:" (:id frag)) (rf/dispatch [:code/exit-hover-form (:form frag)]))}
+                      :attr     {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form (:form frag)]))
+                                 :on-mouse-leave (handler-fn (rf/dispatch [:code/exit-hover-form (:form frag)]))}
                       :children [[rc/h-box
                                   :children [[indent-block (:indent-level frag) first?]
                                              [code-header code-exec-id frag]]]
