@@ -785,10 +785,12 @@
     new-show-all-code?))
 
 (rf/reg-event-db
-  :code/repl-msg
-  [(rf/path [:code :repl-msg])]
-  (fn [_show-all-code? [_ repl-msg]]
-    repl-msg))
+  :code/repl-msg-state
+  [(rf/path [:code :repl-msg-state])]
+  (fn [current-state [_ new-state]]
+    (if (and (= current-state :running) (= new-state :start)) ;; Toggles between :running and :re-running to guarantee rerenderig when you continuously call this event
+      :re-running
+      (if (= new-state :start) :running :end))))
 
 ;;
 

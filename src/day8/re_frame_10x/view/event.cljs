@@ -92,13 +92,11 @@
                 [rc/box
                  :class "code-fragment__button"
                  :attr {:title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
-                        :on-click (handler-fn (let [result      (pr-str (:result line))
-                                                    for-console (str (pp/truncate-string 100 (pr-str (:form line)))
-                                                                     " => "
-                                                                     (pp/truncate-string 200 result))]
-                                                (println for-console)
+                        :on-click (handler-fn (let [form   (pr-str (:form line))
+                                                    result (pr-str (:result line))]
+                                                (println (str (pp/truncate-string 100 form) " => " (pp/truncate-string 200 result)))
                                                 (utils/copy-to-clipboard result)
-                                                (rf/dispatch [:code/repl-msg "Copied REPL text onto the clipboard"])))}
+                                                (rf/dispatch [:code/repl-msg-state :start])))}
                  :child "repl"]]]))
 
 
@@ -179,30 +177,42 @@
                       form-str])]))})))
 
 
+(defn repl-msg-area
+  []
+  (let [repl-msg-state @(rf/subscribe [:code/repl-msg-state])]
+    (println "RENDER" repl-msg-state)
+    (when (get #{:running :re-running} repl-msg-state)
+      ^{:key (gensym)}
+      [:div
+       {:style            {:opacity            "0"
+                           :color              "white"
+                           :background-color   "green"
+                           :padding            "0px 4px"
+                           :white-space        "nowrap"
+                           :overflow           "hidden"
+                           :animation-duration "5000ms"
+                           :margin-right       "5px"
+                           :animation-name     "fade-clipboard-msg-re-frame-10x"}
+        :on-animation-end #(rf/dispatch [:code/repl-msg-state :end])}
+       "Clipboard now contains text for pasting into the REPL"])))
+
+
 (defn repl-section
   []
-  (let [msg @(rf/subscribe [:code/repl-msg])]
-    [rc/h-box
-     :height "23px"
-     :align :end
-     :style {:margin-bottom "2px"}
-     :children [^{:key msg}
-                [:div
-                 {:style {:opacity            "0"
-                          :white-space        "nowrap"
-                          :overflow           "hidden"
-                          :animation-duration "10000ms"
-                          :animation-name     "fade-clipboard-msg-re-frame-10x"}}
-                 msg]
-                [rc/box
-                 :size "1"
-                 :child ""]
-                [rc/hyperlink
-                 :label "repl requires"
-                 :style {:margin-right common/gs-7s}
-                 :on-click #(do (utils/copy-to-clipboard "(require '[some-app.mine :as my-ns])")
-                                (rf/dispatch [:code/repl-msg "Copied require text onto the clipboard"]))]
-                [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]]))
+  [rc/h-box
+   :height   "23px"
+   :align    :end
+   :style    {:margin-bottom "2px"}
+   :children [[repl-msg-area]
+              [rc/box
+               :size "1"
+               :child ""]
+              [rc/hyperlink
+               :label "repl requires"
+               :style {:margin-right common/gs-7s}
+               :on-click #(do (utils/copy-to-clipboard "(require '[day8.re-frame-10x.utils.api :as tenX])") ;; TODO for DC - change to correct
+                              (rf/dispatch [:code/repl-msg-state :start]))]
+              [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]])
 
 
 (defn indent-block

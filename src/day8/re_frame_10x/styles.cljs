@@ -481,9 +481,10 @@
                            :left  (when slide? "100%")}]
                    [:to   {:left  (when slide? "0%")}])
      (at-keyframes :fade-clipboard-msg-re-frame-10x
-                   [:10%  {:opacity "1"}
-                    :90%  {:opacity "1"}]
-                   )]))
+                   [:0%   {:margin-left "100px"}]
+                   [:5%   {:margin-left "0px"
+                           :opacity     "1"}]
+                   [:90%  {:opacity "1"}])]))
 
 
 (def panel-styles
