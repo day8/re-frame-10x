@@ -22,6 +22,8 @@
      :background-color code-hover-background-color}]
    [:.code-fragment
     {:background-color common/white-background-color}
+    [:.code-fragment__content
+     {:height "19px"}]
     [:.code-fragment__result
      {:visibility "hidden"
       :color "#b4b4b4"}] ;; Was common/medium-gray
@@ -30,8 +32,7 @@
      [:.code-fragment__result
       {:visibility "visible"}]]
     [:.code-fragment__button
-     {:visibility   "hidden"
-      :height       "19px"
+     {:display "none"
       :padding-left "6px"
       :margin-left  "6px"
       :border-left  "1px solid #cdd8df"
@@ -39,7 +40,7 @@
       :color        common/blue-modern-color}]
     [:&:hover
      [:.code-fragment__button
-      {:visibility "visible"}]]
+      {:display "grid"}]]
     ]])
 
 ;; Terminology:
