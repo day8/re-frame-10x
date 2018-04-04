@@ -206,6 +206,7 @@
               [rc/hyperlink
                :label "repl requires"
                :style {:margin-right common/gs-7s}
+               :attr  {:title "Copy to the clipboard, the require form to set things up for the \"repl\" links below"}
                :on-click #(do (utils/copy-to-clipboard "(require '[day8.re-frame-10x.utils.api :as tenX])") ;; TODO for DC - change to correct
                               (rf/dispatch [:code/repl-msg-state :start]))]
               [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]])
@@ -218,8 +219,9 @@
                (for [num (range indent-level)]
                  [rc/box
                   :width "12px"
-                  :style {:border-top  (when first? code-border)
-                          :border-left code-border}
+                  :style {:background-color common/standard-background-color
+                          :border-top       (when first? code-border)
+                          :border-left      code-border}
                   :child ""]))])
 
 
@@ -244,7 +246,7 @@
                                              [code-header code-exec-id frag]]]
                                  (when (get-in code-open? [@(rf/subscribe [:epochs/current-epoch-id]) code-exec-id id])
                                    [rc/h-box
-                                    :children [[indent-block (:indent-level frag) first?]
+                                    :children [[indent-block (:indent-level frag) false]
                                                [code-block code-exec-id frag id]]])]])))]))
 
 

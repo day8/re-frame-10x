@@ -21,19 +21,7 @@
     {:font-weight      "bold"
      :background-color code-hover-background-color}]
    [:.code-fragment
-
-    ;; ---------------
-    ;; 1 (white indent blocks (not ideal), hover correct)
-    ;{:background-color common/white-background-color}
-    ;; ---------------
-    ;; OR 2 (grey indent blocks (correct), hover bad)
-    [:.code-fragment__content
-     {:background-color common/white-background-color}
-     [:&:hover
-      {:background-color "transparent"}]]
-    ;; ---------------
-
-
+    {:background-color common/white-background-color}
     [:.code-fragment__result
      {:visibility "hidden"
       :color "#b4b4b4"}] ;; Was common/medium-gray
