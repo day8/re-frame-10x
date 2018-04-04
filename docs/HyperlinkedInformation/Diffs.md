@@ -1,13 +1,12 @@
 ## Diffs
 
-This document explains what you are seeing in sections
-labelled "Only Before" and "Only After".
+This document describes how `re-frame-10x` displays "how a value has changed".  It explains 
+what you are seeing in sections labelled "Only Before" and "Only After".
 
-In various places, `re-frame-10x` allows you to inspect values like `app-db`. 
-Knowing the current value is useful, but 
-you are sometimes more interested to know how a value has changed. 
+While it is useful to inspect values like `app-db`,  
+you are sometimes more interested to know how a value has changed.
 The value might be `X` before the start of this epoch, and 
-ended up as `X'`.  So `re-frame-10x` will be showing you `X'` but you might woonder
+ended up as `X'`.  So `re-frame-10x` will be showing you `X'` but you might wonder
 how `X` and `X'` are different. What got added or removed, and what was modified? 
 
 To show such differences, `re-frame-10x` chooses to do a calculation best explained by this pseudo code:
