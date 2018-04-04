@@ -2,6 +2,8 @@
 
 This document explains the operation of the "Replay" button, and how to use **The HotPlay Workflow**.
 
+![Estim8 demo](/docs/images/replay-button.png)
+
 ### Epoch Navigation 
 
 By using the backwards and forwards arrows, `re-frame-10x` allows you to navigate through Epochs.
