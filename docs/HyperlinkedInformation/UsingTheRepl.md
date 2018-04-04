@@ -10,7 +10,7 @@ Just to be clear, we're talking about the kind of
 REPL offered by figwheel - a browser-connected REPL, where code execution happens in the browser-VM running your app. 
 
 At such a REPL, if you were to
-type in `(my-ns/some-fn  "blah" 2)` and hit return, 
+type in `(my-ns/some-fn "blah" 2)` and hit return, 
 then:
  1. this code will compiled within the context of the REPL's *current namespace*
  2. the resulting (javascript) code will be shipped across to the browser 
@@ -42,29 +42,28 @@ So, if we knew enough about the way `re-frame-10x` stored
 trace data, we could use the REPL to reach into the 
 data structures whch store trace and access anythink we wanted.
 
-Let's flesh this concept out a bit. Imagine that `re-frame-10x` supplied an API function called, say, `get-trace` 
-in a namespace called, say, `tenX`, then you could evaluate the following at the REPL: 
+Let's flesh this concept out a bit. Imagine that `re-frame-10x` supplied an API function called, say, `get-traced-result` 
+in a namespace called, say, `day8.re-frame-10x`, then you could evaluate the following at the REPL: 
+
 ``` 
-(tenX/get-trace [:some :identifing :path :to :the :trace :you :want 1234])
+(day8.re-frame-10x/traced-result 80 4)
 ```
+
 and this call would return the trace data you wanted.  
 
-Of course, previously you would have `required` this `tenX` namespace so you had access to the API.
-
-WARNING: there's no `get-trace` or `tenX` - they are just our teaching aid
-to explain the concept, so don't try to type them in at a REPL. 
+In most REPLs, you would have previously `required` the `day8.re-frame-10x` namespace.
 
 ### The Method
 
-To facilitate REPL use, `re-frame-10x` writes (ClojureScript) code into the clipboard.
+To facilitate REPL exploration, `re-frame-10x` writes (ClojureScript) code into the clipboard.
 You then paste this code into your REPL to obtain access to trace data.
 
-So, initially, you click on the **repl requires** hyperlink, and `re-frame-10x` will 
+Initially, you click on the **repl requires** hyperlink, and `re-frame-10x` will 
 put into the clipboard the `require` code needed to access the `re-frame-10x` API.  
 You then paste this code into your REPL and execute it. 
  
 Then, later, in the `re-frame-10x` UI you'll notice a small "repl" 
-button against each piece of trace and, again, if you click it, `re-frame-10x` will put code into 
+button against each piece of trace you hover over. Again if you click it, `re-frame-10x` will put code into 
 the clipboard which uses its own API together with the "path" specific to the trace data you are interested in. 
 
 When you paste this code into the REPL, you are able to access to the exact 
@@ -72,28 +71,24 @@ piece of trace data you want.
 
 So, you might execute something this at the REPL: 
 ```clj
-(count (tenX/get-trace [:some :identifing :path]))
+(count (day8.re-frame-10x/traced-result 80 4))
 ```
 
-That `(tenX/get-trace [:some :identifying :path])` part would be what you pasted in
-from the clipboard. 
+That `(day8.re-frame-10x/traced-result 80 4)` part would be what you pasted in
+from the clipboard.
 
 Or maybe you'd do this
 ```clj
-(let [trace-data  (tenX/get-trace [:some :identifing :path])]
+(let [trace-data  (day8.re-frame-10x/traced-result 80 4)]
     (count trace-data))
 ```
 Or:
 ```cljs
-(def tmp  (tenX/get-trace [:some :identifing :path]))
+(def tmp (day8.re-frame-10x/traced-result 80 4))
 (count tmp)
 ```
 
-WARNING: use of `tenX/get-trace` in these examples is indicative. The clipboard 
-will contain the true code. 
-
 <!-- put screenshots/gif in here -->
-
 
 ### Why This Way?
 
