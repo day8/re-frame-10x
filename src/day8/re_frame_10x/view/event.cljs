@@ -58,6 +58,7 @@
 (defn code-header
   [code-execution-id line]
   (let [open?-path [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]
+        trace-id    code-execution-id
         open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)]
     [rc/h-box
      :class    "code-fragment__content"
@@ -92,7 +93,7 @@
                 [rc/box
                  :class "code-fragment__button"
                  :attr {:title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
-                        :on-click (handler-fn (do (utils/copy-to-clipboard (pr-str (:result line)))
+                        :on-click (handler-fn (do (utils/copy-to-clipboard (pr-str (list 'day8.re-frame-10x/traced-result trace-id (:id line))))
                                                   (rf/dispatch [:code/repl-msg-state :start])))}
                  :child "repl"]]]))
 
@@ -207,7 +208,8 @@
                :label "repl requires"
                :style {:margin-right common/gs-7s}
                :attr  {:title "Copy to the clipboard, the require form to set things up for the \"repl\" links below"}
-               :on-click #(do (utils/copy-to-clipboard "(require '[day8.re-frame-10x.utils.api :as tenX])") ;; TODO for DC - change to correct
+               ;; Doing this in a list would be nicer, but doesn't let us use ' as it will be expanded before we can create the string.
+               :on-click #(do (utils/copy-to-clipboard "(require '[day8.re-frame-10x])")
                               (rf/dispatch [:code/repl-msg-state :start]))]
               [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]])
 
@@ -266,7 +268,7 @@
                   [repl-section]
                   [event-fragments (->> (:code code-execution)
                                         (remove (fn [line] (fn? (:result line)))))
-                   (:id code-execution)]]])))
+                   (:trace-id code-execution)]]])))
 
 
 (defn render []

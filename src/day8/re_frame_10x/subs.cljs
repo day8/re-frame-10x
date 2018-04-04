@@ -619,6 +619,7 @@
     (keep-indexed (fn [i trace]
                     (when-some [code (get-in trace [:tags :code])]
                       {:id    i
+                       :trace-id (:id trace)
                        :title (pr-str (:op-type trace))
                        :code  (->> code (map-indexed (fn [i code] (assoc code :id i))) vec) ;; Add index
                        :form  (get-in trace [:tags :form])}))
