@@ -272,7 +272,7 @@
 
 
 (defn render []
-  (let [epoch-id @(rf/subscribe [:epochs/current-match-state])]
+  (let [epoch-id @(rf/subscribe [:epochs/current-epoch-id])]
     ;; Create a new id on each panel because Reagent can throw an exception if
     ;; the data provided in successive renders is sufficiently different.
     ^{:key epoch-id}

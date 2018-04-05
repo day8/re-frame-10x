@@ -269,9 +269,9 @@
 
 (rf/reg-sub
   :epochs/current-epoch-id
-  :<- [:epochs/epoch-root]
+  :<- [:epochs/current-match]
   (fn [epochs _]
-    (:current-epoch-id epochs)))
+    (:id (first epochs))))
 
 (rf/reg-sub
   :epochs/match-ids
