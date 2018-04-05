@@ -665,6 +665,7 @@
       ;; Else
       {:db db})))
 
+;; TODO: this code is a bit messy, needs refactoring and cleaning up.
 (rf/reg-event-fx
   :epochs/previous-epoch
   [(rf/path [:epochs])]
@@ -694,12 +695,13 @@
         {:db         (assoc db :current-epoch-id new-id)
          :dispatch   [:snapshot/reset-current-epoch-app-db new-id]}))))
 
-(rf/reg-event-db
+(rf/reg-event-fx
   :epochs/most-recent-epoch
   [(rf/path [:epochs])]
-  (fn [db _]
-    (assoc db :current-epoch-index nil
-              :current-epoch-id nil)))
+  (fn [{:keys [db]} _]
+    {:db (assoc db :current-epoch-index nil
+                   :current-epoch-id nil)
+     :dispatch [:snapshot/reset-current-epoch-app-db (utils/last-in-vec (:match-ids db))]}))
 
 (rf/reg-event-db
   :epochs/replay
