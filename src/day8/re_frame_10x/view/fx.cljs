@@ -6,20 +6,42 @@
             [zprint.core :as zp]
             [clojure.string :as str]))
 
+(def code-hover-background-color "rgba(100, 100, 255, 0.08)")
+
 (def fx-styles
   [:#--re-frame-10x--
    [:.code-panel
     #_{:padding-bottom common/gs-31}] ;; Leaving the empty def here for now
    ;; We rely on highlight JS for our background now.
-   #_[:.code-listing
-    {:background-color common/white-background-color
-     :padding          "5px"
-     :margin-right     "19px"}]
+   ;[:.code-listing
+   ; {:background-color common/white-background-color
+   ;  :padding          "5px"
+   ;  :margin-right     "19px"}]
    [:.code-listing--highlighted
     {:font-weight      "bold"
-     :background-color "rgba(100, 100, 255, 0.08)"}]
-   [:.code-fragment {:background-color common/white-background-color}
-    [:&:hover {:background-color "rgba(100, 100, 255, 0.08)"}]]])
+     :background-color code-hover-background-color}]
+   [:.code-fragment
+    {:background-color common/white-background-color}
+    [:.code-fragment__content
+     {:height "19px"}]
+    [:.code-fragment__result
+     {:visibility "hidden"
+      :color "#b4b4b4"}] ;; Was common/medium-gray
+    [:&:hover
+     {:background-color code-hover-background-color}
+     [:.code-fragment__result
+      {:visibility "visible"}]]
+    [:.code-fragment__button
+     {:display "none"
+      :padding-left "6px"
+      :margin-left  "6px"
+      :border-left  "1px solid #cdd8df"
+      :cursor       "pointer"
+      :color        common/blue-modern-color}]
+    [:&:hover
+     [:.code-fragment__button
+      {:display "grid"}]]
+    ]])
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
@@ -32,8 +54,8 @@
    :class "event-section"
    :children
    [[rc/h-box
-     :class "event-section--header app-db-path--header"
-     :align :center
+     :class    "event-section--header app-db-path--header"
+     :align    :center
      :children [[:h2 title]]]
     [components/simple-render data [title] "event-section--data app-db-path--pod-border"]]])
 

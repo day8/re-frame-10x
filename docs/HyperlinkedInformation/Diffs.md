@@ -1,25 +1,24 @@
-This document explains what you are seeing in sections
-labelled "Only Before" and "Only After".
+## Showing Diffs
 
-In various places, `re-frame-10x` allows you to inspect values like `app-db`. 
-Knowing the current value is useful, but 
-you are sometimes more interested to know how a value has changed. 
-The value might be `X` before the start of this epoch, and 
-ended up as `X'`.  So `re-frame-10x` will be showing you `X'` but you might woonder
-how `X` and `X'` are different. What got added or removed, and what was modified? 
+While it is useful to inspect values like `app-db`,
+you are sometimes interested to see how a value has changed.  What are the `diffs`? 
+During this Epoch, what got added or removed, and what was modified? 
 
-To show such differences, `re-frame-10x` chooses to do a calculation best explained by this pseudo code:
+This page explains what you are seeing in sections labelled "Only Before" and "Only After". 
+
+Assume that a value is `X` before the start of an epoch, and 
+ends up being modified to `X'`. To show such differences, `re-frame-10x` chooses 
+to do a calculation best explained by this pseudo code:
 ```clj
 (let [[only-before only-after _] (clojure.data/diff X X')]
    ...)
 ```
-Remember `X` is the value immediately `before` (this epoch). And `X'` is the value `after` (the epoch has completed). 
 
 By [looking at the docs](https://clojuredocs.org/clojure.data/diff) for `clojure.data/diff`, you'll see
 that it calculates how two values differ, and returns a triple of values. `re-frame-10x`
 captures and displays the first two elements of this triple as "only before" and "only after"
 respectively. The 3rd element is ignored because it's what hasn't changed, which isn't interesting.
 
-So, to correctly interpret "Only Before" and "Only after", you'll need to spend a bit
-of time properly familiarising yourself with how `clojure.data/diff` works, but
-it will be a worthwhile investment of your time. 
+So, to correctly interpret "Only Before" and "Only after", you'll need to spend 
+time properly familiarising yourself with how `clojure.data/diff` works, but this will be
+a worthwhile investment. 

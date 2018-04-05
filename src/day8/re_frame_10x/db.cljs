@@ -10,6 +10,7 @@
         app-db-paths (into (sorted-map) (localstorage/get "app-db-paths" {}))
         json-ml-paths (localstorage/get "app-db-json-ml-expansions" #{})
         external-window? (localstorage/get "external-window?" false)
+        external-window-dimensions (localstorage/get "external-window-dimensions" {:width 800 :height 800 :top 0 :left 0})
         show-epoch-traces? (localstorage/get "show-epoch-traces?" true)
         using-trace? (localstorage/get "using-trace?" true)
         ignored-events (localstorage/get "ignored-events" {})
@@ -34,6 +35,7 @@
     (rf/dispatch [:settings/debug? debug?])
     (when external-window?
       (rf/dispatch [:global/launch-external]))
+    (rf/dispatch [:settings/external-window-dimensions external-window-dimensions])
     (rf/dispatch [:traces/filter-items filter-items])
     (rf/dispatch [:traces/set-categories categories])
     (rf/dispatch [:trace-panel/update-show-epoch-traces? show-epoch-traces?])

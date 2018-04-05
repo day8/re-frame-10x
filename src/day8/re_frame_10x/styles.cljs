@@ -3,13 +3,15 @@
             [mranderson047.garden.v1v3v3.garden.units :as units :refer [em px percent]]
             [mranderson047.garden.v1v3v3.garden.color :as color]
             [mranderson047.garden.v1v3v3.garden.selectors :as s]
+            [mranderson047.garden.v1v3v3.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.utils.re-com :as rc]
             [day8.re-frame-10x.view.app-db :as app-db]
             [day8.re-frame-10x.view.timing :as timing]
             [day8.re-frame-10x.view.settings :as settings]
             [day8.re-frame-10x.view.event :as event]
-            [day8.re-frame-10x.view.fx :as fx]))
+            [day8.re-frame-10x.view.fx :as fx]
+            [day8.re-frame-10x.view.container :as container]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -365,8 +367,10 @@
                   :padding          (px 5)
                   :cursor           "pointer"
                   :user-select      "none"}]
-    [:span.arrow__disabled {:color  common/disabled-background-color
+    [:span.arrow__disabled {:color  "#cfd8de"
                             :cursor "auto"}]
+    [:span.arrow.epoch-nav {:min-width "16px"
+                            :max-width "16px"}]
     [:span.event-header {:color            common/text-color
                          :background-color common/standard-background-color
                          :padding          (px 5)
@@ -427,7 +431,24 @@
                 :-moz-user-select      "none"
                 :-ms-user-select       "none"
                 :user-select           "none"}]
-   ])
+
+   ;; https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
+   [:.dont-break-out
+    {
+     "overflow-wrap" "break-word"
+     "word-wrap" "break-word"
+
+     "-ms-word-break" "break-all"
+     ; This is the dangerous one in WebKit, as it breaks things wherever
+     "word-break" "break-all"
+     ; /* Instead use this non-standard one: */
+     :word-break "break-word"
+
+     ; /* Adds a hyphen where the word breaks, if supported (No Blink) */
+     "-ms-hyphens" "auto"
+     "-moz-hyphens" "auto"
+     "-webkit-hyphens" "auto"
+     "hypens" "auto"}]])
 
 (def highlight-js-solarized
   ;; From https://github.com/isagalaev/highlight.js/blob/master/src/styles/solarized-light.css
@@ -453,9 +474,9 @@
    [".hljs-attribute" ".hljs-attr" ".hljs-variable" ".hljs-template-variable" ".hljs-class .hljs-title" ".hljs-type"
     {"color" "#b58900"}]
    ;;Solarized Orange
-   [".hljs-symbol" ".hljs-bullet" ".hljs-subst" ".hljs-meta" ".hljs-meta .hljs-keyword"]
-   {"color" "#cb4b16"}
-   [".hljs-built_in" ".hljs-deletion"
+   [".hljs-symbol" ".hljs-bullet" ".hljs-subst" ".hljs-meta" ".hljs-meta .hljs-keyword"
+    {"color" "#cb4b16"}]
+   [".hljs-builtin-name" ".hljs-deletion"
     {"color" "#dc322f"}]
    [".hljs-formula"
     {"background" "#eee8d5"}]
@@ -466,16 +487,36 @@
    ])
 
 
-(def panel-styles (apply garden/css [css-reset
-                                     [:#--re-frame-10x-- rc/re-com-css]
-                                     [:#--re-frame-10x-- highlight-js-solarized]
-                                     common/blue-modern
-                                     re-frame-trace-styles
-                                     app-db/app-db-styles
-                                     timing/timing-styles
-                                     event/event-styles
-                                     settings/settings-styles
-                                     fx/fx-styles]))
+(def at-keyframes-styles
+  (let [slide? false]
+    [(at-keyframes :pulse-previous-re-frame-10x
+                   [:from {:color "white"
+                           :left  (when slide? "-100%")}]
+                   [:to   {:left  (when slide? "0%")}])
+     (at-keyframes :pulse-next-re-frame-10x
+                   [:from {:color "white"
+                           :left  (when slide? "100%")}]
+                   [:to   {:left  (when slide? "0%")}])
+     (at-keyframes :fade-clipboard-msg-re-frame-10x
+                   [:0%   {:margin-left "100px"}]
+                   [:5%   {:margin-left "0px"
+                           :opacity     "1"}]
+                   [:90%  {:opacity "1"}])]))
+
+
+(def panel-styles
+  (apply garden/css [css-reset
+                     [:#--re-frame-10x-- rc/re-com-css]
+                     [:#--re-frame-10x-- highlight-js-solarized]
+                     common/blue-modern
+                     re-frame-trace-styles
+                     container/container-styles
+                     event/event-styles
+                     fx/fx-styles
+                     app-db/app-db-styles
+                     timing/timing-styles
+                     settings/settings-styles]))
+
 
 (defn inject-inline-style [document id style]
   (let [styles-el     (.getElementById document id)
@@ -494,4 +535,5 @@
         new-styles-el))))
 
 (defn inject-trace-styles [document]
+  (inject-inline-style document "--re-frame-10x-key-frames--" (garden/css at-keyframes-styles))
   (inject-inline-style document "--re-frame-10x-styles--" panel-styles))

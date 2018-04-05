@@ -106,7 +106,7 @@
 
 (defn pod-header [{:keys [id layer path open? diff? run-times order]}]
   [rc/h-box
-   :class    (str "app-db-path--header")
+   :class    "app-db-path--header"
    :align    :center
    :height   common/gs-31s
    :children [[pod-header-section

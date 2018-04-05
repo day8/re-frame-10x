@@ -1,4 +1,8 @@
+## The Replay Button
+
 This document explains the operation of the "Replay" button, and how to use **The HotPlay Workflow**.
+
+![Estim8 demo](/docs/images/replay-button.png)
 
 ### Epoch Navigation 
 
@@ -18,8 +22,9 @@ So, Step 1 is "reestablish initial conditions" and Step 2 is "do it all again".
   - In Step 1, the reset of `app-db` will trigger computation and trace.
     Subscriptions and views are run as the application returns to the "prior state", 
     but none of the associated trace is captured. It is all ignored.
-  - Trace arising from Step 2 forms a normal, new Epoch. The Observed Epoch (which we are replaying) 
-    is still there, untouched.
+  - At the end  Step 1, you'll breifly see the UI rendered for the prior state.
+  - Trace arising from Step 2 forms a normal, new Epoch. The original Observed Epoch (which we are replaying) 
+    is still there, untouched, available if you click the "back" navigation button. 
   - New Epochs (Step 2) are always added to the end of the Epoch list (never inserted amongst old Epochs). 
   - The user's experience is that they click the "Replay" button 
     and immediately view the result. So, after Step 2, the user is auto-navigated to this new epoch.
@@ -34,7 +39,7 @@ It facilitates "The HotPlay Workflow":
   - E: Back to A
 
 Because of `Replay's` "Step 1", you get identical "initial conditions" for
-each iteration of the workflow, and this is true blessing. It removes the nagging 
+each iteration of the workflow, which can be a real blessing in many cases. It removes the nagging 
 cognative load of "allowing for" slightly shifting state and its consequences, or
 the effort of manually reestablishing identical application state before each iteration.
 

@@ -32,12 +32,6 @@
       (get settings :selected-tab))))
 
 (rf/reg-sub
-  :settings/paused?
-  :<- [:settings/root]
-  (fn [settings _]
-    (:paused? settings)))
-
-(rf/reg-sub
   :settings/number-of-retained-epochs
   :<- [:settings/root]
   (fn [settings]
@@ -275,9 +269,9 @@
 
 (rf/reg-sub
   :epochs/current-epoch-id
-  :<- [:epochs/epoch-root]
+  :<- [:epochs/current-match]
   (fn [epochs _]
-    (:current-epoch-id epochs)))
+    (:id (first epochs))))
 
 (rf/reg-sub
   :epochs/match-ids
@@ -625,6 +619,7 @@
     (keep-indexed (fn [i trace]
                     (when-some [code (get-in trace [:tags :code])]
                       {:id    i
+                       :trace-id (:id trace)
                        :title (pr-str (:op-type trace))
                        :code  (->> code (map-indexed (fn [i code] (assoc code :id i))) vec) ;; Add index
                        :form  (get-in trace [:tags :form])}))
@@ -655,7 +650,27 @@
     (:highlighted-form code)))
 
 (rf/reg-sub
-  :code/scroll-pos
+  :code/show-all-code?
   :<- [:code/root]
   (fn [code _]
-    (:scroll-pos code)))
+    (:show-all-code? code)))
+
+(rf/reg-sub
+  :code/repl-msg-state
+  :<- [:code/root]
+  (fn [code _]
+    (:repl-msg-state code)))
+
+
+;;
+
+(rf/reg-sub
+  :component/root
+  (fn [db _]
+    (:component db)))
+
+(rf/reg-sub
+  :component/direction
+  :<- [:component/root]
+  (fn [component _]
+    (:direction component)))

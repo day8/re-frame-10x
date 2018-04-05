@@ -11,7 +11,7 @@ day8.re-frame-10x.utils.pretty-print-condensed
 
   Truncation is indicated by `…` at start/end, or `...` at middle, for readability. "
   ([n string]
-   (n :end string))
+   (truncate-string n :end string))
   ([n cut-from string]
    (let [c (count string)]
      (if (> c n)

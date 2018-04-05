@@ -1,6 +1,8 @@
+## Understanding Timing
+
 Some notes on the "Timing" tab in `re-frame-10x`.
 
-## Be Sceptical Of The Numbers
+### Be Sceptical Of The Numbers
 
 Two reasons:
 
@@ -30,7 +32,7 @@ Two reasons:
     one subscription, compared to the others?
     And, even then, keep in mind point 1 (above). 
     
-## Know Your Epoch Timeline
+### Know Your Epoch Timeline
 
 The Timing Tab is easier to understand once you have internalised the 
 following graphic which shows how, operationally, the six dominoes play out, 
@@ -38,7 +40,7 @@ over time, within the browser.
 
 <img src="https://raw.githubusercontent.com/Day8/re-frame/master/images/epoch.png">
 
-## Other Tips 
+### Other Tips
 
 It might be useful to have [React DevTools](https://github.com/facebook/react-devtools)
 installed because it can show you visually, what is rerednering. Neat idea. But, realise it 

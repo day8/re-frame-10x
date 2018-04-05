@@ -13,8 +13,6 @@
                    [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
 (def delete (macros/slurp-macro "day8/re_frame_10x/images/delete.svg"))
-(def reload (macros/slurp-macro "day8/re_frame_10x/images/reload.svg"))
-(def reload-disabled (macros/slurp-macro "day8/re_frame_10x/images/reload-disabled.svg"))
 (def snapshot (macros/slurp-macro "day8/re_frame_10x/images/snapshot.svg"))
 (def snapshot-ready (macros/slurp-macro "day8/re_frame_10x/images/snapshot-ready.svg"))
 (def round-arrow (macros/slurp-macro "day8/re_frame_10x/images/round-arrow.svg"))
@@ -29,7 +27,7 @@
 (def pod-border-edge (str "1px solid " pod-border-color))
 (def border-radius "3px")
 
-(def *finished-animation? (r/atom false))
+(def *finished-animation? (r/atom true))
 (def animation-duration 150)
 
 (def app-db-styles
@@ -90,48 +88,15 @@
 
 
 (defn panel-header []
-  (let [app-db-after  (rf/subscribe [:app-db/current-epoch-app-db-after])
-        app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])]
-    [rc/h-box
-     :justify :between
-     :align :center
-     :margin (css-join common/gs-19s "0px")
-     :style {:flex-flow "row wrap"}
-     :children [[rc/button
+  [rc/h-box
+   :align      :center
+   :style      {:margin-top common/gs-19s}
+   :children   [[rc/button
                  :class "bm-muted-button app-db-panel-button"
                  :label [rc/v-box
                          :align :center
                          :children ["+ path inspector"]]
-                 :on-click #(rf/dispatch [:app-db/create-path])]
-                [rc/h-box
-                 :class "app-db-panel"
-                 :align :center
-                 :gap common/gs-7s
-                 :height "48px"
-                 :children [[rc/label :label "reset app-db to:"]
-                            [rc/button
-                             :class "bm-muted-button app-db-panel-button"
-                             :label [rc/v-box
-                                     :align :center
-                                     :children ["initial epoch state"]]
-                             :on-click #(rf/dispatch [:snapshot/load-snapshot @app-db-before])]
-                            [rc/v-box
-                             :width common/gs-81s
-                             :align :center
-                             :children [[rc/label
-                                         :style {:font-size "9px"}
-                                         :label "EVENT"]
-                                        [:img {:src (str "data:image/svg+xml;utf8," arrow-right)}]
-                                        [rc/label
-                                         :style {:font-size  "9px"
-                                                 :margin-top "-1px"}
-                                         :label "PROCESSING"]]]
-                            [rc/button
-                             :class "bm-muted-button app-db-panel-button"
-                             :label [rc/v-box
-                                     :align :center
-                                     :children ["end epoch state"]]
-                             :on-click #(rf/dispatch [:snapshot/load-snapshot @app-db-after])]]]]]))
+                 :on-click #(rf/dispatch [:app-db/create-path])]]])
 
 
 (defn pod-header-section
@@ -154,9 +119,9 @@
 
 (defn pod-header [{:keys [id path path-str open? diff?]}]
   [rc/h-box
-   :class (str "app-db-path--header")
-   :align :center
-   :height common/gs-31s
+   :class    "app-db-path--header"
+   :align    :center
+   :height   common/gs-31s
    :children [[pod-header-section
    :children [[rc/box
                            :width  common/gs-31s
@@ -306,15 +271,15 @@
 
 (defn no-pods []
   [rc/h-box
-   :margin (css-join "0px 0px 0px" common/gs-19s)
-   :gap common/gs-7s
+   :margin (css-join common/gs-19s " 0px 0px 50px")
+   :gap common/gs-12s
    :align :start
    :align-self :start
    :children [[:img {:src (str "data:image/svg+xml;utf8," round-arrow)}]
               [rc/label
-               :style {:width      "150px"
+               :style {:width      "160px"
                        :margin-top "22px"}
-               :label "add inspectors to show what happened to app-db"]]])
+               :label "see the values in app-db by adding one or more inspectors"]]])
 
 
 (defn pod-header-column-titles

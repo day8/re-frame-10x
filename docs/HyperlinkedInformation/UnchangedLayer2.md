@@ -1,3 +1,5 @@
+## Ignoring Unchanged Layer 2 Subscriptions
+
 In the "subs" tab, you have the option to
 ignore unchanged layer 2 subscriptions. This document explains why. 
 

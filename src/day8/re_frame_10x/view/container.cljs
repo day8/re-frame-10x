@@ -16,10 +16,13 @@
             [mranderson047.garden.v1v3v3.garden.units :refer [px]]
             [re-frame.trace]
             [day8.re-frame-10x.utils.re-com :as rc]
-            [day8.re-frame-10x.common-styles :as common]))
+            [day8.re-frame-10x.common-styles :as common]
+            [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
 
 (def triangle-down (macros/slurp-macro "day8/re_frame_10x/images/triangle-down.svg"))
-(defn tab-button [panel-id title]
+
+(defn tab-button
+  [panel-id title]
   (let [selected-tab @(rf/subscribe [:settings/selected-tab])]
     [rc/v-box
      :style    {:margin-bottom "-8px"
@@ -32,33 +35,40 @@
 (def open-external (macros/slurp-macro "day8/re_frame_10x/images/logout.svg"))
 (def settings-svg (macros/slurp-macro "day8/re_frame_10x/images/wrench.svg"))
 (def orange-settings-svg (macros/slurp-macro "day8/re_frame_10x/images/orange-wrench.svg"))
-(def pause-svg (macros/slurp-macro "day8/re_frame_10x/images/pause.svg"))
-(def play-svg (macros/slurp-macro "day8/re_frame_10x/images/play.svg"))
+(def reload (macros/slurp-macro "day8/re_frame_10x/images/reload.svg"))
+(def reload-disabled (macros/slurp-macro "day8/re_frame_10x/images/reload-disabled.svg"))
+(def skip-to-end (macros/slurp-macro "day8/re_frame_10x/images/skip-to-end.svg"))
+(def skip-to-end-disabled (macros/slurp-macro "day8/re_frame_10x/images/skip-to-end-disabled.svg"))
 
 (def outer-margins {:margin (str "0px " common/gs-19s)})
 
 
+(def container-styles
+  [:#--re-frame-10x--
+   [:.container--replay-button
+    {:width  "65px"   ;; common/gs-81s - 2 * (7px padding + 1px border)
+     :height "29px"}] ;; common/gs-31s - 2 * 1px border
+   [:.container--info-button
+    {:border-radius    "50%"
+     :color            "white"
+     :background-color common/blue-modern-color}]
+   [:.pulse-previous
+    {:animation-duration "1000ms"
+     :animation-name     "pulse-previous-re-frame-10x"}] ;; Defined in day8.re-frame-10x.styles/at-keyframes
+   [:.pulse-next
+    {:animation-duration "1000ms"
+     :animation-name     "pulse-next-re-frame-10x"}]
+   ])
+
 
 (defn right-hand-buttons [external-window?]
   (let [selected-tab      (rf/subscribe [:settings/selected-tab])
-        paused?           (rf/subscribe [:settings/paused?])
         showing-settings? (= @selected-tab :settings)]
     [rc/h-box
      :align    :center
      :children [(when showing-settings?
                   [:button {:class    "bm-active-button"
                             :on-click #(rf/dispatch [:settings/toggle-settings])} "Done"])
-                (if @paused?
-                  [:img.nav-icon.noselect
-                   {:title    "Play"
-                    :src      (str "data:image/svg+xml;utf8,"
-                                   play-svg)
-                    :on-click #(rf/dispatch [:settings/play])}]
-                  [:img.nav-icon.noselect
-                   {:title    "Pause"
-                    :src      (str "data:image/svg+xml;utf8,"
-                                   pause-svg)
-                    :on-click #(rf/dispatch [:settings/pause])}])
                 [:img.nav-icon.noselect
                  {:title    "Settings"
                   :src      (str "data:image/svg+xml;utf8,"
@@ -69,8 +79,8 @@
                    {:title    "Pop out"
                     :src      (str "data:image/svg+xml;utf8,"
                                    open-external)
-                    :on-click #(rf/dispatch-sync [:global/launch-external])}])]])
-  )
+                    :on-click #(rf/dispatch-sync [:global/launch-external])}])]]))
+
 
 (defn settings-header [external-window?]
   [[rc/h-box
@@ -84,32 +94,65 @@
    [rc/gap-f :size common/gs-12s]
    [right-hand-buttons external-window?]])
 
+
+(defn event-name
+  []
+  (let [direction          @(rf/subscribe [:component/direction])
+        current-event      @(rf/subscribe [:epochs/current-event])
+        beginning-trace-id @(rf/subscribe [:epochs/beginning-trace-id])
+        event-str          (if (some? current-event)
+                             (pp/truncate 400 :end current-event)
+                             "No event")]
+    ^{:key beginning-trace-id}
+    [rc/v-box
+     :size "auto"
+     :style {:max-height       "42px"                       ;42 is exactly 2 lines which is perhaps neater than common/gs-50s (which would allow 3 lines to be seen)
+             :overflow-x       "hidden"
+             :overflow-y       "auto"
+             :background-color common/standard-background-color
+             :font-style       (if (some? current-event) "normal" "italic")}
+     :children [[:span
+                 {:class (str "event-header dont-break-out " (if (= :previous direction) "pulse-previous" "pulse-next"))
+                  :style {:position "relative"}}
+                 event-str]]]))
+
+
 (defn standard-header [external-window?]
-  (let [current-event           @(rf/subscribe [:epochs/current-event])
-        older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])
-        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])
-        event-str               (if (some? current-event)
-                                  (subs (prn-str current-event) 0 400)
-                                  "No event")]
+  (let [older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])
+        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])]
     [[rc/h-box
       :align    :center
       :size     "auto"
       :gap      common/gs-12s
-      :children [[:span.arrow (if older-epochs-available?
-                                {:on-click #(rf/dispatch [:epochs/previous-epoch])}
-                                {:class "arrow__disabled"}) "◀"]
-                 [rc/v-box
-                  :size     "auto"
-                  :style    {:max-height       "42px" ;42 is exactly 2 lines which is perhaps neater than common/gs-50s (which would allow 3 lines to be seen)
-                             :overflow-x       "hidden"
-                             :overflow-y       "auto"
-                             :background-color "white"
-                             :font-style       (if (some? current-event) "normal" "italic")}
-                  :children [[:span.event-header event-str]]]
-                 [:span.arrow (if newer-epochs-available?
-                                {:on-click #(rf/dispatch [:epochs/next-epoch])}
-                                {:class "arrow__disabled"})
-                  "▶"]]]
+      :children [[:span.arrow.epoch-nav
+                  (if older-epochs-available?
+                    {:on-click #(do (rf/dispatch [:component/set-direction :previous])
+                                    (rf/dispatch [:epochs/previous-epoch]))
+                     :title    "Previous epoch"}
+                    {:class "arrow__disabled"
+                     :title "There are no previous epochs"})
+                  "◀"]
+                 [event-name]
+                 [:span.arrow.epoch-nav
+                  (if newer-epochs-available?
+                    {:on-click #(do (rf/dispatch [:component/set-direction :next])
+                                    (rf/dispatch [:epochs/next-epoch]))
+                     :title    "Next epoch"}
+                    {:class "arrow__disabled"
+                     :title "There are no later epochs"})
+                  "▶"]
+                 [:span.arrow.epoch-nav
+                  (if newer-epochs-available?
+                    {:on-click #(do (rf/dispatch [:component/set-direction :next])
+                                    (rf/dispatch [:epochs/most-recent-epoch]))
+                     :title    "Skip to latest epoch"}
+                    {:class "arrow__disabled"
+                     :title "Already showing latest epoch"})
+                  [:img
+                   {:src      (str "data:image/svg+xml;utf8," (if newer-epochs-available? skip-to-end skip-to-end-disabled))
+                    :style    {:cursor        (if newer-epochs-available? "pointer" "default")
+                               :height        "12px"
+                               :margin-bottom "-1px"}}]]]]
      [rc/gap-f :size common/gs-12s]
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))
@@ -121,7 +164,10 @@
         unloading?        (rf/subscribe [:global/unloading?])
         showing-settings? (= @selected-tab :settings)]
     [:div.panel-content
-     {:style {:width "100%" :display "flex" :flex-direction "column" :background-color common/standard-background-color}}
+     {:style {:width            "100%"
+              :display          "flex"
+              :flex-direction   "column"
+              :background-color common/standard-background-color}}
      (if showing-settings?
        [rc/h-box
         :class    "panel-content-top nav"
@@ -139,17 +185,34 @@
                     :gap      "7px"
                     :align    :end
                     :height   "50px"
-                    :children [(tab-button :event "Event")
-                               (tab-button :fx "fx")
-                               (tab-button :app-db "app-db")
-                               (tab-button :subs "Subs")
+                    :children [[tab-button :event "Event"]
+                               [tab-button :fx "fx"]
+                               [tab-button :app-db "app-db"]
+                               [tab-button :subs "Subs"]
                                (when (:debug? opts)
-                                 (tab-button :parts "Parts"))
-                               ;(tab-button :views "Views")
-                               (tab-button :traces "Trace")
-                               (tab-button :timing "Timing")
+                                 [tab-button :parts "Parts"])
+                               ;[tab-button :views "Views"]
+                               [tab-button :traces "Trace"]
+                               [tab-button :timing "Timing"]
                                (when (:debug? opts)
-                                 (tab-button :debug "Debug"))]]]])
+                                 [tab-button :debug "Debug"])]]
+                   [rc/h-box
+                    :align    :center
+                    :padding  "0px 19px 0px 7px"
+                    :gap      "4px"
+                    :children [[rc/button
+                                :class "bm-muted-button container--replay-button"
+                                :label [rc/h-box
+                                        :align    :center
+                                        :gap      "3px"
+                                        :children [[:img
+                                                    {:src      (str "data:image/svg+xml;utf8," reload)
+                                                     :style    {:cursor "pointer"
+                                                                :height "23px"}}]
+                                                   "replay"]]
+                                :on-click #(do (rf/dispatch [:component/set-direction :next])
+                                               (rf/dispatch [:epochs/replay]))]
+                               [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]]]])
      [rc/line :color "#EEEEEE"]
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
@@ -176,4 +239,3 @@
                    :debug    [debug/render]
                    :settings [settings/render]
                    [app-db/render db/app-db])]]]))
-

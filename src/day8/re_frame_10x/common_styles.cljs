@@ -107,7 +107,6 @@
 (def default-text-color "#767A7C")                          ;; Medium grey
 
 ;(def disabled-text-color                    "TBA???")       ;; Placeholder (currently not specified)
-(def disabled-background-color "#ECEDF0")                   ;; Light grey
 (def disabled-border-color border-line-color)
 
 (def strong-button-text-color "white")
@@ -188,10 +187,6 @@
                        :cursor           "pointer"}
     [:&:hover {:color  strong-button-border-color
                :border (str "1px solid " strong-button-border-color)}]]
-
-   [:.bm-disabled-button {;:color            disabled-text-color (not yet defined)
-                          :background-color disabled-background-color
-                          :border           (str "1px solid " strong-button-border-color)}]
 
    [:.bm-popover-content-wrapper
     [:>

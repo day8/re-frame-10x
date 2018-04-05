@@ -32,3 +32,11 @@ This setup is inherently project specific, so open an issue if you have trouble,
 re-frame-10x is designed for development time debugging. The overhead that it imposes would not be suitable for production builds, so it is compiled out by default. If you really want to use re-frame-10x with a production build, you will need to make sure that the `goog.DEBUG` [Closure define](https://clojurescript.org/reference/compiler-options#closure-defines) is `true` to ensure that the tracing isn't dead code eliminated.
 
 There may be more hurdles to cross after this one, Here Be Dragons, if you figure it out, let us know!
+
+## Using Shadow CLJS?
+
+Shadow CLJS doesn't support cljsjs, which we use for some of re-frame-10x's dependencies. Instead, you need to add these via npm/yarn, and make sure you are using shadow-cljs 2.2.22 or higher.
+
+```console
+$ yarn add highlight.js react-highlight.js
+```

@@ -44,13 +44,15 @@
       n
       "")))
 
+(def operation-name (memoize (fn [component] (last (str/split (component-path component) #" > ")))))
+
 (def static-fns
   {:render
    (fn mp-render []                                         ;; Monkeypatched render
      (this-as c
        (trace/with-trace {:op-type   :render
                           :tags      {:component-path (component-path c)}
-                          :operation (last (str/split (component-path c) #" > "))}
+                          :operation (operation-name c)}
                          (if util/*non-reactive*
                            (reagent.impl.component/do-render c)
                            (let [rat        ($ c :cljsRatom)
@@ -227,6 +229,11 @@
   (styles/inject-trace-styles js/document)
   (r/render [devtools-outer {:panel-type :inline
                              :debug?     debug?}] (panel-div)))
+
+(defn traced-result [trace-id fragment-id]
+  ;; TODO: this is not terribly efficient, figure out how to get the index of the trace directly.
+  (let [trace (first (filter #(= trace-id (:id %)) (get-in @mranderson047.re-frame.v0v10v2.re-frame.db/app-db [:traces :all-traces])))]
+    (get-in trace [:tags :code fragment-id :result])))
 
 (defn init-db! []
   (trace.db/init-db debug?))

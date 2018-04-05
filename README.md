@@ -1,10 +1,16 @@
-
-
 # re-frame-10x
 
 `re-frame-10x` lets you instrument, and then inspect, the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination.
 
 It helps you find false assumptions faster.
+
+
+### Build Status
+
+Branch | React Version | Status | Artifact
+----------|--------|--------|--------
+`master` | React 15 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x) | `[day8.re-frame/re-frame-10x "0.3.0"]`
+`react-16` | React 16 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16) | `[day8.re-frame/re-frame-10x "0.3.0-1-react16"]`
 
 ## Show Me
 
@@ -125,13 +131,13 @@ re-frame-10x configuration is per-project, only one person in your team needs to
 
 If you are using leiningen, modify `project.clj` in the following ways. When puzzling over the various possible leiningen configurations, it's often helpful to look at a sample [project.clj](https://github.com/technomancy/leiningen/blob/stable/sample.project.clj).
 
-### IMPORTANT PREREQUISITES 
+### IMPORTANT PREREQUISITES
 
 * You **must** have a [`:main`](https://clojurescript.org/reference/compiler-options#main) specified in your `:compiler` config for the `:preloads` and `:closure-defines` to take effect
 * You **must** be running with the Closure define `goog.DEBUG` as `true`. This is the default under `:optimizations :none`.
 * You **must** be using `:optimizations :none`.
 
-If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/Advanced-Setup.md) for other ways to install re-frame-10x.
+If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://shadow-cljs.github.io/docs/UsersGuide.html) see the docs on [advanced setups](/docs/Advanced-Setup.md) for other ways to install re-frame-10x.
 
 [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
 
@@ -148,7 +154,7 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
                         [day8.re-frame/re-frame-10x "VERSION (see version above)"]] }}
   ```
   
-  If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`.
+  If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`. **N.B.** For React 16 users using the version `0.3.0`, you should use the hotfix [`[day8.re-frame/re-frame-10x "0.3.0-1-react16"]`](https://clojars.org/day8.re-frame/re-frame-10x/versions/0.3.0-1-react16) instead of `[day8.re-frame/re-frame-10x "0.3.0-react16"]` as `0.3.0-react16` has a bad merge which breaks it.
 
 - Locate the `:compiler` map under `:dev` and add `:closure-defines` and `:preloads`.
 
@@ -213,7 +219,7 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 
 ### Event
 
-<img alt="event-panel" src="docs/images/event-10x.png" height="500px">
+<img alt="event-panel" src="docs/images/fx-10x.png" height="500px">
 
 * See the coeffects given to an event handler
 * See the effects produced by an event handler

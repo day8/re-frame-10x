@@ -4,15 +4,18 @@
             [cljs.tools.reader.edn]
             [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
             [day8.re-frame-10x.utils.localstorage :as localstorage]
+            [reagent.impl.batching :as batching]
             [clojure.string :as str]
             [goog.object]
+            [goog.string]
             [re-frame.db]
             [re-frame.interop]
+            [re-frame.core]
+            [re-frame.trace]
             [day8.re-frame-10x.view.container :as container]
             [day8.re-frame-10x.styles :as styles]
             [clojure.set :as set]
-            [day8.re-frame-10x.metamorphic :as metam]
-            [re-frame.trace]))
+            [day8.re-frame-10x.metamorphic :as metam]))
 
 (defn fixed-after
   ;; Waiting on https://github.com/Day8/re-frame/issues/447
@@ -106,20 +109,6 @@
       (-> db
           (assoc-in [:settings :using-trace?] using-trace?)
           (assoc-in [:settings :show-panel?] now-showing?)))))
-
-(rf/reg-event-db
-  :settings/pause
-  (fn [db _]
-    (assoc-in db [:settings :paused?] true)))
-
-(rf/reg-event-fx
-  :settings/play
-  (fn [{db :db} _]
-    {:db       (-> db
-                   (assoc-in [:settings :paused?] false)
-                   (assoc-in [:epochs :current-epoch-index] nil)
-                   (assoc-in [:epochs :current-epoch-id] nil))
-     :dispatch [:snapshot/reset-current-epoch-app-db nil]}))
 
 (rf/reg-event-db
   :settings/set-number-of-retained-epochs
@@ -228,34 +217,80 @@
 ;; Global
 
 (defn mount [popup-window popup-document]
-  (let [app (.getElementById popup-document "--re-frame-10x--")
-        doc js/document]
+  ;; When programming here, we need to be careful about which document and window
+  ;; we are operating on, and keep in mind that the window can close without going
+  ;; through standard react lifecycle, so we hook the beforeunload event.
+  (let [app                      (.getElementById popup-document "--re-frame-10x--")
+        resize-update-scheduled? (atom false)
+        handle-window-resize     (fn [e]
+                                   (when-not @resize-update-scheduled?
+                                     (batching/next-tick
+                                       (fn []
+                                         (let [width  (.-innerWidth popup-window)
+                                               height (.-innerHeight popup-window)]
+                                           (rf/dispatch [:settings/external-window-resize {:width width :height height}]))
+                                         (reset! resize-update-scheduled? false)))
+                                     (reset! resize-update-scheduled? true)))
+        handle-window-position   (let [pos (atom {})]
+                                   (fn []
+                                     ;; Only update re-frame if the windows position has changed.
+                                     (let [{:keys [left top]} @pos
+                                           screen-left (.-screenX popup-window)
+                                           screen-top  (.-screenY popup-window)]
+                                       (when (or (not= left screen-left)
+                                                 (not= top screen-top))
+                                         (rf/dispatch [:settings/external-window-position {:left screen-left :top screen-top}])
+                                         (reset! pos {:left screen-left :top screen-top})))))
+        window-position-interval (atom nil)
+        unmount                  (fn [_]
+                                   (.removeEventListener popup-window "resize" handle-window-resize)
+                                   (some-> @window-position-interval js/clearInterval)
+                                   nil)]
+
+
     (styles/inject-trace-styles popup-document)
     (goog.object/set popup-window "onunload" #(rf/dispatch [:global/external-closed]))
     (r/render
       [(r/create-class
-         {:display-name   "devtools outer external"
-          :reagent-render (fn []
-                            [container/devtools-inner {:panel-type :popup}])})]
+         {:display-name           "devtools outer external"
+          :component-did-mount    (fn []
+                                    (.addEventListener popup-window "resize" handle-window-resize)
+                                    (.addEventListener popup-window "beforeunload" unmount)
+                                    ;; Check the window position every 10 seconds
+                                    (reset! window-position-interval
+                                            (js/setInterval
+                                              handle-window-position
+                                              2000)))
+          :component-will-unmount unmount
+          :reagent-render         (fn [] [container/devtools-inner {:panel-type :popup}])})]
       app)))
 
 (defn open-debugger-window
-  "Copied from re-frisk.devtool/open-debugger-window"
-  []
-  (let [{:keys [ext_height ext_width]} (:prefs {})
-        w (js/window.open "" "Debugger" (str "width=" (or ext_width 800) ",height=" (or ext_height 800)
-                                             ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
+  "Originally copied from re-frisk.devtool/open-debugger-window"
+  [{:keys [width height top left] :as dimensions}]
+  (let [doc-title        js/document.title
+        new-window-title (goog.string/escapeString (str "re-frame-10x | " doc-title))
+        new-window-html  (str "<head><title>"
+                              new-window-title
+                              "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
+        ;; We would like to set the windows left and top positions to match the monitor that it was on previously, but Chrome doesn't give us
+        ;; control over this, it will only position it within the same display that it was popped out on.
+        w                (js/window.open "" "re-frame-10x-popout"
+                                         (str "width=" width ",height=" height ",left=" left ",top=" top
+                                              ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
 
-        d (.-document w)]
+        d                (.-document w)]
+    (when-let [el (.getElementById d "--re-frame-10x--")]
+      (r/unmount-component-at-node el))
     (.open d)
-    (.write d "<head></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
+    (.write d new-window-html)
     (goog.object/set w "onload" #(mount w d))
     (.close d)))
 
 (rf/reg-event-fx
   :global/launch-external
   (fn [ctx _]
-    (open-debugger-window)
+    (open-debugger-window (get-in ctx [:db :settings :external-window-dimensions]))
     (localstorage/save! "external-window?" true)
     {:db             (assoc-in (:db ctx) [:settings :external-window?] true)
      ;; TODO: capture the intent that the user is still interacting with devtools, to persist between reloads.
@@ -267,6 +302,24 @@
     (localstorage/save! "external-window?" false)
     {:db             (assoc-in (:db ctx) [:settings :external-window?] false)
      :dispatch-later [{:ms 400 :dispatch [:settings/show-panel? true]}]}))
+
+(rf/reg-event-db
+  :settings/external-window-dimensions
+  [(rf/path [:settings :external-window-dimensions]) (rf/after #(localstorage/save! "external-window-dimensions" %))]
+  (fn [dim [_ new-dim]]
+    new-dim))
+
+(rf/reg-event-db
+  :settings/external-window-resize
+  [(rf/path [:settings :external-window-dimensions]) (rf/after #(localstorage/save! "external-window-dimensions" %))]
+  (fn [dim [_ {width :width height :height}]]
+    (assoc dim :width width :height height)))
+
+(rf/reg-event-db
+  :settings/external-window-position
+  [(rf/path [:settings :external-window-dimensions]) (rf/after #(localstorage/save! "external-window-dimensions" %))]
+  (fn [dim [_ {left :left top :top}]]
+    (assoc dim :left left :top top)))
 
 (rf/reg-event-fx
   :global/enable-tracing
@@ -507,24 +560,17 @@
     (re-frame.interop/reagent-id re-frame.db/app-db)))
 
 (rf/reg-event-db
-  :snapshot/load-snapshot
-  (fn [db [_ new-db]]
-    (reset! re-frame.db/app-db new-db)
-    db))
-
-(rf/reg-event-db
   :snapshot/reset-current-epoch-app-db
   (fn [db [_ new-id]]
-    (let [follows-events? (get-in db [:settings :app-db-follows-events?])
-          epochs          (:epochs db)
-          match-id        (or new-id
-                              ;; new-id may be nil when we call this event from :settings/play
-                              (utils/last-in-vec (get epochs :match-ids)))
-          match           (get-in epochs [:matches-by-id match-id])
-          event           (metam/matched-event (:match-info match))]
-      (when follows-events?
+    (when (get-in db [:settings :app-db-follows-events?])
+      (let [epochs   (:epochs db)
+            match-id (or new-id
+                         ;; new-id may be nil when we call this event from :settings/play
+                         (utils/last-in-vec (get epochs :match-ids)))
+            match    (get-in epochs [:matches-by-id match-id])
+            event    (metam/matched-event (:match-info match))]
         ;; Don't mess up the users app if there is a problem getting app-db-after.
-        (when-some [new-db (get-in event [:tags :app-db-after])]
+        (when-some [new-db (metam/app-db-after event)]
           (reset! re-frame.db/app-db new-db))))
     db))
 
@@ -534,9 +580,9 @@
   [m]
   (-> m :match-info first :id))
 
-(rf/reg-event-db
+(rf/reg-event-fx
   :epochs/receive-new-traces
-  (fn [db [_ new-traces]]
+  (fn [{:keys [db]} [_ new-traces]]
     (if-let [filtered-traces (->> (filter log-trace? new-traces)
                                   (sort-by :id))]
       (let [number-of-epochs-to-retain (get-in db [:settings :number-of-epochs])
@@ -588,6 +634,11 @@
                                                                      :sub-state  sub-match
                                                                      :timing     t})
                                             new-matches subscription-matches timing)
+            ;; If there are new matches found, then by definition, a quiescent trace must have been received
+            ;; However in cases where we reset the db in a replay, we won't get an event match.
+            ;; We short circuit here to avoid iterating over the traces when it's unnecessary.
+            quiescent?                 (or (seq new-matches)
+                                           (filter metam/quiescent? filtered-traces))
             all-matches                (reduce conj previous-matches new-matches)
             retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
             first-id-to-retain         (first-match-id (first retained-matches))
@@ -595,19 +646,26 @@
                                                       (remove (fn [trace]
                                                                 (or (when drop-reagent (metam/low-level-reagent-trace? trace))
                                                                     (when drop-re-frame (metam/low-level-re-frame-trace? trace)))))) all-traces)]
-        (-> db
-            (assoc-in [:traces :all-traces] retained-traces)
-            (update :epochs (fn [epochs]
-                              (assoc epochs
-                                :matches retained-matches
-                                :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
-                                :match-ids (mapv first-match-id retained-matches)
-                                :parse-state parse-state
-                                :sub-state new-sub-state
-                                :subscription-info subscription-info)))))
+        {:db       (-> db
+                       (assoc-in [:traces :all-traces] retained-traces)
+                       (update :epochs (fn [epochs]
+                                         (let [current-index (:current-epoch-index epochs)
+                                               current-id    (:current-epoch-id epochs)]
+                                           (assoc epochs
+                                             :matches retained-matches
+                                             :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
+                                             :match-ids (mapv first-match-id retained-matches)
+                                             :parse-state parse-state
+                                             :sub-state new-sub-state
+                                             :subscription-info subscription-info
+                                             ;; Reset current epoch to the head of the list if we got a new event in.
+                                             :current-epoch-id (if (seq new-matches) nil current-id)
+                                             :current-epoch-index (if (seq new-matches) nil current-index))))))
+         :dispatch (when quiescent? [:epochs/quiescent])})
       ;; Else
-      db)))
+      {:db db})))
 
+;; TODO: this code is a bit messy, needs refactoring and cleaning up.
 (rf/reg-event-fx
   :epochs/previous-epoch
   [(rf/path [:epochs])]
@@ -616,12 +674,12 @@
       (let [match-ids         (:match-ids db)
             match-array-index (utils/find-index-in-vec (fn [x] (= current-id x)) match-ids)
             new-id            (nth match-ids (dec match-array-index))]
-        {:db         (assoc db :current-epoch-id new-id)
-         :dispatch-n [[:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]})
+        {:db       (assoc db :current-epoch-id new-id)
+         :dispatch [:snapshot/reset-current-epoch-app-db new-id]})
       (let [new-id (nth (:match-ids db)
                         (- (count (:match-ids db)) 2))]
-        {:db         (assoc db :current-epoch-id new-id )
-         :dispatch-n [[:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]}))))
+        {:db       (assoc db :current-epoch-id new-id)
+         :dispatch [:snapshot/reset-current-epoch-app-db new-id]}))))
 
 (rf/reg-event-fx
   :epochs/next-epoch
@@ -632,10 +690,41 @@
             match-array-index (utils/find-index-in-vec (fn [x] (= current-id x)) match-ids)
             new-id            (nth match-ids (inc match-array-index))]
         {:db         (assoc db :current-epoch-id new-id)
-         :dispatch-n [[:code/clear-scroll-pos] [:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]})
-      (let [new-id (last (:match-ids db))]
+         :dispatch   [:snapshot/reset-current-epoch-app-db new-id]})
+      (let [new-id (utils/last-in-vec (:match-ids db))]
         {:db         (assoc db :current-epoch-id new-id)
-         :dispatch-n [[:code/clear-scroll-pos] [:settings/pause] [:snapshot/reset-current-epoch-app-db new-id]]}))))
+         :dispatch   [:snapshot/reset-current-epoch-app-db new-id]}))))
+
+(rf/reg-event-fx
+  :epochs/most-recent-epoch
+  [(rf/path [:epochs])]
+  (fn [{:keys [db]} _]
+    {:db (assoc db :current-epoch-index nil
+                   :current-epoch-id nil)
+     :dispatch [:snapshot/reset-current-epoch-app-db (utils/last-in-vec (:match-ids db))]}))
+
+(rf/reg-event-db
+  :epochs/replay
+  [(rf/path [:epochs])]
+  (fn [epochs _]
+    (let [current-epoch-id (or (get epochs :current-epoch-id)
+                               (utils/last-in-vec (get epochs :match-ids)))
+          event-trace      (-> (get-in epochs [:matches-by-id current-epoch-id :match-info])
+                               (metam/matched-event))
+          app-db-before    (metam/app-db-before event-trace)
+          event            (get-in event-trace [:tags :event])]
+      (reset! re-frame.db/app-db app-db-before)
+      ;; Wait for quiescence
+      (assoc epochs :replay event))))
+
+(rf/reg-event-db
+  :epochs/quiescent
+  [(rf/path [:epochs])]
+  (fn [db _]
+    (if-some [event-to-replay (:replay db)]
+      (do (re-frame.core/dispatch event-to-replay)
+          (dissoc db :replay))
+      db)))
 
 (rf/reg-event-db
   :epochs/reset
@@ -692,13 +781,23 @@
       new-form)))
 
 (rf/reg-event-db
-  :code/save-scroll-pos
-  [(rf/path [:code :scroll-pos])]
-  (fn [_scroll-pos [_ top left]]
-    {:top top :left left}))
+  :code/set-show-all-code?
+  [(rf/path [:code :show-all-code?])]
+  (fn [_show-all-code? [_ new-show-all-code?]]
+    new-show-all-code?))
 
 (rf/reg-event-db
-  :code/clear-scroll-pos
-  [(rf/path [:code :scroll-pos])]
-  (fn [_scroll-pos _]
-    {:top 0 :left 0}))
+  :code/repl-msg-state
+  [(rf/path [:code :repl-msg-state])]
+  (fn [current-state [_ new-state]]
+    (if (and (= current-state :running) (= new-state :start)) ;; Toggles between :running and :re-running to guarantee rerenderig when you continuously call this event
+      :re-running
+      (if (= new-state :start) :running :end))))
+
+;;
+
+(rf/reg-event-db
+  :component/set-direction
+  [(rf/path [:component])]
+  (fn [component [_ new-direction]]
+    (assoc component :direction new-direction)))

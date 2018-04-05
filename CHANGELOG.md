@@ -1,9 +1,36 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.2.2] - Unreleased
+## [0.3.1] - Unreleased
 
+### Added
 
+* Replay button. This lets you replay a previously run event, with the same app-db context that it had when it ran. See the docs on the [HotPlay Workflow](/docs/HyperlinkedInformation/ReplayButton.md) for ways you can use this button.
+* A new REPL button on each traced code form copies a function to your clipboard to access the traced value. You can paste it into your REPL to operate on that value with the full power of the ClojureScript programming language. This is a similar idea to the [scope-capture](https://github.com/vvvvalvalval/scope-capture) library.
+* Popout windows now preserve their previous dimensions and screen position (note that Chrome won't let us reposition windows across displays).
+* Code tracing has added indentation, so you can visualise the call stack of a function and more easily understand how the calls in your traced function flow.
+* Hovering over a code trace shows a preview of the value so you can easily scan it.
+* Double clicking on the code section toggles show the full captured function, or just 10 lines.
+
+### Changed
+
+* Improved the vertical space and visual design of the 'pods' in the subs and app-db panels.
+* Removed the play/paused distinction. It was confusing for people and unclear what its purpose was. re-frame-10x will navigate to the most recent event that arrives if you were looking at a previous event.
+* Popout windows are now titled "re-frame-10x | \<parent window title\>"
+
+### Fixed
+
+* Added syntax highlighting for more elements in the Event code blocks
+
+## [0.3.0] - 2018-03-24
+
+### Added
+
+* Form level code tracing. This lets you inspect all of the intermediate results of an event handlers execution. More info on how to set it up at https://github.com/Day8/re-frame-debux.
+
+### Changed
+
+* New visual style for app-db and subs panels
 
 ## [0.2.1] - 2018-03-19
 
@@ -23,7 +50,7 @@ All notable changes to this project will be documented in this file. This change
 
 * re-frame-trace has been renamed to re-frame-10x! To upgrade you need to do two things:
   * Update your dependency from `day8.re-frame/trace "0.1.21` to `day8.re-frame/re-frame-10x "0.2.0`
-  * Update your preload from `day8.re-frame.trace.preload` to `day8.re-frame-10x.preload`. If you don't update the preload you will get a deprecation warning, reminding you to update it. 
+  * Update your preload from `day8.re-frame.trace.preload` to `day8.re-frame-10x.preload`. If you don't update the preload you will get a deprecation warning, reminding you to update it.
 
 ## [0.1.22] - 2018-02-20
 
