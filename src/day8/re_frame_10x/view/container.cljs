@@ -16,7 +16,8 @@
             [mranderson047.garden.v1v3v3.garden.units :refer [px]]
             [re-frame.trace]
             [day8.re-frame-10x.utils.re-com :as rc]
-            [day8.re-frame-10x.common-styles :as common]))
+            [day8.re-frame-10x.common-styles :as common]
+            [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
 
 (def triangle-down (macros/slurp-macro "day8/re_frame_10x/images/triangle-down.svg"))
 
@@ -100,7 +101,7 @@
         current-event      @(rf/subscribe [:epochs/current-event])
         beginning-trace-id @(rf/subscribe [:epochs/beginning-trace-id])
         event-str          (if (some? current-event)
-                             (subs (prn-str current-event) 0 400)
+                             (pp/truncate 400 :end current-event)
                              "No event")]
     ^{:key beginning-trace-id}
     [rc/v-box
@@ -111,7 +112,7 @@
              :background-color common/standard-background-color
              :font-style       (if (some? current-event) "normal" "italic")}
      :children [[:span
-                 {:class (str "event-header " (if (= :previous direction) "pulse-previous" "pulse-next"))
+                 {:class (str "event-header dont-break-out " (if (= :previous direction) "pulse-previous" "pulse-next"))
                   :style {:position "relative"}}
                  event-str]]]))
 
