@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.3.2] - Unreleased
+
+### Changed
+
+* Updated cljs-devtools to 0.9.10, which includes a fix to render ClojureScript 1.10's MapEntry's in a cleaner fashion.
+
 ## [0.3.1] - 2018-04-05
 
 ### Added

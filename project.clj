@@ -6,7 +6,7 @@
                  [org.clojure/clojurescript "1.9.671"]
                  [reagent "0.6.0" :scope "provided"]
                  [re-frame "0.10.3" :scope "provided"]
-                 [binaryage/devtools "0.9.4"]
+                 [binaryage/devtools "0.9.10"]
                  [cljsjs/react-flip-move "2.9.17-0"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
                  [zprint "0.4.7"]
