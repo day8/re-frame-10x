@@ -9,8 +9,8 @@ It helps you find false assumptions faster.
 
 Branch | React Version | Status | Artifact
 ----------|--------|--------|--------
-`master` | React 15 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x) | `[day8.re-frame/re-frame-10x "0.3.0"]`
-`react-16` | React 16 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16) | `[day8.re-frame/re-frame-10x "0.3.0-1-react16"]`
+`master` | React 15 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x) | `[day8.re-frame/re-frame-10x "0.3.1"]`
+`react-16` | React 16 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16) | `[day8.re-frame/re-frame-10x "0.3.1-react16"]`
 
 ## Show Me
 
@@ -154,7 +154,7 @@ If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://s
                         [day8.re-frame/re-frame-10x "VERSION (see version above)"]] }}
   ```
   
-  If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`. **N.B.** For React 16 users using the version `0.3.0`, you should use the hotfix [`[day8.re-frame/re-frame-10x "0.3.0-1-react16"]`](https://clojars.org/day8.re-frame/re-frame-10x/versions/0.3.0-1-react16) instead of `[day8.re-frame/re-frame-10x "0.3.0-react16"]` as `0.3.0-react16` has a bad merge which breaks it.
+  If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`.
 
 - Locate the `:compiler` map under `:dev` and add `:closure-defines` and `:preloads`.
 
