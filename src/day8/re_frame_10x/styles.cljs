@@ -26,7 +26,7 @@
 (def light-blue common/light-blue)
 (def light-gray common/light-gray)
 (def yellow common/yellow)
-(def text-color common/text-color)
+(def text-color common/default-text-color)
 (def text-color-muted common/text-color-muted)
 
 
@@ -258,7 +258,7 @@
 
    [:.rft-tag
     {:background-color common/white-background-color
-     :color            common/text-color
+     :color            common/default-text-color
      :width            common/gs-50s
      :height           common/gs-19s
      :font-size        "10px"
@@ -371,7 +371,7 @@
                             :cursor "auto"}]
     [:span.arrow.epoch-nav {:min-width "16px"
                             :max-width "16px"}]
-    [:span.event-header {:color            common/text-color
+    [:span.event-header {:color            common/default-text-color
                          :background-color common/standard-background-color
                          :padding          (px 5)
                          :font-weight      "600"

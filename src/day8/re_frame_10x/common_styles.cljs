@@ -18,7 +18,6 @@
 (def light-blue "lightblue")
 (def light-gray "#efeef1")
 (def yellow "yellow")
-(def text-color "#767A7C")                                  ;; Was "#222" but now using bm: (def default-text-color "#767A7C")
 (def text-color-muted "#8f8f8f")
 
 (def event-color dark-gold)
