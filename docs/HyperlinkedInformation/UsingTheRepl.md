@@ -39,10 +39,10 @@ in the same browser VM, and it is a code dependency of your app, which means it 
 be accessed from the REPL like any other part of your app.
 
 So, if we knew enough about the way `re-frame-10x` stored
-trace data, we could use the REPL to reach into the 
-data structures whch store trace and access anythink we wanted.
+trace data, we could use the REPL to reach into its 
+data structures and access anything we wanted.
 
-Let's flesh this concept out a bit. Imagine that `re-frame-10x` supplied an API function called, say, `get-traced-result` 
+So, let's flesh this concept out a bit. Imagine that `re-frame-10x` supplied an API function called, say, `get-traced-result` 
 in a namespace called, say, `day8.re-frame-10x`, then you could evaluate the following at the REPL: 
 
 ``` 
