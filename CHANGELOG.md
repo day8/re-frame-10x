@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Changed
 
-* Updated cljs-devtools to 0.9.10, which includes a fix to render ClojureScript 1.10's MapEntry's in a cleaner fashion.
+* Updated [cljs-devtools](https://github.com/binaryage/cljs-devtools) to 0.9.10, which includes a fix to render ClojureScript 1.10's MapEntry's in a cleaner fashion. Note, if you are using cljs-devtools directly (and you should be!) you will need to update your own version to 0.9.10 or higher.
 
 ## [0.3.1] - 2018-04-05
 
