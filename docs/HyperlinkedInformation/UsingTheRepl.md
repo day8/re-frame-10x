@@ -57,6 +57,8 @@ In most REPLs, you would have previously `required` the `day8.re-frame-10x` name
 
 ### The Method
 
+![Estim8 demo](/docs/images/repl.png)
+
 To facilitate REPL exploration, `re-frame-10x` writes (ClojureScript) code into the clipboard.
 You then paste this code into your REPL to obtain access to trace data.
 
@@ -89,7 +91,7 @@ Or:
 (def tmp (day8.re-frame-10x/traced-result 80 4))
 (count tmp)
 ```
-![Estim8 demo](/docs/images/repl.png)
+
 
 ### Why This Way?
 
