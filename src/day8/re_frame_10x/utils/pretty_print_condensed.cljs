@@ -1,8 +1,13 @@
 (ns ^{:doc    "Utilities for pretty-printing abbreviated Clojure forms"
       :author "Matthew Huebert"}
 day8.re-frame-10x.utils.pretty-print-condensed
-  (:require [clojure.string :as str]))
+  (:refer-clojure :exclude [pr-seq-writer string-print pr-str-with-opts pr-opts pr])
+  (:require [clojure.string :as str]
+            [goog.string :as gstring])
+  (:import [goog.string StringBuffer]))
 
+(defprotocol ILimited
+  (-limited? [x]))
 
 (defn ^string truncate-string
   "Truncate a string to length `n`.
@@ -188,3 +193,158 @@ day8.re-frame-10x.utils.pretty-print-condensed
           (< depth max-depth)) (with-edges form
                                            (str/join ", " (mapv (partial pretty-condensed (inc depth) enter-pred max-depth) form)))
      :else (with-edges form "…"))))
+
+(declare pr-writer)
+
+(defn- pr-writer-impl
+  [obj writer opts]
+  (cond
+    (-limited? writer) #_(<= (:debux/max-string-length opts) (count writer))
+    writer
+
+    (nil? obj) (-write writer "nil")
+    :else
+    (do
+      (when (print-meta? opts obj)
+        (-write writer "^")
+        (pr-writer (meta obj) writer opts)
+        (-write writer " "))
+      (cond
+        ;; handle CLJS ctors
+        ^boolean (.-cljs$lang$type obj)
+        (.cljs$lang$ctorPrWriter obj obj writer opts)
+
+        ; Use the new, more efficient, IPrintWithWriter interface when possible.
+        (implements? IPrintWithWriter obj)
+        (-pr-writer ^not-native obj writer opts)
+
+        (or (true? obj) (false? obj) (number? obj))
+        (-write writer (str obj))
+
+        (object? obj)
+        (do
+          (-write writer "#js ")
+          (print-map
+            (map (fn [k] [(keyword k) (aget obj k)]) (js-keys obj))
+            pr-writer writer opts))
+
+        (array? obj)
+        (pr-sequential-writer writer pr-writer "#js [" " " "]" opts obj)
+
+        ^boolean (goog/isString obj)
+        (if (:readably opts)
+          (-write writer (quote-string obj))
+          (-write writer obj))
+
+        ^boolean (goog/isFunction obj)
+        (let [name (.-name obj)
+              name (if (or (nil? name) (gstring/isEmpty name))
+                     "Function"
+                     name)]
+          (write-all writer "#object[" name " \"" (str obj) "\"]"))
+
+        (instance? js/Date obj)
+        (let [normalize (fn [n len]
+                          (loop [ns (str n)]
+                            (if (< (count ns) len)
+                              (recur (str "0" ns))
+                              ns)))]
+          (write-all writer
+                     "#inst \""
+                     (str (.getUTCFullYear obj)) "-"
+                     (normalize (inc (.getUTCMonth obj)) 2) "-"
+                     (normalize (.getUTCDate obj) 2) "T"
+                     (normalize (.getUTCHours obj) 2) ":"
+                     (normalize (.getUTCMinutes obj) 2) ":"
+                     (normalize (.getUTCSeconds obj) 2) "."
+                     (normalize (.getUTCMilliseconds obj) 3) "-"
+                     "00:00\""))
+
+        (regexp? obj) (write-all writer "#\"" (.-source obj) "\"")
+
+        :else
+        (if (.. obj -constructor -cljs$lang$ctorStr)
+          (write-all writer
+                     "#object[" (.replace (.. obj -constructor -cljs$lang$ctorStr)
+                                          (js/RegExp. "/" "g") ".") "]")
+          (let [name (.. obj -constructor -name)
+                name (if (or (nil? name) (gstring/isEmpty name))
+                       "Object"
+                       name)]
+            (write-all writer "#object[" name " " (str obj) "]")))))))
+
+(defn- pr-writer
+  "Prefer this to pr-seq, because it makes the printing function
+   configurable, allowing efficient implementations such as appending
+   to a StringBuffer."
+  [obj writer opts]
+  (if-let [alt-impl (:alt-impl opts)]
+    (alt-impl obj writer (assoc opts :fallback-impl pr-writer-impl))
+    (pr-writer-impl obj writer opts)))
+
+(defn pr-seq-writer [objs writer opts]
+  (pr-writer (first objs) writer opts)
+  (doseq [obj (next objs)]
+    (-write writer " ")
+    (pr-writer obj writer opts)))
+
+(defn string-print [x]
+  (*print-fn* x)
+  nil)
+
+(deftype LimitedStringBufferWriter [sb max-string-length ^:mutable over-limit?]
+  IWriter
+  (-write [_ s]
+    (when-not over-limit?
+      (if (<= max-string-length (.getLength sb))
+        (set! over-limit? true)
+        (.append sb s)))
+    sb)
+  (-flush [_] nil)
+  ICounted
+  (-count [_]
+    (.getLength sb))
+  ILimited
+  (-limited? [_]
+    over-limit?))
+
+(defn- pr-sb-with-opts [objs opts]
+  (let [sb     (StringBuffer.)
+        writer (LimitedStringBufferWriter. sb (:debux/max-string-length opts 72) false)]
+    (pr-seq-writer objs writer opts)
+    (-flush writer)
+    sb))
+
+(defn pr-str-with-opts
+  "Prints a sequence of objects to a string, observing all the
+  options given in opts"
+  [objs opts]
+  (if (empty? objs)
+    ""
+    (str (pr-sb-with-opts objs opts))))
+
+(defn- pr-opts []
+  {:flush-on-newline *flush-on-newline*
+   :readably         *print-readably*
+   :meta             *print-meta*
+   :dup              *print-dup*
+   :print-length     *print-length*})
+
+(defn pr-str-truncated
+  "Like pr, but truncates output at n characters. Use for efficient printing where
+  you don't want to pay the cost of printing the (possibly large) data structure."
+  [n & objs]
+  (let [opts (pr-opts)]
+    (->> (pr-str-with-opts objs (assoc opts
+                                  ;; Each sequence element must be at least a single character, plus a space separator
+                                  :print-length (/ n 2)
+                                  :more-marker "…"
+                                  :debux/max-string-length (inc n) ;; One higher so we can detect truncation vs. max limit
+                                  :alt-impl pr-writer-impl))
+         (truncate-string n))))
+
+(defn testit []
+  (dotimes [i 5]
+    (time
+      (pr-str-truncated 200 @mranderson047.re-frame.v0v10v2.re-frame.db/app-db)))
+  (pr-str-truncated 200 @mranderson047.re-frame.v0v10v2.re-frame.db/app-db))

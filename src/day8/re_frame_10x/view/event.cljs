@@ -57,9 +57,11 @@
 
 (defn code-header
   [code-execution-id line]
-  (let [open?-path [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]
-        trace-id    code-execution-id
-        open?      (get-in @(rf/subscribe [:code/code-open?]) open?-path)]
+  (let [open?-path       [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]
+        max-column-width @(rf/subscribe [:code/max-column-width])
+        trace-id         code-execution-id
+        open?            (get-in @(rf/subscribe [:code/code-open?]) open?-path)
+        line-str         (pp/pr-str-truncated max-column-width (:form line))]
     [rc/h-box
      :class    "code-fragment__content"
      :size     "1"
@@ -83,13 +85,13 @@
                  :children [[rc/box
                              :style {:margin-left      "2px"
                                      :white-space      "nowrap"}
-                             :child [:code (str (:form line))]]
+                             :child [:code line-str]]
                             [rc/box
                              :class "code-fragment__result"
                              :style {:flex             "1"
                                      :margin-left      "8px"
                                      :white-space      "nowrap"}
-                             :child [:code "=> " (pp/truncate-string 200 (pr-str (:result line)))]]]]
+                             :child [:code "=> " (pp/pr-str-truncated (max 0 (- max-column-width 3 (count line-str))) (:result line))]]]]
                 [rc/box
                  :class "code-fragment__button"
                  :attr {:title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
@@ -263,7 +265,7 @@
       [rc/v-box
        :size "1 1 auto"
        :class "code-panel"
-       :children [(when debug? [:pre "Hover " (subs (pr-str @highlighted-form) 0 50) "\n"])
+       :children [#_(when debug? [:pre "Hover " (subs (pr-str @highlighted-form) 0 50) "\n"])
                   [event-expression]
                   [repl-section]
                   [event-fragments (->> (:code code-execution)

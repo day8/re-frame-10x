@@ -661,6 +661,22 @@
   (fn [code _]
     (:repl-msg-state code)))
 
+(def canvas (js/document.createElement "canvas"))
+
+(rf/reg-sub
+  :code/single-character-width
+  (fn [_ _]
+    (let [context (.getContext canvas "2d")]
+      (set! (.-font context) "Helvetica")
+      (.-width (.measureText context "T")))))
+
+(rf/reg-sub
+  :code/max-column-width
+  :<- [:settings/panel-width%]
+  :<- [:code/single-character-width]
+  (fn [[width% char-width] _]
+    (int (/ (* js/window.innerWidth width%)
+            char-width))))
 
 ;;
 
