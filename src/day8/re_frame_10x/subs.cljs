@@ -18,6 +18,34 @@
     (get settings :panel-width%)))
 
 (rf/reg-sub
+  :settings/panel-width%-rounded
+  :<- [:settings/panel-width%]
+  ;; Rounds panel width to nearest n%
+  (fn [panel-width% [_ n]]
+    ;; https://stackoverflow.com/a/19621472
+    (/ (* (Math/ceil (/ (* panel-width% 100)
+                        n))
+          n)
+       100.0)))
+
+(rf/reg-sub
+  :settings/window-width
+  ;; Prefer window-width-rounded if you don't need the exact number of pixels.
+  :<- [:settings/root]
+  (fn [settings _]
+    (get settings :window-width)))
+
+(rf/reg-sub
+  :settings/window-width-rounded
+  :<- [:settings/window-width]
+  ;; Window width, rounded up to the nearest n pixels.
+  ;; Useful when you want to respond to window size changes
+  ;; but not too many of them.
+  (fn [width [_ n]]
+    (* (Math/ceil (/ width n))
+       n)))
+
+(rf/reg-sub
   :settings/show-panel?
   :<- [:settings/root]
   (fn [settings _]
@@ -618,11 +646,11 @@
   (fn [traces _]
     (keep-indexed (fn [i trace]
                     (when-some [code (get-in trace [:tags :code])]
-                      {:id    i
+                      {:id       i
                        :trace-id (:id trace)
-                       :title (pr-str (:op-type trace))
-                       :code  (->> code (map-indexed (fn [i code] (assoc code :id i))) vec) ;; Add index
-                       :form  (get-in trace [:tags :form])}))
+                       :title    (pr-str (:op-type trace))
+                       :code     (->> code (map-indexed (fn [i code] (assoc code :id i))) vec) ;; Add index
+                       :form     (get-in trace [:tags :form])}))
                   traces)))
 
 (rf/reg-sub
@@ -667,16 +695,18 @@
   :code/single-character-width
   (fn [_ _]
     (let [context (.getContext canvas "2d")]
-      (set! (.-font context) "Helvetica")
+      (set! (.-font context) "monospace 1em")
       (.-width (.measureText context "T")))))
 
 (rf/reg-sub
-  :code/max-column-width
-  :<- [:settings/panel-width%]
-  :<- [:code/single-character-width]
-  (fn [[width% char-width] _]
-    (int (/ (* js/window.innerWidth width%)
-            char-width))))
+    :code/max-column-width
+    :<- [:settings/window-width-rounded 100]
+    :<- [:code/single-character-width]
+    ;; It seems like it would be possible to do something smarter responding to panel sizing,
+    ;; but that introduces a lot of jank, so we just set to maximum possible window width.
+    (fn [[window-width char-width] _]
+      (Math/ceil (/ window-width
+                    char-width))))
 
 ;;
 

@@ -71,6 +71,11 @@
     (assoc-in db [:settings :panel-width%] (max width% 0.05))))
 
 (rf/reg-event-db
+  :settings/window-width
+  (fn [db [_ width]]
+    (assoc-in db [:settings :window-width] width)))
+
+(rf/reg-event-db
   :settings/selected-tab
   (fn [db [_ selected-tab]]
     (localstorage/save! "selected-tab" selected-tab)

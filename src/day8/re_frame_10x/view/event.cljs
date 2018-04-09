@@ -61,7 +61,9 @@
         max-column-width @(rf/subscribe [:code/max-column-width])
         trace-id         code-execution-id
         open?            (get-in @(rf/subscribe [:code/code-open?]) open?-path)
-        line-str         (pp/pr-str-truncated max-column-width (:form line))]
+        line-str         (pp/pr-str-truncated max-column-width (:form line))
+        =>str            "=> "
+        result-length    (- max-column-width (count =>str) (count line-str))]
     [rc/h-box
      :class    "code-fragment__content"
      :size     "1"
@@ -91,7 +93,8 @@
                              :style {:flex             "1"
                                      :margin-left      "8px"
                                      :white-space      "nowrap"}
-                             :child [:code "=> " (pp/pr-str-truncated (max 0 (- max-column-width 3 (count line-str))) (:result line))]]]]
+                             :child [:code =>str (when (pos? result-length)
+                                                   (pp/pr-str-truncated result-length (:result line)))]]]]
                 [rc/box
                  :class "code-fragment__button"
                  :attr {:title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"

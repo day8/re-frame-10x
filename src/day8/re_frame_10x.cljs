@@ -161,9 +161,12 @@
         pin-to-bottom?       (r/atom true)
         selected-tab         (rf/subscribe [:settings/selected-tab])
         window-width         (r/atom js/window.innerWidth)
-        handle-window-resize (fn [e]
-                               ;; N.B. I don't think this should be a perf bottleneck.
-                               (reset! window-width js/window.innerWidth))
+        handle-window-resize (do (rf/dispatch [:settings/window-width js/window.innerWidth]) ;; Set initial
+                                 (fn [e]
+                                   ;; N.B. I don't think this should be a perf bottleneck.
+                                   (let [window-width-val js/window.innerWidth]
+                                     (rf/dispatch [:settings/window-width window-width-val])
+                                     (reset! window-width window-width-val))))
         handle-keys          (fn [e]
                                (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
                                      tag-name        (.-tagName (.-target e))

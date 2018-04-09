@@ -194,84 +194,12 @@ day8.re-frame-10x.utils.pretty-print-condensed
                                            (str/join ", " (mapv (partial pretty-condensed (inc depth) enter-pred max-depth) form)))
      :else (with-edges form "…"))))
 
-(declare pr-writer)
+;; Copied from cljs.core and modified to take a LimitedStringBufferWriter
 
-(defn- pr-writer-impl
-  [obj writer opts]
-  (cond
-    (-limited? writer) #_(<= (:debux/max-string-length opts) (count writer))
+(defn pr-writer-impl [obj writer opts]
+  (if (-limited? writer)
     writer
-
-    (nil? obj) (-write writer "nil")
-    :else
-    (do
-      (when (print-meta? opts obj)
-        (-write writer "^")
-        (pr-writer (meta obj) writer opts)
-        (-write writer " "))
-      (cond
-        ;; handle CLJS ctors
-        ^boolean (.-cljs$lang$type obj)
-        (.cljs$lang$ctorPrWriter obj obj writer opts)
-
-        ; Use the new, more efficient, IPrintWithWriter interface when possible.
-        (implements? IPrintWithWriter obj)
-        (-pr-writer ^not-native obj writer opts)
-
-        (or (true? obj) (false? obj) (number? obj))
-        (-write writer (str obj))
-
-        (object? obj)
-        (do
-          (-write writer "#js ")
-          (print-map
-            (map (fn [k] [(keyword k) (aget obj k)]) (js-keys obj))
-            pr-writer writer opts))
-
-        (array? obj)
-        (pr-sequential-writer writer pr-writer "#js [" " " "]" opts obj)
-
-        ^boolean (goog/isString obj)
-        (if (:readably opts)
-          (-write writer (quote-string obj))
-          (-write writer obj))
-
-        ^boolean (goog/isFunction obj)
-        (let [name (.-name obj)
-              name (if (or (nil? name) (gstring/isEmpty name))
-                     "Function"
-                     name)]
-          (write-all writer "#object[" name " \"" (str obj) "\"]"))
-
-        (instance? js/Date obj)
-        (let [normalize (fn [n len]
-                          (loop [ns (str n)]
-                            (if (< (count ns) len)
-                              (recur (str "0" ns))
-                              ns)))]
-          (write-all writer
-                     "#inst \""
-                     (str (.getUTCFullYear obj)) "-"
-                     (normalize (inc (.getUTCMonth obj)) 2) "-"
-                     (normalize (.getUTCDate obj) 2) "T"
-                     (normalize (.getUTCHours obj) 2) ":"
-                     (normalize (.getUTCMinutes obj) 2) ":"
-                     (normalize (.getUTCSeconds obj) 2) "."
-                     (normalize (.getUTCMilliseconds obj) 3) "-"
-                     "00:00\""))
-
-        (regexp? obj) (write-all writer "#\"" (.-source obj) "\"")
-
-        :else
-        (if (.. obj -constructor -cljs$lang$ctorStr)
-          (write-all writer
-                     "#object[" (.replace (.. obj -constructor -cljs$lang$ctorStr)
-                                          (js/RegExp. "/" "g") ".") "]")
-          (let [name (.. obj -constructor -name)
-                name (if (or (nil? name) (gstring/isEmpty name))
-                       "Object"
-                       name)]
-            (write-all writer "#object[" name " " (str obj) "]")))))))
+    (cljs.core/pr-writer-impl obj writer opts)))
 
 (defn- pr-writer
   "Prefer this to pr-seq, because it makes the printing function
@@ -343,8 +271,8 @@ day8.re-frame-10x.utils.pretty-print-condensed
                                   :alt-impl pr-writer-impl))
          (truncate-string n))))
 
-(defn testit []
-  (dotimes [i 5]
-    (time
-      (pr-str-truncated 200 @mranderson047.re-frame.v0v10v2.re-frame.db/app-db)))
-  (pr-str-truncated 200 @mranderson047.re-frame.v0v10v2.re-frame.db/app-db))
+(comment (defn testit []
+           (dotimes [i 5]
+             (time
+               (pr-str-truncated 200 @mranderson047.re-frame.v0v10v2.re-frame.db/app-db)))
+           (pr-str-truncated 200 "=>" @mranderson047.re-frame.v0v10v2.re-frame.db/app-db)))
