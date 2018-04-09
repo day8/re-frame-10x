@@ -1,4 +1,4 @@
-(defproject day8.re-frame/re-frame-10x "0.3.1-react16"
+(defproject day8.re-frame/re-frame-10x "0.3.2-react16"
   :description "Become 10x more productive when developing and debugging re-frame applications."
   :url "https://github.com/Day8/re-frame-10x"
   :license {:name "MIT"}
@@ -6,7 +6,7 @@
                  [org.clojure/clojurescript "1.9.671"]
                  [reagent "0.8.0-alpha2" :scope "provided"]
                  [re-frame "0.10.3" :scope "provided"]
-                 [binaryage/devtools "0.9.4"]
+                 [binaryage/devtools "0.9.10"]
                  [cljsjs/react-flip-move "2.9.17-0"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
                  [zprint "0.4.7"]

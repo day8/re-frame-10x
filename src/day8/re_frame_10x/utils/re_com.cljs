@@ -519,9 +519,9 @@
             :class   "container--info-button"
             :justify :center
             :align   :center
-            :width   common/gs-12s
-            :height  common/gs-12s
-            :child   "?"]
+            :child [:span {:style {:font-size   "11px"
+                                   :font-weight "bold"}}
+                    "?"]]
    :attr   {:rel "noopener noreferrer"}
    :target "_blank"
    :href   url])

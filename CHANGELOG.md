@@ -1,7 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.3.1] - Unreleased
+## [0.3.2] - Unreleased
+
+### Changed
+
+* Updated [cljs-devtools](https://github.com/binaryage/cljs-devtools) to 0.9.10, which includes a fix to render ClojureScript 1.10's MapEntry's in a cleaner fashion. Note, if you are using cljs-devtools directly (and you should be!) you will need to update your own version to 0.9.10 or higher.
+* Efficiently print results in the code browser, so you only have to pay for the cost of printing what is visible, not the entire data structure. This should result in a big performance boost on apps which have a lot of data in app-db.
+
+## [0.3.1] - 2018-04-05
 
 ### Added
 

@@ -39,21 +39,25 @@ in the same browser VM, and it is a code dependency of your app, which means it 
 be accessed from the REPL like any other part of your app.
 
 So, if we knew enough about the way `re-frame-10x` stored
-trace data, we could use the REPL to reach into the 
-data structures whch store trace and access anythink we wanted.
+trace data, we could use the REPL to reach into its 
+data structures and access anything we wanted.
 
-Let's flesh this concept out a bit. Imagine that `re-frame-10x` supplied an API function called, say, `get-traced-result` 
+So, let's flesh this concept out a bit. Imagine that `re-frame-10x` supplied an API function called, say, `traced-result` 
 in a namespace called, say, `day8.re-frame-10x`, then you could evaluate the following at the REPL: 
 
 ``` 
 (day8.re-frame-10x/traced-result 80 4)
 ```
 
-and this call would return the trace data you wanted.  
+and this call would return the trace data at the "trace coordinates" 80 4. If it helps 
+to understand, imagine that `80` is the `Epoch id` and `4` is the trace-id within that `Epoch`.
+(Warning I just made that up, and it doesn't matter)
 
 In most REPLs, you would have previously `required` the `day8.re-frame-10x` namespace.
 
 ### The Method
+
+![Estim8 demo](/docs/images/repl.png)
 
 To facilitate REPL exploration, `re-frame-10x` writes (ClojureScript) code into the clipboard.
 You then paste this code into your REPL to obtain access to trace data.
@@ -64,7 +68,7 @@ You then paste this code into your REPL and execute it.
  
 Then, later, in the `re-frame-10x` UI you'll notice a small "repl" 
 button against each piece of trace you hover over. Again if you click it, `re-frame-10x` will put code into 
-the clipboard which uses its own API together with the "path" specific to the trace data you are interested in. 
+the clipboard which uses its own API together with the "trace coordinates" for to the data you want. 
 
 When you paste this code into the REPL, you are able to access to the exact 
 piece of trace data you want.
@@ -88,7 +92,6 @@ Or:
 (count tmp)
 ```
 
-<!-- put screenshots/gif in here -->
 
 ### Why This Way?
 

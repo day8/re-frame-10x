@@ -51,7 +51,9 @@
    [:.container--info-button
     {:border-radius    "50%"
      :color            "white"
-     :background-color common/blue-modern-color}]
+     :background-color common/blue-modern-color
+     :width            common/gs-12s
+     :height           common/gs-12s}]
    [:.pulse-previous
     {:animation-duration "1000ms"
      :animation-name     "pulse-previous-re-frame-10x"}] ;; Defined in day8.re-frame-10x.styles/at-keyframes
