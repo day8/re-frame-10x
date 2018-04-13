@@ -226,6 +226,7 @@
         (cond
           (and @expanded?
                (or (string? data)
+                   (instance? js/RegExp data)
                    (number? data)
                    (boolean? data)
                    (nil? data))) [:div {:style {:margin "10px 0"}} (prn-str data)]
