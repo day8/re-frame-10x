@@ -234,35 +234,41 @@
 
 (defn event-fragments
   [fragments code-exec-id]
-  (let [code-open? @(rf/subscribe [:code/code-open?])]
+  (let [code-open? @(rf/subscribe [:code/code-open?])
+        max-frags  50]
     [rc/v-box
      :size     "1"
      :style    {:overflow-y "auto"}
-     :children (doall
-                 (for [frag fragments]
-                   (let [id     (:id frag)
-                         first? (zero? id)]
-                     ^{:key id}
-                     [rc/v-box
-                      :class    "code-fragment"
-                      :style    {:margin-top  (when-not first? "-1px")}
-                      :attr     {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form (:form frag)]))
-                                 :on-mouse-leave (handler-fn (rf/dispatch [:code/exit-hover-form (:form frag)]))}
-                      :children [[rc/h-box
-                                  :children [[indent-block (:indent-level frag) first?]
-                                             [code-header code-exec-id frag]]]
-                                 (when (get-in code-open? [@(rf/subscribe [:epochs/current-epoch-id]) code-exec-id id])
-                                   [rc/h-box
-                                    :children [[indent-block (:indent-level frag) false]
-                                               [code-block code-exec-id frag id]]])]])))]))
+     :children [(doall
+                  (for [frag (take max-frags fragments)]
+                    (let [id     (:id frag)
+                          first? (zero? id)]
+                      ^{:key id}
+                      [rc/v-box
+                       :class    "code-fragment"
+                       :style    {:margin-top (when-not first? "-1px")}
+                       :attr     {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form (:form frag)]))
+                                  :on-mouse-leave (handler-fn (rf/dispatch [:code/exit-hover-form (:form frag)]))}
+                       :children [[rc/h-box
+                                   :children [[indent-block (:indent-level frag) first?]
+                                              [code-header code-exec-id frag]]]
+                                  (when (get-in code-open? [@(rf/subscribe [:epochs/current-epoch-id]) code-exec-id id])
+                                    [rc/h-box
+                                     :children [[indent-block (:indent-level frag) false]
+                                                [code-block code-exec-id frag id]]])]])))
+                (when (> (count fragments) max-frags)
+                  [rc/label
+                   :style {:margin-top common/gs-5s
+                           :font-style "italic"}
+                   :label (str "(only showing first " max-frags " of " (count fragments) " traces)")])]]))
 
 
 (defn event-code
   []
   (let [code-traces      @(rf/subscribe [:code/current-code])
         code-execution   (first code-traces) ;; Ignore multiple code executions for now
-        debug?           @(rf/subscribe [:settings/debug?])
-        highlighted-form (rf/subscribe [:code/highlighted-form])]
+        #_#_debug?           @(rf/subscribe [:settings/debug?])
+        #_#_highlighted-form (rf/subscribe [:code/highlighted-form])]
     (if-not code-execution
       [no-event-instructions]
       [rc/v-box
