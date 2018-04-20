@@ -176,7 +176,7 @@ If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://s
   - `:preloads             [day8.re-frame-10x.preload]`
 
 
-[cljs-devtools](https://github.com/binaryage/cljs-devtools) is not required to use re-frame-10x, but it is highly recommended.https://github.com/Day8/re-frame-debux
+[cljs-devtools](https://github.com/binaryage/cljs-devtools) is not required to use re-frame-10x, but it is highly recommended.
 
 ### Code Tracing
 
