@@ -15,8 +15,8 @@
                  ]
   :plugins [[thomasa/mranderson "0.4.8"]
             [lein-less "RELEASE"]]
-  :deploy-repositories {"releases"  :clojars
-                        "snapshots" :clojars}
+  :deploy-repositories {"releases"  {:sign-releases false :url "https://clojars.org/repo"}
+                        "snapshots" {:sign-releases false :url "https://clojars.org/repo"}}
 
   ;:source-paths ["target/srcdeps"]
 
