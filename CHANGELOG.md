@@ -1,9 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.3.3] - Unreleased
+## [0.3.4] - Unreleased
 
+## [0.3.3] - 2018-04-23
 
+### Changed
+
+* The react-16 series of releases has been updated to internally use the newly released [reagent 0.8.0](https://github.com/reagent-project/reagent/blob/master/CHANGELOG.md#080-2018-04-19). This shouldn't conflict with the version of reagent you are using, as long as it also depends on React 16.
+* Code traces are now truncated after the first 50 results to avoid overwhelming the browser and the user. There are smarter strategies to handle this that will come in the future, but this at least avoids pathological performance issues with large loops.
+
+### Fixed
+
+* The event tab now correctly displays RegExp data in the data browser.
 
 ## [0.3.2] - 2018-04-10
 
