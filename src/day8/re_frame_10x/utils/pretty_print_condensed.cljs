@@ -274,5 +274,5 @@ day8.re-frame-10x.utils.pretty-print-condensed
 (comment (defn testit []
            (dotimes [i 5]
              (time
-               (pr-str-truncated 200 @mranderson047.re-frame.v0v10v2.re-frame.db/app-db)))
-           (pr-str-truncated 200 "=>" @mranderson047.re-frame.v0v10v2.re-frame.db/app-db)))
+               (pr-str-truncated 200 @mranderson048.re-frame.v0v10v2.re-frame.db/app-db)))
+           (pr-str-truncated 200 "=>" @mranderson048.re-frame.v0v10v2.re-frame.db/app-db)))

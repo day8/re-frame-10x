@@ -13,7 +13,7 @@
                  [cljsjs/react-highlight "1.0.7-1" :exclusions [cljsjs/react]]
                  ;[expound "0.4.0"]
                  ]
-  :plugins [[thomasa/mranderson "0.4.7"]
+  :plugins [[thomasa/mranderson "0.4.8"]
             [lein-less "RELEASE"]]
   :deploy-repositories {"releases"  :clojars
                         "snapshots" :clojars}
