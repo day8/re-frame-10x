@@ -1,7 +1,7 @@
 (ns day8.re-frame-10x.view.timing
   (:require [devtools.prefs]
             [devtools.formatters.core]
-            [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+            [mranderson048.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.view.components :as components]))

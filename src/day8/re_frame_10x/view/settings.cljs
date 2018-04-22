@@ -1,9 +1,9 @@
 (ns day8.re-frame-10x.view.settings
-  (:require [mranderson047.re-frame.v0v10v2.re-frame.core :as rf]
+  (:require [mranderson048.re-frame.v0v10v2.re-frame.core :as rf]
             [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame-10x.common-styles :as common]
-            [mranderson047.garden.v1v3v3.garden.units :as units]
-            [mranderson047.garden.v1v3v3.garden.compiler :refer [render-css]]))
+            [mranderson048.garden.v1v3v3.garden.units :as units]
+            [mranderson048.garden.v1v3v3.garden.compiler :refer [render-css]]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")

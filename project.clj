@@ -1,10 +1,10 @@
-(defproject day8.re-frame/re-frame-10x "0.3.2-react16"
+(defproject day8.re-frame/re-frame-10x "0.3.3-react16"
   :description "Become 10x more productive when developing and debugging re-frame applications."
   :url "https://github.com/Day8/re-frame-10x"
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.671"]
-                 [reagent "0.8.0-alpha2" :scope "provided"]
+                 [reagent "0.8.0" :scope "provided"]
                  [re-frame "0.10.3" :scope "provided"]
                  [binaryage/devtools "0.9.10"]
                  [cljsjs/react-flip-move "2.9.17-0"]
@@ -13,7 +13,7 @@
                  [cljsjs/react-highlight "1.0.7-1" :exclusions [cljsjs/react]]
                  ;[expound "0.4.0"]
                  ]
-  :plugins [[thomasa/mranderson "0.4.7"]
+  :plugins [[thomasa/mranderson "0.4.8"]
             [lein-less "RELEASE"]]
   :deploy-repositories {"releases"  :clojars
                         "snapshots" :clojars}
@@ -23,7 +23,7 @@
   :release-tasks [["vcs" "assert-committed"]
                   ["change" "version" "leiningen.release/bump-version" "release"]
                   ["vcs" "commit"]
-                  ["vcs" "tag"]
+                  ["vcs" "tag" "--no-sign"]
                   ["deploy"]
                   ["change" "version" "leiningen.release/bump-version"]
                   ["vcs" "commit"]
@@ -38,7 +38,7 @@
                                                                               cljsjs/create-react-class
                                                                               org.clojure/tools.logging
                                                                               net.cgrand/macrovich]]
-                                                   ^:source-dep [reagent "0.8.0-alpha2"
+                                                   ^:source-dep [reagent "0.8.0"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom
