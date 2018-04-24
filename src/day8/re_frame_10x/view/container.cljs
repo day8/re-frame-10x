@@ -17,7 +17,8 @@
             [re-frame.trace]
             [day8.re-frame-10x.utils.re-com :as rc]
             [day8.re-frame-10x.common-styles :as common]
-            [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
+            [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
+            [day8.re-frame-10x.view.components :as components]))
 
 (def triangle-down (macros/slurp-macro "day8/re_frame_10x/images/triangle-down.svg"))
 
@@ -116,7 +117,8 @@
      :children [[:span
                  {:class (str "event-header dont-break-out " (if (= :previous direction) "pulse-previous" "pulse-next"))
                   :style {:position "relative"}}
-                 event-str]]]))
+                 [components/highlight {:language "clojure"}
+                  event-str]]]]))
 
 
 (defn standard-header [external-window?]
