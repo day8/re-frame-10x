@@ -3,7 +3,7 @@
   :url "https://github.com/Day8/re-frame-10x"
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.9.671"]
+                 [org.clojure/clojurescript "1.10.238"]
                  [reagent "0.8.0" :scope "provided"]
                  [re-frame "0.10.6" :scope "provided"]
                  [binaryage/devtools "0.9.10"]
