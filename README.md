@@ -137,6 +137,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 * You **must** have a [`:main`](https://clojurescript.org/reference/compiler-options#main) specified in your `:compiler` config for the `:preloads` and `:closure-defines` to take effect
 * You **must** be running with the Closure define `goog.DEBUG` as `true`. This is the default under `:optimizations :none`.
 * You **must** be using `:optimizations :none`.
+* You **should** be using re-frame 0.10.5 or later. Earlier versions may partly work, but are not supported.
 
 If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://shadow-cljs.github.io/docs/UsersGuide.html) see the docs on [advanced setups](/docs/Advanced-Setup.md) for other ways to install re-frame-10x.
 
@@ -247,6 +248,10 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 * Reset the settings to factory defaults in the settings panel
 * If you can't load the settings panel, run `day8.re_frame_10x.trace.factory_reset_BANG_()` in the JavaScript console.
 * If neither of those work, remove all of the keys with the prefix `day8.re-frame.trace` from your browser's Local Storage.
+
+### Some parts of re-frame-10x seem to work but others don't
+
+* Make sure you are using the minimum recommended re-frame version in the [prerequisistes](#important-prerequisites). Some parts of re-frame-10x rely on updated versions of re-frame to capture the information it needs.
 
 ## How does it work?
 
