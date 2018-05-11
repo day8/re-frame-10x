@@ -280,7 +280,7 @@
                               "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
         ;; We would like to set the windows left and top positions to match the monitor that it was on previously, but Chrome doesn't give us
         ;; control over this, it will only position it within the same display that it was popped out on.
-        w                (js/window.open "" "re-frame-10x-popout"
+        w                (js/window.open "about:blank" "re-frame-10x-popout"
                                          (str "width=" width ",height=" height ",left=" left ",top=" top
                                               ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
 
