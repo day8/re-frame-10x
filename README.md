@@ -253,6 +253,12 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 
 * Make sure you are using the minimum recommended re-frame version in the [prerequisistes](#important-prerequisites). Some parts of re-frame-10x rely on updated versions of re-frame to capture the information it needs.
 
+### The expansion triangles in the data browsers don't work any more. But they used to. 
+
+* in Chrome, try going to `devtools` (F12), choose the `Application` Tab and then select (on the left) `Local Storage` and clear out what's there. Restart you app.  Fixed?
+* if it still doesn't work, then the nuclear option is to open a new Chrome tab and browse to `chrome://settings/resetProfileSettings`. Multiple people have confirmed this works, but it is a bit descructive. 
+* can you tell us (in Clojurians #reframe slack channel) what you did immediately before this problem showed up. We're still trying to track down the reasons. 
+
 ## How does it work?
 
 re-frame is instrumented - all important activity generates trace data. 
