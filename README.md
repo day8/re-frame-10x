@@ -255,8 +255,8 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 
 ### The expansion triangles in the data browsers don't work any more. But they used to. 
 
-* in Chrome, try going to `devtools` (F12), choose the `Application` Tab and then select (on the left) `Local Storage` and clear out what's there. Restart you app.  Fixed?
-* if there's still a problem, the nuclear option is to open a new Chrome tab and browse to `chrome://settings/resetProfileSettings`. Multiple people have confirmed this works, but it is a bit destructive. 
+* in Chrome, try going to `devtools` (F12), choose the `Application` Tab and then select (on the left) `Local Storage` and clear out what's there. Restart your app.  Fixed?   (Warning this removes your `re-frame-10x` settings)
+* if the problem persists, the nuclear option is to open a new Chrome tab and browse to `chrome://settings/resetProfileSettings`. Multiple people have confirmed this works, but it's a bit too destructive. 
 * can you tell us (in the Clojurians #re-frame slack channel) what you did immediately before the problem showed up. We're still trying to track down the reasons. 
 
 ## How does it work?
