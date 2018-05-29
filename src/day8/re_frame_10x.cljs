@@ -170,11 +170,11 @@
         handle-keys          (fn [e]
                                (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
                                      tag-name        (.-tagName (.-target e))
-                                     key             (.-key e)
+                                     code            (.-code e)
                                      entering-input? (contains? #{"INPUT" "SELECT" "TEXTAREA"} tag-name)]
                                  (when (and (not entering-input?) combo-key?)
                                    (cond
-                                     (and (= key "h") (.-ctrlKey e))
+                                     (and (= code "KeyH") (.-ctrlKey e))
                                      (do (rf/dispatch [:settings/user-toggle-panel])
                                          (.preventDefault e))))))
         handle-mousemove     (fn [e]
