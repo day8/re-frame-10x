@@ -258,3 +258,6 @@
 
 (defn ^:export factory-reset! []
   (rf/dispatch [:settings/factory-reset]))
+
+(defn ^:export show-panel! [show-panel?]
+  (rf/dispatch [:settings/show-panel? show-panel?]))
