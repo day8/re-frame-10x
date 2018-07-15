@@ -37,7 +37,7 @@ And, yes, it has "time travel debugger" capabilities - you can go
 ### It Is About Trace Data
 
 As it runs, `re-frame` logs "trace" as data, and this provides an x-ray (MRI?) of your app's inner
-functioning. At its most basic level, `re-frame-10x` is a consumer, processor and presenter
+functions. At its most basic level, `re-frame-10x` is a consumer, processor and presenter
 of trace data.
 
 ### It Is About The Data Flow
@@ -57,7 +57,7 @@ Each time you put a `println` into your program, you are printing out what?
 And why? Invariably, it is data which fuels your debugging investigation, 
 confirming your current hypothesis, or not.
 
-And when you write your unittests, you represent your expections as what? Code is proved
+And when you write your unit tests, you represent your expections as what? Code is proved
 correct by the data it produces. 
 
 So, for debugging and understanding activities, "more data, more easily" is winning. If
@@ -121,7 +121,7 @@ features, and build a cognitive map of how the code is structured.
 
 Internal discussion about a name meandered for a while.  Initially, it was `re-frame-trace`, which is accurate, sure, but it is also 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  Side stepping the issue, I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.
 
-If benifit was a must, then there was `-insight` and `-illumination`, but adding either made the name waaaay too long.  Naming things - it really is a nightmare!
+If benefit was a must, then there was `-insight` and `-illumination`, but adding either made the name waaaay too long.  Naming things - it really is a nightmare!
 
 Finally, `-10x` cheekily materialised, delivering 100 decibels of audacious sizzle, and consequently a challenge for us to live up to. A 10x programmer starts by having 10x more knowledge and insight - so go make that tool, smarty pants.
 
