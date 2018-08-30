@@ -46,7 +46,7 @@
 (defn no-event-instructions
   []
   [rc/v-box
-   :children [[rc/p {:style {:font-style "italic"}} "Code trace is not currently available for this event"]
+   :children [[rc/p {:style {:font-style "italic"}} "Code trace is not available for this event"]
               [:br]
               [rc/hyperlink-href
                :label  "Instructions for enabling Event Code Tracing"
