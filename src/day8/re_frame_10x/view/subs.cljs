@@ -105,9 +105,10 @@
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-l2-subs? %])]]]]]))
 
 
-(defn pod-header [{:keys [id layer path open? diff? run-times order]}]
+(defn pod-header [{:keys [id layer path open? diff? pin? run-times order]}]
   [rc/h-box
    :class    "app-db-path--header"
+   :style {:background-color (when pin? "lightblue")}
    :align    :center
    :height   common/gs-31s
    :children [[pod-header-section
@@ -133,13 +134,13 @@
               [rc/h-box
                :class "app-db-path--path-header"
                :size "auto"
-               :style {:height common/gs-31s
+               :style {:height       common/gs-31s
                        :border-right pod-border-edge}
                :background-color "white"
                :align :center
                :children [[rc/input-text
                            :style {:height  "25px"
-                                   :border "none"
+                                   :border  "none"
                                    :padding (css-join "0px" common/gs-7s)
                                    :width   "-webkit-fill-available"} ;; This took a bit of finding!
                            :width "100%"
@@ -168,13 +169,25 @@
                                    :height           common/gs-19s
                                    :border           pod-border-edge
                                    :border-radius    "50%"
-                                   :margin "auto"
+                                   :margin           "auto"
                                    :background-color "white"}
                            :child (if (some? layer)
                                     [:div {:style {:margin "auto"}} layer]
                                     [rc/link {:label "?"
                                               :style {:margin "auto"}
                                               :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]]]
+
+              [pod-header-section
+               :width "50px"
+               :attr     {:on-click (handler-fn (rf/dispatch [:subs/set-pinned id (not pin?)]))}
+               :children [[rc/box
+                           :style {:margin "auto"}
+                           :child [rc/checkbox
+                                   :model pin?
+                                   :label ""
+                                   :style {:margin-left "6px"
+                                           :margin-top  "1px"}
+                                   :on-change #(rf/dispatch [:subs/set-pinned id (not pin?)])]]]]
 
               [pod-header-section
                :width "50px"
@@ -318,6 +331,10 @@
               [rc/box
                :width "51px" ;;  50px + 1 border
                :justify :center
+               :child [rc/label :style {:font-size "9px"} :label "PINS"]]
+              [rc/box
+               :width "51px" ;;  50px + 1 border
+               :justify :center
                :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]
               [rc/gap-f :size "6px"]]]) ;; Add extra space to look better when there is/aren't scrollbars
 
@@ -326,6 +343,7 @@
   (let [visible-subs     @(rf/subscribe [:subs/visible-subs])
         intra-epoch-subs @(rf/subscribe [:subs/intra-epoch-subs])
         sub-expansions   @(rf/subscribe [:subs/sub-expansions])
+        sub-pins         @(rf/subscribe [:subs/sub-pins])
         all-subs         (if @(rf/subscribe [:settings/debug?])
                            (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
                            visible-subs)]
@@ -340,7 +358,9 @@
                             :overflow-y "auto"}
                  :children [(for [p all-subs]
                               ^{:key (:id p)}
-                              [pod (merge p (get sub-expansions (:id p)))])
+                              [pod (merge p
+                                          (get sub-expansions (:id p))
+                                          (get sub-pins (:id p)))])
                             (when (seq intra-epoch-subs)
                               (list
                                 ^{:key "intra-epoch-line"}
