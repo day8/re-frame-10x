@@ -357,11 +357,24 @@
                                   [pod (merge p (get sub-expansions (:id p)))])))]]]]))
 
 
+(defn filter-section []
+  (let [filter-str (rf/subscribe [:subs/filter-str])]
+    [:div.filter
+     [:div.filter-control
+      [:div.filter-control-input {:style {:margin-left 10}}
+       [:input {:type      "text"
+                :value     @filter-str
+                :placeholder "Type to search"
+                :on-change #(rf/dispatch [:subs/set-filter
+                                          (-> % .-target .-value)])}]]]]))
+
+
 (defn render []
   []
   [rc/v-box
    :size     "1"
    :style    {:margin-right common/gs-19s}
    :children [[panel-header]
+              [filter-section]
               [pod-section]
               [rc/gap-f :size common/gs-19s]]])

@@ -767,6 +767,12 @@
           ;; If we turn on diffing then we want to also expand the path
           (assoc-in [id :open?] open?)))))
 
+(rf/reg-event-db
+  :subs/set-filter
+  [(rf/path [:subs :filter-str])]
+  (fn [_ [_ filter-value]]
+    filter-value))
+
 ;;
 
 (rf/reg-event-db

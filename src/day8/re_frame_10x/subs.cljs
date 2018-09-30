@@ -573,14 +573,24 @@
   :<- [:subs/reaction-state]
   prepare-pod-info)
 
+
+(rf/reg-sub
+ :subs/filter-str
+ :<- [:subs/root]
+ (fn [root _]
+   (:filter-str root)))
+
+
 (rf/reg-sub
   :subs/visible-subs
   :<- [:subs/all-subs]
   :<- [:subs/ignore-unchanged-l2-subs?]
-  (fn [[all-subs ignore-unchanged-l2?]]
-    (if ignore-unchanged-l2?
-      (remove metam/unchanged-l2-subscription? all-subs)
-      all-subs)))
+  :<- [:subs/filter-str]
+  (fn [[all-subs ignore-unchanged-l2? filter-str]]
+    (cond->> (sort-by :path all-subs)
+      ignore-unchanged-l2?   (remove metam/unchanged-l2-subscription?)
+      (not-empty filter-str) (filter (fn [{:keys [path]}]
+                                       (str/includes? path filter-str))))))
 
 (rf/reg-sub
   :subs/sub-counts
