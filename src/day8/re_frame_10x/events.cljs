@@ -764,6 +764,12 @@
           (assoc-in [id :open?] open?)))))
 
 (rf/reg-event-db
+ :subs/set-pinned
+ [(rf/path [:subs :pinned])]
+ (fn [pinned [_ id pinned?]]
+   (assoc-in pinned [id :pin?] pinned?)))
+
+(rf/reg-event-db
   :subs/set-filter
   [(rf/path [:subs :filter-str])]
   (fn [_ [_ filter-value]]
