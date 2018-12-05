@@ -1,4 +1,4 @@
-(ns mranderson048.re-frame.v0v10v2.re-frame.loggers
+(ns mranderson048.re-frame.v0v10v6.re-frame.loggers
   (:require
    [clojure.set :refer [difference]]
    #?@(:clj [[clojure.string :as str]
@@ -13,7 +13,7 @@
 ;; XXX should loggers be put in the registrar ??
 (def ^:private loggers
   "Holds the current set of logging functions.
-   By default, mranderson048.re-frame.v0v10v2.re-frame uses the functions provided by js/console.
+   By default, mranderson048.re-frame.v0v10v6.re-frame uses the functions provided by js/console.
    Use `set-loggers!` to change these defaults
   "
   (atom #?(:cljs {:log       (js/console.log.bind   js/console)
@@ -39,13 +39,13 @@
 
 
 (defn set-loggers!
-  "Change the set (or a subset) of logging functions used by mranderson048.re-frame.v0v10v2.re-frame.
+  "Change the set (or a subset) of logging functions used by mranderson048.re-frame.v0v10v6.re-frame.
   `new-loggers` should be a map with the same keys as `loggers` (above)"
   [new-loggers]
   (assert  (empty? (difference (set (keys new-loggers)) (-> @loggers keys set))) "Unknown keys in new-loggers")
   (swap! loggers merge new-loggers))
 
 (defn get-loggers
-  "Get the current logging functions used by mranderson048.re-frame.v0v10v2.re-frame."
+  "Get the current logging functions used by mranderson048.re-frame.v0v10v6.re-frame."
   []
   @loggers)

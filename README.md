@@ -9,8 +9,8 @@ It helps you find false assumptions faster.
 
 Branch | React Version | Status | Artifact
 ----------|--------|--------|--------
-`master` | React 15 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x) | `[day8.re-frame/re-frame-10x "0.3.2"]`
-`react-16` | React 16 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16) | `[day8.re-frame/re-frame-10x "0.3.2-react16"]`
+`master` | React 15 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x) | `[day8.re-frame/re-frame-10x "0.3.3"]`
+`react-16` | React 16 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16) | `[day8.re-frame/re-frame-10x "0.3.3-react16"]`
 
 ## Show Me
 [Conduit demo with re-frame-10x](https://jacekschae.github.io/conduit-re-frame-10x-demo/)
@@ -37,7 +37,7 @@ And, yes, it has "time travel debugger" capabilities - you can go
 ### It Is About Trace Data
 
 As it runs, `re-frame` logs "trace" as data, and this provides an x-ray (MRI?) of your app's inner
-functioning. At its most basic level, `re-frame-10x` is a consumer, processor and presenter
+functions. At its most basic level, `re-frame-10x` is a consumer, processor and presenter
 of trace data.
 
 ### It Is About The Data Flow
@@ -57,7 +57,7 @@ Each time you put a `println` into your program, you are printing out what?
 And why? Invariably, it is data which fuels your debugging investigation, 
 confirming your current hypothesis, or not.
 
-And when you write your unittests, you represent your expections as what? Code is proved
+And when you write your unit tests, you represent your expections as what? Code is proved
 correct by the data it produces. 
 
 So, for debugging and understanding activities, "more data, more easily" is winning. If
@@ -121,7 +121,7 @@ features, and build a cognitive map of how the code is structured.
 
 Internal discussion about a name meandered for a while.  Initially, it was `re-frame-trace`, which is accurate, sure, but it is also 100% sausage because it talks about low level function, and not higher level benefit (sizzle, sizzle).  Side stepping the issue, I wanted to call it `vox-datum` (voice of the data) but that was cruelly rejected, for reasons I don't care to remember. The pain. I mean, who the hell doesn't like a Latin name??  Philistines.
 
-If benifit was a must, then there was `-insight` and `-illumination`, but adding either made the name waaaay too long.  Naming things - it really is a nightmare!
+If benefit was a must, then there was `-insight` and `-illumination`, but adding either made the name waaaay too long.  Naming things - it really is a nightmare!
 
 Finally, `-10x` cheekily materialised, delivering 100 decibels of audacious sizzle, and consequently a challenge for us to live up to. A 10x programmer starts by having 10x more knowledge and insight - so go make that tool, smarty pants.
 
@@ -137,6 +137,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 * You **must** have a [`:main`](https://clojurescript.org/reference/compiler-options#main) specified in your `:compiler` config for the `:preloads` and `:closure-defines` to take effect
 * You **must** be running with the Closure define `goog.DEBUG` as `true`. This is the default under `:optimizations :none`.
 * You **must** be using `:optimizations :none`.
+* You **should** be using re-frame 0.10.5 or later. Earlier versions may partly work, but are not supported.
 
 If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://shadow-cljs.github.io/docs/UsersGuide.html) see the docs on [advanced setups](/docs/Advanced-Setup.md) for other ways to install re-frame-10x.
 
@@ -247,6 +248,16 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 * Reset the settings to factory defaults in the settings panel
 * If you can't load the settings panel, run `day8.re_frame_10x.trace.factory_reset_BANG_()` in the JavaScript console.
 * If neither of those work, remove all of the keys with the prefix `day8.re-frame.trace` from your browser's Local Storage.
+
+### Some parts of re-frame-10x seem to work but others don't
+
+* Make sure you are using the minimum recommended re-frame version in the [prerequisistes](#important-prerequisites). Some parts of re-frame-10x rely on updated versions of re-frame to capture the information it needs.
+
+### The expansion triangles in the data browsers don't work any more. But they used to. 
+
+* (when running your app), in Chrome, go to `devtools` (F12), choose the `Application` Tab and then select (on the left) `Local Storage` and clear out what's there. Restart your app.  Fixed?   (Warning this removes your `re-frame-10x` settings)
+* if the problem persists, the nuclear option is to open a new Chrome tab and browse to `chrome://settings/resetProfileSettings`. Multiple people have confirmed this works, but it's a bit too destructive. 
+* can you tell us (in the Clojurians #re-frame slack channel) what you did immediately before the problem showed up. We're still trying to track down the reasons. 
 
 ## How does it work?
 

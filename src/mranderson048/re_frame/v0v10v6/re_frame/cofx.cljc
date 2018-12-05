@@ -1,15 +1,15 @@
-(ns mranderson048.re-frame.v0v10v2.re-frame.cofx
+(ns mranderson048.re-frame.v0v10v6.re-frame.cofx
   (:require
-    [mranderson048.re-frame.v0v10v2.re-frame.db           :refer [app-db]]
-    [mranderson048.re-frame.v0v10v2.re-frame.interceptor  :refer [->interceptor]]
-    [mranderson048.re-frame.v0v10v2.re-frame.registrar    :refer [get-handler clear-handlers register-handler]]
-    [mranderson048.re-frame.v0v10v2.re-frame.loggers      :refer [console]]))
+    [mranderson048.re-frame.v0v10v6.re-frame.db           :refer [app-db]]
+    [mranderson048.re-frame.v0v10v6.re-frame.interceptor  :refer [->interceptor]]
+    [mranderson048.re-frame.v0v10v6.re-frame.registrar    :refer [get-handler clear-handlers register-handler]]
+    [mranderson048.re-frame.v0v10v6.re-frame.loggers      :refer [console]]))
 
 
 ;; -- Registration ------------------------------------------------------------
 
 (def kind :cofx)
-(assert (mranderson048.re-frame.v0v10v2.re-frame.registrar/kinds kind))
+(assert (mranderson048.re-frame.v0v10v6.re-frame.registrar/kinds kind))
 
 (defn reg-cofx
   "Register the given coeffect `handler` for the given `id`, for later use
@@ -32,7 +32,7 @@
    'coeffect handler' identified by the `id`.
 
    The previous association of a `coeffect handler` with an `id` will have
-   happened via a call to `mranderson048.re-frame.v0v10v2.re-frame.core/reg-cofx` - generally on program startup.
+   happened via a call to `mranderson048.re-frame.v0v10v6.re-frame.core/reg-cofx` - generally on program startup.
 
    Within the created interceptor, this 'looked up' `coeffect handler` will
    be called (within the `:before`) with two arguments:
@@ -46,7 +46,7 @@
 
    1. Early in app startup, you register a `coeffect handler` for `:datetime`:
 
-      (mranderson048.re-frame.v0v10v2.re-frame.core/reg-cofx
+      (mranderson048.re-frame.v0v10v6.re-frame.core/reg-cofx
         :datetime                        ;; usage  (inject-cofx :datetime)
         (fn coeffect-handler
           [coeffect]
@@ -54,7 +54,7 @@
 
    2. Later, add an interceptor to an -fx event handler, using `inject-cofx`:
 
-      (mranderson048.re-frame.v0v10v2.re-frame.core/reg-event-fx        ;; we are registering an event handler
+      (mranderson048.re-frame.v0v10v6.re-frame.core/reg-event-fx        ;; we are registering an event handler
          :event-id
          [ ... (inject-cofx :datetime) ... ]    ;; <-- create an injecting interceptor
          (fn event-handler
@@ -85,7 +85,7 @@
                [context]
                (if-let [handler (get-handler kind id)]
                  (update context :coeffects handler)
-                 (console :error "No cofx handler registered for \"" id "\"")))))
+                 (console :error "No cofx handler registered for" id)))))
   ([id value]
    (->interceptor
      :id     :coeffects
@@ -93,7 +93,7 @@
                 [context]
                 (if-let [handler (get-handler kind id)]
                   (update context :coeffects handler value)
-                  (console :error "No cofx handler registered for \"" id "\""))))))
+                  (console :error "No cofx handler registered for" id))))))
 
 
 ;; -- Builtin CoEffects Handlers  ---------------------------------------------

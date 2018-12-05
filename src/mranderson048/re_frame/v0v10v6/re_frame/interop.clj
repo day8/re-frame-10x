@@ -1,11 +1,11 @@
-(ns mranderson048.re-frame.v0v10v2.re-frame.interop
+(ns mranderson048.re-frame.v0v10v6.re-frame.interop
   (:import [java.util.concurrent Executor Executors]))
 
 
 ;; The purpose of this file is to provide JVM-runnable implementations of the
 ;; CLJS equivalents in interop.cljs.
 ;;
-;; These implementations are to enable you to bring up a mranderson048.re-frame.v0v10v2.re-frame app on the JVM
+;; These implementations are to enable you to bring up a mranderson048.re-frame.v0v10v6.re-frame app on the JVM
 ;; in order to run tests, or to develop at a JVM REPL instead of a CLJS one.
 ;;
 ;; Please note, though, that the purpose here *isn't* to fully replicate all of
@@ -88,4 +88,4 @@
 (defn reagent-id
   "Doesn't make sense in a Clojure context currently."
   [reactive-val]
-  nil)
+  "rx-clj")

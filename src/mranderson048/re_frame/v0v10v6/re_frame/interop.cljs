@@ -1,4 +1,4 @@
-(ns mranderson048.re-frame.v0v10v2.re-frame.interop
+(ns mranderson048.re-frame.v0v10v6.re-frame.interop
   (:require [goog.async.nextTick]
             [mranderson048.reagent.v0v8v0.reagent.core]
             [mranderson048.reagent.v0v8v0.reagent.ratom]))
@@ -38,7 +38,9 @@
   (js/setTimeout f ms))
 
 (defn now []
-  (if (exists? js/performance.now)
+  (if (and
+       (exists? js/performance)
+       (exists? js/performance.now))
     (js/performance.now)
     (js/Date.now)))
 

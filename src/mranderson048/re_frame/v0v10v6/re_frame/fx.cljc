@@ -1,18 +1,19 @@
-(ns mranderson048.re-frame.v0v10v2.re-frame.fx
+(ns mranderson048.re-frame.v0v10v6.re-frame.fx
   (:require
-    [mranderson048.re-frame.v0v10v2.re-frame.router      :as router]
-    [mranderson048.re-frame.v0v10v2.re-frame.db          :refer [app-db]]
-    [mranderson048.re-frame.v0v10v2.re-frame.interceptor :refer [->interceptor]]
-    [mranderson048.re-frame.v0v10v2.re-frame.interop     :refer [set-timeout!]]
-    [mranderson048.re-frame.v0v10v2.re-frame.events      :as events]
-    [mranderson048.re-frame.v0v10v2.re-frame.registrar   :refer [get-handler clear-handlers register-handler]]
-    [mranderson048.re-frame.v0v10v2.re-frame.loggers     :refer [console]]))
+    [mranderson048.re-frame.v0v10v6.re-frame.router      :as router]
+    [mranderson048.re-frame.v0v10v6.re-frame.db          :refer [app-db]]
+    [mranderson048.re-frame.v0v10v6.re-frame.interceptor :refer [->interceptor]]
+    [mranderson048.re-frame.v0v10v6.re-frame.interop     :refer [set-timeout!]]
+    [mranderson048.re-frame.v0v10v6.re-frame.events      :as events]
+    [mranderson048.re-frame.v0v10v6.re-frame.registrar   :refer [get-handler clear-handlers register-handler]]
+    [mranderson048.re-frame.v0v10v6.re-frame.loggers     :refer [console]]
+    [mranderson048.re-frame.v0v10v6.re-frame.trace :as trace :include-macros true]))
 
 
 ;; -- Registration ------------------------------------------------------------
 
 (def kind :fx)
-(assert (mranderson048.re-frame.v0v10v2.re-frame.registrar/kinds kind))
+(assert (mranderson048.re-frame.v0v10v6.re-frame.registrar/kinds kind))
 
 (defn reg-fx
   "Register the given effect `handler` for the given `id`.
@@ -68,10 +69,12 @@
     :id :do-fx
     :after (fn do-fx-after
              [context]
-             (doseq [[effect-key effect-value] (:effects context)]
-               (if-let [effect-fn (get-handler kind effect-key false)]
-                 (effect-fn effect-value)
-                 (console :error "re-frame: no handler registered for effect: \"" effect-key "\". Ignoring."))))))
+             (trace/with-trace
+               {:op-type :event/do-fx}
+               (doseq [[effect-key effect-value] (:effects context)]
+                 (if-let [effect-fn (get-handler kind effect-key false)]
+                   (effect-fn effect-value)
+                   (console :error "re-frame: no handler registered for effect:" effect-key ". Ignoring.")))))))
 
 ;; -- Builtin Effect Handlers  ------------------------------------------------
 
@@ -85,10 +88,15 @@
 ;;    {:dispatch-later [{:ms 200 :dispatch [:event-id "param"]}    ;;  in 200ms do this: (dispatch [:event-id "param"])
 ;;                      {:ms 100 :dispatch [:also :this :in :100ms]}]}
 ;;
+;; Note: nil entries in the collection are ignored which means events can be added
+;; conditionally:
+;;    {:dispatch-later [ (when (> 3 5) {:ms 200 :dispatch [:conditioned-out]})
+;;                       {:ms 100 :dispatch [:another-one]}]}
+;;
 (reg-fx
   :dispatch-later
   (fn [value]
-    (doseq [{:keys [ms dispatch] :as effect} value]
+    (doseq [{:keys [ms dispatch] :as effect} (remove nil? value)]
         (if (or (empty? dispatch) (not (number? ms)))
           (console :error "re-frame: ignoring bad :dispatch-later value:" effect)
           (set-timeout! #(router/dispatch dispatch) ms)))))
@@ -96,7 +104,7 @@
 
 ;; :dispatch
 ;;
-;; `dispatch` one event. Excepts a single vector.
+;; `dispatch` one event. Expects a single vector.
 ;;
 ;; usage:
 ;;   {:dispatch [:event-id "param"] }

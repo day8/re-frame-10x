@@ -1,15 +1,15 @@
-(ns mranderson048.re-frame.v0v10v2.re-frame.events
-  (:require [mranderson048.re-frame.v0v10v2.re-frame.db          :refer [app-db]]
-            [mranderson048.re-frame.v0v10v2.re-frame.utils       :refer [first-in-vector]]
-            [mranderson048.re-frame.v0v10v2.re-frame.interop     :refer [empty-queue debug-enabled?]]
-            [mranderson048.re-frame.v0v10v2.re-frame.registrar   :refer [get-handler register-handler]]
-            [mranderson048.re-frame.v0v10v2.re-frame.loggers     :refer [console]]
-            [mranderson048.re-frame.v0v10v2.re-frame.interceptor :as  interceptor]
-            [mranderson048.re-frame.v0v10v2.re-frame.trace       :as trace :include-macros true]))
+(ns mranderson048.re-frame.v0v10v6.re-frame.events
+  (:require [mranderson048.re-frame.v0v10v6.re-frame.db          :refer [app-db]]
+            [mranderson048.re-frame.v0v10v6.re-frame.utils       :refer [first-in-vector]]
+            [mranderson048.re-frame.v0v10v6.re-frame.interop     :refer [empty-queue debug-enabled?]]
+            [mranderson048.re-frame.v0v10v6.re-frame.registrar   :refer [get-handler register-handler]]
+            [mranderson048.re-frame.v0v10v6.re-frame.loggers     :refer [console]]
+            [mranderson048.re-frame.v0v10v6.re-frame.interceptor :as  interceptor]
+            [mranderson048.re-frame.v0v10v6.re-frame.trace       :as trace :include-macros true]))
 
 
 (def kind :event)
-(assert (mranderson048.re-frame.v0v10v2.re-frame.registrar/kinds kind))
+(assert (mranderson048.re-frame.v0v10v6.re-frame.registrar/kinds kind))
 
 (defn- flatten-and-remove-nils
   "`interceptors` might have nested collections, and contain nil elements.
@@ -21,14 +21,14 @@
       (make-chain interceptors)
       (do    ;; do a whole lot of development time checks
         (when-not (coll? interceptors)
-          (console :error "re-frame: when registering " id ", expected a collection of interceptors, got: " interceptors))
+          (console :error "re-frame: when registering" id ", expected a collection of interceptors, got:" interceptors))
         (let [chain (make-chain interceptors)]
           (when (empty? chain)
-            (console :error "re-frame: when registering " id ", given an empty interceptor chain"))
+            (console :error "re-frame: when registering" id ", given an empty interceptor chain"))
           (when-let [not-i (first (remove interceptor/interceptor? chain))]
             (if (fn? not-i)
-              (console :error "re-frame: when registering " id ", got a function instead of an interceptor. Did you provide old style middleware by mistake? Got: " not-i)
-              (console :error "re-frame: when registering " id ", expected interceptors, but got: " not-i)))
+              (console :error "re-frame: when registering" id ", got a function instead of an interceptor. Did you provide old style middleware by mistake? Got:" not-i)
+              (console :error "re-frame: when registering" id ", expected interceptors, but got:" not-i)))
           chain)))))
 
 
@@ -56,11 +56,13 @@
   (let [event-id  (first-in-vector event-v)]
     (if-let [interceptors  (get-handler kind event-id true)]
       (if *handling*
-        (console :error "re-frame: while handling \"" *handling* "\", dispatch-sync was called for \"" event-v "\". You can't call dispatch-sync within an event handler.")
+        (console :error "re-frame: while handling" *handling* ", dispatch-sync was called for" event-v ". You can't call dispatch-sync within an event handler.")
         (binding [*handling*  event-v]
           (trace/with-trace {:operation event-id
                              :op-type   kind
                              :tags      {:event event-v}}
-            (interceptor/execute event-v interceptors)))))))
+            (trace/merge-trace! {:tags {:app-db-before @app-db}})
+            (interceptor/execute event-v interceptors)
+            (trace/merge-trace! {:tags {:app-db-after @app-db}})))))))
 
 
