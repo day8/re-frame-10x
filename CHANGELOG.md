@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file. This change
 
 ## [0.3.4] - Unreleased
 
+### Fixed
+
+* Added mising `clojure.data` require.
+* Enable zooming in popout window
+* Use KeyboardEvent.code instead of KeyboardEvent.key to toggle inspection window
+
+### Changed
+
+* Set default number of retained epochs to 25 (was previously 5).
+* Update bundled version of re-frame to 0.10.6
+
+
 ## [0.3.3] - 2018-04-23
 
 ### Changed
