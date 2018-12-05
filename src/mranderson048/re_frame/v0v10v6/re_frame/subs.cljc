@@ -1,14 +1,14 @@
-(ns mranderson048.re-frame.v0v10v2.re-frame.subs
+(ns mranderson048.re-frame.v0v10v6.re-frame.subs
  (:require
-   [mranderson048.re-frame.v0v10v2.re-frame.db        :refer [app-db]]
-   [mranderson048.re-frame.v0v10v2.re-frame.interop   :refer [add-on-dispose! debug-enabled? make-reaction ratom? deref? dispose! reagent-id]]
-   [mranderson048.re-frame.v0v10v2.re-frame.loggers   :refer [console]]
-   [mranderson048.re-frame.v0v10v2.re-frame.utils     :refer [first-in-vector]]
-   [mranderson048.re-frame.v0v10v2.re-frame.registrar :refer [get-handler clear-handlers register-handler]]
-   [mranderson048.re-frame.v0v10v2.re-frame.trace     :as trace :include-macros true]))
+   [mranderson048.re-frame.v0v10v6.re-frame.db        :refer [app-db]]
+   [mranderson048.re-frame.v0v10v6.re-frame.interop   :refer [add-on-dispose! debug-enabled? make-reaction ratom? deref? dispose! reagent-id]]
+   [mranderson048.re-frame.v0v10v6.re-frame.loggers   :refer [console]]
+   [mranderson048.re-frame.v0v10v6.re-frame.utils     :refer [first-in-vector]]
+   [mranderson048.re-frame.v0v10v6.re-frame.registrar :refer [get-handler clear-handlers register-handler]]
+   [mranderson048.re-frame.v0v10v6.re-frame.trace     :as trace :include-macros true]))
 
 (def kind :sub)
-(assert (mranderson048.re-frame.v0v10v2.re-frame.registrar/kinds kind))
+(assert (mranderson048.re-frame.v0v10v6.re-frame.registrar/kinds kind))
 
 ;; -- cache -------------------------------------------------------------------
 ;;
@@ -44,14 +44,21 @@
   [query-v dynv r]
   (let [cache-key [query-v dynv]]
     ;; when this reaction is no longer being used, remove it from the cache
-    (add-on-dispose! r #(do (swap! query->reaction dissoc cache-key)
-                            (trace/with-trace {:operation (first-in-vector query-v)
-                                               :op-type   :sub/dispose
-                                               :tags      {:query-v  query-v
-                                                           :reaction (reagent-id r)}}
-                              nil)))
+    (add-on-dispose! r #(trace/with-trace {:operation (first-in-vector query-v)
+                                           :op-type   :sub/dispose
+                                           :tags      {:query-v  query-v
+                                                       :reaction (reagent-id r)}}
+                                          (swap! query->reaction
+                                                 (fn [query-cache]
+                                                   (if (and (contains? query-cache cache-key) (identical? r (get query-cache cache-key)))
+                                                     (dissoc query-cache cache-key)
+                                                     query-cache)))))
     ;; cache this reaction, so it can be used to deduplicate other, later "=" subscriptions
-    (swap! query->reaction assoc cache-key r)
+    (swap! query->reaction (fn [query-cache]
+                             (when debug-enabled?
+                               (when (contains? query-cache cache-key)
+                                 (console :warn "re-frame: Adding a new subscription to the cache while there is an existing subscription in the cache" cache-key)))
+                             (assoc query-cache cache-key r)))
     (trace/merge-trace! {:tags {:reaction (reagent-id r)}})
     r)) ;; return the actual reaction
 
@@ -96,7 +103,7 @@
   When used in a view function BE SURE to `deref` the returned value.
   In fact, to avoid any mistakes, some prefer to define:
 
-     (def <sub  (comp deref mranderson048.re-frame.v0v10v2.re-frame.core/subscribe))
+     (def <sub  (comp deref mranderson048.re-frame.v0v10v6.re-frame.core/subscribe))
 
   And then, within their views, they call  `(<sub [:items :small])` rather
   than using `subscribe` directly.
@@ -122,7 +129,7 @@
          (trace/merge-trace! {:tags {:cached? false}})
          (if (nil? handler-fn)
            (do (trace/merge-trace! {:error true})
-               (console :error (str "re-frame: no subscription handler registered for: \"" query-id "\". Returning a nil subscription.")))
+               (console :error (str "re-frame: no subscription handler registered for: " query-id ". Returning a nil subscription.")))
            (cache-and-return query [] (handler-fn app-db query)))))))
 
   ([query dynv]
@@ -143,7 +150,7 @@
              (console :warn "re-frame: your subscription's dynamic parameters that don't implement IReactiveAtom:" not-reactive)))
          (if (nil? handler-fn)
            (do (trace/merge-trace! {:error true})
-               (console :error (str "re-frame: no subscription handler registered for: \"" query-id "\". Returning a nil subscription.")))
+               (console :error (str "re-frame: no subscription handler registered for: " query-id ". Returning a nil subscription.")))
            (let [dyn-vals (make-reaction (fn [] (mapv deref dynv)))
                  sub      (make-reaction (fn [] (handler-fn app-db query @dyn-vals)))]
              ;; handler-fn returns a reaction which is then wrapped in the sub reaction
@@ -161,16 +168,33 @@
         (map (fn [[k v]] [k (f v)]))
         m))
 
+(defn map-signals
+  "Runs f over signals. Signals may take several
+  forms, this function handles all of them."
+  [f signals]
+  (cond
+    (sequential? signals) (map f signals)
+    (map? signals) (map-vals f signals)
+    (deref? signals) (f signals)
+    :else '()))
+
+(defn to-seq
+  "Coerces x to a seq if it isn't one already"
+  [x]
+  (if (sequential? x)
+    x
+    (list x)))
 
 (defn- deref-input-signals
   [signals query-id]
-  (let [signals (cond
-                  (sequential? signals) (map deref signals)
-                  (map? signals) (map-vals deref signals)
-                  (deref? signals) @signals
-                  :else (console :error "re-frame: in the reg-sub for " query-id ", the input-signals function returns: " signals))]
-    (trace/merge-trace! {:tags {:input-signals (map reagent-id signals)}})
-    signals))
+  (let [dereffed-signals (map-signals deref signals)]
+    (cond
+      (sequential? signals) (map deref signals)
+      (map? signals) (map-vals deref signals)
+      (deref? signals) (deref signals)
+      :else (console :error "re-frame: in the reg-sub for" query-id ", the input-signals function returns:" signals))
+    (trace/merge-trace! {:tags {:input-signals (doall (to-seq (map-signals reagent-id signals)))}})
+    dereffed-signals))
 
 
 (defn reg-sub

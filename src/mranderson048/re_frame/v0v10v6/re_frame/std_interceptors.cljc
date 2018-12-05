@@ -1,13 +1,14 @@
-(ns mranderson048.re-frame.v0v10v2.re-frame.std-interceptors
-  "contains mranderson048.re-frame.v0v10v2.re-frame supplied, standard interceptors"
+(ns mranderson048.re-frame.v0v10v6.re-frame.std-interceptors
+  "contains mranderson048.re-frame.v0v10v6.re-frame supplied, standard interceptors"
   (:require
-    [mranderson048.re-frame.v0v10v2.re-frame.interceptor :refer [->interceptor get-effect get-coeffect assoc-coeffect assoc-effect]]
-    [mranderson048.re-frame.v0v10v2.re-frame.loggers :refer [console]]
-    [mranderson048.re-frame.v0v10v2.re-frame.registrar :as registrar]
-    [mranderson048.re-frame.v0v10v2.re-frame.db :refer [app-db]]
+    [mranderson048.re-frame.v0v10v6.re-frame.interceptor :refer [->interceptor get-effect get-coeffect assoc-coeffect assoc-effect]]
+    [mranderson048.re-frame.v0v10v6.re-frame.loggers :refer [console]]
+    [mranderson048.re-frame.v0v10v6.re-frame.registrar :as registrar]
+    [mranderson048.re-frame.v0v10v6.re-frame.db :refer [app-db]]
     [clojure.data :as data]
-    [mranderson048.re-frame.v0v10v2.re-frame.cofx :as cofx]
-    [mranderson048.re-frame.v0v10v2.re-frame.utils :as utils]))
+    [mranderson048.re-frame.v0v10v6.re-frame.cofx :as cofx]
+    [mranderson048.re-frame.v0v10v6.re-frame.utils :as utils]
+    [mranderson048.re-frame.v0v10v6.re-frame.trace :as trace :include-macros true]))
 
 
 (def debug
@@ -28,9 +29,9 @@
   can be slow. So, you won't want this interceptor present in production
   code. So condition it out like this :
 
-    (mranderson048.re-frame.v0v10v2.re-frame.core/reg-event-db
+    (mranderson048.re-frame.v0v10v6.re-frame.core/reg-event-db
        :evt-id
-       [(when ^boolean goog.DEBUG mranderson048.re-frame.v0v10v2.re-frame.core/debug)]  ;; <-- conditional
+       [(when ^boolean goog.DEBUG mranderson048.re-frame.v0v10v6.re-frame.core/debug)]  ;; <-- conditional
        (fn [db v]
          ...))
 
@@ -41,7 +42,7 @@
     :id     :debug
     :before (fn debug-before
               [context]
-              (console :log "Handling mranderson048.re-frame.v0v10v2.re-frame event:" (get-coeffect context :event))
+              (console :log "Handling mranderson048.re-frame.v0v10v6.re-frame event:" (get-coeffect context :event))
               context)
     :after  (fn debug-after
               [context]
@@ -106,9 +107,19 @@
     :id     :db-handler
     :before (fn db-handler-before
               [context]
-              (let [{:keys [db event]} (:coeffects context)]
-                (->> (handler-fn db event)
-                     (assoc-effect context :db))))))
+              (let [new-context
+                    (trace/with-trace
+                      {:op-type   :event/handler
+                       :operation (get-in context [:coeffects :event])}
+                      (let [{:keys [db event]} (:coeffects context)]
+                        (->> (handler-fn db event)
+                             (assoc-effect context :db))))]
+                ;; We merge these tags outside of the :event/handler trace because we want them to be assigned to the parent
+                ;; wrapping trace.
+                (trace/merge-trace!
+                  {:tags {:effects   (:effects new-context)
+                          :coeffects (:coeffects context)}})
+                new-context))))
 
 
 (defn fx-handler->interceptor
@@ -129,9 +140,17 @@
   :id     :fx-handler
   :before (fn fx-handler-before
             [context]
-            (let [{:keys [event] :as coeffects} (:coeffects context)]
-              (->> (handler-fn coeffects event)
-                   (assoc context :effects))))))
+            (let [{:keys [event] :as coeffects} (:coeffects context)
+                  new-context
+                  (trace/with-trace
+                    {:op-type   :event/handler
+                     :operation (get-in context [:coeffects :event])}
+                    (->> (handler-fn coeffects event)
+                         (assoc context :effects)))]
+              (trace/merge-trace!
+                {:tags {:effects   (:effects new-context)
+                        :coeffects (:coeffects context)}})
+              new-context))))
 
 
 (defn ctx-handler->interceptor
@@ -143,7 +162,17 @@
   [handler-fn]
   (->interceptor
     :id     :ctx-handler
-    :before handler-fn))
+    :before (fn ctx-handler-before
+              [context]
+              (let [new-context
+                    (trace/with-trace
+                      {:op-type   :event/handler
+                       :operation (get-in context [:coeffects :event])}
+                      (handler-fn context))]
+                (trace/merge-trace!
+                  {:tags {:effects   (:effects new-context)
+                          :coeffects (:coeffects context)}})
+                new-context))))
 
 
 ;; -- Interceptors Factories -  PART 2 ------------------------------------------------------------
@@ -249,13 +278,13 @@
   each time. This may be a very satisfactory trade-off in many cases."
   [f]
   (->interceptor
-    :id    :enrich
+    :id :enrich
     :after (fn enrich-after
              [context]
              (let [event (get-coeffect context :event)
-                   db    (or (get-effect context :db)
-                             ;; If no db effect is returned, we provide the original coeffect.
-                             (get-coeffect context :db))]
+                   db    (if (contains? (:effects context) :db)
+                           (get-effect context :db) ;; If no db effect is returned, we provide the original coeffect.
+                           (get-coeffect context :db))]
                (->> (f db event)
                     (assoc-effect context :db))))))
 
@@ -274,15 +303,15 @@
      - `f` writes to localstorage."
   [f]
   (->interceptor
-    :id    :after
+    :id :after
     :after (fn after-after
              [context]
-             (let [db    (or (get-effect context :db)
-                             ;; If no db effect is returned, we provide the original coeffect.
-                             (get-coeffect context :db))
-                   event (get-coeffect context :event)]
-               (f db event)    ;; call f for side effects
-               context))))     ;; context is unchanged
+             (let [db    (if (contains? (:effects context) :db)
+                           (get-in context [:effects :db])
+                           (get-in context [:coeffects :db]))
+                   event (get-in context [:coeffects :event])]
+               (f db event) ;; call f for side effects
+               context)))) ;; context is unchanged
 
 
 (defn  on-changes

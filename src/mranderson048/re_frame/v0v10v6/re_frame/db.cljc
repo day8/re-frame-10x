@@ -1,5 +1,5 @@
-(ns mranderson048.re-frame.v0v10v2.re-frame.db
-  (:require [mranderson048.re-frame.v0v10v2.re-frame.interop :refer [ratom]]))
+(ns mranderson048.re-frame.v0v10v6.re-frame.db
+  (:require [mranderson048.re-frame.v0v10v6.re-frame.interop :refer [ratom]]))
 
 
 ;; -- Application State  --------------------------------------------------------------------------
