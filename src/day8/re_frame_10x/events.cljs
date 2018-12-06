@@ -1,5 +1,5 @@
 (ns day8.re-frame-10x.events
-  (:require [mranderson048.re-frame.v0v10v2.re-frame.core :as rf]
+  (:require [mranderson048.re-frame.v0v10v6.re-frame.core :as rf]
             [mranderson048.reagent.v0v7v0.reagent.core :as r]
             [cljs.tools.reader.edn]
             [day8.re-frame-10x.utils.utils :as utils :refer [spy]]

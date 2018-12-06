@@ -13,7 +13,7 @@
             [reagent.ratom :as ratom]
             [goog.object :as gob]
             [re-frame.interop :as interop]
-            [mranderson048.re-frame.v0v10v2.re-frame.core :as rf]
+            [mranderson048.re-frame.v0v10v6.re-frame.core :as rf]
             [mranderson048.reagent.v0v7v0.reagent.core :as r]))
 
 (goog-define debug? false)
