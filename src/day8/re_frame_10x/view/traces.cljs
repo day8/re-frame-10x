@@ -3,7 +3,7 @@
             [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
             [clojure.string :as str]
             [mranderson048.reagent.v0v8v0.reagent.core :as r]
-            [mranderson048.re-frame.v0v10v2.re-frame.core :as rf]
+            [mranderson048.re-frame.v0v10v6.re-frame.core :as rf]
             [day8.re-frame-10x.utils.re-com :as rc]))
 
 (defn query->fn [query]

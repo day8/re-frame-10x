@@ -3,7 +3,7 @@
                                                    pod-header-section cljs-dev-tools-background]]
             [day8.re-frame-10x.utils.utils :as utils]
             [day8.re-frame-10x.utils.animated :as animated]
-            [mranderson048.re-frame.v0v10v2.re-frame.core :as rf]
+            [mranderson048.re-frame.v0v10v6.re-frame.core :as rf]
             [mranderson048.reagent.v0v8v0.reagent.core :as r]
             [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame-10x.common-styles :as common]

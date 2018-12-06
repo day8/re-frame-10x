@@ -1,5 +1,5 @@
 (ns day8.re-frame-10x.view.settings
-  (:require [mranderson048.re-frame.v0v10v2.re-frame.core :as rf]
+  (:require [mranderson048.re-frame.v0v10v6.re-frame.core :as rf]
             [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame-10x.common-styles :as common]
             [mranderson048.garden.v1v3v3.garden.units :as units]

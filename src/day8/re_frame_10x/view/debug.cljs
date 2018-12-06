@@ -1,7 +1,7 @@
 (ns day8.re-frame-10x.view.debug
   (:require [day8.re-frame-10x.utils.re-com :as rc]
             [day8.re-frame-10x.view.components :as components]
-            [mranderson048.re-frame.v0v10v2.re-frame.core :as rf]
+            [mranderson048.re-frame.v0v10v6.re-frame.core :as rf]
             [day8.re-frame-10x.metamorphic :as metam]))
 
 (defn render []
