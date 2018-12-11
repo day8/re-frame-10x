@@ -1,7 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.3.5] - Unreleased
+## [0.3.6] - 2018-12-11
+
+Fixed broken merges in 0.3.4 and 0.3.5 when updating the bundled version of re-frame.
+
+## [0.3.5] - 2018-12-06
+
+### Fixed
+
+* Attempted to fix the namespaces when updating the bundled version of re-frame, but we didn't fix everything, so this release should not be used.
 
 ## [0.3.4] - 2018-12-06
 
@@ -15,7 +23,6 @@ All notable changes to this project will be documented in this file. This change
 
 * Set default number of retained epochs to 25 (was previously 5).
 * Update bundled version of re-frame to 0.10.6
-
 
 ## [0.3.3] - 2018-04-23
 
