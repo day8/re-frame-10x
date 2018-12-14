@@ -205,7 +205,8 @@
 
    ;; Default text color overrides
    [:body {:color default-text-color}]
-   [:.form-control {:color default-text-color}]
+   [:.form-control {:color default-text-color
+                    :width "100%"}]
    [:.btn-default {:color default-text-color}]
    [:.raptor-editable-block {:color default-text-color}]
 
