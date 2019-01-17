@@ -9,7 +9,7 @@
                  [binaryage/devtools "0.9.10"]
                  [cljsjs/react-flip-move "2.9.17-0"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
-                 [zprint "0.4.7"]
+                 [zprint "0.4.15"]
                  [cljsjs/react-highlight "1.0.7-1" :exclusions [cljsjs/react]]
                  ;[expound "0.4.0"]
                  ]
