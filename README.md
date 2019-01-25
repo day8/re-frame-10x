@@ -248,6 +248,7 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 * Reset the settings to factory defaults in the settings panel
 * If you can't load the settings panel, run `day8.re_frame_10x.trace.factory_reset_BANG_()` in the JavaScript console.
 * If neither of those work, remove all of the keys with the prefix `day8.re-frame.trace` from your browser's Local Storage.
+* If pop-ups are blocked by your browser (Chrome), it can cause confusing exception `Uncaught TypeError: Cannot read property 'document' of null` followed by stack trace mentioning `mranderson`. The solution is to always allow pop-ups from your app under development URL (e.g. http://0.0.0.0:3449).
 
 ### Some parts of re-frame-10x seem to work but others don't
 
