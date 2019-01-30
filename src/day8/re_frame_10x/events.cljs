@@ -282,15 +282,16 @@
         ;; control over this, it will only position it within the same display that it was popped out on.
         w                (js/window.open "about:blank" "re-frame-10x-popout"
                                          (str "width=" width ",height=" height ",left=" left ",top=" top
-                                              ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
-
-        d                (.-document w)]
-    (when-let [el (.getElementById d "--re-frame-10x--")]
-      (r/unmount-component-at-node el))
-    (.open d)
-    (.write d new-window-html)
-    (goog.object/set w "onload" #(mount w d))
-    (.close d)))
+                                              ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))]
+    (if-not w
+      (js/console.error "CANNOT OPEN re-frame-10x DEBUGGER WINDOW! Allow pop-ups from this URL.")
+      (let [d (.-document w)]
+        (when-let [el (.getElementById d "--re-frame-10x--")]
+          (r/unmount-component-at-node el))
+        (.open d)
+        (.write d new-window-html)
+        (goog.object/set w "onload" #(mount w d))
+        (.close d)))))
 
 (rf/reg-event-fx
   :global/launch-external
