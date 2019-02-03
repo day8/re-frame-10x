@@ -199,7 +199,7 @@ day8.re-frame-10x.utils.pretty-print-condensed
 (defn pr-writer-impl [obj writer opts]
   (if (-limited? writer)
     writer
-    (cljs.core/pr-writer-impl obj writer opts)))
+    (#'cljs.core/pr-writer-impl obj writer opts)))
 
 (defn- pr-writer
   "Prefer this to pr-seq, because it makes the printing function
