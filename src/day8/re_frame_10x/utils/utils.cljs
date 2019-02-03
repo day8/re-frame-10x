@@ -61,3 +61,8 @@
     (.select el)
     (.execCommand js/document "copy")
     (.removeChild (.-body js/document) el)))
+
+(def default-readers
+  {'uuid (fn default-uuid-reader [form]
+           {:pre [(string? form)]}
+           (uuid form))})

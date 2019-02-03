@@ -60,7 +60,7 @@
     (dissoc m k)))
 
 (defn read-string-maybe [s]
-  (try (cljs.tools.reader.edn/read-string s)
+  (try (cljs.tools.reader.edn/read-string {:readers utils/default-readers} s)
        (catch :default e
          nil)))
 
