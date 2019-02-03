@@ -377,7 +377,8 @@
                          :font-weight      "600"
                          ;; TODO: figure out how to hide long events
                          :text-overflow    "ellipsis"}]
-    ]
+    [:span.event-header :.hljs
+     {:padding "2.5px"}]]
    [(s/& :.external-window) {:display "flex"
                              :height  (percent 100)
                              :flex    "1 1 auto"}]
