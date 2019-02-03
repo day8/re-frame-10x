@@ -164,6 +164,7 @@
         panel-type        (:panel-type opts)
         external-window?  (= panel-type :popup)
         unloading?        (rf/subscribe [:global/unloading?])
+        popup-failed?     @(rf/subscribe [:errors/popup-failed?])
         showing-settings? (= @selected-tab :settings)]
     [:div.panel-content
      {:style {:width            "100%"
@@ -222,6 +223,11 @@
        [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set "
         ;; Note this Closure define is in re-frame, not re-frame-10x
         [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
+     (when popup-failed?
+       [:h1.errors "Couldn't open external window. Check if popups are allowed?"
+        [rc/hyperlink
+         :label "Dismiss"
+         :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])
      [rc/v-box
       :size "auto"
       :style {:margin-left common/gs-19s

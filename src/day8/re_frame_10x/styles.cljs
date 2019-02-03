@@ -417,7 +417,13 @@
     ["> span" {:vertical-align "text-top"}]
     [:li {:margin 0}]]
    [:.host-closed {:font-size        (em 4)
+                   :margin-left      common/gs-19
+                   :margin-right     common/gs-19
                    :background-color (color/rgba 255 255 0 0.8)}]
+   [:.errors {:font-size        (em 2)
+              :margin-left      common/gs-19
+              :margin-right     common/gs-19
+              :background-color (color/rgba 255 255 0 0.8)}]
    [:.expansion-button {:font-family    "sans-serif"
                         :width          (px 16)
                         :padding        [[0 common/expansion-button-horizontal-padding]]

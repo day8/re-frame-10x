@@ -720,3 +720,16 @@
   :<- [:component/root]
   (fn [component _]
     (:direction component)))
+
+;;
+
+(rf/reg-sub
+  :errors/root
+  (fn [db _]
+    (:errors db)))
+
+(rf/reg-sub
+  :errors/popup-failed?
+  :<- [:errors/root]
+  (fn [errors _]
+    (boolean (:popup-failed? errors))))

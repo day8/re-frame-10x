@@ -277,29 +277,33 @@
         new-window-title (goog.string/escapeString (str "re-frame-10x | " doc-title))
         new-window-html  (str "<head><title>"
                               new-window-title
-                              "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
-        ;; We would like to set the windows left and top positions to match the monitor that it was on previously, but Chrome doesn't give us
-        ;; control over this, it will only position it within the same display that it was popped out on.
-        w                (js/window.open "about:blank" "re-frame-10x-popout"
-                                         (str "width=" width ",height=" height ",left=" left ",top=" top
-                                              ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
-
-        d                (.-document w)]
-    (when-let [el (.getElementById d "--re-frame-10x--")]
-      (r/unmount-component-at-node el))
-    (.open d)
-    (.write d new-window-html)
-    (goog.object/set w "onload" #(mount w d))
-    (.close d)))
+                              "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")]
+    ;; We would like to set the windows left and top positions to match the monitor that it was on previously, but Chrome doesn't give us
+    ;; control over this, it will only position it within the same display that it was popped out on.
+    (if-let [w (js/window.open "about:blank" "re-frame-10x-popout"
+                               (str "width=" width ",height=" height ",left=" left ",top=" top
+                                    ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))]
+      (let [d (.-document w)]
+        (when-let [el (.getElementById d "--re-frame-10x--")]
+          (r/unmount-component-at-node el))
+        (.open d)
+        (.write d new-window-html)
+        (goog.object/set w "onload" #(mount w d))
+        (.close d)
+        true)
+      false)))
 
 (rf/reg-event-fx
   :global/launch-external
   (fn [ctx _]
-    (open-debugger-window (get-in ctx [:db :settings :external-window-dimensions]))
-    (localstorage/save! "external-window?" true)
-    {:db             (assoc-in (:db ctx) [:settings :external-window?] true)
-     ;; TODO: capture the intent that the user is still interacting with devtools, to persist between reloads.
-     :dispatch-later [{:ms 200 :dispatch [:settings/show-panel? false]}]}))
+    (if (open-debugger-window (get-in ctx [:db :settings :external-window-dimensions]))
+      (do
+        (localstorage/save! "external-window?" true)
+        {:db             (-> (:db ctx)
+                             (assoc-in [:settings :external-window?] true)
+                             (dissoc-in [:errors :popup-failed]))
+         :dispatch-later [{:ms 200 :dispatch [:settings/show-panel? false]}]})
+      {:db (assoc-in (:db ctx) [:errors :popup-failed?] true)})))
 
 (rf/reg-event-fx
   :global/external-closed
@@ -806,3 +810,11 @@
   [(rf/path [:component])]
   (fn [component [_ new-direction]]
     (assoc component :direction new-direction)))
+
+;;
+
+(rf/reg-event-db
+  :errors/dismiss-popup-failed
+  [(rf/path [:errors])]
+  (fn [errors _]
+    (dissoc errors :popup-failed?)))
