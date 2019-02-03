@@ -3,9 +3,12 @@
 (def diff-link "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
 (defn last-in-vec
-  "Get the last element in the vector"
+  "Get the last element in the vector. Returns nil if v is empty"
   [v]
-  (nth v (dec (count v))))
+  (let [num (count v)]
+    (if (zero? num)
+      nil
+      (nth v (dec num)))))
 
 (defn find-all-indexes-in-vec
   "Gets the index of all items in vec that match the predicate"

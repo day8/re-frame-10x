@@ -165,7 +165,8 @@
         external-window?  (= panel-type :popup)
         unloading?        (rf/subscribe [:global/unloading?])
         popup-failed?     @(rf/subscribe [:errors/popup-failed?])
-        showing-settings? (= @selected-tab :settings)]
+        showing-settings? (= @selected-tab :settings)
+        current-event     @(rf/subscribe [:epochs/current-event])]
     [:div.panel-content
      {:style {:width            "100%"
               :display          "flex"
@@ -199,23 +200,24 @@
                                [tab-button :timing "Timing"]
                                (when (:debug? opts)
                                  [tab-button :debug "Debug"])]]
-                   [rc/h-box
-                    :align    :center
-                    :padding  "0px 19px 0px 7px"
-                    :gap      "4px"
-                    :children [[rc/button
-                                :class "bm-muted-button container--replay-button"
-                                :label [rc/h-box
-                                        :align    :center
-                                        :gap      "3px"
-                                        :children [[:img
-                                                    {:src      (str "data:image/svg+xml;utf8," reload)
-                                                     :style    {:cursor "pointer"
-                                                                :height "23px"}}]
-                                                   "replay"]]
-                                :on-click #(do (rf/dispatch [:component/set-direction :next])
-                                               (rf/dispatch [:epochs/replay]))]
-                               [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]]]])
+                   (when (some? current-event)
+                     [rc/h-box
+                      :align :center
+                      :padding "0px 19px 0px 7px"
+                      :gap "4px"
+                      :children [[rc/button
+                                  :class "bm-muted-button container--replay-button"
+                                  :label [rc/h-box
+                                          :align :center
+                                          :gap "3px"
+                                          :children [[:img
+                                                      {:src   (str "data:image/svg+xml;utf8," reload)
+                                                       :style {:cursor "pointer"
+                                                               :height "23px"}}]
+                                                     "replay"]]
+                                  :on-click #(do (rf/dispatch [:component/set-direction :next])
+                                                 (rf/dispatch [:epochs/replay]))]
+                                 [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]])]])
      [rc/line :color "#EEEEEE"]
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
