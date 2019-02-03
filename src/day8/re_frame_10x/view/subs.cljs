@@ -105,89 +105,104 @@
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-l2-subs? %])]]]]]))
 
 
-(defn pod-header [{:keys [id layer path open? diff? run-times order]}]
-  [rc/h-box
-   :class    "app-db-path--header"
-   :align    :center
-   :height   common/gs-31s
-   :children [[pod-header-section
-               :children [[rc/box
-                           :width  common/gs-31s
-                           :height common/gs-31s
-                           :class  "noselect"
-                           :style  {:cursor "pointer"}
-                           :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
+(defn pod-header [{:keys [id layer path open? diff? pin? run-times order]}]
+  (let [debug? @(rf/subscribe [:settings/debug?])]
+    [rc/h-box
+     :class "app-db-path--header"
+     :style {:background-color (when pin? "lightblue")}
+     :align :center
+     :height common/gs-31s
+     :children [[pod-header-section
+                 :children [[rc/box
+                             :width common/gs-31s
+                             :height common/gs-31s
+                             :class "noselect"
+                             :style {:cursor "pointer"}
+                             :attr {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
                                     :on-click (handler-fn (rf/dispatch [:subs/open-pod? id (not open?)]))}
-                           :child  [rc/box
-                                    :margin "auto"
-                                    :child [:span.arrow (if open? "▼" "▶")]]]]]
+                             :child [rc/box
+                                     :margin "auto"
+                                     :child [:span.arrow (if open? "▼" "▶")]]]]]
 
-              #_[rc/box
-                 ;:width "64px"                                ;; (100-36)px from box above
-                 :child [sub-tag (first order) (short-tag-desc (first order))]]
+                #_[rc/box
+                   ;:width "64px"                                ;; (100-36)px from box above
+                   :child [sub-tag (first order) (short-tag-desc (first order))]]
 
-              ;; TODO: report if a sub was run multiple times
-              #_(when run-times
-                  [:span "Warning: run " run-times " times"])
+                ;; TODO: report if a sub was run multiple times
+                #_(when run-times
+                    [:span "Warning: run " run-times " times"])
 
-              [rc/h-box
-               :class "app-db-path--path-header"
-               :size "auto"
-               :style {:height common/gs-31s
-                       :border-right pod-border-edge}
-               :background-color "white"
-               :align :center
-               :children [[rc/input-text
-                           :style {:height  "25px"
-                                   :border "none"
-                                   :padding (css-join "0px" common/gs-7s)
-                                   :width   "-webkit-fill-available"} ;; This took a bit of finding!
-                           :width "100%"
-                           :model path
-                           :disabled? true]]]
+                [rc/h-box
+                 :class "app-db-path--path-header"
+                 :size "auto"
+                 :style {:height       common/gs-31s
+                         :border-right pod-border-edge}
+                 :background-color "white"
+                 :align :center
+                 :children [[rc/input-text
+                             :style {:height  "25px"
+                                     :border  "none"
+                                     :padding (css-join "0px" common/gs-7s)
+                                     :width   "-webkit-fill-available"} ;; This took a bit of finding!
+                             :width "100%"
+                             :model path
+                             :disabled? true]]]
 
-              (when @(rf/subscribe [:settings/debug?])
+                (when debug?
+                  [pod-header-section
+                   :min-width "50px"
+                   :children [[rc/label :label (str id)]]])
+
                 [pod-header-section
-                 :min-width "50px"
-                 :children [[rc/label :label (str id)]]])
+                 :min-width "106px"                         ;; common/gs-131s - (2 * 12px padding) - (1px border)
+                 :gap common/gs-12s
+                 :style {:padding "0px 12px"}
+                 :children (into []
+                                 (comp
+                                   (take 3)
+                                   (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
+                                 order)]
 
-              [pod-header-section
-               :min-width "106px" ;; common/gs-131s - (2 * 12px padding) - (1px border)
-               :gap       common/gs-12s
-               :style     {:padding "0px 12px"}
-               :children  (into []
-                                (comp
-                                  (take 3)
-                                  (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
-                                order)]
+                [pod-header-section
+                 :width common/gs-31s
+                 :children [[rc/box
+                             :style {:width            common/gs-19s
+                                     :height           common/gs-19s
+                                     :border           pod-border-edge
+                                     :border-radius    "50%"
+                                     :margin           "auto"
+                                     :background-color "white"}
+                             :child (if (some? layer)
+                                      [:div {:style {:margin "auto"}} layer]
+                                      [rc/link {:label "?"
+                                                :style {:margin "auto"}
+                                                :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]]]
 
-              [pod-header-section
-               :width    common/gs-31s
-               :children [[rc/box
-                           :style {:width            common/gs-19s
-                                   :height           common/gs-19s
-                                   :border           pod-border-edge
-                                   :border-radius    "50%"
-                                   :margin "auto"
-                                   :background-color "white"}
-                           :child (if (some? layer)
-                                    [:div {:style {:margin "auto"}} layer]
-                                    [rc/link {:label "?"
-                                              :style {:margin "auto"}
-                                              :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]]]
+                (when debug?
+                  [pod-header-section
+                   :width "50px"
+                   :attr {:on-click (handler-fn (rf/dispatch [:subs/set-pinned id (not pin?)]))}
+                   :children [[rc/box
+                               :style {:margin "auto"}
+                               :child [rc/checkbox
+                                       :model pin?
+                                       :label ""
+                                       :style {:margin-left "6px"
+                                               :margin-top  "1px"}
+                                       :on-change #(rf/dispatch [:subs/set-pinned id (not pin?)])]]]])
 
-              [pod-header-section
-               :width "50px"
-               :attr     {:on-click (handler-fn (rf/dispatch [:subs/set-diff-visibility id (not diff?)]))}
-               :last?    true
-               :children [[rc/box
-                           :style {:margin "auto"}
-                           :child [rc/checkbox
-                                   :model diff?
-                                   :label ""
-                                   :style {:margin-left "6px"
-                                           :margin-top  "1px"}
-                                   :on-change #(rf/dispatch [:subs/set-diff-visibility id (not diff?)])]]]]]])
+                [pod-header-section
+                 :width "50px"
+                 :attr {:on-click (handler-fn (rf/dispatch [:subs/set-diff-visibility id (not diff?)]))}
+                 :last? true
+                 :children [[rc/box
+                             :style {:margin "auto"}
+                             :child [rc/checkbox
+                                     :model diff?
+                                     :label ""
+                                     :style {:margin-left "6px"
+                                             :margin-top  "1px"}
+                                     :on-change #(rf/dispatch [:subs/set-diff-visibility id (not diff?)])]]]]]]))
 
 
 (def no-prev-value-msg [:p {:style {:font-style "italic"}} "No previous value exists to diff"])
@@ -315,6 +330,11 @@
                :width "32px" ;; common/gs-31s + 1 border
                :justify :center
                :child [rc/label :style {:font-size "9px"} :label "LAYER"]]
+              (when @(rf/subscribe [:settings/debug?])
+                [rc/box
+                 :width "51px"                              ;;  50px + 1 border
+                 :justify :center
+                 :child [rc/label :style {:font-size "9px"} :label "PINS"]])
               [rc/box
                :width "51px" ;;  50px + 1 border
                :justify :center
@@ -326,6 +346,7 @@
   (let [visible-subs     @(rf/subscribe [:subs/visible-subs])
         intra-epoch-subs @(rf/subscribe [:subs/intra-epoch-subs])
         sub-expansions   @(rf/subscribe [:subs/sub-expansions])
+        sub-pins         @(rf/subscribe [:subs/sub-pins])
         all-subs         (if @(rf/subscribe [:settings/debug?])
                            (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
                            visible-subs)]
@@ -340,7 +361,9 @@
                             :overflow-y "auto"}
                  :children [(for [p all-subs]
                               ^{:key (:id p)}
-                              [pod (merge p (get sub-expansions (:id p)))])
+                              [pod (merge p
+                                          (get sub-expansions (:id p))
+                                          (get sub-pins (:id p)))])
                             (when (seq intra-epoch-subs)
                               (list
                                 ^{:key "intra-epoch-line"}
@@ -357,11 +380,24 @@
                                   [pod (merge p (get sub-expansions (:id p)))])))]]]]))
 
 
+(defn filter-section []
+  (let [filter-str (rf/subscribe [:subs/filter-str])]
+    [:div.filter
+     [:div.filter-control
+      [:div.filter-control-input {:style {:margin-left 10}}
+       [:input {:type      "text"
+                :value     @filter-str
+                :placeholder "Type to search"
+                :on-change #(rf/dispatch [:subs/set-filter
+                                          (-> % .-target .-value)])}]]]]))
+
+
 (defn render []
   []
   [rc/v-box
    :size     "1"
    :style    {:margin-right common/gs-19s}
    :children [[panel-header]
+              (when @(rf/subscribe [:settings/debug?]) [filter-section])
               [pod-section]
               [rc/gap-f :size common/gs-19s]]])
