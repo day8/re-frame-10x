@@ -225,7 +225,7 @@
        [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set "
         ;; Note this Closure define is in re-frame, not re-frame-10x
         [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
-     (when popup-failed?
+     (when (and (not external-window?) popup-failed?)
        [:h1.errors "Couldn't open external window. Check if popups are allowed?"
         [rc/hyperlink
          :label "Dismiss"

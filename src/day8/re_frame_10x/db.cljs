@@ -33,9 +33,10 @@
     (rf/dispatch [:settings/set-number-of-retained-epochs num-epochs])
     (rf/dispatch [:settings/app-db-follows-events? follows-events?])
     (rf/dispatch [:settings/debug? debug?])
+    ;; Important that window dimensions are set before we open an external window.
+    (rf/dispatch [:settings/external-window-dimensions external-window-dimensions])
     (when external-window?
       (rf/dispatch [:global/launch-external]))
-    (rf/dispatch [:settings/external-window-dimensions external-window-dimensions])
     (rf/dispatch [:traces/filter-items filter-items])
     (rf/dispatch [:traces/set-categories categories])
     (rf/dispatch [:trace-panel/update-show-epoch-traces? show-epoch-traces?])

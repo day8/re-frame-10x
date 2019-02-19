@@ -301,9 +301,10 @@
         (localstorage/save! "external-window?" true)
         {:db             (-> (:db ctx)
                              (assoc-in [:settings :external-window?] true)
-                             (dissoc-in [:errors :popup-failed]))
+                             (dissoc-in [:errors :popup-failed?]))
          :dispatch-later [{:ms 200 :dispatch [:settings/show-panel? false]}]})
-      {:db (assoc-in (:db ctx) [:errors :popup-failed?] true)})))
+      {:db (assoc-in (:db ctx) [:errors :popup-failed?] true)
+       :dispatch [:global/external-closed]})))
 
 (rf/reg-event-fx
   :global/external-closed

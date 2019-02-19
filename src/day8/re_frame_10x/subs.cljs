@@ -755,4 +755,4 @@
   :errors/popup-failed?
   :<- [:errors/root]
   (fn [errors _]
-    (boolean (:popup-failed? errors))))
+    (:popup-failed? errors)))
