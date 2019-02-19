@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Deprecated
 
-This is the last release of re-frame-10x to support from Reagent 0.6.0 to 0.8.0. The next release of re-frame-10x will only support Reagent 0.8.0 and up. See [#229](https://github.com/Day8/re-frame-10x/issues/229) for more context.
+This is the last release of re-frame-10x to support from React 15/Reagent 0.6.0-0.7.0 and React 16/Reagent 0.8.0. The next release of re-frame-10x will only support React 16/Reagent 0.8.0 and up. See [#229](https://github.com/Day8/re-frame-10x/issues/229) for more context.
 
 ### Added
 
