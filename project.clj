@@ -1,4 +1,4 @@
-(defproject day8.re-frame/re-frame-10x "0.3.6-react16"
+(defproject day8.re-frame/re-frame-10x "0.3.7-react16"
   :description "Become 10x more productive when developing and debugging re-frame applications."
   :url "https://github.com/Day8/re-frame-10x"
   :license {:name "MIT"}
@@ -9,7 +9,7 @@
                  [binaryage/devtools "0.9.10"]
                  [cljsjs/react-flip-move "2.9.17-0"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
-                 [zprint "0.4.7"]
+                 [zprint "0.4.15"]
                  [cljsjs/react-highlight "1.0.7-1" :exclusions [cljsjs/react]]
                  ;[expound "0.4.0"]
                  ]

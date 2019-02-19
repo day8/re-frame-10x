@@ -573,14 +573,32 @@
   :<- [:subs/reaction-state]
   prepare-pod-info)
 
+
+(rf/reg-sub
+ :subs/filter-str
+ :<- [:subs/root]
+ (fn [root _]
+   (:filter-str root)))
+
+
 (rf/reg-sub
   :subs/visible-subs
   :<- [:subs/all-subs]
   :<- [:subs/ignore-unchanged-l2-subs?]
-  (fn [[all-subs ignore-unchanged-l2?]]
-    (if ignore-unchanged-l2?
-      (remove metam/unchanged-l2-subscription? all-subs)
-      all-subs)))
+  :<- [:subs/filter-str]
+  :<- [:subs/sub-pins]
+  (fn [[all-subs ignore-unchanged-l2? filter-str pins]]
+    (let [compare-fn (fn [s1 s2]
+                       (let [p1 (boolean (get-in pins [(:id s1) :pin?]))
+                             p2 (boolean (get-in pins [(:id s2) :pin?]))]
+                         (if (= p1 p2)
+                           (compare (:path s1) (:path s2))
+                           p1)))]
+      (cond->> (sort compare-fn all-subs)
+        ignore-unchanged-l2?   (remove metam/unchanged-l2-subscription?)
+        (not-empty filter-str) (filter (fn [{:keys [path id]}]
+                                         (or (str/includes? path filter-str)
+                                             (get-in pins [id :pin?]))))))))
 
 (rf/reg-sub
   :subs/sub-counts
@@ -632,6 +650,11 @@
   (fn [subs _]
     (:expansions subs)))
 
+(rf/reg-sub
+  :subs/sub-pins
+  :<- [:subs/root]
+  (fn [subs _]
+    (:pinned subs)))
 
 ;;
 
@@ -720,3 +743,16 @@
   :<- [:component/root]
   (fn [component _]
     (:direction component)))
+
+;;
+
+(rf/reg-sub
+  :errors/root
+  (fn [db _]
+    (:errors db)))
+
+(rf/reg-sub
+  :errors/popup-failed?
+  :<- [:errors/root]
+  (fn [errors _]
+    (:popup-failed? errors)))

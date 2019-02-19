@@ -60,7 +60,7 @@
     (dissoc m k)))
 
 (defn read-string-maybe [s]
-  (try (cljs.tools.reader.edn/read-string s)
+  (try (cljs.tools.reader.edn/read-string {:readers utils/default-readers} s)
        (catch :default e
          nil)))
 
@@ -277,29 +277,34 @@
         new-window-title (goog.string/escapeString (str "re-frame-10x | " doc-title))
         new-window-html  (str "<head><title>"
                               new-window-title
-                              "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
-        ;; We would like to set the windows left and top positions to match the monitor that it was on previously, but Chrome doesn't give us
-        ;; control over this, it will only position it within the same display that it was popped out on.
-        w                (js/window.open "about:blank" "re-frame-10x-popout"
-                                         (str "width=" width ",height=" height ",left=" left ",top=" top
-                                              ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))
-
-        d                (.-document w)]
-    (when-let [el (.getElementById d "--re-frame-10x--")]
-      (r/unmount-component-at-node el))
-    (.open d)
-    (.write d new-window-html)
-    (goog.object/set w "onload" #(mount w d))
-    (.close d)))
+                              "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")]
+    ;; We would like to set the windows left and top positions to match the monitor that it was on previously, but Chrome doesn't give us
+    ;; control over this, it will only position it within the same display that it was popped out on.
+    (if-let [w (js/window.open "about:blank" "re-frame-10x-popout"
+                               (str "width=" width ",height=" height ",left=" left ",top=" top
+                                    ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))]
+      (let [d (.-document w)]
+        (when-let [el (.getElementById d "--re-frame-10x--")]
+          (r/unmount-component-at-node el))
+        (.open d)
+        (.write d new-window-html)
+        (goog.object/set w "onload" #(mount w d))
+        (.close d)
+        true)
+      false)))
 
 (rf/reg-event-fx
   :global/launch-external
   (fn [ctx _]
-    (open-debugger-window (get-in ctx [:db :settings :external-window-dimensions]))
-    (localstorage/save! "external-window?" true)
-    {:db             (assoc-in (:db ctx) [:settings :external-window?] true)
-     ;; TODO: capture the intent that the user is still interacting with devtools, to persist between reloads.
-     :dispatch-later [{:ms 200 :dispatch [:settings/show-panel? false]}]}))
+    (if (open-debugger-window (get-in ctx [:db :settings :external-window-dimensions]))
+      (do
+        (localstorage/save! "external-window?" true)
+        {:db             (-> (:db ctx)
+                             (assoc-in [:settings :external-window?] true)
+                             (dissoc-in [:errors :popup-failed?]))
+         :dispatch-later [{:ms 200 :dispatch [:settings/show-panel? false]}]})
+      {:db (assoc-in (:db ctx) [:errors :popup-failed?] true)
+       :dispatch [:global/external-closed]})))
 
 (rf/reg-event-fx
   :global/external-closed
@@ -763,6 +768,18 @@
           ;; If we turn on diffing then we want to also expand the path
           (assoc-in [id :open?] open?)))))
 
+(rf/reg-event-db
+ :subs/set-pinned
+ [(rf/path [:subs :pinned])]
+ (fn [pinned [_ id pinned?]]
+   (assoc-in pinned [id :pin?] pinned?)))
+
+(rf/reg-event-db
+  :subs/set-filter
+  [(rf/path [:subs :filter-str])]
+  (fn [_ [_ filter-value]]
+    filter-value))
+
 ;;
 
 (rf/reg-event-db
@@ -806,3 +823,11 @@
   [(rf/path [:component])]
   (fn [component [_ new-direction]]
     (assoc component :direction new-direction)))
+
+;;
+
+(rf/reg-event-db
+  :errors/dismiss-popup-failed
+  [(rf/path [:errors])]
+  (fn [errors _]
+    (dissoc errors :popup-failed?)))

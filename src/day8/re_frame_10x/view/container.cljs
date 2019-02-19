@@ -164,7 +164,9 @@
         panel-type        (:panel-type opts)
         external-window?  (= panel-type :popup)
         unloading?        (rf/subscribe [:global/unloading?])
-        showing-settings? (= @selected-tab :settings)]
+        popup-failed?     @(rf/subscribe [:errors/popup-failed?])
+        showing-settings? (= @selected-tab :settings)
+        current-event     @(rf/subscribe [:epochs/current-event])]
     [:div.panel-content
      {:style {:width            "100%"
               :display          "flex"
@@ -198,23 +200,24 @@
                                [tab-button :timing "Timing"]
                                (when (:debug? opts)
                                  [tab-button :debug "Debug"])]]
-                   [rc/h-box
-                    :align    :center
-                    :padding  "0px 19px 0px 7px"
-                    :gap      "4px"
-                    :children [[rc/button
-                                :class "bm-muted-button container--replay-button"
-                                :label [rc/h-box
-                                        :align    :center
-                                        :gap      "3px"
-                                        :children [[:img
-                                                    {:src      (str "data:image/svg+xml;utf8," reload)
-                                                     :style    {:cursor "pointer"
-                                                                :height "23px"}}]
-                                                   "replay"]]
-                                :on-click #(do (rf/dispatch [:component/set-direction :next])
-                                               (rf/dispatch [:epochs/replay]))]
-                               [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]]]])
+                   (when (some? current-event)
+                     [rc/h-box
+                      :align :center
+                      :padding "0px 19px 0px 7px"
+                      :gap "4px"
+                      :children [[rc/button
+                                  :class "bm-muted-button container--replay-button"
+                                  :label [rc/h-box
+                                          :align :center
+                                          :gap "3px"
+                                          :children [[:img
+                                                      {:src   (str "data:image/svg+xml;utf8," reload)
+                                                       :style {:cursor "pointer"
+                                                               :height "23px"}}]
+                                                     "replay"]]
+                                  :on-click #(do (rf/dispatch [:component/set-direction :next])
+                                                 (rf/dispatch [:epochs/replay]))]
+                                 [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]])]])
      [rc/line :color "#EEEEEE"]
      (when (and external-window? @unloading?)
        [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
@@ -222,6 +225,11 @@
        [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set "
         ;; Note this Closure define is in re-frame, not re-frame-10x
         [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
+     (when (and (not external-window?) popup-failed?)
+       [:h1.errors "Couldn't open external window. Check if popups are allowed?"
+        [rc/hyperlink
+         :label "Dismiss"
+         :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])
      [rc/v-box
       :size "auto"
       :style {:margin-left common/gs-19s
