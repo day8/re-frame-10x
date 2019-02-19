@@ -9,7 +9,7 @@ This is the last release of re-frame-10x to support both Reagent 0.7.0 and 0.8.0
 
 ### Added
 
-* Search and pin subscriptions. @shen-tian - [#217](https://github.com/Day8/re-frame-10x/pull/217)
+* Added support for searching and pining subscriptions. For now this is available behind the [debug flag](https://github.com/Day8/re-frame-10x/blob/master/DEVELOPERS.md). @shen-tian - [#217](https://github.com/Day8/re-frame-10x/pull/217)
 * Added reader for UUID tagged literals in app-db paths, e.g. `#uuid 7ad6b5f5-e419-4681-a960-e7b35d3de0b1`
 
 ### Fixed
@@ -22,6 +22,7 @@ This is the last release of re-frame-10x to support both Reagent 0.7.0 and 0.8.0
 ### Changed
 
 * Bumped zprint version to 0.4.15. @jacekschae - [#226](https://github.com/Day8/re-frame-10x/pull/226)
+* Sort subscriptions alphabetically. @shen-tian - [#217](https://github.com/Day8/re-frame-10x/pull/217)
 
 ## [0.3.6] - 2018-12-11
 
