@@ -19,10 +19,10 @@
    https://github.com/joshwcomeau/react-flip-move#options"
   (:require
     [mranderson048.reagent.v0v8v0.reagent.core :as reagent]
-    [cljsjs.react-flip-move]))
+    [react-flip-move :as react-flip-move]))
 
 (def component
-  (reagent/adapt-react-class js/FlipMove))
+  (reagent/adapt-react-class react-flip-move))
 
 (def ^{:constant true
        :doc "mimic v-box style properties for standard :div
