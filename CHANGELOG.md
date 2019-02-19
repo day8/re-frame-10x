@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.4.0] - Unreleased
+
+### Removed
+
+* Support for React 15/Reagent 0.7.0 and below. The last version of re-frame-10x that supports these versions is 0.3.7. - [#229](https://github.com/Day8/re-frame-10x/issue/229)
+
 ## [0.3.7] - 2018-02-19
 
 ### Deprecated
