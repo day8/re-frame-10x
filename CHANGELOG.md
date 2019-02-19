@@ -1,6 +1,28 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.3.7] - 2018-02-19
+
+### Deprecated
+
+This is the last release of re-frame-10x to support both Reagent 0.7.0 and 0.8.0. The next release of re-frame-10x will only support Reagent 0.8.0. See [#229](https://github.com/Day8/re-frame-10x/issues/229) for more context.
+
+### Added
+
+* Search and pin subscriptions. @shen-tian - [#217](https://github.com/Day8/re-frame-10x/pull/217)
+* Added reader for UUID tagged literals in app-db paths, e.g. `#uuid 7ad6b5f5-e419-4681-a960-e7b35d3de0b1`
+
+### Fixed
+
+* Show a useful error message if browsers block opening the external window. @kajism - [#228](https://github.com/Day8/re-frame-10x/pull/228)
+* Fix Firefox rendering issue. @solatis - [#223](https://github.com/Day8/re-frame-10x/pull/223)
+* Prevent warnings about using private vars by using var-quote.
+* Hide the replay button when there is no event to replay.
+
+### Changed
+
+* Bumped zprint version to 0.4.15. @jacekschae - [#226](https://github.com/Day8/re-frame-10x/pull/226)
+
 ## [0.3.6] - 2018-12-11
 
 Fixed broken merges in 0.3.4 and 0.3.5 when updating the bundled version of re-frame.
