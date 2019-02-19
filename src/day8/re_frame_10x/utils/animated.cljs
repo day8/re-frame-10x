@@ -18,7 +18,7 @@
    see additional properties that can be specified in options
    https://github.com/joshwcomeau/react-flip-move#options"
   (:require
-    [mranderson048.reagent.v0v7v0.reagent.core :as reagent]
+    [mranderson048.reagent.v0v8v0.reagent.core :as reagent]
     [cljsjs.react-flip-move]))
 
 (def component

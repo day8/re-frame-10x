@@ -1,21 +1,7 @@
-(ns mranderson048.reagent.v0v7v0.reagent.impl.util
-  (:require [cljsjs.react]
-            [cljsjs.create-react-class]
-            [mranderson048.reagent.v0v7v0.reagent.debug :refer-macros [dbg log warn]]
-            [mranderson048.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]
+(ns mranderson048.reagent.v0v8v0.reagent.impl.util
+  (:require [mranderson048.reagent.v0v8v0.reagent.debug :refer-macros [dbg log warn]]
+            [mranderson048.reagent.v0v8v0.reagent.interop :refer-macros [$ $!]]
             [clojure.string :as string]))
-
-(defonce react
-  (cond (exists? js/React) js/React
-        (exists? js/require) (or (js/require "react")
-                                 (throw (js/Error. "require('react') failed")))
-        :else (throw (js/Error. "js/React is missing"))))
-
-(defonce create-class
-  (cond (exists? js/createReactClass) js/createReactClass
-        (exists? js/require) (or (js/require "create-react-class")
-                                 (throw (js/Error. "require('create-react-class') failed")))
-        :else (throw (js/Error. "js/createReactClass is missing"))))
 
 (def is-client (and (exists? js/window)
                     (-> js/window ($ :document) nil? not)))

@@ -5,7 +5,7 @@
             [day8.re-frame-10x.utils.animated :as animated]
             [day8.re-frame-10x.view.components :as components]
             [mranderson048.re-frame.v0v10v6.re-frame.core :as rf]
-            [mranderson048.reagent.v0v7v0.reagent.core :as r]
+            [mranderson048.reagent.v0v8v0.reagent.core :as r]
             [day8.re-frame-10x.utils.re-com :as rc :refer [close-button css-join]]
             [day8.re-frame-10x.common-styles :as common]
             [clojure.data])
@@ -29,7 +29,6 @@
 
 (def *finished-animation? (r/atom true))
 (def animation-duration 150)
-
 
 (def app-db-styles
   [:#--re-frame-10x--
@@ -124,15 +123,15 @@
    :align    :center
    :height   common/gs-31s
    :children [[pod-header-section
-               :children [[rc/box
+   :children [[rc/box
                            :width  common/gs-31s
-                           :height common/gs-31s
-                           :class  "noselect"
-                           :style  {:cursor "pointer"}
-                           :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
+               :height common/gs-31s
+               :class  "noselect"
+               :style  {:cursor "pointer"}
+               :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
                                     :on-click (handler-fn (rf/dispatch [:app-db/set-path-visibility id (not open?)]))}
-                           :child  [rc/box
-                                    :margin "auto"
+               :child  [rc/box
+                        :margin "auto"
                                     :child [:span.arrow (if open? "▼" "▶")]]]]]
 
               [rc/h-box
@@ -192,8 +191,8 @@
                  :children [[animated/component
                              (animated/v-box-options
                                {:enter-animation "accordionVertical"
-                                :leave-animation "accordionVertical"
-                                :duration        animation-duration})
+                                                      :leave-animation "accordionVertical"
+                                                      :duration        animation-duration})
                              (when open?
                                [rc/v-box
                                 :class "data-viewer"
@@ -222,8 +221,8 @@
                             [animated/component
                              (animated/v-box-options
                                {:enter-animation "accordionVertical"
-                                :leave-animation "accordionVertical"
-                                :duration        animation-duration})
+                                                      :leave-animation "accordionVertical"
+                                                      :duration        animation-duration})
                              (when render-diff?
                                (let [app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
                                      [diff-before diff-after _] (when render-diff?
@@ -262,7 +261,7 @@
                                              [rc/v-box
                                               :class    "data-viewer data-viewer--top-rule"
                                               :style    {:overflow-x "auto"
-                                                         :overflow-y "hidden"}
+                                                      :overflow-y "hidden"}
                                               :children [[components/simple-render
                                                           diff-after
                                                           ["app-db-diff" path]]]]]]))]
@@ -313,10 +312,10 @@
                 [animated/component
                  (animated/v-box-options
                    {:on-finish #(reset! *finished-animation? true)
-                    :duration  animation-duration
+                                          :duration  animation-duration
                     :style     {:flex       "1 1 0px"
-                                :overflow-x "hidden"
-                                :overflow-y "auto"}})
+                                                      :overflow-x "hidden"
+                                                      :overflow-y "auto"}})
                  (for [p pods]
                    ^{:key (:id p)}
                    [pod p])]]]))

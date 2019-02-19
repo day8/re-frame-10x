@@ -1,39 +1,29 @@
-(ns mranderson048.reagent.v0v7v0.reagent.dom
-  (:require [cljsjs.react.dom]
-            [mranderson048.reagent.v0v7v0.reagent.impl.util :as util]
-            [mranderson048.reagent.v0v7v0.reagent.impl.template :as tmpl]
-            [mranderson048.reagent.v0v7v0.reagent.impl.batching :as batch]
-            [mranderson048.reagent.v0v7v0.reagent.ratom :as ratom]
-            [mranderson048.reagent.v0v7v0.reagent.debug :refer-macros [dbg]]
-            [mranderson048.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]))
+(ns mranderson048.reagent.v0v8v0.reagent.dom
+  (:require [react-dom :as react-dom]
+            [mranderson048.reagent.v0v8v0.reagent.impl.util :as util]
+            [mranderson048.reagent.v0v8v0.reagent.impl.template :as tmpl]
+            [mranderson048.reagent.v0v8v0.reagent.impl.batching :as batch]
+            [mranderson048.reagent.v0v8v0.reagent.ratom :as ratom]
+            [mranderson048.reagent.v0v8v0.reagent.debug :refer-macros [dbg]]
+            [mranderson048.reagent.v0v8v0.reagent.interop :refer-macros [$ $!]]))
 
 (defonce ^:private imported nil)
-
-(defn module []
-  (cond
-    (some? imported) imported
-    (exists? js/ReactDOM) (set! imported js/ReactDOM)
-    (exists? js/require) (or (set! imported (js/require "react-dom"))
-                             (throw (js/Error. "require('react-dom') failed")))
-    :else
-    (throw (js/Error. "js/ReactDOM is missing"))))
-
 
 (defonce ^:private roots (atom {}))
 
 (defn- unmount-comp [container]
   (swap! roots dissoc container)
-  ($ (module) unmountComponentAtNode container))
+  (react-dom/unmountComponentAtNode container))
 
 (defn- render-comp [comp container callback]
   (binding [util/*always-update* true]
-    (->> ($ (module) render (comp) container
-            (fn []
-              (binding [util/*always-update* false]
-                (swap! roots assoc container [comp container])
-                (batch/flush-after-render)
-                (if (some? callback)
-                  (callback))))))))
+    (react-dom/render (comp) container
+      (fn []
+        (binding [util/*always-update* false]
+          (swap! roots assoc container [comp container])
+          (batch/flush-after-render)
+          (if (some? callback)
+            (callback)))))))
 
 (defn- re-render-component [comp container]
   (render-comp comp container nil))
@@ -59,7 +49,7 @@
 (defn dom-node
   "Returns the root DOM node of a mounted component."
   [this]
-  ($ (module) findDOMNode this))
+  (react-dom/findDOMNode this))
 
 (set! tmpl/find-dom-node dom-node)
 

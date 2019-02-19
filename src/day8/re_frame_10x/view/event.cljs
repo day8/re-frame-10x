@@ -3,7 +3,7 @@
             [day8.re-frame-10x.view.components :as components]
             [day8.re-frame-10x.common-styles :as common]
             [mranderson048.garden.v1v3v3.garden.units :as units]
-            [mranderson048.reagent.v0v7v0.reagent.core :as reagent]
+            [mranderson048.reagent.v0v8v0.reagent.core :as reagent]
             [mranderson048.re-frame.v0v10v6.re-frame.core :as rf]
             [zprint.core :as zp]
             [goog.string]

@@ -1,9 +1,11 @@
-(ns mranderson048.reagent.v0v7v0.reagent.impl.component
-  (:require [mranderson048.reagent.v0v7v0.reagent.impl.util :as util]
-            [mranderson048.reagent.v0v7v0.reagent.impl.batching :as batch]
-            [mranderson048.reagent.v0v7v0.reagent.ratom :as ratom]
-            [mranderson048.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]
-            [mranderson048.reagent.v0v7v0.reagent.debug :refer-macros [dbg prn dev? warn error warn-unless
+(ns mranderson048.reagent.v0v8v0.reagent.impl.component
+  (:require [create-react-class :as create-react-class]
+            [react :as react]
+            [mranderson048.reagent.v0v8v0.reagent.impl.util :as util]
+            [mranderson048.reagent.v0v8v0.reagent.impl.batching :as batch]
+            [mranderson048.reagent.v0v8v0.reagent.ratom :as ratom]
+            [mranderson048.reagent.v0v8v0.reagent.interop :refer-macros [$ $!]]
+            [mranderson048.reagent.v0v8v0.reagent.debug :refer-macros [dbg prn dev? warn error warn-unless
                                           assert-callable]]))
 
 (declare ^:dynamic *current-component*)
@@ -49,7 +51,7 @@
     (if-some [v ($ p :argv)]
       (extract-children v)
       (->> ($ p :children)
-           ($ util/react Children.toArray)
+           (react/Children.toArray)
            (into [])))))
 
 (defn ^boolean reagent-class? [c]
@@ -197,6 +199,10 @@
                (when-not (nil? f)
                  (.call f c c))))
 
+    :componentDidCatch
+    (fn componentDidCatch [error info]
+      (this-as c (.call f c c error info)))
+
     nil))
 
 (defn get-wrapper [key f name]
@@ -263,21 +269,41 @@
   {:pre [(map? body)]}
   (->> body
        cljsify
-       util/create-class))
+       create-react-class))
 
-(defn component-path [c]
-  (let [elem (some-> (or (some-> c ($ :_reactInternalInstance))
-                          c)
-                     ($ :_currentElement))
-        name (some-> elem
+(defn fiber-component-path [fiber]
+  (let [name (some-> fiber
                      ($ :type)
                      ($ :displayName))
-        path (some-> elem
-                     ($ :_owner)
-                     component-path
+        parent (some-> fiber
+                       ($ :return))
+        path (some-> parent
+                     fiber-component-path
                      (str " > "))
         res (str path name)]
     (when-not (empty? res) res)))
+
+(defn component-path [c]
+  ;; Alternative branch for React 16
+  ;; Try both original name (for UMD foreign-lib) and manged name (property access, for Closure optimized React)
+  (if-let [fiber (or (some-> c ($ :_reactInternalFiber))
+                     (some-> c (.-_reactInternalFiber)))]
+    (fiber-component-path fiber)
+    (let [instance (or (some-> c ($ :_reactInternalInstance))
+                       (some-> c (.-_reactInternalInstance))
+                       c)
+          elem (or (some-> instance ($ :_currentElement))
+                   (some-> instance (.-_currentElement)))
+          name (some-> elem
+                       ($ :type)
+                       ($ :displayName))
+          owner (or (some-> elem ($ :_owner))
+                    (some-> elem (.-_owner)))
+          path (some-> owner
+                       component-path
+                       (str " > "))
+          res (str path name)]
+      (when-not (empty? res) res))))
 
 (defn comp-name []
   (if (dev?)

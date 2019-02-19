@@ -1,13 +1,16 @@
-(ns mranderson048.reagent.v0v7v0.reagent.impl.template
-  (:require [clojure.string :as string]
+(ns mranderson048.reagent.v0v8v0.reagent.impl.template
+  (:require [react :as react]
+            [clojure.string :as string]
             [clojure.walk :refer [prewalk]]
-            [mranderson048.reagent.v0v7v0.reagent.impl.util :as util :refer [is-client]]
-            [mranderson048.reagent.v0v7v0.reagent.impl.component :as comp]
-            [mranderson048.reagent.v0v7v0.reagent.impl.batching :as batch]
-            [mranderson048.reagent.v0v7v0.reagent.ratom :as ratom]
-            [mranderson048.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]
-            [mranderson048.reagent.v0v7v0.reagent.debug :refer-macros [dbg prn println log dev?
+            [mranderson048.reagent.v0v8v0.reagent.impl.util :as util :refer [is-client]]
+            [mranderson048.reagent.v0v8v0.reagent.impl.component :as comp]
+            [mranderson048.reagent.v0v8v0.reagent.impl.batching :as batch]
+            [mranderson048.reagent.v0v8v0.reagent.ratom :as ratom]
+            [mranderson048.reagent.v0v8v0.reagent.interop :refer-macros [$ $!]]
+            [mranderson048.reagent.v0v8v0.reagent.debug :refer-macros [dbg prn println log dev?
                                           warn warn-unless]]))
+
+(declare as-element)
 
 ;; From Weavejester's Hiccup, via pump:
 (def ^{:doc "Regular expression that parses a CSS-style id and class
@@ -70,6 +73,33 @@
                    (apply x args))
         :else (clj->js x)))
 
+;; Previous few functions copied for custom elements,
+;; without mapping from class to className etc.
+
+(def custom-prop-name-cache #js{})
+
+(defn cached-custom-prop-name [k]
+  (if (named? k)
+    (if-some [k' (cache-get custom-prop-name-cache (name k))]
+      k'
+      (aset prop-name-cache (name k)
+            (util/dash-to-camel k)))
+    k))
+
+(defn custom-kv-conv [o k v]
+  (doto o
+    (aset (cached-custom-prop-name k)
+          (convert-prop-value v))))
+
+(defn convert-custom-prop-value [x]
+  (cond (js-val? x) x
+        (named? x) (name x)
+        (map? x) (reduce-kv custom-kv-conv #js{} x)
+        (coll? x) (clj->js x)
+        (ifn? x) (fn [& args]
+                   (apply x args))
+        :else (clj->js x)))
+
 (defn oset [o k v]
   (doto (if (nil? o) #js{} o)
     (aset k v)))
@@ -77,28 +107,42 @@
 (defn oget [o k]
   (if (nil? o) nil (aget o k)))
 
-(defn set-id-class [p id-class]
+(defn set-id-class
+  "Takes the id and class from tag keyword, and adds them to the
+  other props. Parsed tag is JS object with :id and :class properties."
+  [props id-class]
   (let [id ($ id-class :id)
-        p (if (and (some? id)
-                   (nil? (oget p "id")))
-            (oset p "id" id)
-            p)]
-    (if-some [class ($ id-class :className)]
-      (let [old (oget p "className")]
-        (oset p "className" (if (nil? old)
-                              class
-                              (str class " " old))))
-      p)))
+        class ($ id-class :class)]
+    (cond-> props
+      ;; Only use ID from tag keyword if no :id in props already
+      (and (some? id)
+           (nil? (:id props)))
+      (assoc :id id)
+
+      ;; Merge classes
+      class
+      (assoc :class (let [old-class (:class props)]
+                      (if (nil? old-class) class (str class " " old-class)))))))
+
+(defn stringify-class [{:keys [class] :as props}]
+  (if (coll? class)
+    (->> class
+         (filter identity)
+         (string/join " ")
+         (assoc props :class))
+    props))
 
 (defn convert-props [props id-class]
-  (-> props
-      convert-prop-value
-      (set-id-class id-class)))
-
+  (let [props (-> props
+                  stringify-class
+                  (set-id-class id-class))]
+    (if ($ id-class :custom)
+      (convert-custom-prop-value props)
+      (convert-prop-value props))))
 
 ;;; Specialization for input components
 
-;; This gets set from mranderson048.reagent.v0v7v0.reagent.dom
+;; This gets set from mranderson048.reagent.v0v8v0.reagent.dom
 (defonce find-dom-node nil)
 
 ;; <input type="??" >
@@ -111,55 +155,66 @@
   [input-type]
   (contains? these-inputs-have-selection-api input-type))
 
-(defn input-set-value [this]
+(declare input-component-set-value)
+
+(defn input-node-set-value
+  [node rendered-value dom-value component {:keys [on-write]}]
+  (if-not (and (identical? node ($ js/document :activeElement))
+            (has-selection-api? ($ node :type))
+            (string? rendered-value)
+            (string? dom-value))
+    ;; just set the value, no need to worry about a cursor
+    (do
+      ($! component :cljsDOMValue rendered-value)
+      ($! node :value rendered-value)
+      (when (fn? on-write)
+        (on-write rendered-value)))
+
+    ;; Setting "value" (below) moves the cursor position to the
+    ;; end which gives the user a jarring experience.
+    ;;
+    ;; But repositioning the cursor within the text, turns out to
+    ;; be quite a challenge because changes in the text can be
+    ;; triggered by various events like:
+    ;; - a validation function rejecting a user inputted char
+    ;; - the user enters a lower case char, but is transformed to
+    ;;   upper.
+    ;; - the user selects multiple chars and deletes text
+    ;; - the user pastes in multiple chars, and some of them are
+    ;;   rejected by a validator.
+    ;; - the user selects multiple chars and then types in a
+    ;;   single new char to repalce them all.
+    ;; Coming up with a sane cursor repositioning strategy hasn't
+    ;; been easy ALTHOUGH in the end, it kinda fell out nicely,
+    ;; and it appears to sanely handle all the cases we could
+    ;; think of.
+    ;; So this is just a warning. The code below is simple
+    ;; enough, but if you are tempted to change it, be aware of
+    ;; all the scenarios you have handle.
+    (let [node-value ($ node :value)]
+      (if (not= node-value dom-value)
+        ;; IE has not notified us of the change yet, so check again later
+        (batch/do-after-render #(input-component-set-value component))
+        (let [existing-offset-from-end (- (count node-value)
+                                         ($ node :selectionStart))
+              new-cursor-offset        (- (count rendered-value)
+                                         existing-offset-from-end)]
+          ($! component :cljsDOMValue rendered-value)
+          ($! node :value rendered-value)
+          (when (fn? on-write)
+            (on-write rendered-value))
+          ($! node :selectionStart new-cursor-offset)
+          ($! node :selectionEnd new-cursor-offset))))))
+
+(defn input-component-set-value [this]
   (when ($ this :cljsInputLive)
     ($! this :cljsInputDirty false)
     (let [rendered-value ($ this :cljsRenderedValue)
           dom-value ($ this :cljsDOMValue)
+          ;; Default to the root node within this component
           node (find-dom-node this)]
       (when (not= rendered-value dom-value)
-        (if-not (and (identical? node ($ js/document :activeElement))
-                     (has-selection-api? ($ node :type))
-                     (string? rendered-value)
-                     (string? dom-value))
-          ;; just set the value, no need to worry about a cursor
-          (do
-            ($! this :cljsDOMValue rendered-value)
-            ($! node :value rendered-value))
-
-          ;; Setting "value" (below) moves the cursor position to the
-          ;; end which gives the user a jarring experience.
-          ;;
-          ;; But repositioning the cursor within the text, turns out to
-          ;; be quite a challenge because changes in the text can be
-          ;; triggered by various events like:
-          ;; - a validation function rejecting a user inputted char
-          ;; - the user enters a lower case char, but is transformed to
-          ;;   upper.
-          ;; - the user selects multiple chars and deletes text
-          ;; - the user pastes in multiple chars, and some of them are
-          ;;   rejected by a validator.
-          ;; - the user selects multiple chars and then types in a
-          ;;   single new char to repalce them all.
-          ;; Coming up with a sane cursor repositioning strategy hasn't
-          ;; been easy ALTHOUGH in the end, it kinda fell out nicely,
-          ;; and it appears to sanely handle all the cases we could
-          ;; think of.
-          ;; So this is just a warning. The code below is simple
-          ;; enough, but if you are tempted to change it, be aware of
-          ;; all the scenarios you have handle.
-          (let [node-value ($ node :value)]
-            (if (not= node-value dom-value)
-              ;; IE has not notified us of the change yet, so check again later
-              (batch/do-after-render #(input-set-value this))
-              (let [existing-offset-from-end (- (count node-value)
-                                                ($ node :selectionStart))
-                    new-cursor-offset        (- (count rendered-value)
-                                                existing-offset-from-end)]
-                ($! this :cljsDOMValue rendered-value)
-                ($! node :value rendered-value)
-                ($! node :selectionStart new-cursor-offset)
-                ($! node :selectionEnd new-cursor-offset)))))))))
+        (input-node-set-value node rendered-value dom-value this {})))))
 
 (defn input-handle-change [this on-change e]
   ($! this :cljsDOMValue (-> e .-target .-value))
@@ -167,10 +222,11 @@
   ;; wants to keep the value unchanged
   (when-not ($ this :cljsInputDirty)
     ($! this :cljsInputDirty true)
-    (batch/do-after-render #(input-set-value this)))
+    (batch/do-after-render #(input-component-set-value this)))
   (on-change e))
 
-(defn input-render-setup [this jsprops]
+(defn input-render-setup
+  [this jsprops]
   ;; Don't rely on React for updating "controlled inputs", since it
   ;; doesn't play well with async rendering (misses keystrokes).
   (when (and (some? jsprops)
@@ -205,7 +261,7 @@
 
 (def input-spec
   {:display-name "ReagentInput"
-   :component-did-update input-set-value
+   :component-did-update input-component-set-value
    :component-will-unmount input-unmount
    :reagent-render
    (fn [argv comp jsprops first-child]
@@ -213,7 +269,8 @@
        (input-render-setup this jsprops)
        (make-element argv comp jsprops first-child)))})
 
-(defn reagent-input []
+(defn reagent-input
+  []
   (when (nil? reagent-input-class)
     (set! reagent-input-class (comp/create-class input-spec)))
   reagent-input-class)
@@ -227,9 +284,12 @@
                 (string/replace class #"\." " "))]
     (assert tag (str "Invalid tag: '" hiccup-tag "'"
                      (comp/comp-name)))
-    #js{:name tag
-        :id id
-        :className class}))
+    #js {:name tag
+         :id id
+         :class class
+         ;; Custom element names must contain hyphen
+         ;; https://www.w3.org/TR/custom-elements/#custom-elements-core-concepts
+         :custom (not= -1 (.indexOf tag "-"))}))
 
 (defn try-get-key [x]
   ;; try catch to avoid clojurescript peculiarity with
@@ -251,9 +311,19 @@
         jsprops #js{:argv v}]
     (when-some [key (key-from-vec v)]
       ($! jsprops :key key))
-    ($ util/react createElement c jsprops)))
+    (react/createElement c jsprops)))
 
-(defn adapt-react-class [c]
+(defn fragment-element [argv]
+  (let [props (nth argv 1 nil)
+        hasprops (or (nil? props) (map? props))
+        jsprops (convert-prop-value (if hasprops props))
+        first-child (+ 1 (if hasprops 1 0))]
+    (when-some [key (key-from-vec argv)]
+      (oset jsprops "key" key))
+    (make-element argv react/Fragment jsprops first-child)))
+
+(defn adapt-react-class
+  [c]
   (doto (->NativeWrapper)
     ($! :name c)
     ($! :id nil)
@@ -265,8 +335,6 @@
   (if-some [s (cache-get tag-name-cache x)]
     s
     (aset tag-name-cache x (parse-tag x))))
-
-(declare as-element)
 
 (defn native-element [parsed argv first]
   (let [comp ($ parsed :name)]
@@ -301,6 +369,9 @@
   (let [tag (nth v 0 nil)]
     (assert (valid-tag? tag) (hiccup-err v "Invalid Hiccup form"))
     (cond
+      (keyword-identical? :<> tag)
+      (fragment-element v)
+
       (hiccup-tag? tag)
       (let [n (name tag)
             pos (.indexOf n ">")]
@@ -313,8 +384,12 @@
                       (hiccup-err v "Expected React component in"))
               (native-element #js{:name comp} v 2))
           ;; Support extended hiccup syntax, i.e :div.bar>a.foo
-          (recur [(subs n 0 pos)
-                  (assoc v 0 (subs n (inc pos)))])))
+          ;; Apply metadata (e.g. :key) to the outermost element.
+          ;; Metadata is probably used only with sequeneces, and in that case
+          ;; only the key of the outermost element matters.
+          (recur (with-meta [(subs n 0 pos)
+                             (assoc (with-meta v nil) 0 (subs n (inc pos)))]
+                            (meta v)))))
 
       (instance? NativeWrapper tag)
       (native-element tag v 1)
@@ -392,12 +467,12 @@
 (defn make-element [argv comp jsprops first-child]
   (case (- (count argv) first-child)
     ;; Optimize cases of zero or one child
-    0 ($ util/react createElement comp jsprops)
+    0 (react/createElement comp jsprops)
 
-    1 ($ util/react createElement comp jsprops
+    1 (react/createElement comp jsprops
           (as-element (nth argv first-child nil)))
 
-    (.apply ($ util/react :createElement) nil
+    (.apply react/createElement nil
             (reduce-kv (fn [a k v]
                          (when (>= k first-child)
                            (.push a (as-element v)))

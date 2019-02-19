@@ -4,7 +4,7 @@
             [mranderson048.re-frame.v0v10v6.re-frame.core :as rf]
             [clojure.string :as str]
             [day8.re-frame-10x.utils.re-com :as rc]
-            [mranderson048.reagent.v0v7v0.reagent.core :as r]
+            [mranderson048.reagent.v0v8v0.reagent.core :as r]
             [devtools.prefs]
             [devtools.formatters.core]
             [cljsjs.react-highlight]

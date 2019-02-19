@@ -4,7 +4,7 @@
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.671"]
-                 [reagent "0.6.0" :scope "provided"]
+                 [reagent "0.8.0" :scope "provided"]
                  [re-frame "0.10.6" :scope "provided"]
                  [binaryage/devtools "0.9.10"]
                  [cljsjs/react-flip-move "2.9.17-0"]
@@ -38,7 +38,7 @@
                                                                               cljsjs/create-react-class
                                                                               org.clojure/tools.logging
                                                                               net.cgrand/macrovich]]
-                                                   ^:source-dep [reagent "0.7.0"
+                                                   ^:source-dep [reagent "0.8.0"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom

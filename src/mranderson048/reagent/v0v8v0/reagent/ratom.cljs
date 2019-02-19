@@ -1,9 +1,9 @@
-(ns mranderson048.reagent.v0v7v0.reagent.ratom
+(ns mranderson048.reagent.v0v8v0.reagent.ratom
   (:refer-clojure :exclude [atom])
-  (:require-macros [mranderson048.reagent.v0v7v0.reagent.ratom :refer [with-let]])
-  (:require [mranderson048.reagent.v0v7v0.reagent.impl.util :as util]
-            [mranderson048.reagent.v0v7v0.reagent.debug :refer-macros [dbg log warn error dev? time]]
-            [mranderson048.reagent.v0v7v0.reagent.impl.batching :as batch]
+  (:require-macros [mranderson048.reagent.v0v8v0.reagent.ratom :refer [with-let]])
+  (:require [mranderson048.reagent.v0v8v0.reagent.impl.util :as util]
+            [mranderson048.reagent.v0v8v0.reagent.debug :refer-macros [dbg log warn error dev? time]]
+            [mranderson048.reagent.v0v8v0.reagent.impl.batching :as batch]
             [clojure.set :as s]))
 
 (declare ^:dynamic *ratom-context*)
@@ -145,6 +145,9 @@
   (-swap! [a f x]        (-reset! a (f state x)))
   (-swap! [a f x y]      (-reset! a (f state x y)))
   (-swap! [a f x y more] (-reset! a (apply f state x y more)))
+
+  IWithMeta
+  (-with-meta [_ new-meta] (RAtom. state new-meta validator watches))
 
   IMeta
   (-meta [_] meta)

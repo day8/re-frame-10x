@@ -1,21 +1,20 @@
-(ns mranderson048.reagent.v0v7v0.reagent.core
-  (:require-macros [mranderson048.reagent.v0v7v0.reagent.core])
+(ns mranderson048.reagent.v0v8v0.reagent.core
+  (:require-macros [mranderson048.reagent.v0v8v0.reagent.core])
   (:refer-clojure :exclude [partial atom flush])
-  (:require [mranderson048.reagent.v0v7v0.reagent.impl.template :as tmpl]
-            [mranderson048.reagent.v0v7v0.reagent.impl.component :as comp]
-            [mranderson048.reagent.v0v7v0.reagent.impl.util :as util]
-            [mranderson048.reagent.v0v7v0.reagent.impl.batching :as batch]
-            [mranderson048.reagent.v0v7v0.reagent.ratom :as ratom]
-            [mranderson048.reagent.v0v7v0.reagent.debug :as deb :refer-macros [dbg prn
+  (:require [react :as react]
+            [mranderson048.reagent.v0v8v0.reagent.impl.template :as tmpl]
+            [mranderson048.reagent.v0v8v0.reagent.impl.component :as comp]
+            [mranderson048.reagent.v0v8v0.reagent.impl.util :as util]
+            [mranderson048.reagent.v0v8v0.reagent.impl.batching :as batch]
+            [mranderson048.reagent.v0v8v0.reagent.ratom :as ratom]
+            [mranderson048.reagent.v0v8v0.reagent.debug :as deb :refer-macros [dbg prn
                                                   assert-some assert-component
                                                   assert-js-object assert-new-state
                                                   assert-callable]]
-            [mranderson048.reagent.v0v7v0.reagent.interop :refer-macros [$ $!]]
-            [mranderson048.reagent.v0v7v0.reagent.dom :as dom]))
+            [mranderson048.reagent.v0v8v0.reagent.interop :refer-macros [$ $!]]
+            [mranderson048.reagent.v0v8v0.reagent.dom :as dom]))
 
 (def is-client util/is-client)
-
-(def react util/react)
 
 (defn create-element
   "Create a native React element, by calling React.createElement directly.
@@ -34,13 +33,13 @@
    (create-element type nil))
   ([type props]
    (assert-js-object props)
-   ($ react createElement type props))
+   (react/createElement type props))
   ([type props child]
    (assert-js-object props)
-   ($ react createElement type props child))
+   (react/createElement type props child))
   ([type props child & children]
    (assert-js-object props)
-   (apply ($ react :createElement) type props child children)))
+   (apply react/createElement type props child children)))
 
 (defn as-element
   "Turns a vector of Hiccup syntax into a React element. Returns form
