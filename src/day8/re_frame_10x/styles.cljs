@@ -355,7 +355,10 @@
                         :color     text-color-muted
                         :content   "\"⚲\""
                         :transform "rotate(-45deg)"}]
-      [:input {:border "none"}]]]]
+      [:input {:border "none"}
+       ["&::placeholder"
+        {:color common/medium-gray
+         :font-style "italic"}]]]]]
    [:.filter-control-input
     {:display "flex"
      :flex    "0 0 auto"}]

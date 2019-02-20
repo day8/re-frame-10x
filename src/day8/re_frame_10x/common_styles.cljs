@@ -16,6 +16,7 @@
 (def medium-gray "#999")
 (def light-purple "#616cdb")
 (def light-blue "lightblue")
+(def lighter-blue "A tint of background-blue" "#eef5ff")
 (def light-gray "#efeef1")
 (def yellow "yellow")
 (def text-color-muted "#8f8f8f")

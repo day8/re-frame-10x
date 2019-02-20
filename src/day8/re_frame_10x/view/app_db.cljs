@@ -46,7 +46,9 @@
     {:background-color        "#fafbfc"
      :color                   "#b0b2b4"
      :border                  pod-border-edge
-     :height                  common/gs-31}]
+     :height                  common/gs-31}
+    ["&.subscription-pinned"
+     {:background-color common/lighter-blue}]]
 
    [:.app-db-path--button
     {:width         "25px"

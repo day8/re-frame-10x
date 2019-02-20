@@ -140,7 +140,8 @@
              [:option {:value "slower-than"} "slower than"]]
             [:div.filter-control-input {:style {:margin-left 10}}
              [components/search-input {:on-save   save-query
-                                       :on-change #(reset! filter-input (.. % -target -value))}]
+                                       :on-change #(reset! filter-input (.. % -target -value))
+                                       :placeholder "Type to filter traces"}]
              (if @input-error
                [:div.input-error {:style {:color "red" :margin-top 5}}
                 "Please enter a valid number."])]]]

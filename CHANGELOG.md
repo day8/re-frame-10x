@@ -7,13 +7,14 @@ All notable changes to this project will be documented in this file. This change
 
 * Support for React 15/Reagent 0.7.0 and below. The last version of re-frame-10x that supports these versions is 0.3.7. - [#229](https://github.com/Day8/re-frame-10x/issue/229)
 
-### Changed
-
-* Use npm-style names for JS libs. This should improve compatibility with Shadow CLJS users, and people using ClojureScript's `:npm-deps`. @deraen - [#201](https://github.com/Day8/re-frame-10x/pull/201)
-
 ### Added
 
 * Added an explicit dependency on create-react-class in preparation for it being removed as a dependency in the upcoming Reagent 0.9.0. [#224](https://github.com/Day8/re-frame-10x/issues/224)
+* Enabled subscription pinning and searching by default.
+
+### Changed
+
+* Use npm-style names for JS libs. This should improve compatibility with Shadow CLJS users, and people using ClojureScript's `:npm-deps`. @deraen - [#201](https://github.com/Day8/re-frame-10x/pull/201)
 
 ## [0.3.7] - 2018-02-19
 
