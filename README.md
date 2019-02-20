@@ -160,21 +160,36 @@ If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://s
 
   If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`.
 
-- Locate the `:compiler` map under `:dev` and add `:closure-defines` and `:preloads`.
+- Locate your compiler config for your development build and add `:closure-defines` and `:preloads` to enable re-frame-10x.
 
-  For example:
+  For example using [cljsbuild](https://github.com/emezeske/lein-cljsbuild) and Leiningen update your `project.clj`:
 
   ```cljs
-  {:builds
-     [{:id           "dev"
-       :source-paths ["src" "dev"]
-       :compiler     {...
-                      :closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}
-                      :preloads             [day8.re-frame-10x.preload]
-                      :main                 "myapp.core" ;; You must specify a :main or follow the advanced setup ^^^
-                      }}]}
+  :profiles 
+  {:dev  
+    {:cljsbuild
+      {:builds
+        [{:id           "dev"
+          :source-paths ["src" "dev"]
+          :compiler     {...
+                         :closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}
+                         :preloads             [day8.re-frame-10x.preload]
+                         :main                 "myapp.core" ;; You must specify a :main or follow the advanced setup ^^^
+                         }}]}}}
+  ```
+  
+  If you're using figwheel-main, update your `dev.cljs.edn` file:
+  
+  ```cljs
+  ^{:watch-dirs   ["src/main/cljs"]
+    :ring-handler "...}
+  {:main            "myapp.core" ;; You must specify a :main or follow the advanced setup ^^^
+   :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
+   :preloads        [day8.re-frame-10x.preload]}
   ```
 
+  The key things you need to add are:
+  
   - `:closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true}`
   - `:preloads             [day8.re-frame-10x.preload]`
 
@@ -258,9 +273,9 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 
 ### The expansion triangles in the data browsers don't work any more. But they used to.
 
-* (when running your app), in Chrome, go to `devtools` (F12), choose the `Application` Tab and then select (on the left) `Local Storage` and clear out what's there. Restart your app.  Fixed?   (Warning this removes your `re-frame-10x` settings)
-* if the problem persists, the nuclear option is to open a new Chrome tab and browse to `chrome://settings/resetProfileSettings`. Multiple people have confirmed this works, but it's a bit too destructive.
-* can you tell us (in the Clojurians #re-frame slack channel) what you did immediately before the problem showed up. We're still trying to track down the reasons.
+* (While running your app), in Chrome, go to `devtools` (F12), choose the `Application` Tab and then select (on the left) `Local Storage` and clear out what's there. Restart your app.  Fixed?   (Warning this removes your `re-frame-10x` settings)
+* If the problem persists, the nuclear option is to open a new Chrome tab and browse to `chrome://settings/resetProfileSettings`. Multiple people have confirmed this works, but it's a bit too destructive.
+* Tell us (in the Clojurians #re-frame slack channel) what you did immediately before the problem showed up. We're still trying to track down the reasons.
 
 ## How does it work?
 
