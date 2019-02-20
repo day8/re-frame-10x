@@ -178,7 +178,7 @@ If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://s
                          }}]}}}
   ```
   
-  If you're using figwheel-main, update your `dev.cljs.edn` file:
+  If you're using [figwheel-main](https://github.com/bhauman/figwheel-main), update your `dev.cljs.edn` file:
   
   ```cljs
   ^{:watch-dirs   ["src/main/cljs"]
