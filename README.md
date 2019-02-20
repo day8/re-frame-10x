@@ -244,6 +244,7 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 ### If the re-frame-10x window won't show up when pressing Ctrl-H
 
 * Make sure that your browser window doesn't have focus in a text-box or something else that is intercepting keyboard events.
+* Make sure that the re-frame-10x div has been created. Run `document.querySelector('#--re-frame-10x--')` in your browser's console to check if an element is returned. If this returns `null` then something else isn't working correctly.
 
 ### If re-frame-10x throws an exception on startup
 
