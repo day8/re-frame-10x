@@ -168,15 +168,13 @@
                                      (rf/dispatch [:settings/window-width window-width-val])
                                      (reset! window-width window-width-val))))
         handle-keys          (fn [e]
-                               (let [combo-key?      (or (.-ctrlKey e) (.-metaKey e) (.-altKey e))
-                                     tag-name        (.-tagName (.-target e))
-                                     code            (.-code e)
+                               (let [tag-name        (.-tagName (.-target e))
                                      entering-input? (contains? #{"INPUT" "SELECT" "TEXTAREA"} tag-name)]
-                                 (when (and (not entering-input?) combo-key?)
-                                   (cond
-                                     (and (= code "KeyH") (.-ctrlKey e))
-                                     (do (rf/dispatch [:settings/user-toggle-panel])
-                                         (.preventDefault e))))))
+                                 (when (and (not entering-input?)
+                                            (= (.-key e) "h")
+                                            (.-ctrlKey e))
+                                   (rf/dispatch [:settings/user-toggle-panel])
+                                   (.preventDefault e))))
         handle-mousemove     (fn [e]
                                (when @dragging?
                                  (let [x                (.-clientX e)

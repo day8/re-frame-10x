@@ -16,6 +16,10 @@ All notable changes to this project will be documented in this file. This change
 
 * Use npm-style names for JS libs. This should improve compatibility with Shadow CLJS users, and people using ClojureScript's `:npm-deps`. @deraen - [#201](https://github.com/Day8/re-frame-10x/pull/201)
 
+### Fixed
+
+* Make Ctrl-H show/hide shortcut work correctly when using different keyboard layouts. [#231](https://github.com/Day8/re-frame-10x/issues/231)
+
 ## [0.3.7] - 2018-02-19
 
 ### Deprecated
