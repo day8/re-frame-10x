@@ -9,8 +9,8 @@ It helps you find false assumptions faster.
 
 Branch | React Version | Status | Artifact
 ----------|--------|--------|--------
-`master` | React 16 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16) | `[day8.re-frame/re-frame-10x "0.3.7-react16"]`
-- | React 15 | - | `[day8.re-frame/re-frame-10x "0.3.7"]`
+`master` | React 16 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x/tree/master.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x/tree/react-16) | `[day8.re-frame/re-frame-10x "0.3.7-react16"]`
+`-` | React 15 | `-` | `[day8.re-frame/re-frame-10x "0.3.7"]`
 
 **Important**: Note that version 0.3.7 is the last release that supports React 15/Reagent 0.6.0-0.7.0. re-frame-10x 0.4.0 will only support React 16/Reagent 0.8.0.
 
