@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Removed
 
-* Support for React 15/Reagent 0.7.0 and below. The last version of re-frame-10x that supports these versions is 0.3.7. - [#229](https://github.com/Day8/re-frame-10x/issue/229)
+* Support for React 15/Reagent 0.7.0 and below. The last version of re-frame-10x that supports these versions is 0.3.7. - [#229](https://github.com/Day8/re-frame-10x/issues/229)
 
 ### Added
 
