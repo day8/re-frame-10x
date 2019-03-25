@@ -14,12 +14,12 @@
                  [cljsjs/create-react-class "15.6.2-0" :exclusions [cljsjs/react]]
                  ;[expound "0.4.0"]
                  ]
-  :plugins [[thomasa/mranderson "0.4.8"]
+  :plugins [[thomasa/mranderson "0.5.0"]
             [lein-less "RELEASE"]]
   :deploy-repositories {"releases"  {:sign-releases false :url "https://clojars.org/repo"}
                         "snapshots" {:sign-releases false :url "https://clojars.org/repo"}}
 
-  ;:source-paths ["target/srcdeps"]
+  :source-paths ["src" "gen-src"]
 
   :release-tasks [["vcs" "assert-committed"]
                   ["change" "version" "leiningen.release/bump-version" "release"]
@@ -31,7 +31,8 @@
                   ["vcs" "push"]]
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
-             :mranderson {:dependencies ^:replace [^:source-dep [re-frame "0.10.6"
+             :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
+                          :dependencies ^:replace [^:source-dep [re-frame "0.10.6"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom
@@ -47,5 +48,7 @@
                                                                               cljsjs/create-react-class
                                                                               org.clojure/tools.logging
                                                                               net.cgrand/macrovich]]
+                                                   ; We need a source-dep on Garden, as there are breaking changes between
+                                                   ; versions, and consuming projects can override this version of Garden.
                                                    ^:source-dep [garden "1.3.3"
                                                                  :exclusions [com.yahoo.platform.yui/yuicompressor]]]}})

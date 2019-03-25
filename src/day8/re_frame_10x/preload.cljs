@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.preload
   (:require [day8.re-frame-10x :as trace]
-            [mranderson048.re-frame.v0v10v6.re-frame.core :as rf]))
+            [day8.re-frame-10x.inlined-deps.re-frame.v0v10v6.re-frame.core :as rf]))
 
 
 ;; Use this namespace with the :preloads compiler option to perform the necessary setup for enabling tracing:

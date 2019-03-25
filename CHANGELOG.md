@@ -20,6 +20,10 @@ All notable changes to this project will be documented in this file. This change
 
 * Make Ctrl-H show/hide shortcut work correctly when using different keyboard layouts. [#231](https://github.com/Day8/re-frame-10x/issues/231)
 
+### Internal Changes
+
+* Upgraded to [mranderson 0.5.0](https://github.com/benedekfazekas/mranderson/blob/master/CHANGELOG.md#050). This is an internal change and shouldn't be visible to end-users of 10x, but it's listed here in case you run into any trouble.
+
 ## [0.3.7] - 2018-02-19
 
 ### Deprecated
