@@ -24,19 +24,33 @@ jobs:
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "project.clj" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: lein deps
+      # run tests!
+      - run:
+          name: test Clojure
+          command: lein test
+
+      - run:
+          name: install 10x for use by sample project
+          command: lein install
+
+      - run:
+          name: test sample project dev compile
+          command: lein with-profile dev do clean, compile
+          working_directory: ~/repo/examples/todomvc
+
+      - run:
+          name: test sample project prod compile
+          command: lein with-profile prod do clean, compile
+          working_directory: ~/repo/examples/todomvc
 
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "project.clj" }}
 
-      # run tests!
-      - run: lein test
