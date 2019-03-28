@@ -1,9 +1,6 @@
 (ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.reagent.v0v8v0.reagent.debug
   (:refer-clojure :exclude [prn println time]))
 
-; mranderson upgrading note: these macros below need to be rewritten by hand until
-; https://github.com/benedekfazekas/mranderson/issues/28 is fixed.
-
 (defmacro log
   "Print with console.log, if it exists."
   [& forms]
