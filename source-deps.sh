@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-# Clean beforehand to remove anything left over from previous runs
-# then create the inline dependencies.
-lein with-profile mranderson do clean, inline-deps
+set -e
 
 # Delete all generated sources
 rm -r ./gen-src/
+
+# Clean beforehand to remove anything left over from previous runs
+# then create the inline dependencies.
+lein with-profile mranderson do clean, inline-deps
 
 # Delete the extra META-INF directories, we can't use -delete here, as find's -delete only deletes empty directories.
 # See https://unix.stackexchange.com/a/164882 for more details.
