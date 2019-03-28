@@ -2,6 +2,7 @@
   :description "Become 10x more productive when developing and debugging re-frame applications."
   :url "https://github.com/Day8/re-frame-10x"
   :license {:name "MIT"}
+  :min-lein-version "2.9.1"
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.238"]
                  [reagent "0.8.0" :scope "provided"]
