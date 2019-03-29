@@ -582,7 +582,7 @@
     (defselector a)
     ;; => #'user/a
     (a \":hover\")
-    ;; => #<CSSSelector garden.selectors.CSSSelector@7c42c2a9>
+    ;; => #<CSSSelector day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.selectors.CSSSelector@7c42c2a9>
     (css-selector a)
     ;; => \"a\"
     (css-selector (a \":hover\"))
@@ -623,7 +623,7 @@
     (defpseudoclass hover)
     ;; => #'user/hover
     (hover)
-    ;; => #<CssSelector garden.selectors.CssSelector@2a0ca6e1>
+    ;; => #<CssSelector day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.selectors.CssSelector@2a0ca6e1>
     (p/selector (a hover))
     ;; => \"a:hover\"
 
@@ -667,7 +667,7 @@
     (defpseudoelement first-letter)
     ;; => #'user/first-letter
     (first-letter)
-    ;; => #<CssSelector garden.selectors.CssSelector@20aef718>
+    ;; => #<CssSelector day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.selectors.CssSelector@20aef718>
     (p/selector (p first-letter))
     ;; => \"p::first-letter\"
 
@@ -880,7 +880,7 @@
               "Selector must be either a keyword, string, or symbol." (str "Invalid value " (pr-str s)))))))
 
 (defpseudoclass
-  ^{:doc "CSS :nth-child pseudo class selector."} 
+  ^{:doc "CSS :nth-child pseudo class selector."}
   nth-child [x]
   (if (number? x)
     (nth-x (str x "n"))
@@ -931,7 +931,7 @@
   ([attr-name op attr-value]
    (let [v (name attr-value)
          ;; Wrap the value in quotes unless it's already
-         ;; quoted to prevent emitting bad selectors. 
+         ;; quoted to prevent emitting bad selectors.
          v (if (re-matches #"\"(\\|[^\"])*\"|'(\\|[^\'])*'" v)
              v
              (pr-str v))]
@@ -1039,14 +1039,14 @@
 
 (defn specificity
   "Calculate a CSS3 selector's specificity.
-  
+
   Example:
 
     (specificity \"#s12:not(FOO)\")
     ;; => 101
     (specificity (a hover))
     ;; => 10
-  " 
+  "
   [selector]
   {:pre [(satisfies? ICSSSelector selector)]}
   (let [{:keys [a b c]} (specificity* selector)

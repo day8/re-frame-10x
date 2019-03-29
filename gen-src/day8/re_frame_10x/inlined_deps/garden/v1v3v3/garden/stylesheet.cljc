@@ -4,8 +4,8 @@
             [day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.color :as color]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.types :as t])
   #?(:clj
-     (:import day8.re_frame_10x.inlined_deps.garden.v1v3v3.garden.types.CSSFunction
-              day8.re_frame_10x.inlined_deps.garden.v1v3v3.garden.types.CSSAtRule)))
+      (:import day8.re_frame_10x.inlined_deps.garden.v1v3v3.garden.types.CSSFunction
+               day8.re_frame_10x.inlined_deps.garden.v1v3v3.garden.types.CSSAtRule)))
 
 ;;;; ## Stylesheet helpers
 

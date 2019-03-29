@@ -45,7 +45,7 @@
   defcssfn
   "Define a function for creating custom CSS functions. The generated
   function will automatically create an instance of
-  `garden.types.CSSFunction` of which the `:args` field will be set
+  `day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.types.CSSFunction` of which the `:args` field will be set
   to whatever the return value of the original function is. The
   `:function` field will be set to `(str name)`.
 
@@ -57,10 +57,10 @@
       ;; => #'user/url
 
       (url \"http://fonts.googleapis.com/css?family=Lato\")
-      ;; => #garden.types.CSSFunction{:function \"url\", :args \"http://fonts.googleapis.com/css?family=Lato\"}
+      ;; => #day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.types.CSSFunction{:function \"url\", :args \"http://fonts.googleapis.com/css?family=Lato\"}
 
       (css (url \"http://fonts.googleapis.com/css?family=Lato\"))
-      ;; => url(http://fonts.googleapis.com/css?family=Lato)
+      ;; => url(http://fonts.googleapis.com/css?family=Lato) 
 
   Ex.
       (defcssfn attr
@@ -72,13 +72,13 @@
       ;; => #'user/attr
 
       (attr :vertical :length)
-      ;; => #garden.types.CSSFunction{:function \"url\", :args [:vertical :length]}
+      ;; => #day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.types.CSSFunction{:function \"url\", :args [:vertical :length]}
 
       (css (attr :vertical :length))
       ;; => \"attr(vertical length)\"
 
-      (attr :end-of-quote :string :inherit)
-      ;; => #garden.types.CSSFunction{:function \"url\", :args [:end-of-quote [:string :inherit]]}
+      (attr :end-of-quote :string :inherit) 
+      ;; => #day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.types.CSSFunction{:function \"url\", :args [:end-of-quote [:string :inherit]]}
 
       (css (attr :end-of-quote :string :inherit))
       ;; => \"attr(end-of-quote string, inherit)\""
@@ -97,7 +97,7 @@
 (defmacro defkeyframes
   "Define a CSS @keyframes animation.
 
-  Ex.
+  Ex. 
       (defkeyframes my-animation
         [:from
          {:background \"red\"}]
