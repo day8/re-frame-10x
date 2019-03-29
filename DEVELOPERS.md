@@ -1,8 +1,20 @@
 ## Development
 
-### Setting up re-frame-10x for development
+### Using the example project (easy)
 
-You need both the re-frame-10x project _and_ a test project to develop it against. For example, you can use the [todo-mvc](https://github.com/Day8/re-frame/tree/master/examples/todomvc) project.
+There is an example TodoMVC project in `/examples/todomvc` in this repo. It is a pretty basic
+application, but in many cases is all you need to work on re-frame-10x.
+
+```console
+$ cd examples/todomvc
+$ lein do clean, figwheel
+```
+
+### Setting up re-frame-10x for development (more advanced)
+
+If you want to test and develop re-frame-10x against your own re-frame projects, you will need to do some more advanced setup using the leiningen checkouts feature.
+
+You need both the re-frame-10x project _and_ a test project to develop it against. For example, you can use the [todo-mvc](https://github.com/Day8/re-frame/tree/master/examples/todomvc) project in the re-frame repo.
 
 - Clone `re-frame-10x` to your machine:
 
@@ -61,7 +73,7 @@ We want to use re-frame, but we don't want to use the re-frame that the host is 
 Run `./source-deps.sh` to update the source dependencies.
 
 ### How does re-frame-10x build?? I don't see anything in the project.clj that looks like it will build.
-    
+
 When you add a path to the :source-paths of the test project used to develop the trace panel against, figwheel in the test project will know to watch and build it too.
 
 ### I'm developing against the re-frame todomvc project. Why are changes in my local re-frame repo reflected in the example project? Shouldn't it be pulling from clojars?
