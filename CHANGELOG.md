@@ -1,7 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.4.0] - Unreleased
+## Unreleased
+
+## [0.4.0] - 2019-03-30
 
 ### Removed
 
@@ -25,7 +27,7 @@ All notable changes to this project will be documented in this file. This change
 
 * Upgraded to [mranderson 0.5.0](https://github.com/benedekfazekas/mranderson/blob/master/CHANGELOG.md#050). This is an internal change and shouldn't be visible to end-users of 10x, but it's listed here in case you run into any trouble.
 
-## [0.3.7] - 2018-02-19
+## [0.3.7] - 2019-02-19
 
 ### Deprecated
 
