@@ -15,7 +15,7 @@
                  [cljsjs/create-react-class "15.6.2-0" :exclusions [cljsjs/react]]
                  ;[expound "0.4.0"]
                  ]
-  :plugins [[thomasa/mranderson "0.5.1-20190329.105340-3"]
+  :plugins [[thomasa/mranderson "0.5.1-20190330.112619-4"]
             [lein-less "RELEASE"]]
   :deploy-repositories {"releases"  {:sign-releases false :url "https://clojars.org/repo"}
                         "snapshots" {:sign-releases false :url "https://clojars.org/repo"}}
