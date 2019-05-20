@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file. This change
 
 * Added an explicit dependency on create-react-class in preparation for it being removed as a dependency in the upcoming Reagent 0.9.0. [#224](https://github.com/Day8/re-frame-10x/issues/224)
 * Enabled subscription pinning and searching by default.
-* There is now a sample project at [example/todomvc](./example/todovmc) which you can use to develop against re-frame-10x, or use for comparison when setting up re-frame-10x on your own project.
+* There is now a sample project at [examples/todomvc](./examples/todomvc) which you can use to develop against re-frame-10x, or use for comparison when setting up re-frame-10x on your own project.
 
 ### Changed
 
