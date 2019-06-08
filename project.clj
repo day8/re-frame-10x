@@ -4,7 +4,7 @@
   :license {:name "MIT"}
   :min-lein-version "2.9.1"
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.238"]
+                 [org.clojure/clojurescript "1.10.520"]
                  [reagent "0.8.0" :scope "provided"]
                  [re-frame "0.10.6" :scope "provided"]
                  [binaryage/devtools "0.9.10"]
