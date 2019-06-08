@@ -12,7 +12,7 @@
                  [zprint "0.4.15"]
                  [cljsjs/react-flip-move "3.0.1-1"]
                  [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]
-                 [cljsjs/create-react-class "15.6.2-0" :exclusions [cljsjs/react]]
+                 [cljsjs/create-react-class "15.6.3-1" :exclusions [cljsjs/react]]
                  ;[expound "0.4.0"]
                  ]
   :plugins [[thomasa/mranderson "0.5.1"]
