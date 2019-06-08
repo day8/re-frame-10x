@@ -5,7 +5,7 @@
   :min-lein-version "2.9.1"
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.520"]
-                 [reagent "0.8.0" :scope "provided"]
+                 [reagent "0.8.1" :scope "provided"]
                  [re-frame "0.10.6" :scope "provided"]
                  [binaryage/devtools "0.9.10"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
@@ -41,7 +41,7 @@
                                                                               cljsjs/create-react-class
                                                                               org.clojure/tools.logging
                                                                               net.cgrand/macrovich]]
-                                                   ^:source-dep [reagent "0.8.0"
+                                                   ^:source-dep [reagent "0.8.1"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom
