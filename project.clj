@@ -51,5 +51,5 @@
                                                                               net.cgrand/macrovich]]
                                                    ; We need a source-dep on Garden, as there are breaking changes between
                                                    ; versions, and consuming projects can override this version of Garden.
-                                                   ^:source-dep [garden "1.3.3"
+                                                   ^:source-dep [garden "1.3.9"
                                                                  :exclusions [com.yahoo.platform.yui/yuicompressor]]]}})
