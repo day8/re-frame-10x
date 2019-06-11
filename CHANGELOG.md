@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## [0.4.1] - 2019-06-11
+
 ### Improvements
 
 * Upgraded dependency on ClojureScript to 1.10.520
