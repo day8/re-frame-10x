@@ -15,10 +15,14 @@
                  [cljsjs/create-react-class "15.6.3-1" :exclusions [cljsjs/react]]
                  ;[expound "0.4.0"]
                  ]
+  
   :plugins [[thomasa/mranderson "0.5.1"]
             [lein-less "RELEASE"]]
-  :deploy-repositories {"releases"  {:sign-releases false :url "https://clojars.org/repo"}
-                        "snapshots" {:sign-releases false :url "https://clojars.org/repo"}}
+
+  :deploy-repositories [["clojars" {:sign-releases false
+                                    :url "https://clojars.org/repo"
+                                    :username :env/CLOJARS_USERNAME
+                                    :password :env/CLOJARS_PASSWORD}]]
 
   :source-paths ["src" "gen-src"]
 
@@ -26,7 +30,7 @@
                   ["change" "version" "leiningen.release/bump-version" "release"]
                   ["vcs" "commit"]
                   ["vcs" "tag" "--no-sign"]
-                  ["deploy"]
+                  ["deploy" "clojars"]
                   ["change" "version" "leiningen.release/bump-version"]
                   ["vcs" "commit"]
                   ["vcs" "push"]]
