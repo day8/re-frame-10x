@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Improvements
+
+* Upgraded dependency on ClojureScript to 1.10.520
+* Upgraded dependency on Clojure to 1.10.1
+* Upgraded dependency on reagent to 0.8.1
+* Upgraded dependency on garden to 1.3.9
+* Upgraded dependency on mranderson to 0.5.1
+* Upgraded dependency on create-react-class to 15.6.3-1
+* Upgraded dependency on react to 16.8.6
+* Upgraded dependency on react-dom to 16.8.6
+* Upgraded dependency on react-flip-move to 3.0.3
+* Upgraded dependency on highlight.js to 9.15.8
+
 ## [0.4.0] - 2019-03-30
 
 ### Removed
