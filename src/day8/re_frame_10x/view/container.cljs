@@ -127,7 +127,7 @@
       :size     "auto"
       :gap      common/gs-12s
       :children [[:span.cross.epoch-nav
-                  {:on-click #(do (rf/dispatch [:settings/user-toggle-panel]))
+                  {:on-click #(rf/dispatch [:settings/user-toggle-panel])
                    :title "Toggle panel"}
                   "✖"]
                  [:span.arrow.epoch-nav
