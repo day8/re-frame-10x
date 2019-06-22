@@ -126,7 +126,11 @@
       :align    :center
       :size     "auto"
       :gap      common/gs-12s
-      :children [[:span.arrow.epoch-nav
+      :children [[:span.cross.epoch-nav
+                  {:on-click #(do (rf/dispatch [:settings/user-toggle-panel]))
+                   :title "Toggle panel"}
+                  "✖"]
+                 [:span.arrow.epoch-nav
                   (if older-epochs-available?
                     {:on-click #(do (rf/dispatch [:component/set-direction :previous])
                                     (rf/dispatch [:epochs/previous-epoch]))

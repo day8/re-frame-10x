@@ -365,6 +365,13 @@
    [:.nav {:background common/sidebar-background-color
            :height     (px 50)
            :color      "white"}
+    [:span.cross {:color common/dark-purple
+                  :background-color common/standard-background-color
+                  :padding          "5px 5px 5px 10px"
+                  :cursor           "pointer"
+                  :user-select      "none"
+                  :min-width "16px"
+                  :max-width "16px"}]
     [:span.arrow {:color            common/blue-modern-color ;; Should this be a button instead of a span?
                   :background-color common/standard-background-color
                   :padding          (px 5)
