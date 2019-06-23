@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.520"]
                  [reagent "0.8.1" :scope "provided"]
-                 [re-frame "0.10.6" :scope "provided"]
+                 [re-frame "0.10.7" :scope "provided"]
                  [binaryage/devtools "0.9.10"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
                  [zprint "0.4.15"]
