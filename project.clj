@@ -37,7 +37,7 @@
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
-                          :dependencies ^:replace [^:source-dep [re-frame "0.10.6"
+                          :dependencies ^:replace [^:source-dep [re-frame "0.10.7"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom
