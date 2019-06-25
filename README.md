@@ -299,6 +299,7 @@ If you want to work on re-frame-10x, see [DEVELOPERS.md](DEVELOPERS.md).
 * [Delete](https://thenounproject.com/term/delete/926276) by logan from the Noun Project
 * [Settings](https://thenounproject.com/search/?q=settings&i=1169241) by arjuazka from the Noun Project
 * [Wrench](https://thenounproject.com/icon/1013218/) by Aleksandr Vector from the Noun Project
+* [Collapse right](https://thenounproject.com/search/?q=minimize%20right&i=45856) by By useiconic.com, from the Noun Project
 * [pause](https://thenounproject.com/icon/1376662/) by Bhuvan from the Noun Project
 * [play]() by Bhuvan from the Noun Project
 * [Log Out](https://thenounproject.com/icon/54484/) by Arthur Shlain from the Noun Project

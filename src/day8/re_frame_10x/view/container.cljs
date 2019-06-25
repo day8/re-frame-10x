@@ -35,6 +35,7 @@
 (def open-external (macros/slurp-macro "day8/re_frame_10x/images/logout.svg"))
 (def settings-svg (macros/slurp-macro "day8/re_frame_10x/images/wrench.svg"))
 (def orange-settings-svg (macros/slurp-macro "day8/re_frame_10x/images/orange-wrench.svg"))
+(def collapse-svg (macros/slurp-macro "day8/re_frame_10x/images/collapse.svg"))
 (def reload (macros/slurp-macro "day8/re_frame_10x/images/reload.svg"))
 (def reload-disabled (macros/slurp-macro "day8/re_frame_10x/images/reload-disabled.svg"))
 (def skip-to-end (macros/slurp-macro "day8/re_frame_10x/images/skip-to-end.svg"))
@@ -81,7 +82,14 @@
                    {:title    "Pop out"
                     :src      (str "data:image/svg+xml;utf8,"
                                    open-external)
-                    :on-click #(rf/dispatch-sync [:global/launch-external])}])]]))
+                    :on-click #(rf/dispatch-sync [:global/launch-external])}])
+                (when-not external-window?
+                          [:img.nav-icon.active.noselect
+                           {:title    "Collapse"
+                            :src      (str "data:image/svg+xml;utf8,"
+                                           collapse-svg)
+                            :on-click #(rf/dispatch [:settings/user-toggle-panel])}])
+                ]]))
 
 
 (defn settings-header [external-window?]
@@ -126,11 +134,7 @@
       :align    :center
       :size     "auto"
       :gap      common/gs-12s
-      :children [[:span.cross.epoch-nav
-                  {:on-click #(rf/dispatch [:settings/user-toggle-panel])
-                   :title "Toggle panel"}
-                  "✖"]
-                 [:span.arrow.epoch-nav
+      :children [[:span.arrow.epoch-nav
                   (if older-epochs-available?
                     {:on-click #(do (rf/dispatch [:component/set-direction :previous])
                                     (rf/dispatch [:epochs/previous-epoch]))
