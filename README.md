@@ -158,7 +158,7 @@ If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://s
                         [day8.re-frame/re-frame-10x "VERSION (see version above)"]] }}
   ```
 
-  If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`.
+  **For versions < 0.4.0:** If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`.
 
 - Locate your compiler config for your development build and add `:closure-defines` and `:preloads` to enable re-frame-10x.
 
