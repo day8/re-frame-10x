@@ -251,6 +251,18 @@
     (:epochs db)))
 
 (rf/reg-sub
+  :epochs/all-indexed-events
+  :<- [:epochs/epoch-root]
+  (fn [epochs _]
+    (mapv (fn [match]
+            (-> match
+                :match-info
+                metam/matched-event
+                ((juxt #(get-in % [:id])
+                       #(get-in % [:tags :event])))))
+          (:matches epochs))))
+
+(rf/reg-sub
   :epochs/current-match-state
   :<- [:epochs/epoch-root]
   :<- [:epochs/match-ids]
@@ -756,3 +768,10 @@
   :<- [:errors/root]
   (fn [errors _]
     (:popup-failed? errors)))
+
+;;
+
+(rf/reg-sub
+  :history/showing-history?
+  (fn [db _]
+    (get-in db [:history :showing-history?])))

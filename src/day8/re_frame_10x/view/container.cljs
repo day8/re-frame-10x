@@ -12,6 +12,7 @@
             [day8.re-frame-10x.view.timing :as timing]
             [day8.re-frame-10x.view.debug :as debug]
             [day8.re-frame-10x.view.settings :as settings]
+            [day8.re-frame-10x.view.history :as history]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.core :refer [css style]]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.units :refer [px]]
             [re-frame.trace]
@@ -121,7 +122,8 @@
 
 (defn standard-header [external-window?]
   (let [older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])
-        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])]
+        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])
+        showing-history?        @(rf/subscribe [:history/showing-history?])]
     [[rc/h-box
       :align    :center
       :size     "auto"
@@ -143,18 +145,29 @@
                     {:class "arrow__disabled"
                      :title "There are no later epochs"})
                   "▶"]
-                 [:span.arrow.epoch-nav
-                  (if newer-epochs-available?
-                    {:on-click #(do (rf/dispatch [:component/set-direction :next])
-                                    (rf/dispatch [:epochs/most-recent-epoch]))
-                     :title    "Skip to latest epoch"}
-                    {:class "arrow__disabled"
-                     :title "Already showing latest epoch"})
-                  [:img
-                   {:src      (str "data:image/svg+xml;utf8," (if newer-epochs-available? skip-to-end skip-to-end-disabled))
-                    :style    {:cursor        (if newer-epochs-available? "pointer" "default")
-                               :height        "12px"
-                               :margin-bottom "-1px"}}]]]]
+                 [rc/v-box
+                  :gap common/gs-5s
+                  :children
+                  [[:span.arrow.epoch-nav
+                    (if newer-epochs-available?
+                      {:on-click #(do (rf/dispatch [:component/set-direction :next])
+                                      (rf/dispatch [:epochs/most-recent-epoch]))
+                       :title    "Skip to latest epoch"}
+                      {:class "arrow__disabled"
+                       :title "Already showing latest epoch"})
+                    [:img
+                     {:src      (str "data:image/svg+xml;utf8," (if newer-epochs-available? skip-to-end skip-to-end-disabled))
+                      :style    {:cursor        (if newer-epochs-available? "pointer" "default")
+                                 :height        "10px"
+                                 :margin-bottom "-1px"}}]]
+                   [:span.arrow.epoch-nav
+                    {:on-click #(rf/dispatch [:history/toggle-history])
+                     :title    "Show event history"
+                     :style    {:height "10px"}}
+                    (if showing-history?
+                      "▲"
+                      "▼")]]]]]
+
      [rc/gap-f :size common/gs-12s]
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))
@@ -166,7 +179,8 @@
         unloading?        (rf/subscribe [:global/unloading?])
         popup-failed?     @(rf/subscribe [:errors/popup-failed?])
         showing-settings? (= @selected-tab :settings)
-        current-event     @(rf/subscribe [:epochs/current-event])]
+        current-event     @(rf/subscribe [:epochs/current-event])
+        showing-history?  @(rf/subscribe [:history/showing-history?])]
     [:div.panel-content
      {:style {:width            "100%"
               :display          "flex"
@@ -181,6 +195,8 @@
         :class    "panel-content-top nav"
         :style    {:padding "0px 19px"}
         :children (standard-header external-window?)])
+     (when showing-history?
+       [history/render])
      (when-not showing-settings?
        [rc/h-box
         :class    "panel-content-tabs"
