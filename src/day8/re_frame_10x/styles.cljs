@@ -11,7 +11,8 @@
             [day8.re-frame-10x.view.settings :as settings]
             [day8.re-frame-10x.view.event :as event]
             [day8.re-frame-10x.view.fx :as fx]
-            [day8.re-frame-10x.view.container :as container]))
+            [day8.re-frame-10x.view.container :as container]
+            [day8.re-frame-10x.view.history :as history]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -522,6 +523,7 @@
                      container/container-styles
                      event/event-styles
                      fx/fx-styles
+                     history/history-styles
                      app-db/app-db-styles
                      timing/timing-styles
                      settings/settings-styles]))

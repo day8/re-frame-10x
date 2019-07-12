@@ -718,6 +718,13 @@
                          :current-epoch-id nil)
      :dispatch [:snapshot/reset-current-epoch-app-db (utils/last-in-vec (:match-ids db))]}))
 
+(rf/reg-event-fx
+  :epochs/load-epoch
+  [(rf/path [:epochs])]
+  (fn [{:keys [db]} [_ new-id]]
+    {:db       (assoc db :current-epoch-id new-id)
+     :dispatch [:snapshot/reset-current-epoch-app-db new-id]}))
+
 (rf/reg-event-db
   :epochs/replay
   [(rf/path [:epochs])]
@@ -836,3 +843,10 @@
   [(rf/path [:errors])]
   (fn [errors _]
     (dissoc errors :popup-failed?)))
+
+;;
+
+(rf/reg-event-db
+  :history/toggle-history
+  (fn [db _]
+    (update-in db [:history :showing-history?] not)))

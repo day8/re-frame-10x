@@ -141,6 +141,12 @@
 (def wizard-step-current-color "#C7FF66")                   ;; Bright lime green
 (def wizard-step-future-color dark-background-color)
 
+(def history-background-color "#32323C")                    ;; Dark black
+(def history-item-background-color "#636A6F")               ;; Very dark grey
+(def history-item-text-color "white")
+(def history-item-hover-color "#6EC0E6")                    ;; Our standard rich blue colour
+(def history-item-active-color "#767A7C")                   ;; Medium grey
+
 (def font-stack ["\"Segoe UI\"" "Roboto", "Helvetica", "sans-serif"])
 
 ;; =================================================================================================
