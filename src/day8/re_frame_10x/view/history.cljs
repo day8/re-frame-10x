@@ -17,21 +17,30 @@
       :margin           "2px"
       :padding          "5px"
       :font-weight      "600"
-      :text-overflow    "ellipsis"}
+      :text-overflow    "ellipsis"
+      :cursor           "pointer"}
      [:&:hover
       {:color common/history-item-hover-color}]]
     [:.history-item.active
-     {:color common/history-item-active-color}]]])
+     {:color  common/history-item-active-color
+      :cursor "default"}]
+    [:.history-item.inactive
+     {:color common/history-item-inactive-color}
+     [:&:hover
+      {:color common/history-item-hover-color}]]]])
 
-(defn history-item [id event active?]
-  (let [event-str (pp/truncate 400 :end event)]
+(defn history-item [id event match-id current-id]
+  (let [event-str (pp/truncate 400 :end event)
+        active? (= match-id current-id)
+        inactive? (> match-id current-id)]
     [:span
      (merge
-       {:class    (str "history-item" (when active? " active"))}
+       {:class    (str "history-item"
+                       (when active? " active")
+                       (when inactive? " inactive"))}
        (when-not active?
-         {:on-click #(rf/dispatch [:epochs/load-epoch (dec id)])
-          :title    "Jump to this epoch"
-          :style    {:cursor "pointer"}}))
+         {:on-click #(rf/dispatch [:epochs/load-epoch match-id])
+          :title    "Jump to this epoch"}))
      event-str]))
 
 (defn render []
@@ -42,5 +51,5 @@
      :height "20%"
      :children [(for [[id event] (rseq all-events)]
                   ^{:key id}
-                  [history-item id event (= (dec id) current-id)])]]))
+                  [history-item id event (dec id) current-id])]]))
 
