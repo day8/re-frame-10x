@@ -145,7 +145,8 @@
 (def history-item-background-color "#636A6F")               ;; Very dark grey
 (def history-item-text-color "white")
 (def history-item-hover-color "#6EC0E6")                    ;; Our standard rich blue colour
-(def history-item-active-color "#767A7C")                   ;; Medium grey
+(def history-item-active-color "#E66E96")                   ;; Magenta
+(def history-item-inactive-color "#767A7C")                 ;; Medium grey
 
 (def font-stack ["\"Segoe UI\"" "Roboto", "Helvetica", "sans-serif"])
 
