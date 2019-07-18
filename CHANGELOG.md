@@ -3,20 +3,31 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## [0.4.2] - 2018-07-18
+
+### Fixed
+
+* shadow-cljs compatibility 
+
+### Changed
+
+* Upgraded re-frame to 0.10.8
+* Upgraded zprint to 0.4.16
+
 ## [0.4.1] - 2019-06-11
 
-### Improvements
+### Changed
 
-* Upgraded dependency on ClojureScript to 1.10.520
-* Upgraded dependency on Clojure to 1.10.1
-* Upgraded dependency on reagent to 0.8.1
-* Upgraded dependency on garden to 1.3.9
-* Upgraded dependency on mranderson to 0.5.1
-* Upgraded dependency on create-react-class to 15.6.3-1
-* Upgraded dependency on react to 16.8.6
-* Upgraded dependency on react-dom to 16.8.6
-* Upgraded dependency on react-flip-move to 3.0.3
-* Upgraded dependency on highlight.js to 9.15.8
+* Upgraded ClojureScript to 1.10.520
+* Upgraded Clojure to 1.10.1
+* Upgraded reagent to 0.8.1
+* Upgraded garden to 1.3.9
+* Upgraded mranderson to 0.5.1
+* Upgraded create-react-class to 15.6.3-1
+* Upgraded react to 16.8.6
+* Upgraded react-dom to 16.8.6
+* Upgraded react-flip-move to 3.0.3
+* Upgraded highlight.js to 9.15.8
 
 ## [0.4.0] - 2019-03-30
 
