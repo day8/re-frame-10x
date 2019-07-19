@@ -148,7 +148,7 @@
                  [rc/v-box
                   :gap common/gs-5s
                   :children
-                  [[:span.arrow.epoch-nav
+                  [[:span.arrow.epoch-aux-nav
                     (if newer-epochs-available?
                       {:on-click #(do (rf/dispatch [:component/set-direction :next])
                                       (rf/dispatch [:epochs/most-recent-epoch]))
@@ -160,10 +160,9 @@
                       :style    {:cursor        (if newer-epochs-available? "pointer" "default")
                                  :height        "10px"
                                  :margin-bottom "-1px"}}]]
-                   [:span.arrow.epoch-nav
+                   [:span.arrow.epoch-aux-nav
                     {:on-click #(rf/dispatch [:history/toggle-history])
-                     :title    "Show event history"
-                     :style    {:height "10px"}}
+                     :title    "Show event history"}
                     (if showing-history?
                       "▲"
                       "▼")]]]]]

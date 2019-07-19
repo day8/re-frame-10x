@@ -375,13 +375,17 @@
                             :cursor "auto"}]
     [:span.arrow.epoch-nav {:min-width "16px"
                             :max-width "16px"}]
+    [:span.arrow.epoch-aux-nav {:min-width   "12px"
+                                :max-width   "12px"
+                                :height      "9px"
+                                :line-height "9px"}]
     [:span.event-header {:color            common/default-text-color
                          :background-color common/standard-background-color
                          :padding          (px 5)
                          :font-weight      "600"
                          ;; TODO: figure out how to hide long events
-                         :text-overflow    "ellipsis"}]
-    ]
+                         :text-overflow    "ellipsis"}]]
+
    [(s/& :.external-window) {:display "flex"
                              :height  (percent 100)
                              :flex    "1 1 auto"}]
