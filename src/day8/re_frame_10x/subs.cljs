@@ -258,7 +258,7 @@
             (-> match
                 :match-info
                 metam/matched-event
-                ((juxt #(get-in % [:id])
+                ((juxt #(or (get % :child-of) (get % :id))
                        #(get-in % [:tags :event])))))
           (:matches epochs))))
 
