@@ -375,6 +375,10 @@
                             :cursor "auto"}]
     [:span.arrow.epoch-nav {:min-width "16px"
                             :max-width "16px"}]
+    [:span.arrow.epoch-aux-nav {:min-width   "12px"
+                                :max-width   "12px"
+                                :height      "9px"
+                                :line-height "9px"}]
     [:span.event-header {:color            common/default-text-color
                          :background-color common/standard-background-color
                          :padding          (px 5)
