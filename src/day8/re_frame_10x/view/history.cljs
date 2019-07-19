@@ -32,17 +32,17 @@
      [:&:hover
       {:color common/history-item-hover-color}]]]])
 
-(defn history-item [id event match-id current-id]
+(defn history-item [event id current-id]
   (let [event-str (pp/truncate 400 :end event)
-        active? (= match-id current-id)
-        inactive? (> match-id current-id)]
+        active?   (= id current-id)
+        inactive? (> id current-id)]
     [:span
      (merge
-       {:class    (str "history-item"
-                       (when active? " active")
-                       (when inactive? " inactive"))}
+       {:class (str "history-item"
+                    (when active?   " active")
+                    (when inactive? " inactive"))}
        (when-not active?
-         {:on-click #(rf/dispatch [:epochs/load-epoch match-id])
+         {:on-click #(rf/dispatch [:epochs/load-epoch id])
           :title    "Jump to this epoch"}))
      event-str]))
 
@@ -54,5 +54,5 @@
      :height "20%"
      :children [(for [[id event] (rseq all-events)]
                   ^{:key id}
-                  [history-item id event (dec id) current-id])]]))
+                  [history-item event id current-id])]]))
 
