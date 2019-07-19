@@ -17,8 +17,11 @@
       :margin           "2px"
       :padding          "5px"
       :font-weight      "600"
+      :cursor           "pointer"
       :text-overflow    "ellipsis"
-      :cursor           "pointer"}
+      :white-space      "nowrap"
+      :overflow         "hidden"
+      :flex-shrink      0}
      [:&:hover
       {:color common/history-item-hover-color}]]
     [:.history-item.active
