@@ -251,16 +251,12 @@
     (:epochs db)))
 
 (rf/reg-sub
-  :epochs/all-indexed-events
+  :epochs/all-events-by-id
   :<- [:epochs/epoch-root]
   (fn [epochs _]
-    (mapv (fn [match]
-            (-> match
-                :match-info
-                metam/matched-event
-                ((juxt #(or (get % :child-of) (get % :id))
-                       #(get-in % [:tags :event])))))
-          (:matches epochs))))
+    (->> (map (juxt key (comp :event :tags metam/matched-event :match-info val))
+              (:matches-by-id epochs))
+         (sort-by first >))))
 
 (rf/reg-sub
   :epochs/current-match-state
