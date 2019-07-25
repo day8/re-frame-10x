@@ -47,12 +47,12 @@
      event-str]))
 
 (defn render []
-  (let [all-events @(rf/subscribe [:epochs/all-indexed-events])
+  (let [all-events @(rf/subscribe [:epochs/all-events-by-id])
         current-id @(rf/subscribe [:epochs/current-epoch-id])]
     [rc/v-box
      :class "history-list"
      :height "20%"
-     :children [(for [[id event] (rseq all-events)]
+     :children [(for [[id event] all-events]
                   ^{:key id}
                   [history-item event id current-id])]]))
 
