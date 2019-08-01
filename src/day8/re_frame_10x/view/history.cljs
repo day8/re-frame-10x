@@ -52,7 +52,8 @@
     [rc/v-box
      :class "history-list"
      :height "20%"
-     :children [(for [[id event] all-events]
-                  ^{:key id}
-                  [history-item event id current-id])]]))
+     :children [(for [[id event] all-events
+                      :when (not-empty event)]
+                     ^{:key id}
+                     [history-item event id current-id])]]))
 
