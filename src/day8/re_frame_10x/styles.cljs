@@ -1,9 +1,9 @@
 (ns day8.re-frame-10x.styles
-  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.core :as garden]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.units :as units :refer [em px percent]]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.color :as color]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.selectors :as s]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v3.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
+  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.core :as garden]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :as units :refer [em px percent]]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.color :as color]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.selectors :as s]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.utils.re-com :as rc]
             [day8.re-frame-10x.view.app-db :as app-db]

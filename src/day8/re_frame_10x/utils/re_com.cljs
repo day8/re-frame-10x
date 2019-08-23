@@ -1,7 +1,7 @@
 (ns day8.re-frame-10x.utils.re-com
   "Shameless pilfered from re-com."
   (:require-macros [day8.re-frame-10x.utils.re-com :refer [handler-fn]])
-  (:require [day8.re-frame-10x.inlined-deps.reagent.v0v8v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
+  (:require [day8.re-frame-10x.inlined-deps.reagent.v0v8v1.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
             [clojure.string :as string]
             [day8.re-frame-10x.common-styles :as common]))
 

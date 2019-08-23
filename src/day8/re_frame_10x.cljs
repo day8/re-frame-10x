@@ -13,8 +13,8 @@
             [reagent.ratom :as ratom]
             [goog.object :as gob]
             [re-frame.interop :as interop]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v10v6.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v8v0.reagent.core :as r]))
+            [day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.core :as rf]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v8v1.reagent.core :as r]))
 
 (goog-define debug? false)
 
@@ -233,7 +233,7 @@
 
 (defn traced-result [trace-id fragment-id]
   ;; TODO: this is not terribly efficient, figure out how to get the index of the trace directly.
-  (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v0v10v6.re-frame.db/app-db [:traces :all-traces])))]
+  (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.db/app-db [:traces :all-traces])))]
     (get-in trace [:tags :code fragment-id :result])))
 
 (defn init-db! []

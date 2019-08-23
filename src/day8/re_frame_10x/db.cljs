@@ -1,5 +1,5 @@
 (ns day8.re-frame-10x.db
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v10v6.re-frame.core :as rf]
+  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.core :as rf]
             [day8.re-frame-10x.utils.localstorage :as localstorage]))
 
 (defn init-db [debug?]

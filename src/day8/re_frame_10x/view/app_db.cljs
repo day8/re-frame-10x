@@ -4,8 +4,8 @@
             [day8.re-frame-10x.utils.utils :as utils]
             [day8.re-frame-10x.utils.animated :as animated]
             [day8.re-frame-10x.view.components :as components]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v10v6.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v8v0.reagent.core :as r]
+            [day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.core :as rf]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v8v1.reagent.core :as r]
             [day8.re-frame-10x.utils.re-com :as rc :refer [close-button css-join]]
             [day8.re-frame-10x.common-styles :as common]
             [clojure.data])
