@@ -10,12 +10,15 @@
                  [day8.re-frame/re-frame-10x "0.4.3-SNAPSHOT"]
                  [secretary "1.2.3"]]
 
-
   :plugins [[lein-shadow "0.1.5"]]
 
   :profiles {:dev  {:dependencies [[binaryage/devtools "0.9.10"]]}}
 
   :source-paths ["src" "../../src" "../../gen-src"]
+
+  :clean-targets ^{:protect false} [:target-path
+                                    ".shadow-cljs"
+                                    "resources/public/js"]
 
   :shadow-cljs {:nrepl  {:port 8777}
 
@@ -30,6 +33,4 @@
                                   :devtools   {:http-root "resources/public"
                                                :http-port 8280}}}}
 
-  :aliases {"dev-auto" ["with-profile" "dev" "shadow" "watch" "client"]}
-
-  :clean-targets ^{:protect false} ["resources/public/js" "target"])
+  :aliases {"dev-auto" ["with-profile" "dev" "shadow" "watch" "client"]})
