@@ -1,42 +1,35 @@
-(defproject todomvc-re-frame "0.10.5"
-  :dependencies [[org.clojure/clojure        "1.10.0"]
-                 [org.clojure/clojurescript  "1.10.439"]
+(defproject todomvc-re-frame "0.10.9"
+  :dependencies [[org.clojure/clojure        "1.10.1"]
+                 [org.clojure/clojurescript  "1.10.520"
+                  :exclusions [com.google.javascript/closure-compiler-unshaded
+                               org.clojure/google-closure-library]]
+                 [thheller/shadow-cljs "2.8.51"]
                  [reagent "0.8.1"]
-                 [re-frame "0.10.5"]
-                 [day8.re-frame/tracing "0.5.1"]
-                 [day8.re-frame/re-frame-10x "0.3.8-SNAPSHOT"]
+                 [re-frame "0.10.9"]
+                 [day8.re-frame/tracing "0.5.3"]
+                 [day8.re-frame/re-frame-10x "0.4.3-SNAPSHOT"]
                  [secretary "1.2.3"]]
 
 
-  :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-figwheel  "0.5.18"]]
+  :plugins [[lein-shadow "0.1.5"]]
 
-  :hooks [leiningen.cljsbuild]
+  :profiles {:dev  {:dependencies [[binaryage/devtools "0.9.10"]]}}
 
-  :profiles {:dev  {:dependencies [[binaryage/devtools "0.9.10"]]
-                    :cljsbuild
-                    {:builds {:client {:compiler {:asset-path           "js"
-                                                  :optimizations        :none
-                                                  :source-map           true
-                                                  :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true
-                                                                    "day8.re_frame_10x.debug_QMARK_" true
-                                                                    "day8.re_frame.tracing.trace_enabled_QMARK_" true}
-                                                  :preloads             [day8.re-frame-10x.preload]
-                                                  :source-map-timestamp true
-                                                  :main                 "todomvc.core"}
-                                       :figwheel {:on-jsload "todomvc.core/main"}}}}}
+  :source-paths ["src" "../../src" "../../gen-src"]
 
-             :prod {:cljsbuild
-                    {:builds {:client {:compiler {:optimizations :advanced
-                                                  :elide-asserts true
-                                                  :pretty-print  false}}}}}}
+  :shadow-cljs {:nrepl  {:port 8777}
 
-  :figwheel {:server-port 3450
-             :repl        false}
+                :builds {:client {:target     :browser
+                                  :output-dir "resources/public/js"
+                                  :modules    {:client {:init-fn  todomvc.core/main
+                                                        :preloads [day8.re-frame-10x.preload]}}
+                                  :dev        {:compiler-options {:closure-defines {re-frame.trace.trace-enabled?        true
+                                                                                    day8.re-frame-10x.debug?             true
+                                                                                    day8.re-frame.tracing.trace-enabled? true}
+                                                                  :external-config  {:devtools/config {:features-to-install [:formatters :hints]}}}}
+                                  :devtools   {:http-root "resources/public"
+                                               :http-port 8280}}}}
 
+  :aliases {"dev-auto" ["with-profile" "dev" "shadow" "watch" "client"]}
 
-  :clean-targets ^{:protect false} ["resources/public/js" "target"]
-
-  :cljsbuild {:builds {:client {:source-paths ["src" "../../src" "../../gen-src"]
-                                :compiler     {:output-dir "resources/public/js"
-                                               :output-to  "resources/public/js/client.js"}}}})
+  :clean-targets ^{:protect false} ["resources/public/js" "target"])

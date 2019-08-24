@@ -1,1 +1,4 @@
-resources/public/js
+/resources/public/js
+/shadow-cljs.edn
+/package.json
+/.shadow-cljs/
