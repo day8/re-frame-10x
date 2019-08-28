@@ -17,7 +17,6 @@
   :source-paths ["src" "../../src" "../../gen-src"]
 
   :clean-targets ^{:protect false} [:target-path
-                                    ".shadow-cljs"
                                     "resources/public/js"]
 
   :shadow-cljs {:nrepl  {:port 8777}
