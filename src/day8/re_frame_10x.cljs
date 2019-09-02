@@ -181,7 +181,9 @@
                                        y                (.-clientY e)
                                        new-window-width js/window.innerWidth]
                                    (.preventDefault e)
-                                   (rf/dispatch [:settings/panel-width% (/ (- new-window-width x) new-window-width)])
+                                   (let [width% (/ (- new-window-width x) new-window-width)]
+                                     (when (<= width% 0.9)
+                                       (rf/dispatch [:settings/panel-width% width%])))
                                    (reset! window-width new-window-width))))
         handle-mouse-up      (fn [e] (reset! dragging? false))]
     (r/create-class
