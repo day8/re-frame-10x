@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.loggers
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.loggers
   (:require
    [clojure.set :refer [difference]]
    #?@(:clj [[clojure.string :as str]

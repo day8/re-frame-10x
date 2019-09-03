@@ -14,7 +14,8 @@
             [goog.object :as gob]
             [re-frame.interop :as interop]
             [day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v8v1.reagent.core :as r]))
+            [day8.re-frame-10x.inlined-deps.reagent.v0v8v1.reagent.core :as r]
+            [day8.re-frame-10x.inlined-deps.re-com.v2v5v0.re-com.core :as re-com]))
 
 (goog-define debug? false)
 
@@ -207,14 +208,20 @@
                                                         ease-transition)]
                                    [:div.panel-wrapper
                                     {:style {:position "fixed" :width "0px" :height "0px" :top "0px" :left "0px" :z-index 99999999}}
-                                    [:div.panel
-                                     {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px" :background "white"
-                                              :display    "flex"
-                                              :left       left :top "0px" :width (str (* 100 @panel-width%) "%") :height "100%"
-                                              :transition transition}}
-                                     [:div.panel-resizer (when @showing? {:style         (resizer-style draggable-area)
-                                                                          :on-mouse-down #(reset! dragging? true)})]
-                                     [container/devtools-inner opts]]]))})))
+                                    [re-com/v-box
+                                     :style {:position   "fixed"
+                                             :z-index 1
+                                             :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px"
+                                             :background "white"
+                                             ;:display    "flex"
+                                             :left       left
+                                             :top "0px"
+                                             :width (str (* 100 @panel-width%) "%")
+                                             :height "100vh"
+                                             :transition transition}
+                                     :children [[:div.panel-resizer (when @showing? {:style         (resizer-style draggable-area)
+                                                                                     :on-mouse-down #(reset! dragging? true)})]
+                                                [container/devtools-inner opts]]]]))})))
 
 
 (defn panel-div []

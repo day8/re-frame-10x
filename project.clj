@@ -53,6 +53,9 @@
                                                                               cljsjs/create-react-class
                                                                               org.clojure/tools.logging
                                                                               net.cgrand/macrovich]]
+                                                   ^:source-dep [re-com "2.5.0"
+                                                                 :exclusions [org.clojure/core.async
+                                                                              com.andrewmcveigh/cljs-time]]
                                                    ; We need a source-dep on Garden, as there are breaking changes between
                                                    ; versions, and consuming projects can override this version of Garden.
                                                    ^:source-dep [garden "1.3.9"

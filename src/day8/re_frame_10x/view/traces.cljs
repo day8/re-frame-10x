@@ -4,7 +4,8 @@
             [clojure.string :as str]
             [day8.re-frame-10x.inlined-deps.reagent.v0v8v1.reagent.core :as r]
             [day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.core :as rf]
-            [day8.re-frame-10x.utils.re-com :as rc]))
+            [day8.re-frame-10x.utils.re-com :as rc]
+            [day8.re-frame-10x.inlined-deps.re-com.v2v5v0.re-com.core :as re-com]))
 
 (defn query->fn [query]
   (if (= :contains (:filter-type query))
@@ -113,58 +114,59 @@
                                      (reset! input-error false)
                                      (add-filter filter-items @filter-input @filter-type))))]
 
-        [:div.tab-contents
-         [:div.filter
-          [:div.filter-control
-           [:ul.filter-categories "show: "
-            [:li.filter-category {:class    (when (contains? @categories :event) "active")
-                                  :on-click #(rf/dispatch [:traces/toggle-categories #{:event}])}
-             "events"]
-            [:li.filter-category {:class    (when (contains? @categories :sub/run) "active")
-                                  :on-click #(rf/dispatch [:traces/toggle-categories #{:sub/run :sub/create :sub/dispose}])}
-             "subscriptions"]
-            [:li.filter-category {:class    (when (contains? @categories :render) "active")
-                                  :on-click #(rf/dispatch [:traces/toggle-categories #{:render}])}
-             "reagent"]
-            [:li.filter-category {:class    (when (contains? @categories :re-frame.router/fsm-trigger) "active")
-                                  :on-click #(rf/dispatch [:traces/toggle-categories #{:re-frame.router/fsm-trigger :componentWillUnmount}])}
-             "internals"]]
-           [rc/checkbox
-            :model show-epoch-traces?
-            :on-change #(rf/dispatch [:trace-panel/update-show-epoch-traces? %])
-            :label "Only show traces for this epoch?"]
-           [:div.filter-fields
-            [:select {:value     @filter-type
-                      :on-change #(reset! filter-type (keyword (.. % -target -value)))}
-             [:option {:value "contains"} "contains"]
-             [:option {:value "slower-than"} "slower than"]]
-            [:div.filter-control-input {:style {:margin-left 10}}
-             [components/search-input {:on-save   save-query
-                                       :on-change #(reset! filter-input (.. % -target -value))
-                                       :placeholder "Type to filter traces"}]
-             (if @input-error
-               [:div.input-error {:style {:color "red" :margin-top 5}}
-                "Please enter a valid number."])]]]
-          [:ul.filter-items
-           (map (fn [item]
-                  ^{:key (:id item)}
-                  [:li.filter-item
-                   [:button.button
-                    {:style    {:margin 0}
-                     :on-click #(rf/dispatch [:traces/remove-filter (:id item)])}
-                    (:filter-type item) ": " [:span.filter-item-string (:query item)]]])
-                @filter-items)]]
-         [components/autoscroll-list {:class "panel-content-scrollable" :scroll? true}
-          [:table
-           [:thead>tr
-            [:th {:style {:padding 0}}
-             [:button.text-button
-              {:style    {:cursor "pointer"}
-               :on-click #(rf/dispatch [:traces/toggle-all-expansions])}
-              (if (:show-all? @trace-detail-expansions) "-" "+")]]
-            [:th "operations"]
-            [:th
-             (str (count visible-traces) " traces")
-             [:span "(" [:button.text-button {:on-click #(rf/dispatch [:epochs/reset])} "clear"] ")"]]
-            [:th {:style {:text-align "right"}} "meta"]]
-           [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]))))
+        [re-com/v-box
+         :justify :start
+         :children [[:div.filter
+                     [:div.filter-control
+                      [:ul.filter-categories "show: "
+                       [:li.filter-category {:class    (when (contains? @categories :event) "active")
+                                             :on-click #(rf/dispatch [:traces/toggle-categories #{:event}])}
+                        "events"]
+                       [:li.filter-category {:class    (when (contains? @categories :sub/run) "active")
+                                             :on-click #(rf/dispatch [:traces/toggle-categories #{:sub/run :sub/create :sub/dispose}])}
+                        "subscriptions"]
+                       [:li.filter-category {:class    (when (contains? @categories :render) "active")
+                                             :on-click #(rf/dispatch [:traces/toggle-categories #{:render}])}
+                        "reagent"]
+                       [:li.filter-category {:class    (when (contains? @categories :re-frame.router/fsm-trigger) "active")
+                                             :on-click #(rf/dispatch [:traces/toggle-categories #{:re-frame.router/fsm-trigger :componentWillUnmount}])}
+                        "internals"]]
+                      [re-com/checkbox
+                       :model show-epoch-traces?
+                       :on-change #(rf/dispatch [:trace-panel/update-show-epoch-traces? %])
+                       :label "Only show traces for this epoch?"]
+                      [:div.filter-fields
+                       [:select {:value     @filter-type
+                                 :on-change #(reset! filter-type (keyword (.. % -target -value)))}
+                        [:option {:value "contains"} "contains"]
+                        [:option {:value "slower-than"} "slower than"]]
+                       [:div.filter-control-input {:style {:margin-left 10}}
+                        [components/search-input {:on-save   save-query
+                                                  :on-change #(reset! filter-input (.. % -target -value))
+                                                  :placeholder "Type to filter traces"}]
+                        (if @input-error
+                          [:div.input-error {:style {:color "red" :margin-top 5}}
+                           "Please enter a valid number."])]]]
+                     [:ul.filter-items
+                      (map (fn [item]
+                             ^{:key (:id item)}
+                             [:li.filter-item
+                              [:button.button
+                               {:style    {:margin 0}
+                                :on-click #(rf/dispatch [:traces/remove-filter (:id item)])}
+                               (:filter-type item) ": " [:span.filter-item-string (:query item)]]])
+                           @filter-items)]]
+                    [re-com/scroller
+                     :child [:table
+                             [:thead>tr
+                              [:th {:style {:padding 0}}
+                               [:button.text-button
+                                {:style    {:cursor "pointer"}
+                                 :on-click #(rf/dispatch [:traces/toggle-all-expansions])}
+                                (if (:show-all? @trace-detail-expansions) "-" "+")]]
+                              [:th "operations"]
+                              [:th
+                               (str (count visible-traces) " traces")
+                               [:span "(" [:button.text-button {:on-click #(rf/dispatch [:epochs/reset])} "clear"] ")"]]
+                              [:th {:style {:text-align "right"}} "meta"]]
+                             [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]]]))))
