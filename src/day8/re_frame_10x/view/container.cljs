@@ -167,85 +167,86 @@
         popup-failed?     @(rf/subscribe [:errors/popup-failed?])
         showing-settings? (= @selected-tab :settings)
         current-event     @(rf/subscribe [:epochs/current-event])]
-    [:div.panel-content
-     {:style {:width            "100%"
-              :display          "flex"
-              :flex-direction   "column"
-              :background-color common/standard-background-color}}
-     (if showing-settings?
-       [rc/h-box
-        :class    "panel-content-top nav"
-        :style    {:padding "0px 19px"}
-        :children (settings-header external-window?)]
-       [rc/h-box
-        :class    "panel-content-top nav"
-        :style    {:padding "0px 19px"}
-        :children (standard-header external-window?)])
-     (when-not showing-settings?
-       [rc/h-box
-        :class    "panel-content-tabs"
-        :justify  :between
-        :children [[rc/h-box
-                    :gap      "7px"
-                    :align    :end
-                    :height   "50px"
-                    :children [[tab-button :event "Event"]
-                               [tab-button :fx "fx"]
-                               [tab-button :app-db "app-db"]
-                               [tab-button :subs "Subs"]
-                               (when (:debug? opts)
-                                 [tab-button :parts "Parts"])
-                               ;[tab-button :views "Views"]
-                               [tab-button :traces "Trace"]
-                               [tab-button :timing "Timing"]
-                               (when (:debug? opts)
-                                 [tab-button :debug "Debug"])]]
-                   (when (some? current-event)
-                     [rc/h-box
-                      :align :center
-                      :padding "0px 19px 0px 7px"
-                      :gap "4px"
-                      :children [[rc/button
-                                  :class "bm-muted-button container--replay-button"
-                                  :label [rc/h-box
-                                          :align :center
-                                          :gap "3px"
-                                          :children [[:img
-                                                      {:src   (str "data:image/svg+xml;utf8," reload)
-                                                       :style {:cursor "pointer"
-                                                               :height "23px"}}]
-                                                     "replay"]]
-                                  :on-click #(do (rf/dispatch [:component/set-direction :next])
-                                                 (rf/dispatch [:epochs/replay]))]
-                                 [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]])]])
-     [rc/line :color "#EEEEEE"]
-     (when (and external-window? @unloading?)
-       [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
-     (when-not (re-frame.trace/is-trace-enabled?)
-       [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set "
-        ;; Note this Closure define is in re-frame, not re-frame-10x
-        [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
-     (when (and (not external-window?) popup-failed?)
-       [:h1.errors "Couldn't open external window. Check if popups are allowed?"
-        [rc/hyperlink
-         :label "Dismiss"
-         :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])
-     [rc/v-box
-      :size "auto"
-      :style {:margin-left common/gs-19s
-              :overflow-y  (if (contains? #{:event :fx :parts :timing :debug :settings} @selected-tab)
-                             "auto" "initial")
-              ;:overflow    "auto" ;; TODO: Might have to put this back or add scrolling within the panels
-              }
-      :children [(case @selected-tab
-                   :event    [event/render]
-                   :fx       [fx/render]
-                   :app-db   [app-db/render db/app-db]
-                   :subs     [subs/render]
-                   :views    [views/render]
-                   :parts    [parts/render]
-                   :timing   [timing/render]
-                   :traces   [traces/render]
-                   :debug    [debug/render]
-                   :settings [settings/render]
-                   [app-db/render db/app-db])]]]))
+    [rc/v-box
+     :class "panel-content"
+     :style {:width            "100%"
+             :display          "flex"
+             :flex-direction   "column"
+             :background-color common/standard-background-color}
+     :children [(if showing-settings?
+                  [rc/h-box
+                   :class    "panel-content-top nav"
+                   :style    {:padding "0px 19px"}
+                   :children (settings-header external-window?)]
+                  [rc/h-box
+                   :class    "panel-content-top nav"
+                   :style    {:padding "0px 19px"}
+                   :children (standard-header external-window?)])
+                (when-not showing-settings?
+                  [rc/h-box
+                   :class    "panel-content-tabs"
+                   :justify  :between
+                   :children [[rc/h-box
+                               :gap      "7px"
+                               :align    :end
+                               :height   "50px"
+                               :children [[tab-button :event "Event"]
+                                          [tab-button :fx "fx"]
+                                          [tab-button :app-db "app-db"]
+                                          [tab-button :subs "Subs"]
+                                          (when (:debug? opts)
+                                            [tab-button :parts "Parts"])
+                                          ;[tab-button :views "Views"]
+                                          [tab-button :traces "Trace"]
+                                          [tab-button :timing "Timing"]
+                                          (when (:debug? opts)
+                                            [tab-button :debug "Debug"])]]
+                              (when (some? current-event)
+                                [rc/h-box
+                                 :align :center
+                                 :padding "0px 19px 0px 7px"
+                                 :gap "4px"
+                                 :children [[rc/button
+                                             :class "bm-muted-button container--replay-button"
+                                             :label [rc/h-box
+                                                     :align :center
+                                                     :gap "3px"
+                                                     :children [[:img
+                                                                 {:src   (str "data:image/svg+xml;utf8," reload)
+                                                                  :style {:cursor "pointer"
+                                                                          :height "23px"}}]
+                                                                "replay"]]
+                                             :on-click #(do (rf/dispatch [:component/set-direction :next])
+                                                            (rf/dispatch [:epochs/replay]))]
+                                            [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]])]])
+                [rc/line :color "#EEEEEE"]
+                (when (and external-window? @unloading?)
+                  [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
+                (when-not (re-frame.trace/is-trace-enabled?)
+                  [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set "
+                   ;; Note this Closure define is in re-frame, not re-frame-10x
+                   [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
+                (when (and (not external-window?) popup-failed?)
+                  [:h1.errors "Couldn't open external window. Check if popups are allowed?"
+                   [rc/hyperlink
+                    :label "Dismiss"
+                    :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])
+                [rc/v-box
+                 :class    "tab-wrapper"
+                 :size     "1"
+                 :style    {:margin-left common/gs-19s
+                            :overflow-y  (if (contains? #{:event :fx :parts :timing :debug :settings} @selected-tab)
+                                           "auto"
+                                           "initial")}
+                 :children [(case @selected-tab
+                              :event    [event/render]
+                              :fx       [fx/render]
+                              :app-db   [app-db/render db/app-db]
+                              :subs     [subs/render]
+                              :views    [views/render]
+                              :parts    [parts/render]
+                              :timing   [timing/render]
+                              :traces   [traces/render]
+                              :debug    [debug/render]
+                              :settings [settings/render]
+                              [app-db/render db/app-db])]]]]))

@@ -1,5 +1,6 @@
 (ns day8.re-frame-10x
-  (:require [day8.re-frame-10x.styles :as styles]
+  (:require [day8.re-frame-10x.utils.re-com :as rc]
+            [day8.re-frame-10x.styles :as styles]
             [day8.re-frame-10x.view.container :as container]
             [day8.re-frame-10x.subs]
             [day8.re-frame-10x.events]
@@ -205,16 +206,28 @@
                                        transition     (if @dragging?
                                                         ""
                                                         ease-transition)]
-                                   [:div.panel-wrapper
-                                    {:style {:position "fixed" :width "0px" :height "0px" :top "0px" :left "0px" :z-index 99999999}}
-                                    [:div.panel
-                                     {:style {:position   "fixed" :z-index 1 :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px" :background "white"
-                                              :display    "flex"
-                                              :left       left :top "0px" :width (str (* 100 @panel-width%) "%") :height "100%"
-                                              :transition transition}}
-                                     [:div.panel-resizer (when @showing? {:style         (resizer-style draggable-area)
-                                                                          :on-mouse-down #(reset! dragging? true)})]
-                                     [container/devtools-inner opts]]]))})))
+                                   [rc/box
+                                    :class "panel-wrapper"
+                                    :style {:position "fixed"
+                                            :width    "0px"
+                                            :height   "0px"
+                                            :top      "0px"
+                                            :left     "0px"
+                                            :z-index  99999999}
+                                    :child [rc/h-box
+                                            :class    "panel"
+                                            :style    {:position   "fixed"
+                                                       :z-index    1
+                                                       :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px"
+                                                       :background "white"
+                                                       :display    "flex"
+                                                       :left       left
+                                                       :top        "0px"
+                                                       :width      (str (* 100 @panel-width%) "%") :height "100%"
+                                                       :transition transition}
+                                            :children [[:div.panel-resizer (when @showing? {:style         (resizer-style draggable-area)
+                                                                                            :on-mouse-down #(reset! dragging? true)})]
+                                                       [container/devtools-inner opts]]]]))})))
 
 
 (defn panel-div []
