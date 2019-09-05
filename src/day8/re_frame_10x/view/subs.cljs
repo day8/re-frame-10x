@@ -348,6 +348,7 @@
                            visible-subs)]
     [rc/v-box
      :size     "1"
+     :style    {:overflow-y "auto"}
      :children [(if (and (empty? all-subs) @*finished-animation?)
                   [no-pods]
                   [pod-header-column-titles])
