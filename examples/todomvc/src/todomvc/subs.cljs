@@ -13,9 +13,9 @@
 ;; that `app-db` changes (in any way). As a result, we want Layer 2 to be trivial.
 ;;
 (reg-sub
-  :showing          ;; usage:   (subscribe [:showing])
-  (fn [db _]        ;; db is the (map) value stored in the app-db atom
-    (:showing db))) ;; extract a value from the application state
+  :showing                                                  ;; usage:   (subscribe [:showing])
+  (fn [db _]                                                ;; db is the (map) value stored in the app-db atom
+    (:showing db)))                                         ;; extract a value from the application state
 
 
 ;; Next, the registration of a similar handler is done in two steps.
@@ -25,7 +25,7 @@
 (defn sorted-todos
   [db _]
   (:todos db))
-(reg-sub :sorted-todos sorted-todos)    ;; usage: (subscribe [:sorted-todos])
+(reg-sub :sorted-todos sorted-todos)                        ;; usage: (subscribe [:sorted-todos])
 
 ;; -------------------------------------------------------------------------------------
 ;; Layer 3
@@ -58,7 +58,7 @@
 ;; But now we are dealing with intermediate (layer 3) nodes, we'll need to provide both fns.
 ;;
 (reg-sub
-  :todos        ;; usage:   (subscribe [:todos])
+  :todos                                                    ;; usage:   (subscribe [:todos])
 
   ;; This function returns the input signals.
   ;; In this case, it returns a single signal.
@@ -67,7 +67,7 @@
   ;; X will be the query vector and Y is an advanced feature and out of scope
   ;; for this explanation.
   (fn [query-v _]
-    (subscribe [:sorted-todos]))    ;; returns a single input signal
+    (subscribe [:sorted-todos]))                            ;; returns a single input signal
 
   ;; This 2nd fn does the computation. Data values in, derived data out.
   ;; It is the same as the two simple subscription handlers up at the top.
@@ -98,11 +98,11 @@
      (subscribe [:showing])])
 
   ;; Computation Function
-  (fn [[todos showing] _]   ;; that 1st parameter is a 2-vector of values
+  (fn [[todos showing] _]                                   ;; that 1st parameter is a 2-vector of values
     (let [filter-fn (case showing
                       :active (complement :done)
-                      :done   :done
-                      :all    identity)]
+                      :done :done
+                      :all identity)]
       (filter filter-fn todos))))
 
 ;; -------------------------------------------------------------------------------------
@@ -133,15 +133,15 @@
 ;; vector of input signals. The 1st function is not needed.
 ;; Here is the example above rewritten using the sugar.
 #_(reg-sub
-  :visible-todos
-  :<- [:todos]
-  :<- [:showing]
-  (fn [[todos showing] _]
-    (let [filter-fn (case showing
-                      :active (complement :done)
-                      :done   :done
-                      :all    identity)]
-      (filter filter-fn todos))))
+    :visible-todos
+    :<- [:todos]
+    :<- [:showing]
+    (fn [[todos showing] _]
+      (let [filter-fn (case showing
+                        :active (complement :done)
+                        :done :done
+                        :all identity)]
+        (filter filter-fn todos))))
 
 
 (reg-sub
