@@ -303,7 +303,7 @@
                              (assoc-in [:settings :external-window?] true)
                              (dissoc-in [:errors :popup-failed?]))
          :dispatch-later [{:ms 200 :dispatch [:settings/show-panel? false]}]})
-      {:db (assoc-in (:db ctx) [:errors :popup-failed?] true)
+      {:db       (assoc-in (:db ctx) [:errors :popup-failed?] true)
        :dispatch [:global/external-closed]})))
 
 (rf/reg-event-fx
@@ -699,18 +699,18 @@
       (let [match-ids         (:match-ids db)
             match-array-index (utils/find-index-in-vec (fn [x] (= current-id x)) match-ids)
             new-id            (nth match-ids (inc match-array-index))]
-        {:db         (assoc db :current-epoch-id new-id)
-         :dispatch   [:snapshot/reset-current-epoch-app-db new-id]})
+        {:db       (assoc db :current-epoch-id new-id)
+         :dispatch [:snapshot/reset-current-epoch-app-db new-id]})
       (let [new-id (utils/last-in-vec (:match-ids db))]
-        {:db         (assoc db :current-epoch-id new-id)
-         :dispatch   [:snapshot/reset-current-epoch-app-db new-id]}))))
+        {:db       (assoc db :current-epoch-id new-id)
+         :dispatch [:snapshot/reset-current-epoch-app-db new-id]}))))
 
 (rf/reg-event-fx
   :epochs/most-recent-epoch
   [(rf/path [:epochs])]
   (fn [{:keys [db]} _]
-    {:db (assoc db :current-epoch-index nil
-                   :current-epoch-id nil)
+    {:db       (assoc db :current-epoch-index nil
+                         :current-epoch-id nil)
      :dispatch [:snapshot/reset-current-epoch-app-db (utils/last-in-vec (:match-ids db))]}))
 
 (rf/reg-event-db
@@ -769,10 +769,10 @@
           (assoc-in [id :open?] open?)))))
 
 (rf/reg-event-db
- :subs/set-pinned
- [(rf/path [:subs :pinned])]
- (fn [pinned [_ id pinned?]]
-   (assoc-in pinned [id :pin?] pinned?)))
+  :subs/set-pinned
+  [(rf/path [:subs :pinned])]
+  (fn [pinned [_ id pinned?]]
+    (assoc-in pinned [id :pin?] pinned?)))
 
 (rf/reg-event-db
   :subs/set-filter
