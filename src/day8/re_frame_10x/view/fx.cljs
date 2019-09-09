@@ -32,7 +32,7 @@
      [:.code-fragment__result
       {:visibility "visible"}]]
     [:.code-fragment__button
-     {:display "none"
+     {:display      "none"
       :padding-left "6px"
       :margin-left  "6px"
       :border-left  "1px solid #cdd8df"
@@ -40,8 +40,8 @@
       :color        common/blue-modern-color}]
     [:&:hover
      [:.code-fragment__button
-      {:display "grid"}]]
-    ]])
+      {:display "grid"}]]]])
+
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
@@ -54,8 +54,8 @@
    :class "event-section"
    :children
    [[rc/h-box
-     :class    "event-section--header app-db-path--header"
-     :align    :center
+     :class "event-section--header app-db-path--header"
+     :align :center
      :children [[:h2 title]]]
     [components/simple-render data [title] "event-section--data app-db-path--pod-border"]]])
 
