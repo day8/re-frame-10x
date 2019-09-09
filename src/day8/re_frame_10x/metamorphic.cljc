@@ -249,10 +249,10 @@
 
 
               :else
-              state
-              ;; Add a timeout/warning if a match goes on for more than a second?
+              state)
+            ;; Add a timeout/warning if a match goes on for more than a second?
 
-              )
+
             (assoc :previous-event event))))
     parse-state
     traces))
