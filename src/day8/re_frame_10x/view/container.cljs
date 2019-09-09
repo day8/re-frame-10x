@@ -25,8 +25,8 @@
   [panel-id title]
   (let [selected-tab @(rf/subscribe [:settings/selected-tab])]
     [rc/v-box
-     :style    {:margin-bottom "-8px"
-                :z-index       1}
+     :style {:margin-bottom "-8px"
+             :z-index       1}
      :children [[:button {:class    (str "tab button bm-heading-text " (when (= selected-tab panel-id) "active"))
                           :on-click #(rf/dispatch [:settings/selected-tab panel-id])} title]
                 [:img {:src   (str "data:image/svg+xml;utf8," triangle-down)
@@ -56,18 +56,18 @@
      :height           common/gs-12s}]
    [:.pulse-previous
     {:animation-duration "1000ms"
-     :animation-name     "pulse-previous-re-frame-10x"}] ;; Defined in day8.re-frame-10x.styles/at-keyframes
+     :animation-name     "pulse-previous-re-frame-10x"}]    ;; Defined in day8.re-frame-10x.styles/at-keyframes
    [:.pulse-next
     {:animation-duration "1000ms"
-     :animation-name     "pulse-next-re-frame-10x"}]
-   ])
+     :animation-name     "pulse-next-re-frame-10x"}]])
+
 
 
 (defn right-hand-buttons [external-window?]
   (let [selected-tab      (rf/subscribe [:settings/selected-tab])
         showing-settings? (= @selected-tab :settings)]
     [rc/h-box
-     :align    :center
+     :align :center
      :children [(when showing-settings?
                   [:button {:class    "bm-active-button"
                             :on-click #(rf/dispatch [:settings/toggle-settings])} "Done"])
@@ -123,9 +123,9 @@
   (let [older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])
         newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])]
     [[rc/h-box
-      :align    :center
-      :size     "auto"
-      :gap      common/gs-12s
+      :align :center
+      :size "auto"
+      :gap common/gs-12s
       :children [[:span.arrow.epoch-nav
                   (if older-epochs-available?
                     {:on-click #(do (rf/dispatch [:component/set-direction :previous])
@@ -151,10 +151,10 @@
                     {:class "arrow__disabled"
                      :title "Already showing latest epoch"})
                   [:img
-                   {:src      (str "data:image/svg+xml;utf8," (if newer-epochs-available? skip-to-end skip-to-end-disabled))
-                    :style    {:cursor        (if newer-epochs-available? "pointer" "default")
-                               :height        "12px"
-                               :margin-bottom "-1px"}}]]]]
+                   {:src   (str "data:image/svg+xml;utf8," (if newer-epochs-available? skip-to-end skip-to-end-disabled))
+                    :style {:cursor        (if newer-epochs-available? "pointer" "default")
+                            :height        "12px"
+                            :margin-bottom "-1px"}}]]]]
      [rc/gap-f :size common/gs-12s]
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))
@@ -173,21 +173,21 @@
      :style {:background-color common/standard-background-color}
      :children [(if showing-settings?
                   [rc/h-box
-                   :class    "panel-content-top nav"
-                   :style    {:padding "0px 19px"}
+                   :class "panel-content-top nav"
+                   :style {:padding "0px 19px"}
                    :children (settings-header external-window?)]
                   [rc/h-box
-                   :class    "panel-content-top nav"
-                   :style    {:padding "0px 19px"}
+                   :class "panel-content-top nav"
+                   :style {:padding "0px 19px"}
                    :children (standard-header external-window?)])
                 (when-not showing-settings?
                   [rc/h-box
-                   :class    "panel-content-tabs"
-                   :justify  :between
+                   :class "panel-content-tabs"
+                   :justify :between
                    :children [[rc/h-box
-                               :gap      "7px"
-                               :align    :end
-                               :height   "50px"
+                               :gap "7px"
+                               :align :end
+                               :height "50px"
                                :children [[tab-button :event "Event"]
                                           [tab-button :fx "fx"]
                                           [tab-button :app-db "app-db"]
@@ -230,21 +230,21 @@
                     :label "Dismiss"
                     :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])
                 [rc/v-box
-                 :class    "tab-wrapper"
-                 :size     "1"
-                 :style    {:margin-left common/gs-19s
-                            :overflow-y  (if (contains? #{:event :fx :parts :timing :debug :settings} @selected-tab)
-                                           "auto"
-                                           "initial")}
+                 :class "tab-wrapper"
+                 :size "1"
+                 :style {:margin-left common/gs-19s
+                         :overflow-y  (if (contains? #{:event :fx :parts :timing :debug :settings} @selected-tab)
+                                        "auto"
+                                        "initial")}
                  :children [(case @selected-tab
-                              :event    [event/render]
-                              :fx       [fx/render]
-                              :app-db   [app-db/render db/app-db]
-                              :subs     [subs/render]
-                              :views    [views/render]
-                              :parts    [parts/render]
-                              :timing   [timing/render]
-                              :traces   [traces/render]
-                              :debug    [debug/render]
+                              :event [event/render]
+                              :fx [fx/render]
+                              :app-db [app-db/render db/app-db]
+                              :subs [subs/render]
+                              :views [views/render]
+                              :parts [parts/render]
+                              :timing [timing/render]
+                              :traces [traces/render]
+                              :debug [debug/render]
                               :settings [settings/render]
                               [app-db/render db/app-db])]]]]))
