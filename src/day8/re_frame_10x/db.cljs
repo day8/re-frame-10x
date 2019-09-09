@@ -3,25 +3,25 @@
             [day8.re-frame-10x.utils.localstorage :as localstorage]))
 
 (defn init-db [debug?]
-  (let [panel-width% (localstorage/get "panel-width-ratio" 0.35)
-        show-panel? (localstorage/get "show-panel" true)
-        selected-tab (localstorage/get "selected-tab" :event)
-        filter-items (localstorage/get "filter-items" [])
-        app-db-paths (into (sorted-map) (localstorage/get "app-db-paths" {}))
-        json-ml-paths (localstorage/get "app-db-json-ml-expansions" #{})
-        external-window? (localstorage/get "external-window?" false)
+  (let [panel-width%               (localstorage/get "panel-width-ratio" 0.35)
+        show-panel?                (localstorage/get "show-panel" true)
+        selected-tab               (localstorage/get "selected-tab" :event)
+        filter-items               (localstorage/get "filter-items" [])
+        app-db-paths               (into (sorted-map) (localstorage/get "app-db-paths" {}))
+        json-ml-paths              (localstorage/get "app-db-json-ml-expansions" #{})
+        external-window?           (localstorage/get "external-window?" false)
         external-window-dimensions (localstorage/get "external-window-dimensions" {:width 800 :height 800 :top 0 :left 0})
-        show-epoch-traces? (localstorage/get "show-epoch-traces?" true)
-        using-trace? (localstorage/get "using-trace?" true)
-        ignored-events (localstorage/get "ignored-events" {})
-        low-level-trace (localstorage/get "low-level-trace" {:reagent true :re-frame true})
-        filtered-view-trace (localstorage/get "filtered-view-trace" (let [id1 (random-uuid)
-                                                                          id2 (random-uuid)]
-                                                                      {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
-                                                                       id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}}))
-        num-epochs (localstorage/get "retained-epochs" 25)
-        follows-events? (localstorage/get "app-db-follows-events?" true)
-        categories (localstorage/get "categories" #{:event :sub/run :sub/create :sub/dispose})]
+        show-epoch-traces?         (localstorage/get "show-epoch-traces?" true)
+        using-trace?               (localstorage/get "using-trace?" true)
+        ignored-events             (localstorage/get "ignored-events" {})
+        low-level-trace            (localstorage/get "low-level-trace" {:reagent true :re-frame true})
+        filtered-view-trace        (localstorage/get "filtered-view-trace" (let [id1 (random-uuid)
+                                                                                 id2 (random-uuid)]
+                                                                             {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
+                                                                              id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}}))
+        num-epochs                 (localstorage/get "retained-epochs" 25)
+        follows-events?            (localstorage/get "app-db-follows-events?" true)
+        categories                 (localstorage/get "categories" #{:event :sub/run :sub/create :sub/dispose})]
     (when using-trace?
       (rf/dispatch [:global/enable-tracing]))
     (rf/dispatch [:settings/panel-width% panel-width%])
