@@ -35,8 +35,8 @@
     (merge (common/panel-style "3px")
            {:padding  common/gs-12s
             :margin   (css-join common/gs-7s "0px")
-            :overflow "hidden"})]
-   ])
+            :overflow "hidden"})]])
+
 
 (defn timing-tag [label]
   [components/tag "rft-tag__timing" label])
