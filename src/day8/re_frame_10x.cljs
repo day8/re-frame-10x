@@ -76,8 +76,8 @@
 (defonce do-after-render-trace-scheduled? (atom false))
 
 (defn monkey-patch-reagent []
-  (let [#_#_real-renderer reagent.impl.component/do-render
-        ]
+  (let [#_#_real-renderer reagent.impl.component/do-render]
+
 
 
     #_(set! reagent.impl.component/do-render
@@ -126,9 +126,9 @@
                                                 (f)
                                                 (trace/with-trace {:op-type :raf-end})
                                                 (when (false? (.-scheduled? reagent.impl.batching/render-queue))
-                                                  (trace/with-trace {:op-type :reagent/quiescent}))
+                                                  (trace/with-trace {:op-type :reagent/quiescent})))))))
 
-                                                )))))
+
 
     #_(set! reagent.impl.batching/schedule
             (fn []
@@ -215,16 +215,16 @@
                                             :left     "0px"
                                             :z-index  99999999}
                                     :child [rc/h-box
-                                            :class    "panel"
-                                            :width    (str (* 100 @panel-width%) "%")
-                                            :height   "100%"
-                                            :style    {:position   "fixed"
-                                                       :z-index    1
-                                                       :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px"
-                                                       :background "white"
-                                                       :left       left
-                                                       :top        "0px"
-                                                       :transition transition}
+                                            :class "panel"
+                                            :width (str (* 100 @panel-width%) "%")
+                                            :height "100%"
+                                            :style {:position   "fixed"
+                                                    :z-index    1
+                                                    :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px"
+                                                    :background "white"
+                                                    :left       left
+                                                    :top        "0px"
+                                                    :transition transition}
                                             :children [[:div.panel-resizer (when @showing? {:style         (resizer-style draggable-area)
                                                                                             :on-mouse-down #(reset! dragging? true)})]
                                                        [container/devtools-inner opts]]]]))})))
