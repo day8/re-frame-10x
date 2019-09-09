@@ -32,8 +32,8 @@
     {:background-color "rgba(100, 255, 100, 0.08)"
      :padding-left     (units/px- common/gs-12 common/expansion-button-horizontal-padding)
      :overflow-x       "auto"
-     :overflow-y       "hidden"}]
-   ])
+     :overflow-y       "hidden"}]])
+
 
 
 ;; Terminology:
@@ -49,10 +49,10 @@
    :children [[rc/p {:style {:font-style "italic"}} "Code trace is not available for this event"]
               [:br]
               [rc/hyperlink-href
-               :label  "Instructions for enabling Event Code Tracing"
-               :attr   {:rel "noopener noreferrer"}
+               :label "Instructions for enabling Event Code Tracing"
+               :attr {:rel "noopener noreferrer"}
                :target "_blank"
-               :href   "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/EventCodeTracing.md"]]])
+               :href "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/EventCodeTracing.md"]]])
 
 
 (defn code-header
@@ -65,34 +65,34 @@
         =>str            "=> "
         result-length    (- max-column-width (count =>str) (count line-str))]
     [rc/h-box
-     :class    "code-fragment__content"
-     :size     "1"
-     :align    :center
-     :style    {:border   code-border
-                :overflow "hidden"
-                :padding  "0px 6px"}
+     :class "code-fragment__content"
+     :size "1"
+     :align :center
+     :style {:border   code-border
+             :overflow "hidden"
+             :padding  "0px 6px"}
      :children [[rc/box
-                 :width  "17px"
+                 :width "17px"
                  :height "17px"
-                 :class  "noselect"
-                 :style  {:cursor "pointer"
-                          :color  "#b0b2b4"}
-                 :attr   {:on-click (handler-fn (rf/dispatch [:code/set-code-visibility open?-path (not open?)]))}
-                 :child  [rc/box
-                          :margin "auto"
-                          :child  [:span.arrow (if open? "▼" "▶")]]]
+                 :class "noselect"
+                 :style {:cursor "pointer"
+                         :color  "#b0b2b4"}
+                 :attr {:on-click (handler-fn (rf/dispatch [:code/set-code-visibility open?-path (not open?)]))}
+                 :child [rc/box
+                         :margin "auto"
+                         :child [:span.arrow (if open? "▼" "▶")]]]
                 [rc/h-box
-                 :size     "1"
-                 :style    {:overflow "hidden"}
+                 :size "1"
+                 :style {:overflow "hidden"}
                  :children [[rc/box
-                             :style {:margin-left      "2px"
-                                     :white-space      "nowrap"}
+                             :style {:margin-left "2px"
+                                     :white-space "nowrap"}
                              :child [:code line-str]]
                             [rc/box
                              :class "code-fragment__result"
-                             :style {:flex             "1"
-                                     :margin-left      "8px"
-                                     :white-space      "nowrap"}
+                             :style {:flex        "1"
+                                     :margin-left "8px"
+                                     :white-space "nowrap"}
                              :child [:code =>str (when (pos? result-length)
                                                    (pp/pr-str-truncated result-length (:result line)))]]]]
                 [rc/box
@@ -106,7 +106,7 @@
 (defn code-block
   [code-execution-id line]
   [rc/box
-   :size  "1"
+   :size "1"
    :style {:background-color "rgba(100, 255, 100, 0.08)"
            :border           code-border
            :margin-top       "-1px"
@@ -119,8 +119,8 @@
   "Try and find the bounds of the form we are searching for. Uses some heuristics to
   try and avoid matching partial forms, e.g. 'default-|weeks| for the form 'weeks."
   [form-str search-str]
-  (let [re         (re-pattern (str "(\\s|\\(|\\[|\\{)" "(" (goog.string.regExpEscape search-str) ")"))
-        result     (.exec re form-str)]
+  (let [re     (re-pattern (str "(\\s|\\(|\\[|\\{)" "(" (goog.string.regExpEscape search-str) ")"))
+        result (.exec re form-str)]
     (if (some? result)
       (let [index        (.-index result)
             pre-match    (aget result 1)
@@ -202,9 +202,9 @@
 (defn repl-section
   []
   [rc/h-box
-   :height   "23px"
-   :align    :end
-   :style    {:margin-bottom "2px"}
+   :height "23px"
+   :align :end
+   :style {:margin-bottom "2px"}
    :children [[repl-msg-area]
               [rc/box
                :size "1"
@@ -212,7 +212,7 @@
               [rc/hyperlink
                :label "repl requires"
                :style {:margin-right common/gs-7s}
-               :attr  {:title "Copy to the clipboard, the require form to set things up for the \"repl\" links below"}
+               :attr {:title "Copy to the clipboard, the require form to set things up for the \"repl\" links below"}
                ;; Doing this in a list would be nicer, but doesn't let us use ' as it will be expanded before we can create the string.
                :on-click #(do (utils/copy-to-clipboard "(require '[day8.re-frame-10x])")
                               (rf/dispatch [:code/repl-msg-state :start]))]
@@ -237,18 +237,18 @@
   (let [code-open? @(rf/subscribe [:code/code-open?])
         max-frags  50]
     [rc/v-box
-     :size     "1"
-     :style    {:overflow-y "auto"}
+     :size "1"
+     :style {:overflow-y "auto"}
      :children [(doall
                   (for [frag (take max-frags fragments)]
                     (let [id     (:id frag)
                           first? (zero? id)]
                       ^{:key id}
                       [rc/v-box
-                       :class    "code-fragment"
-                       :style    {:margin-top (when-not first? "-1px")}
-                       :attr     {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form (:form frag)]))
-                                  :on-mouse-leave (handler-fn (rf/dispatch [:code/exit-hover-form (:form frag)]))}
+                       :class "code-fragment"
+                       :style {:margin-top (when-not first? "-1px")}
+                       :attr {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form (:form frag)]))
+                              :on-mouse-leave (handler-fn (rf/dispatch [:code/exit-hover-form (:form frag)]))}
                        :children [[rc/h-box
                                    :children [[indent-block (:indent-level frag) first?]
                                               [code-header code-exec-id frag]]]
@@ -265,9 +265,9 @@
 
 (defn event-code
   []
-  (let [code-traces      @(rf/subscribe [:code/current-code])
-        code-execution   (first code-traces) ;; Ignore multiple code executions for now
-        #_#_debug?           @(rf/subscribe [:settings/debug?])
+  (let [code-traces    @(rf/subscribe [:code/current-code])
+        code-execution (first code-traces)                  ;; Ignore multiple code executions for now
+        #_#_debug? @(rf/subscribe [:settings/debug?])
         #_#_highlighted-form (rf/subscribe [:code/highlighted-form])]
     (if-not code-execution
       [no-event-instructions]
@@ -288,8 +288,8 @@
     ;; the data provided in successive renders is sufficiently different.
     ^{:key epoch-id}
     [rc/v-box
-     :size     "1"
-     :class    "event-panel"
-     :gap      common/gs-19s
+     :size "1"
+     :class "event-panel"
+     :gap common/gs-19s
      :children [[event-code]
                 [rc/gap-f :size "0px"]]]))
