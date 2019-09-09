@@ -233,12 +233,12 @@
                                   :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
                                           :overflow-x "auto"
                                           :overflow-y "hidden"}
-                                  :children [(if (or value? #_ previous-value?)
+                                  :children [(if (or value? #_previous-value?)
                                                [components/simple-render
                                                 main-value
                                                 ["sub-path" path]]
-                                               not-run-yet-msg
-                                               )]]))]
+                                               not-run-yet-msg)]]))]
+
                             [animated/component
                              (animated/v-box-options
                                {:enter-animation "accordionVertical"
@@ -253,9 +253,9 @@
                                      [diff-before diff-after _] (clojure.data/diff previous-value value)]
                                  [rc/v-box
                                   :children [[rc/v-box
-                                              :class    "app-db-path--link"
-                                              :style    {:background-color cljs-dev-tools-background}
-                                              :justify  :end
+                                              :class "app-db-path--link"
+                                              :style {:background-color cljs-dev-tools-background}
+                                              :justify :end
                                               :children [[rc/hyperlink-href
                                                           ;:class  "app-db-path--label"
                                                           :label "ONLY BEFORE"
@@ -275,9 +275,9 @@
                                                                       ["app-db-diff" path]]
                                                            :else no-prev-value-msg)]]
                                              [rc/v-box
-                                              :class    "app-db-path--link"
-                                              :style    {:background-color cljs-dev-tools-background}
-                                              :justify  :end
+                                              :class "app-db-path--link"
+                                              :style {:background-color cljs-dev-tools-background}
+                                              :justify :end
                                               :children [[rc/hyperlink-href
                                                           ;:class  "app-db-path--label"
                                                           :label "ONLY AFTER"
@@ -320,11 +320,11 @@
                :size "1"
                :child ""]
               [rc/box
-               :width "132px" ;; common/gs-131s + 1 border
+               :width "132px"                               ;; common/gs-131s + 1 border
                :justify :center
                :child [rc/label :style {:font-size "9px"} :label "ACTIVITY"]]
               [rc/box
-               :width "32px" ;; common/gs-31s + 1 border
+               :width "32px"                                ;; common/gs-31s + 1 border
                :justify :center
                :child [rc/label :style {:font-size "9px"} :label "LAYER"]]
               [rc/box
@@ -332,10 +332,10 @@
                :justify :center
                :child [rc/label :style {:font-size "9px"} :label "PINNED"]]
               [rc/box
-               :width "51px" ;;  50px + 1 border
+               :width "51px"                                ;;  50px + 1 border
                :justify :center
                :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]
-              [rc/gap-f :size "6px"]]]) ;; Add extra space to look better when there is/aren't scrollbars
+              [rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
 
 (defn pod-section []
@@ -347,15 +347,15 @@
                            (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
                            visible-subs)]
     [rc/v-box
-     :size     "1"
-     :style    {:overflow-y "auto"}
+     :size "1"
+     :style {:overflow-y "auto"}
      :children [(if (and (empty? all-subs) @*finished-animation?)
                   [no-pods]
                   [pod-header-column-titles])
                 [rc/v-box
-                 :size     "auto"
-                 :style    {:overflow-x "hidden"
-                            :overflow-y "auto"}
+                 :size "auto"
+                 :style {:overflow-x "hidden"
+                         :overflow-y "auto"}
                  :children [(for [p all-subs]
                               ^{:key (:id p)}
                               [pod (merge p
@@ -382,18 +382,18 @@
     [:div.filter
      [:div.filter-control
       [:div.filter-control-input {:style {:margin-left 10}}
-       [:input {:type      "text"
-                :value     @filter-str
+       [:input {:type        "text"
+                :value       @filter-str
                 :placeholder "Type to filter subs"
-                :on-change #(rf/dispatch [:subs/set-filter
-                                          (-> % .-target .-value)])}]]]]))
+                :on-change   #(rf/dispatch [:subs/set-filter
+                                            (-> % .-target .-value)])}]]]]))
 
 
 (defn render []
   []
   [rc/v-box
-   :size     "1"
-   :style    {:margin-right common/gs-19s}
+   :size "1"
+   :style {:margin-right common/gs-19s}
    :children [[panel-header]
               [filter-section]
               [pod-section]
