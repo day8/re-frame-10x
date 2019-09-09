@@ -5,13 +5,15 @@ All notable changes to this project will be documented in this file. This change
 
 ### Changed
 
-* Upgraded highlight.js to 9.15.10 
+* Upgrade highlight.js to 9.15.10 
 
 ### Fixed
 
+* Fix scrolling content in trace and subs tabs. [#246](https://github.com/Day8/re-frame-10x/issues/246)
 * It is no longer possible to resize the 10x panel beyond 90% of the available
   window width thereby avoiding a situation where it was impossible to resize
-  to a smaller width if dragged too far.
+  to a smaller width if dragged too far; i.e. the panel would get 'stuck'
+  covering all the window content.
 
 ## [0.4.2] - 2018-07-18
 
