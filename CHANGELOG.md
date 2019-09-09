@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file. This change
 
 * Upgraded highlight.js to 9.15.10 
 
+### Fixed
+
+* It is no longer possible to resize the 10x panel beyond 90% of the available
+  window width thereby avoiding a situation where it was impossible to resize
+  to a smaller width if dragged too far.
+
 ## [0.4.2] - 2018-07-18
 
 ### Fixed
