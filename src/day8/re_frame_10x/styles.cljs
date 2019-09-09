@@ -153,9 +153,9 @@
    ["*"
     {:transform-origin "0px 0px 0px"}]
    ["html|* > svg"
-    {:transform-origin "50% 50%"}]
+    {:transform-origin "50% 50%"}]])
 
-   ])
+
 
 (def label-mixin {:color      text-color
                   :background background-gray-hint
@@ -357,7 +357,7 @@
                         :transform "rotate(-45deg)"}]
       [:input {:border "none"}
        ["&::placeholder"
-        {:color common/medium-gray
+        {:color      common/medium-gray
          :font-style "italic"}]]]]]
    [:.filter-control-input
     {:display "flex"
@@ -379,8 +379,8 @@
                          :padding          (px 5)
                          :font-weight      "600"
                          ;; TODO: figure out how to hide long events
-                         :text-overflow    "ellipsis"}]
-    ]
+                         :text-overflow    "ellipsis"}]]
+
    [(s/& :.external-window) {:display "flex"
                              :height  (percent 100)
                              :flex    "1 1 auto"}]
@@ -444,26 +444,26 @@
    ;; https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
    [:.dont-break-out
     {
-     "overflow-wrap" "break-word"
-     "word-wrap" "break-word"
+     "overflow-wrap"   "break-word"
+     "word-wrap"       "break-word"
 
-     "-ms-word-break" "break-all"
+     "-ms-word-break"  "break-all"
      ; This is the dangerous one in WebKit, as it breaks things wherever
-     "word-break" "break-all"
+     "word-break"      "break-all"
      ; /* Instead use this non-standard one: */
-     :word-break "break-word"
+     :word-break       "break-word"
 
      ; /* Adds a hyphen where the word breaks, if supported (No Blink) */
-     "-ms-hyphens" "auto"
-     "-moz-hyphens" "auto"
+     "-ms-hyphens"     "auto"
+     "-moz-hyphens"    "auto"
      "-webkit-hyphens" "auto"
-     "hypens" "auto"}]])
+     "hypens"          "auto"}]])
 
 (def highlight-js-solarized
   ;; From https://github.com/isagalaev/highlight.js/blob/master/src/styles/solarized-light.css
-  [[:.hljs {"display"    "block"
-            "padding"    "0.5em"
-            "color"      "#657b83"}]
+  [[:.hljs {"display" "block"
+            "padding" "0.5em"
+            "color"   "#657b83"}]
    [:.hljs-comment :.hljs-quote
     {"color" "#93a1a1"}]
    [:.hljs-keyword :.hljs-selector-tag :.hljs-addition
@@ -492,8 +492,8 @@
    [".hljs-emphasis"
     {"font-style" "italic"}]
    [".hljs-strong"
-    {"font-weight" "bold"}]
-   ])
+    {"font-weight" "bold"}]])
+
 
 
 (def at-keyframes-styles
@@ -501,16 +501,16 @@
     [(at-keyframes :pulse-previous-re-frame-10x
                    [:from {:color "white"
                            :left  (when slide? "-100%")}]
-                   [:to   {:left  (when slide? "0%")}])
+                   [:to {:left (when slide? "0%")}])
      (at-keyframes :pulse-next-re-frame-10x
                    [:from {:color "white"
                            :left  (when slide? "100%")}]
-                   [:to   {:left  (when slide? "0%")}])
+                   [:to {:left (when slide? "0%")}])
      (at-keyframes :fade-clipboard-msg-re-frame-10x
-                   [:0%   {:margin-left "100px"}]
-                   [:5%   {:margin-left "0px"
-                           :opacity     "1"}]
-                   [:90%  {:opacity "1"}])]))
+                   [:0% {:margin-left "100px"}]
+                   [:5% {:margin-left "0px"
+                         :opacity     "1"}]
+                   [:90% {:opacity "1"}])]))
 
 
 (def panel-styles
