@@ -29,11 +29,11 @@
             :let [match-info (:match-info match)]]
         ^{:key (:id (first match-info))}
         [rc/v-box
-         :style {:border "1px solid black"
+         :style {:border      "1px solid black"
                  :font-weight (if (= current-match match-info)
                                 "bold"
                                 "normal")}
-         :children (doall (map (fn [event] [rc/label :label (prn-str event)]) (metam/summarise-match match-info)))
-         ]))
-    ]]
-  )
+         :children (doall (map (fn [event] [rc/label :label (prn-str event)]) (metam/summarise-match match-info)))]))]])
+
+
+
