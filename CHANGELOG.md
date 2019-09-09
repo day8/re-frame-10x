@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Changed
+
+* Upgraded highlight.js to 9.15.10 
+
 ## [0.4.2] - 2018-07-18
 
 ### Fixed
