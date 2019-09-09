@@ -25,13 +25,13 @@
 (s/def ::todo (s/keys :req-un [::id ::title ::done]))
 (s/def ::todos (s/and                                       ;; should use the :kind kw to s/map-of (not supported yet)
                  (s/map-of ::id ::todo)                     ;; in this map, each todo is keyed by its :id
-                 #(instance? PersistentTreeMap %)           ;; is a sorted-map (not just a map)
-                 ))
+                 #(instance? PersistentTreeMap %)))         ;; is a sorted-map (not just a map)
+
 (s/def ::showing                                            ;; what todos are shown to the user?
   #{:all                                                    ;; all todos are shown
     :active                                                 ;; only todos whose :done is false
-    :done                                                   ;; only todos whose :done is true
-    })
+    :done})                                                 ;; only todos whose :done is true
+
 (s/def ::db (s/keys :req-un [::todos ::showing]))
 
 ;; -- Default app-db Value  ---------------------------------------------------
@@ -43,9 +43,9 @@
 ;;   2.  `events.cljs` for the registration of :initialise-db handler
 ;;
 
-(def default-db           ;; what gets put into app-db by default.
-  {:todos   (sorted-map)  ;; an empty list of todos. Use the (int) :id as the key
-   :showing :all})        ;; show all todos
+(def default-db                                             ;; what gets put into app-db by default.
+  {:todos   (sorted-map)                                    ;; an empty list of todos. Use the (int) :id as the key
+   :showing :all})                                          ;; show all todos
 
 
 ;; -- Local Storage  ----------------------------------------------------------
@@ -56,12 +56,12 @@
 ;; filter. Just the todos.
 ;;
 
-(def ls-key "todos-reframe")                         ;; localstore key
+(def ls-key "todos-reframe")                                ;; localstore key
 
 (defn todos->local-store
   "Puts todos into localStorage"
   [todos]
-  (.setItem js/localStorage ls-key (str todos)))     ;; sorted-map written as an EDN map
+  (.setItem js/localStorage ls-key (str todos)))            ;; sorted-map written as an EDN map
 
 
 ;; -- cofx Registrations  -----------------------------------------------------
@@ -78,10 +78,10 @@
 (re-frame/reg-cofx
   :local-store-todos
   (fn [cofx _]
-      ;; put the localstore todos into the coeffect under :local-store-todos
-      (assoc cofx :local-store-todos
-             ;; read in todos from localstore, and process into a sorted map
-             (into (sorted-map)
-                   (some->> (.getItem js/localStorage ls-key)
-                            (cljs.reader/read-string)    ;; EDN map -> map
-                            )))))
+    ;; put the localstore todos into the coeffect under :local-store-todos
+    (assoc cofx :local-store-todos
+              ;; read in todos from localstore, and process into a sorted map
+              (into (sorted-map
+                      (some->> (.getItem js/localStorage ls-key)
+                               (cljs.reader/read-string))))))) ;; EDN map -> map
+
