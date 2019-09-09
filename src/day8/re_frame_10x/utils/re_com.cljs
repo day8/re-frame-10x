@@ -84,17 +84,17 @@
    Regex101 testing: ^(initial|auto|none)|(\\d+)(px|%|em)|(\\d+)\\w(\\d+)\\w(.*) - remove double backslashes"
   [size]
   ;; TODO: Could make initial/auto/none into keywords???
-  (let [split-size      (string/split (string/trim size) #"\s+")                  ;; Split into words separated by whitespace
+  (let [split-size      (string/split (string/trim size) #"\s+") ;; Split into words separated by whitespace
         split-count     (count split-size)
         _               (assert (contains? #{1 3} split-count) "Must pass either 1 or 3 words to flex-child-style")
-        size-only       (when (= split-count 1) (first split-size))         ;; Contains value when only one word passed (e.g. auto, 60px)
+        size-only       (when (= split-count 1) (first split-size)) ;; Contains value when only one word passed (e.g. auto, 60px)
         split-size-only (when size-only (string/split size-only #"(\d+)(.*)")) ;; Split into number + string
-        [_ num units] (when size-only split-size-only)                    ;; grab number and units
-        pass-through?   (nil? num)                                          ;; If we can't split, then we'll pass this straign through
-        grow-ratio?     (or (= units "%") (= units "") (nil? units))        ;; Determine case for using grow ratio
-        grow            (if grow-ratio? num "0")                            ;; Set grow based on percent or integer, otherwise no grow
-        shrink          (if grow-ratio? "1" "0")                            ;; If grow set, then set shrink to even shrinkage as well
-        basis           (if grow-ratio? "0px" size)                         ;; If grow set, then even growing, otherwise set basis size to the passed in size (e.g. 100px, 5em)
+        [_ num units] (when size-only split-size-only)      ;; grab number and units
+        pass-through?   (nil? num)                          ;; If we can't split, then we'll pass this straign through
+        grow-ratio?     (or (= units "%") (= units "") (nil? units)) ;; Determine case for using grow ratio
+        grow            (if grow-ratio? num "0")            ;; Set grow based on percent or integer, otherwise no grow
+        shrink          (if grow-ratio? "1" "0")            ;; If grow set, then set shrink to even shrinkage as well
+        basis           (if grow-ratio? "0px" size)         ;; If grow set, then even growing, otherwise set basis size to the passed in size (e.g. 100px, 5em)
         flex            (if (and size-only (not pass-through?))
                           (str grow " " shrink " " basis)
                           size)]
@@ -306,7 +306,7 @@
 (defn- input-text-base
   "Returns markup for a basic text input label"
   [& {:keys [model input-type] :as args}]
-  (let [external-model (reagent/atom (deref-or-value model))  ;; Holds the last known external value of model, to detect external model changes
+  (let [external-model (reagent/atom (deref-or-value model)) ;; Holds the last known external value of model, to detect external model changes
         internal-model (reagent/atom (if (nil? @external-model) "" @external-model))] ;; Create a new atom from the model to be used internally (avoid nil)
     (fn
       [& {:keys [model on-change on-submit status status-icon? status-tooltip placeholder width height rows change-on-blur? validation-regex disabled? class style attr]
@@ -515,16 +515,16 @@
 (defn hyperlink-info
   [url]
   [hyperlink-href
-   :label  [box
-            :class   "container--info-button"
-            :justify :center
-            :align   :center
-            :child [:span {:style {:font-size   "11px"
-                                   :font-weight "bold"}}
-                    "?"]]
-   :attr   {:rel "noopener noreferrer"}
+   :label [box
+           :class "container--info-button"
+           :justify :center
+           :align :center
+           :child [:span {:style {:font-size   "11px"
+                                  :font-weight "bold"}}
+                   "?"]]
+   :attr {:rel "noopener noreferrer"}
    :target "_blank"
-   :href   url])
+   :href url])
 
 
 (defn link [{:keys [label href style]}]
@@ -578,26 +578,26 @@
           :or   {div-size 16 font-size 16 color "#ccc" hover-color "#999"}}]
       [box
        :class "rc-close-button noselect"
-       :style {:display          "inline-block"
-               :position         "relative"
-               :width            (px div-size)
-               :height           (px div-size)}
+       :style {:display  "inline-block"
+               :position "relative"
+               :width    (px div-size)
+               :height   (px div-size)}
        :child [box
                :style (merge
                         {:position  "absolute"
                          :cursor    "pointer"
                          :font-size (px font-size)
                          :color     (if @over? hover-color color)
-                         :top       (px (- (/ (- font-size div-size) 2) top-offset)  :negative)
+                         :top       (px (- (/ (- font-size div-size) 2) top-offset) :negative)
                          :left      (px (- (/ (- font-size div-size) 2) left-offset) :negative)}
                         style)
-               :attr  (merge
-                        {:title          tooltip
-                         :on-click       (handler-fn (on-click)
-                                                     (.stopPropagation event))
-                         :on-mouse-enter (handler-fn (reset! over? true))
-                         :on-mouse-leave (handler-fn (reset! over? false))}
-                        attr)
+               :attr (merge
+                       {:title          tooltip
+                        :on-click       (handler-fn (on-click)
+                                                    (.stopPropagation event))
+                        :on-mouse-enter (handler-fn (reset! over? true))
+                        :on-mouse-leave (handler-fn (reset! over? false))}
+                       attr)
                ;:child [:i {:class "zmdi zmdi-hc-fw-rc zmdi zmdi-close"}]
                :child [:span "×"]]])))
 
