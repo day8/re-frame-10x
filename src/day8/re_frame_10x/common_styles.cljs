@@ -218,10 +218,10 @@
 
    ;; input-text - set to 26px high
    [:.rc-input-text
-    [:input {:height "25px"
-             :border-radius "2px"
+    [:input {:height           "25px"
+             :border-radius    "2px"
              :background-color "white"
-             :border (str "1px solid " white-background-border-color)}]]
+             :border           (str "1px solid " white-background-border-color)}]]
 
    ;; input-time - set to 26px high
    [:.rc-input-time {:height "26px"}]
@@ -269,5 +269,5 @@
    [:.btn-default.active {:color default-text-color}]
    [:.open
     [:>
-     [:.dropdown-toggle.btn-default {:color default-text-color}]]]
-   ])
+     [:.dropdown-toggle.btn-default {:color default-text-color}]]]])
+
