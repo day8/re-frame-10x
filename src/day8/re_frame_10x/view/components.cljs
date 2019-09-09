@@ -73,7 +73,7 @@
    :none-style                     "display: none"
    :index-tag                      [:span :none-style]
    :min-expandable-sequable-count-for-well-known-types
-   3
+                                   3
 
    ; Our JSON renderer does not have hierarchy depth limit,
    ; See https://github.com/binaryage/cljs-devtools/blob/master/src/lib/devtools/formatters/budgeting.cljs
@@ -83,7 +83,7 @@
 
 (defn make-devtools-api-call [api-fn & args]
   (with-cljs-devtools-prefs effective-cljs-devtools-prefs
-    (apply api-fn args)))
+                            (apply api-fn args)))
 
 (defn cljs-devtools-header [& args]
   (apply make-devtools-api-call devtools.formatters.core/header-api-call args))
