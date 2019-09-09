@@ -1,6 +1,6 @@
 (ns ^{:doc    "Utilities for pretty-printing abbreviated Clojure forms"
       :author "Matthew Huebert"}
-day8.re-frame-10x.utils.pretty-print-condensed
+  day8.re-frame-10x.utils.pretty-print-condensed
   (:refer-clojure :exclude [pr-seq-writer string-print pr-str-with-opts pr-opts pr])
   (:require [clojure.string :as str]
             [goog.string :as gstring])
