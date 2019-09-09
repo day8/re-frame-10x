@@ -16,7 +16,7 @@
 
 (defmacro with-cljs-devtools-prefs [prefs & body]
   `(let [previous-config# (devtools.prefs/get-prefs)
-         prefs# ~prefs]
+         prefs#           ~prefs]
      (try
        (devtools.prefs/set-prefs! prefs#)
        ~@body
