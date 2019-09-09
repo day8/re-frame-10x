@@ -4,8 +4,10 @@
             [reagent.core :as reagent]
             [re-frame.core :refer [dispatch dispatch-sync]]
             [secretary.core :as secretary]
-            [todomvc.events] ;; These two are only required to make the compiler
-            [todomvc.subs]   ;; load them (see docs/Basic-App-Structure.md)
+    ;; These two are only required to make the compiler
+    ;; load them (see docs/Basic-App-Structure.md)
+            [todomvc.events]
+            [todomvc.subs]
             [todomvc.views]
             [devtools.core :as devtools])
   (:import [goog History]
@@ -13,8 +15,10 @@
 
 
 ;; -- Debugging aids ----------------------------------------------------------
-(devtools/install!)       ;; we love https://github.com/binaryage/cljs-devtools
-(enable-console-print!)   ;; so that println writes to `console.log`
+;; we love https://github.com/binaryage/cljs-devtools
+(devtools/install!)
+;; so that println writes to `console.log`
+(enable-console-print!)
 
 
 ;; Put an initial value into app-db.
@@ -35,9 +39,9 @@
 
 (def history
   (doto (History.)
-    (events/listen EventType.NAVIGATE
-                   (fn [event] (secretary/dispatch! (.-token event))))
-    (.setEnabled true)))
+        (events/listen EventType.NAVIGATE
+                       (fn [event] (secretary/dispatch! (.-token event))))
+        (.setEnabled true)))
 
 
 ;; -- Entry Point -------------------------------------------------------------
@@ -48,10 +52,10 @@
 ;; So this is the entry function that kicks off the app once the HTML is loaded.
 ;;
 (defn ^:export main
-  []
-  ;; Render the UI into the HTML's <div id="app" /> element
-  ;; The view function `todomvc.views/todo-app` is the
-  ;; root view for the entire UI.
-  (reagent/render [todomvc.views/todo-app]
-                  (.getElementById js/document "app")))
+      []
+      ;; Render the UI into the HTML's <div id="app" /> element
+      ;; The view function `todomvc.views/todo-app` is the
+      ;; root view for the entire UI.
+      (reagent/render [todomvc.views/todo-app]
+                      (.getElementById js/document "app")))
 
