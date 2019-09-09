@@ -25,7 +25,7 @@
   (reagent/adapt-react-class react-flip-move))
 
 (def ^{:constant true
-       :doc "mimic v-box style properties for standard :div
+       :doc      "mimic v-box style properties for standard :div
              note1: typicaly you should also set :class \"rc-v-box display-flex\"
              note2: re-com.box/justify-style & align-style for others"}
   rc-v-box-style
@@ -42,7 +42,7 @@
   [options]
   (-> options
       (update :style #(merge rc-v-box-style %))
-      (assoc  :class "rc-v-box display-flex")))
+      (assoc :class "rc-v-box display-flex")))
 
 (def ^{:constant true
        :doc      "mimic h-box style properties for standard :div
@@ -61,4 +61,4 @@
   [options]
   (-> options
       (update :style #(merge rc-h-box-style %))
-      (assoc  :class "rc-h-box display-flex")))
+      (assoc :class "rc-h-box display-flex")))
