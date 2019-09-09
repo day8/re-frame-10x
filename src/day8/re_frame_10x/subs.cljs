@@ -575,10 +575,10 @@
 
 
 (rf/reg-sub
- :subs/filter-str
- :<- [:subs/root]
- (fn [root _]
-   (:filter-str root)))
+  :subs/filter-str
+  :<- [:subs/root]
+  (fn [root _]
+    (:filter-str root)))
 
 
 (rf/reg-sub
@@ -595,10 +595,10 @@
                            (compare (:path s1) (:path s2))
                            p1)))]
       (cond->> (sort compare-fn all-subs)
-        ignore-unchanged-l2?   (remove metam/unchanged-l2-subscription?)
-        (not-empty filter-str) (filter (fn [{:keys [path id]}]
-                                         (or (str/includes? path filter-str)
-                                             (get-in pins [id :pin?]))))))))
+               ignore-unchanged-l2? (remove metam/unchanged-l2-subscription?)
+               (not-empty filter-str) (filter (fn [{:keys [path id]}]
+                                                (or (str/includes? path filter-str)
+                                                    (get-in pins [id :pin?]))))))))
 
 (rf/reg-sub
   :subs/sub-counts
@@ -722,14 +722,14 @@
       (.-width (.measureText context "T")))))
 
 (rf/reg-sub
-    :code/max-column-width
-    :<- [:settings/window-width-rounded 100]
-    :<- [:code/single-character-width]
-    ;; It seems like it would be possible to do something smarter responding to panel sizing,
-    ;; but that introduces a lot of jank, so we just set to maximum possible window width.
-    (fn [[window-width char-width] _]
-      (Math/ceil (/ window-width
-                    char-width))))
+  :code/max-column-width
+  :<- [:settings/window-width-rounded 100]
+  :<- [:code/single-character-width]
+  ;; It seems like it would be possible to do something smarter responding to panel sizing,
+  ;; but that introduces a lot of jank, so we just set to maximum possible window width.
+  (fn [[window-width char-width] _]
+    (Math/ceil (/ window-width
+                  char-width))))
 
 ;;
 
