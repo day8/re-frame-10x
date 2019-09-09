@@ -113,8 +113,8 @@
                                      (reset! input-error false)
                                      (add-filter filter-items @filter-input @filter-type))))]
         [rc/v-box
-         :class    "tab-contents"
-         :size     "1"
+         :class "tab-contents"
+         :size "1"
          :children [[rc/v-box
                      :class "filter"
                      :children [[:div.filter-control
@@ -141,8 +141,8 @@
                                    [:option {:value "contains"} "contains"]
                                    [:option {:value "slower-than"} "slower than"]]
                                   [:div.filter-control-input {:style {:margin-left 10}}
-                                   [components/search-input {:on-save   save-query
-                                                             :on-change #(reset! filter-input (.. % -target -value))
+                                   [components/search-input {:on-save     save-query
+                                                             :on-change   #(reset! filter-input (.. % -target -value))
                                                              :placeholder "Type to filter traces"}]
                                    (if @input-error
                                      [:div.input-error {:style {:color "red" :margin-top 5}}
