@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## Unreleased
+## [0.4.3] - 2018-09-11
 
 ### Changed
 
@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file. This change
 
 ### Fixed
 
+* Fix `unmountComponentAtNode` exception when external window is open. [#234](https://github.com/Day8/re-frame-10x/issues/234)
+  Possibly also reduces or fixes 'triangles frozen' problem. [#209](https://github.com/Day8/re-frame-10x/issues/209)
 * Fix scrolling content in trace and subs tabs. [#246](https://github.com/Day8/re-frame-10x/issues/246)
 * It is no longer possible to resize the 10x panel beyond 90% of the available
   window width thereby avoiding a situation where it was impossible to resize
