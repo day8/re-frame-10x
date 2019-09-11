@@ -284,8 +284,13 @@
                                (str "width=" width ",height=" height ",left=" left ",top=" top
                                     ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))]
       (let [d (.-document w)]
-        (when-let [el (.getElementById d "--re-frame-10x--")]
-          (r/unmount-component-at-node el))
+        ;; We had to comment out the following unmountComponentAtNode as it causes a React exception we assume
+        ;; because React says el is not a root container that it knows about.
+        ;; In theory by not freeing up the resources associated with this container (e.g. event handlers) we may be
+        ;; creating memory leaks. However with observation of the heap in developer tools we cannot see any significant
+        ;; unbounded growth in memory usage.
+        ;(when-let [el (.getElementById d "--re-frame-10x--")]
+        ;  (r/unmount-component-at-node el)))
         (.open d)
         (.write d new-window-html)
         (goog.object/set w "onload" #(mount w d))
