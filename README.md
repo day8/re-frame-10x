@@ -16,6 +16,7 @@ Branch | React Version | Status | Artifact
 **Important**: Please note the following compatibility table:
 
 re-frame-10x Version | React Version | Reagent Versions
+-------------------- | ------------- | ----------------
 `0.5.x` | React 16.9.0 | 0.9.x |
 `0.4.3` | React 16 - 16.8.6 | 0.8.x | 
 `0.3.7` | React 15 | 0.6.0 - 0.7.0 |
