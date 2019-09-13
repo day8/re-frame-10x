@@ -1,20 +1,19 @@
 ## Using The REPL
 
-`re-frame-10x` captures trace data. When debugging,
-it can be useful to experiment with this trace data in your REPL. This document 
-explains how to make that happen.
+`re-frame-10x` captures trace data.  
 
-### The Concepts
+This document explains how to access this traced data from your REPL - so you can both inspect it and experiement with it. 
 
-Just to be clear, we're talking about the kind of 
-REPL offered by figwheel - a browser-connected REPL, where code execution happens in the browser-VM running your app. 
+### The Concepts - Step by Step
 
-At such a REPL, if you were to
+We're talking about using a browser-connected REPL - the kind offered by shadow-clj or figwheel. Any code execution happens in the javascript browser-VM running your app. 
+
+When using such a REPL, if you were to
 type in `(my-ns/some-fn "blah" 2)` and hit return, 
 then:
  1. this code will compiled within the context of the REPL's *current namespace*
  2. the resulting (javascript) code will be shipped across to the browser 
- 3. the code will be run by the VM also running your app 
+ 3. the code will be run by the javascript VM running your app 
 
 **The Step 1** compilation can use any part of your app's codebase, so long as it 
 has been previously `required`. The example code fragment above accessed `some-fn` 
@@ -33,23 +32,24 @@ part of your running app.
 
 ### The Running App
 
-Until this moment, it may not have occurred to you that `re-frame-10x` is effectively
-a part of your app. Yes, it certainly looks separate, but it is running alongside your app 
-in the same browser VM, and it is a code dependency of your app, which means it can 
-be accessed from the REPL like any other part of your app.
+`re-frame-10x` is effectively a part of your app. 
 
-So, if we knew enough about the way `re-frame-10x` stored
-trace data, we could use the REPL to reach into its 
-data structures and access anything we wanted.
+Yes, it looks separate, but it is running alongside your app 
+in the same browser VM. It just a code dependency of your app, and that means **_it can 
+be accessed from the REPL like any other part of your app_**.
 
-So, let's flesh this concept out a bit. Imagine that `re-frame-10x` supplied an API function called, say, `traced-result` 
-in a namespace called, say, `day8.re-frame-10x`, then you could evaluate the following at the REPL: 
+`re-frame-10x` can be accessed by you from the REPL, just like other parts of your app. 
+And the trace stored by `re-frame-10x` is no different to any other data stored in your app. 
+But, of course, you'd have to know how to reach into re-frame-10x and obtain this traced data. 
+
+To make this easier, `re-frame-10x` supplies an API function called `traced-result` 
+in a namespace `day8.re-frame-10x`, which you can call from the REPL like this: 
 
 ``` 
 (day8.re-frame-10x/traced-result 80 4)
 ```
 
-and this call would return the trace data at the "trace coordinates" 80 4. If it helps 
+Such a call would return the trace data at the "trace coordinates" 80 4. If it helps 
 to understand, imagine that `80` is the `Epoch id` and `4` is the trace-id within that `Epoch`.
 (Warning I just made that up, and it doesn't matter)
 
