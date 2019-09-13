@@ -1,19 +1,19 @@
 ## Using The REPL
 
-`re-frame-10x` captures trace data.  
+`re-frame-10x` captures trace data. This document explains how to access this traced data from within your REPL - so you can experiement with it. 
 
-This document explains how to access this traced data from your REPL - so you can experiement with it. 
+### At The REPL
 
-### The Concepts - 3 Steps
+Here, we're talking about using a browser-connected REPL - the kind offered by shadow-clj or figwheel. Any code you type in, is ultimately executed by the browser-VM currently running your app. 
 
-Here, we're talking about using a browser-connected REPL - the kind offered by shadow-clj or figwheel. Any code execution happens in the javascript browser-VM currently running your app. 
-
-When you are using a REPL, if 
+If 
 type in `(my-ns/some-fn "blah" 2)` and hit return, 
-then:
+then the process proceeds in three steps:
  1. this code will be compiled within the context of the REPL's *current namespace*
  2. the resulting (javascript) code will be shipped across to the browser 
- 3. the code will be run by the javascript VM running your app 
+ 3. the code will be run by the javascript browser-VM running your app 
+ 
+ Further notes ...
 
 **The Step 1** compilation can use any part of your app's codebase, so long as it 
 has been previously `required`. The example code fragment above accessed `some-fn` 
@@ -38,8 +38,7 @@ Yes, it looks separate, but it is running alongside your app
 in the same browser VM. It just a code dependency of your app, and that means **_it can 
 be accessed from the REPL like any other part of your app_**.
 
-`re-frame-10x` can be accessed by you from the REPL, just like other parts of your app. 
-And the trace stored by `re-frame-10x` is no different to any other data stored in your app. 
+`re-frame-10x` stores trace data, and it can be accessed by you from the REPL, just like any other data stored in your app. 
 But, of course, you'd have to know how to reach into re-frame-10x and obtain this traced data. 
 
 To make this easier, `re-frame-10x` supplies an API function called `traced-result` 
@@ -49,18 +48,19 @@ in a namespace `day8.re-frame-10x`, which you can call from the REPL like this:
 (day8.re-frame-10x/traced-result 80 4)
 ```
 
-Such a call would return the trace data at the "trace coordinates" 80 4. If it helps 
-to understand, imagine that `80` is the `Epoch id` and `4` is the trace-id within that `Epoch`.
-(Warning I just made that up, and it doesn't matter)
+Such a call would return the trace data at the "trace coordinates" `80 4`. Imagine that 
+`80` is the `Epoch id` and `4` is the trace-id within that `Epoch`.
+(Warning I just made that up. As you'll see below, it doesn't matter to you what `80` and `4` represent)
 
 In most REPLs, you would have previously `required` the `day8.re-frame-10x` namespace.
 
-### The Method
+### Your Method
 
 ![Estim8 demo](/docs/images/repl.png)
 
-To facilitate REPL exploration, `re-frame-10x` writes (ClojureScript) code into the clipboard.
-You then paste this code into your REPL to obtain access to trace data.
+To facilitate REPL exploration:
+  1. `re-frame-10x` will write (ClojureScript) code into the clipboard (when you click on certain things in the re-frame-10x UI)
+  2. you then paste this code into your REPL to obtain access to trace data
 
 Initially, you click on the **repl requires** hyperlink, and `re-frame-10x` will 
 put into the clipboard the `require` code needed to access the `re-frame-10x` API.  
@@ -68,17 +68,17 @@ You then paste this code into your REPL and execute it.
  
 Then, later, in the `re-frame-10x` UI you'll notice a small "repl" 
 button against each piece of trace you hover over. Again if you click it, `re-frame-10x` will put code into 
-the clipboard which uses its own API together with the "trace coordinates" for to the data you want. 
+the clipboard which uses its own API together with the "trace coordinates" for the data you want. 
 
 When you paste this code into the REPL, you are able to access to the exact 
-piece of trace data you want.
+piece of trace data you want.  What's in the clipboard might look something like `(day8.re-frame-10x/traced-result 80 4)`. This expression will retrieve the traced data you want. 
 
 So, you might execute something this at the REPL: 
 ```clj
 (count (day8.re-frame-10x/traced-result 80 4))
 ```
 
-That `(day8.re-frame-10x/traced-result 80 4)` part would be what you pasted in
+And that `(day8.re-frame-10x/traced-result 80 4)` part would be what you pasted in
 from the clipboard.
 
 Or maybe you'd do this
@@ -92,6 +92,7 @@ Or:
 (count tmp)
 ```
 
+So the expression you paste in `(day8.re-frame-10x/traced-result 80 4)` can be used within your broarder REPL experience.  That's just the expression you use to obtain the data. 
 
 ### Why This Way?
 
