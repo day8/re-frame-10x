@@ -1,10 +1,12 @@
 ## Event Handler Tracing
 
-This panel provides an interactive, explorative UI through which you can browse the form-by-form execution trace of the ClojureScript code in your event handlers.  You can inspect the data produced by every ClojureScript form, while retaining overall context. 
+See the execution trace of your event handler.  See it deeply.
+
+This panel shows you exactly how your event handler "executed" - form by form. The UI allows you to inspect every argument and every return value for every form. And it relates all execution back to the source code of your function.
 
 ### Show Me
 
-Here's what it would look like if you had it setup:
+Here's what it looks like if you set it up:
 
 ![Estim8 demo](/docs/images/estim8-demo.png)
 
