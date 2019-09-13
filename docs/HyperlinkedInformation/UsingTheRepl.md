@@ -2,16 +2,16 @@
 
 `re-frame-10x` captures trace data.  
 
-This document explains how to access this traced data from your REPL - so you can both inspect it and experiement with it. 
+This document explains how to access this traced data from your REPL - so you can experiement with it. 
 
-### The Concepts - Step by Step
+### The Concepts - 3 Steps
 
-We're talking about using a browser-connected REPL - the kind offered by shadow-clj or figwheel. Any code execution happens in the javascript browser-VM running your app. 
+Here, we're talking about using a browser-connected REPL - the kind offered by shadow-clj or figwheel. Any code execution happens in the javascript browser-VM currently running your app. 
 
-When using such a REPL, if you were to
+When you are using a REPL, if 
 type in `(my-ns/some-fn "blah" 2)` and hit return, 
 then:
- 1. this code will compiled within the context of the REPL's *current namespace*
+ 1. this code will be compiled within the context of the REPL's *current namespace*
  2. the resulting (javascript) code will be shipped across to the browser 
  3. the code will be run by the javascript VM running your app 
 
