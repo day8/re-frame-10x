@@ -6,7 +6,7 @@ This panel shows how your event handler "executed" - form by form. It allows you
 
 ### Show Me
 
-Source code for the event handler is show at the top, and the form by form exection trace is shown as row after row underneath. The indent level of the row indicates the nesting of the form being executed. 
+Source code for the event handler is show at the top, and the form by form exection trace is shown as row after row underneath. The indent level of the row indicates the nesting of the form being executed. When you mouse hover over a row of trace, it highlights the original source code.
 
 ![Estim8 demo](/docs/images/estim8-demo.png)
 
