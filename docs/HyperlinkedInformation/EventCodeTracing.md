@@ -1,12 +1,12 @@
 ## Event Handler Tracing
 
-See the execution trace of your event handler.  See it deeply.
+Look deeply into the execution trace of your event handler.
 
-This panel shows you exactly how your event handler "executed" - form by form. The UI allows you to inspect every argument and every return value for every form. And it relates all execution back to the source code of your function.
+This panel shows how your event handler "executed" - form by form. It allows you to inspect every argument and every return value, and it orients execution trace back to the original source code.
 
 ### Show Me
 
-Here's what it looks like if you set it up:
+Source code for the event handler is show at the top, and the form by form exection trace is shown as row after row underneath. The indent level of the row indicates the nesting of the form being executed. 
 
 ![Estim8 demo](/docs/images/estim8-demo.png)
 
