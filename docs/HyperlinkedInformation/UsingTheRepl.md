@@ -1,4 +1,4 @@
-## Using Trace The REPL
+## Using Trace In Your REPL
 
 `re-frame-10x` captures trace data. 
 
