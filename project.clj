@@ -3,6 +3,7 @@
   :url "https://github.com/Day8/re-frame-10x"
   :license {:name "MIT"}
   :min-lein-version "2.9.1"
+
   :dependencies [[org.clojure/clojure "1.10.1" :scope "provided"]
                  [org.clojure/clojurescript "1.10.520" :scope "provided"]
                  [reagent "0.9.0-rc1" :scope "provided"]
@@ -12,9 +13,7 @@
                  [zprint "0.4.16"]
                  [cljsjs/react-flip-move "3.0.1-1"]
                  [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]
-                 [cljsjs/create-react-class "15.6.3-1" :exclusions [cljsjs/react]]
-                 ;[expound "0.4.0"]
-                 ]
+                 [cljsjs/create-react-class "15.6.3-1" :exclusions [cljsjs/react]]]
   
   :plugins [[thomasa/mranderson "0.5.1"]
             [lein-less "RELEASE"]]
