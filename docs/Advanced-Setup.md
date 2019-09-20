@@ -35,8 +35,4 @@ There may be more hurdles to cross after this one, Here Be Dragons, if you figur
 
 ## Using Shadow CLJS?
 
-Shadow CLJS doesn't support cljsjs, which we use for some of re-frame-10x's dependencies. Instead, you need to add these via npm/yarn, and make sure you are using shadow-cljs 2.2.22 or higher.
-
-```console
-$ yarn add highlight.js react-highlight.js react-flip-move
-```
+Dependencies will be automatically installed via shadow-cljs's `deps.cljs` transitive dependency mechanism.     
