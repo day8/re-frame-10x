@@ -36,20 +36,14 @@
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
                           :dependencies ^:replace [^:source-dep [re-frame "0.11.0-rc1"
                                                                  :exclusions [org.clojure/clojurescript
-                                                                              cljsjs/react
-                                                                              cljsjs/react-dom
-                                                                              cljsjs/react-dom-server
-                                                                              cljsjs/create-react-class
-                                                                              org.clojure/tools.logging
-                                                                              net.cgrand/macrovich]]
+                                                                              reagent
+                                                                              net.cgrand/macrovich
+                                                                              org.clojure/tools.logging]]
                                                    ^:source-dep [reagent "0.9.0-rc1"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom
-                                                                              cljsjs/react-dom-server
-                                                                              cljsjs/create-react-class
-                                                                              org.clojure/tools.logging
-                                                                              net.cgrand/macrovich]]
+                                                                              cljsjs/react-dom-server]]
                                                    ; We need a source-dep on Garden, as there are breaking changes between
                                                    ; versions, and consuming projects can override this version of Garden.
                                                    ^:source-dep [garden "1.3.9"
