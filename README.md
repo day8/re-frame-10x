@@ -21,7 +21,13 @@ Branch | React Version | Status | Artifact
 `master` | React 16 | [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
 `-` | React 15 | `-` | `[day8.re-frame/re-frame-10x "0.3.7"]`
 
-**Important**: Note that version 0.3.7 is the last release that supports React 15/Reagent 0.6.0-0.7.0. re-frame-10x 0.4.0 and up only support React 16/Reagent 0.8.0.
+**Important**: Please note the following compatibility table:
+
+re-frame-10x Version | React Version | Reagent Versions
+-------------------- | ------------- | ----------------
+`0.5.x` | React 16.9.0 | 0.9.x |
+`0.4.3` | React 16 - 16.8.6 | 0.8.x | 
+`0.3.7` | React 15 | 0.6.0 - 0.7.0 |
 
 ## Show Me
 [Conduit demo with re-frame-10x](https://jacekschae.github.io/conduit-re-frame-10x-demo/)
