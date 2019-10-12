@@ -10,7 +10,7 @@
                  [day8.re-frame/re-frame-10x "0.4.3-SNAPSHOT"]
                  [secretary "1.2.3"]]
 
-  :plugins [[lein-shadow "0.1.5"]]
+  :plugins [[lein-shadow "0.1.6"]]
 
   :profiles {:dev  {:dependencies [[binaryage/devtools "0.9.10"]]}}
 
