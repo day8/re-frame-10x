@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## Unreleased
+
+### Added
+
+* Event/epoch history explorer. See [#244](https://github.com/day8/re-frame-10x/pull/244).
+  Thanks to [@uosl](https://github.com/uosl).
+
+### Fixed
+
+* Prevent nil component path from trace map. See [#245](https://github.com/day8/re-frame-10x/pull/245).
+  Thanks to [@dpsutton](https://github.com/dpsutton).
+
 ## [0.4.3] - 2018-09-11
 
 ### Changed
