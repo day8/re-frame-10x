@@ -14,12 +14,12 @@ $ lein do clean, figwheel
 
 If you want to test and develop re-frame-10x against your own re-frame projects, you will need to do some more advanced setup using the leiningen checkouts feature.
 
-You need both the re-frame-10x project _and_ a test project to develop it against. For example, you can use the [todo-mvc](https://github.com/Day8/re-frame/tree/master/examples/todomvc) project in the re-frame repo.
+You need both the re-frame-10x project _and_ a test project to develop it against. For example, you can use the [todo-mvc](https://github.com/day8/re-frame/tree/master/examples/todomvc) project in the re-frame repo.
 
 - Clone `re-frame-10x` to your machine:
 
   ```
-  git clone git@github.com:Day8/re-frame-10x.git
+  git clone git@github.com:day8/re-frame-10x.git
   ```
 
 - Go into the root folder of the test project you're using to develop re-frame-10x with.

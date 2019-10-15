@@ -21,9 +21,9 @@ All notable changes to this project will be documented in this file. This change
 
 ### Fixed
 
-* Fix `unmountComponentAtNode` exception when external window is open. [#234](https://github.com/Day8/re-frame-10x/issues/234)
-  Possibly also reduces or fixes 'triangles frozen' problem. [#209](https://github.com/Day8/re-frame-10x/issues/209)
-* Fix scrolling content in trace and subs tabs. [#246](https://github.com/Day8/re-frame-10x/issues/246)
+* Fix `unmountComponentAtNode` exception when external window is open. [#234](https://github.com/day8/re-frame-10x/issues/234)
+  Possibly also reduces or fixes 'triangles frozen' problem. [#209](https://github.com/day8/re-frame-10x/issues/209)
+* Fix scrolling content in trace and subs tabs. [#246](https://github.com/day8/re-frame-10x/issues/246)
 * It is no longer possible to resize the 10x panel beyond 90% of the available
   window width thereby avoiding a situation where it was impossible to resize
   to a smaller width if dragged too far; i.e. the panel would get 'stuck'
@@ -59,21 +59,21 @@ All notable changes to this project will be documented in this file. This change
 
 ### Removed
 
-* Support for React 15/Reagent 0.7.0 and below. The last version of re-frame-10x that supports these versions is 0.3.7. - [#229](https://github.com/Day8/re-frame-10x/issues/229)
+* Support for React 15/Reagent 0.7.0 and below. The last version of re-frame-10x that supports these versions is 0.3.7. - [#229](https://github.com/day8/re-frame-10x/issues/229)
 
 ### Added
 
-* Added an explicit dependency on create-react-class in preparation for it being removed as a dependency in the upcoming Reagent 0.9.0. [#224](https://github.com/Day8/re-frame-10x/issues/224)
+* Added an explicit dependency on create-react-class in preparation for it being removed as a dependency in the upcoming Reagent 0.9.0. [#224](https://github.com/day8/re-frame-10x/issues/224)
 * Enabled subscription pinning and searching by default.
 * There is now a sample project at [examples/todomvc](./examples/todomvc) which you can use to develop against re-frame-10x, or use for comparison when setting up re-frame-10x on your own project.
 
 ### Changed
 
-* Use npm-style names for JS libs. This should improve compatibility with Shadow CLJS users, and people using ClojureScript's `:npm-deps`. @deraen - [#201](https://github.com/Day8/re-frame-10x/pull/201)
+* Use npm-style names for JS libs. This should improve compatibility with Shadow CLJS users, and people using ClojureScript's `:npm-deps`. @deraen - [#201](https://github.com/day8/re-frame-10x/pull/201)
 
 ### Fixed
 
-* Make Ctrl-H show/hide shortcut work correctly when using different keyboard layouts. [#231](https://github.com/Day8/re-frame-10x/issues/231)
+* Make Ctrl-H show/hide shortcut work correctly when using different keyboard layouts. [#231](https://github.com/day8/re-frame-10x/issues/231)
 
 ### Internal Changes
 
@@ -83,24 +83,24 @@ All notable changes to this project will be documented in this file. This change
 
 ### Deprecated
 
-This is the last release of re-frame-10x to support from React 15/Reagent 0.6.0-0.7.0 and React 16/Reagent 0.8.0. The next release of re-frame-10x will only support React 16/Reagent 0.8.0 and up. See [#229](https://github.com/Day8/re-frame-10x/issues/229) for more context.
+This is the last release of re-frame-10x to support from React 15/Reagent 0.6.0-0.7.0 and React 16/Reagent 0.8.0. The next release of re-frame-10x will only support React 16/Reagent 0.8.0 and up. See [#229](https://github.com/day8/re-frame-10x/issues/229) for more context.
 
 ### Added
 
-* Added support for searching and pining subscriptions. For now this is available behind the [debug flag](https://github.com/Day8/re-frame-10x/blob/master/DEVELOPERS.md). @shen-tian - [#217](https://github.com/Day8/re-frame-10x/pull/217)
+* Added support for searching and pining subscriptions. For now this is available behind the [debug flag](https://github.com/day8/re-frame-10x/blob/master/DEVELOPERS.md). @shen-tian - [#217](https://github.com/day8/re-frame-10x/pull/217)
 * Added reader for UUID tagged literals in app-db paths, e.g. `#uuid 7ad6b5f5-e419-4681-a960-e7b35d3de0b1`
 
 ### Fixed
 
-* Show a useful error message if browsers block opening the external window. @kajism - [#228](https://github.com/Day8/re-frame-10x/pull/228)
-* Fix Firefox rendering issue. @solatis - [#223](https://github.com/Day8/re-frame-10x/pull/223)
+* Show a useful error message if browsers block opening the external window. @kajism - [#228](https://github.com/day8/re-frame-10x/pull/228)
+* Fix Firefox rendering issue. @solatis - [#223](https://github.com/day8/re-frame-10x/pull/223)
 * Prevent warnings about using private vars by using var-quote.
 * Hide the replay button when there is no event to replay.
 
 ### Changed
 
-* Bumped zprint version to 0.4.15. @jacekschae - [#226](https://github.com/Day8/re-frame-10x/pull/226)
-* Sort subscriptions alphabetically. @shen-tian - [#217](https://github.com/Day8/re-frame-10x/pull/217)
+* Bumped zprint version to 0.4.15. @jacekschae - [#226](https://github.com/day8/re-frame-10x/pull/226)
+* Sort subscriptions alphabetically. @shen-tian - [#217](https://github.com/day8/re-frame-10x/pull/217)
 
 ## [0.3.6] - 2018-12-11
 
@@ -168,7 +168,7 @@ Fixed broken merges in 0.3.4 and 0.3.5 when updating the bundled version of re-f
 
 ### Added
 
-* Form level code tracing. This lets you inspect all of the intermediate results of an event handlers execution. More info on how to set it up at https://github.com/Day8/re-frame-debux.
+* Form level code tracing. This lets you inspect all of the intermediate results of an event handlers execution. More info on how to set it up at https://github.com/day8/re-frame-debux.
 
 ### Changed
 
@@ -183,8 +183,8 @@ Fixed broken merges in 0.3.4 and 0.3.5 when updating the bundled version of re-f
 ### Fixed
 
 * Bug where under certain rare circumstances relating to the structure of your app-db, the Event panel could throw an error when transitioning from one epoch to another.
-* Refer to the correct Closure define to enable tracing [#170](https://github.com/Day8/re-frame-10x/issues/170).
-* Add missing requires in parts panel [#164](https://github.com/Day8/re-frame-10x/pull/164)
+* Refer to the correct Closure define to enable tracing [#170](https://github.com/day8/re-frame-10x/issues/170).
+* Add missing requires in parts panel [#164](https://github.com/day8/re-frame-10x/pull/164)
 
 ## [0.2.0] - 2018-02-20
 
@@ -269,7 +269,7 @@ This version requires re-frame 0.10.4 to make use of the newly added Event panel
 ### Fixed
 
 * External windows not loading
-* All app-db and subscription path expansions are now independent of each other [#134](https://github.com/Day8/re-frame-trace/issues/134).
+* All app-db and subscription path expansions are now independent of each other [#134](https://github.com/day8/re-frame-trace/issues/134).
 * Layer 2/3 calculations are more accurate now. We now use the last seen layer level when a subscription runs, to inform it's layer level if it was created or destroyed.
 * View namespaces that are ignored are no longer shown when showing traces for all epochs.
 * Distinguish between subscriptions that return `nil` values and those that haven't run yet.
@@ -294,7 +294,7 @@ There is now a React 16 variant of re-frame-trace available under the version `0
 ### Fixed
 
 * Set a print limit of 400 characters in the event header, to prevent very large events from DOSing the host application.
-* XML encode # character in SVGs, fixing [#130](https://github.com/Day8/re-frame-trace/issues/130).
+* XML encode # character in SVGs, fixing [#130](https://github.com/day8/re-frame-trace/issues/130).
 * Fix the reset tracing button in the traces panel.
 * Fix a bug when there is only one traced event, re-frame-trace would allow you to go back an epoch, throwing an exception.
 
@@ -316,12 +316,12 @@ There is now a React 16 variant of re-frame-trace available under the version `0
 
 Lots of quality of life fixes:
 
-* Lower count of items in sequence before expanding icon shows [#126](https://github.com/Day8/re-frame-trace/issues/126)
-* Only allow one time based filter at a time [#125](https://github.com/Day8/re-frame-trace/issues/125)
-* Persist trace expansions when changing tab [#105](https://github.com/Day8/re-frame-trace/issues/105)
-* Hide :sub/create traces for cached subscriptions [#93](https://github.com/Day8/re-frame-trace/issues/93)
-* Persist filter category settings to localstorage [#121](https://github.com/Day8/re-frame-trace/issues/121)
-* Highlight events in trace window [#106](https://github.com/Day8/re-frame-trace/issues/106)
+* Lower count of items in sequence before expanding icon shows [#126](https://github.com/day8/re-frame-trace/issues/126)
+* Only allow one time based filter at a time [#125](https://github.com/day8/re-frame-trace/issues/125)
+* Persist trace expansions when changing tab [#105](https://github.com/day8/re-frame-trace/issues/105)
+* Hide :sub/create traces for cached subscriptions [#93](https://github.com/day8/re-frame-trace/issues/93)
+* Persist filter category settings to localstorage [#121](https://github.com/day8/re-frame-trace/issues/121)
+* Highlight events in trace window [#106](https://github.com/day8/re-frame-trace/issues/106)
 
 ## [0.1.14] - 2017-12-19
 
@@ -355,10 +355,10 @@ Lots of quality of life fixes:
 
 ### Added
 
-* Preliminary support for React 16 component paths. [#89](https://github.com/Day8/re-frame-trace/pull/89)
-* External popout window. [#92](https://github.com/Day8/re-frame-trace/issues/92)
-* Namespace aware truncation in the traces panel. [#100](https://github.com/Day8/re-frame-trace/pull/100)
-* App DB expansions and contractions now persist across reloads. Note the [limitations](https://github.com/Day8/re-frame-trace/blob/master/docs/README.md#app-db-path-expansions) with this feature.
+* Preliminary support for React 16 component paths. [#89](https://github.com/day8/re-frame-trace/pull/89)
+* External popout window. [#92](https://github.com/day8/re-frame-trace/issues/92)
+* Namespace aware truncation in the traces panel. [#100](https://github.com/day8/re-frame-trace/pull/100)
+* App DB expansions and contractions now persist across reloads. Note the [limitations](https://github.com/day8/re-frame-trace/blob/master/docs/README.md#app-db-path-expansions) with this feature.
 
 ### Changed
 
@@ -470,14 +470,14 @@ Lots of quality of life fixes:
 
 ### Changed
 
-* The preloads namespace now adds the tracing panel to the DOM automatically, so you don't need to change any of your app code to bring it in. [#14](https://github.com/Day8/re-frame-trace/pull/14) via [Dexter Gramfors](https://github.com/Dexterminator).
+* The preloads namespace now adds the tracing panel to the DOM automatically, so you don't need to change any of your app code to bring it in. [#14](https://github.com/day8/re-frame-trace/pull/14) via [Dexter Gramfors](https://github.com/Dexterminator).
   **Migration steps:** Remove any explicit rendering instructions for `day8.re-frame.trace/devtools` in your app, as this is automatically added now.
 
 ## [0.0.8] - 2017-04-13
 
 ### Added
 
-* There is now a preload namespace you can use to configure re-frame-trace. Install details are in the README.md. [#13](https://github.com/Day8/re-frame-trace/pull/13) via [Dexter Gramfors](https://github.com/Dexterminator).
+* There is now a preload namespace you can use to configure re-frame-trace. Install details are in the README.md. [#13](https://github.com/day8/re-frame-trace/pull/13) via [Dexter Gramfors](https://github.com/Dexterminator).
 
 ## [0.0.7] - 2017-04-13
 

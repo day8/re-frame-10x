@@ -35,7 +35,7 @@ The indent level of a trace row indicates "the depth" of the form being executed
 
 ### Setup
 
-**First**, adjust your `project.clj` by following [these instructions](https://github.com/Day8/re-frame-debux/blob/master/README.md#installation) to add `day8.re-frame/tracing` to the `:dev` `:dependencies`. 
+**First**, adjust your `project.clj` by following [these instructions](https://github.com/day8/re-frame-debux/blob/master/README.md#installation) to add `day8.re-frame/tracing` to the `:dev` `:dependencies`. 
  
 **Then**, within the namespace of yours which contains the event handlers to be traced (perhaps called `events.cljs`):
 

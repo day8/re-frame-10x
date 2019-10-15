@@ -6,7 +6,7 @@ ignore unchanged layer 2 subscriptions. This document explains why.
 ### Background
 
 `re-frame`
-[makes a distinction](https://github.com/Day8/re-frame/blob/master/docs/SubscriptionInfographic.md)
+[makes a distinction](https://github.com/day8/re-frame/blob/master/docs/SubscriptionInfographic.md)
 between `layer 2` and `layer 3` subscriptions:
   - **`layer 2` subscriptions extract data directly from `app-db`**. They should be
     trivial in nature, which is to say there should be no computation in them beyond

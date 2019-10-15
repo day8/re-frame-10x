@@ -230,7 +230,7 @@
                                                                 "replay"]]
                                              :on-click #(do (rf/dispatch [:component/set-direction :next])
                                                             (rf/dispatch [:epochs/replay]))]
-                                            [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]])]])
+                                            [rc/hyperlink-info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]])]])
                 [rc/line :color "#EEEEEE"]
                 (when (and external-window? @unloading?)
                   [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])

@@ -1,6 +1,6 @@
 (defproject day8.re-frame/re-frame-10x "0.4.5-SNAPSHOT"
   :description "Become 10x more productive when developing and debugging re-frame applications."
-  :url "https://github.com/Day8/re-frame-10x"
+  :url "https://github.com/day8/re-frame-10x"
   :license {:name "MIT"}
   :min-lein-version "2.9.1"
 

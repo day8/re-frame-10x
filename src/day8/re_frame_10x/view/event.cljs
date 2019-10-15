@@ -52,7 +52,7 @@
                :label "Instructions for enabling Event Code Tracing"
                :attr {:rel "noopener noreferrer"}
                :target "_blank"
-               :href "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/EventCodeTracing.md"]]])
+               :href "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/EventCodeTracing.md"]]])
 
 
 (defn code-header
@@ -216,7 +216,7 @@
                ;; Doing this in a list would be nicer, but doesn't let us use ' as it will be expanded before we can create the string.
                :on-click #(do (utils/copy-to-clipboard "(require '[day8.re-frame-10x])")
                               (rf/dispatch [:code/repl-msg-state :start]))]
-              [rc/hyperlink-info "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]])
+              [rc/hyperlink-info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]])
 
 
 (defn indent-block

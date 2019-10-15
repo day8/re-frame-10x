@@ -100,7 +100,7 @@
                              :model ignore-unchanged-l2-subs?
                              :label [:span "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br]
                                      [rc/link {:label (str "layer 2 " (utils/pluralize- @ignore-unchanged-l2-count "sub"))
-                                               :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
+                                               :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
                              :style {:margin-top "6px"}
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-l2-subs? %])]]]]]))
 
@@ -174,7 +174,7 @@
                                     [:div {:style {:margin "auto"}} layer]
                                     [rc/link {:label "?"
                                               :style {:margin "auto"}
-                                              :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]]]
+                                              :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]]]
 
               [pod-header-section
                :width "50px"
@@ -370,7 +370,7 @@
                                 [:h2 {:class "bm-heading-text"
                                       :style {:margin "19px 0px"}}
                                  [rc/link
-                                  {:href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
+                                  {:href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
                                    :label "Intra-Epoch Subscriptions"}]]
                                 (for [p intra-epoch-subs]
                                   ^{:key (:id p)}

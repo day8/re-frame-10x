@@ -9,7 +9,7 @@ It helps you find false assumptions faster.
 
 Branch | React Version | Status | Artifact
 ----------|--------|--------|--------
-`master` | React 16 | [![CircleCI](https://circleci.com/gh/Day8/re-frame-10x.svg?style=svg)](https://circleci.com/gh/Day8/re-frame-10x) | `[day8.re-frame/re-frame-10x "0.4.1"]`
+`master` | React 16 | [![CircleCI](https://circleci.com/gh/day8/re-frame-10x.svg?style=svg)](https://circleci.com/gh/day8/re-frame-10x) | `[day8.re-frame/re-frame-10x "0.4.1"]`
 `-` | React 15 | `-` | `[day8.re-frame/re-frame-10x "0.3.7"]`
 
 **Important**: Note that version 0.3.7 is the last release that supports React 15/Reagent 0.6.0-0.7.0. re-frame-10x 0.4.0 and up only support React 16/Reagent 0.8.0.
@@ -117,7 +117,7 @@ features, and build a cognitive map of how the code is structured.
 
 ### Temporary Warning
 
-> Some of the claims above are aspirational. `re-frame-10x` [remains a WIP](https://github.com/Day8/re-frame-10x/issues/118).
+> Some of the claims above are aspirational. `re-frame-10x` [remains a WIP](https://github.com/day8/re-frame-10x/issues/118).
 
 ## Of Sausage And Sizzle
 
@@ -198,7 +198,7 @@ If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://s
 
 ### Code Tracing
 
-re-frame-10x includes an experimental code tracing feature for tracing the code in your event handlers. See [Day8/re-frame-debux](https://github.com/Day8/re-frame-debux) for instructions on how to set it up.
+re-frame-10x includes an experimental code tracing feature for tracing the code in your event handlers. See [day8/re-frame-debux](https://github.com/day8/re-frame-debux) for instructions on how to set it up.
 
 ## Usage
 
@@ -285,7 +285,7 @@ re-frame is instrumented - all important activity generates trace data.
 
 By default, re-frame tracing is "compiled out", so it won't impose a performance cost in production. The trade-off here is that you need to explicitly enable it in development.
 
-The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#preloads) option (`:preloads [day8.re-frame-10x.preload]`) has to be set in order to automatically monkeypatch Reagent to add appropriate lifecycle hooks. Yes this is gross, and yes we will [make a PR to reagent to add proper hooks](https://github.com/Day8/re-frame-10x/issues/115), once we know exactly what we need. The preload namespace also injects a div containing the devtools panel into the DOM.
+The [preloads](https://github.com/clojure/clojurescript/wiki/Compiler-Options#preloads) option (`:preloads [day8.re-frame-10x.preload]`) has to be set in order to automatically monkeypatch Reagent to add appropriate lifecycle hooks. Yes this is gross, and yes we will [make a PR to reagent to add proper hooks](https://github.com/day8/re-frame-10x/issues/115), once we know exactly what we need. The preload namespace also injects a div containing the devtools panel into the DOM.
 
 ## Developing/Contributing
 

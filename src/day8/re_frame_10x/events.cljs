@@ -18,7 +18,7 @@
             [day8.re-frame-10x.metamorphic :as metam]))
 
 (defn fixed-after
-  ;; Waiting on https://github.com/Day8/re-frame/issues/447
+  ;; Waiting on https://github.com/day8/re-frame/issues/447
   [f]
   (rf/->interceptor
     :id :after

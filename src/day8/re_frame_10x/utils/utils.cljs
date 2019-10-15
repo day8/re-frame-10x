@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.utils.utils)
 
-(def diff-link "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
+(def diff-link "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
 (defn last-in-vec
   "Get the last element in the vector. Returns nil if v is empty"
