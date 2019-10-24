@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Changed
+
+* Upgrade todomvc example shadow-cljs to 2.8.67
+
 ### Added
 
 * Event/epoch history explorer. See [#244](https://github.com/day8/re-frame-10x/pull/244).
