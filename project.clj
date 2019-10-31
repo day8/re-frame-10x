@@ -10,11 +10,11 @@
                  [re-frame "0.10.9" :scope "provided"]
                  [binaryage/devtools "0.9.10"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
-                 [zprint "0.4.16"]
+                 [zprint "0.5.1"]
                  [cljsjs/react-flip-move "3.0.1-1"]
                  [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]
                  [cljsjs/create-react-class "15.6.3-1" :exclusions [cljsjs/react]]]
-  
+
   :plugins [[thomasa/mranderson "0.5.1"]
             [lein-less "RELEASE"]]
 
