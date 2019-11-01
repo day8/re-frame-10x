@@ -2,7 +2,6 @@
   (:require [day8.re-frame-10x.view.app-db :refer [pod-gap pod-padding border-radius pod-border-edge
                                                    pod-header-section cljs-dev-tools-background]]
             [day8.re-frame-10x.utils.utils :as utils]
-            [day8.re-frame-10x.utils.animated :as animated]
             [day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.core :as rf]
             [day8.re-frame-10x.inlined-deps.reagent.v0v8v1.reagent.core :as r]
             [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
@@ -35,9 +34,6 @@
                 :sub/run     {:long "RUN" :short "R"}
                 :sub/not-run {:long "NOT-RUN" :short "N"}
                 nil          {:long "NIL" :short "NIL"}})
-
-(def *finished-animation? (r/atom false))
-(def animation-duration 150)
 
 (defn long-tag-desc [type]
   (get-in tag-types [type :long] (str type)))
@@ -218,85 +214,75 @@
      :children [[pod-header pod-info]
                 [rc/v-box
                  :class (when open? "app-db-path--pod-border")
-                 :children [[animated/component
-                             (animated/v-box-options
-                               {:enter-animation "accordionVertical"
-                                :leave-animation "accordionVertical"
-                                :duration        animation-duration})
-                             (when open?
-                               (let [main-value (:value pod-info)
-                                     #_(cond value? (:value pod-info)
-                                             previous-value? (:previous-value pod-info)
-                                             :else nil)]
-                                 [rc/v-box
-                                  :class "data-viewer"
-                                  :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
-                                          :overflow-x "auto"
-                                          :overflow-y "hidden"}
-                                  :children [(if (or value? #_previous-value?)
-                                               [components/simple-render
-                                                main-value
-                                                ["sub-path" path]]
-                                               not-run-yet-msg)]]))]
+                 :children [(when open?
+                              (let [main-value (:value pod-info)
+                                    #_(cond value? (:value pod-info)
+                                            previous-value? (:previous-value pod-info)
+                                            :else nil)]
+                                [rc/v-box
+                                 :class "data-viewer"
+                                 :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
+                                         :overflow-x "auto"
+                                         :overflow-y "hidden"}
+                                 :children [(if (or value? #_previous-value?)
+                                              [components/simple-render
+                                               main-value
+                                               ["sub-path" path]]
+                                              not-run-yet-msg)]]))
 
-                            [animated/component
-                             (animated/v-box-options
-                               {:enter-animation "accordionVertical"
-                                :leave-animation "accordionVertical"
-                                :duration        animation-duration})
-                             (when render-diff?
-                               (let [diffable?        (and value? previous-value?)
-                                     not-run?         (= (:order pod-info) [:sub/not-run])
-                                     previous-value   (:previous-value pod-info)
-                                     value            (:value pod-info)
-                                     unchanged-value? (get-in pod-info [:sub/traits :unchanged?] false)
-                                     [diff-before diff-after _] (clojure.data/diff previous-value value)]
-                                 [rc/v-box
-                                  :children [[rc/v-box
-                                              :class "app-db-path--link"
-                                              :style {:background-color cljs-dev-tools-background}
-                                              :justify :end
-                                              :children [[rc/hyperlink-href
-                                                          ;:class  "app-db-path--label"
-                                                          :label "ONLY BEFORE"
-                                                          :style {:margin-left common/gs-7s}
-                                                          :attr {:rel "noopener noreferrer"}
-                                                          :target "_blank"
-                                                          :href utils/diff-link]]]
-                                             [rc/v-box
-                                              :class "data-viewer data-viewer--top-rule"
-                                              :style {:overflow-x "auto"
-                                                      :overflow-y "hidden"}
-                                              :children [(cond
-                                                           not-run? sub-not-run-msg
-                                                           unchanged-value? unchanged-value-msg
-                                                           diffable? [components/simple-render
-                                                                      diff-before
-                                                                      ["app-db-diff" path]]
-                                                           :else no-prev-value-msg)]]
-                                             [rc/v-box
-                                              :class "app-db-path--link"
-                                              :style {:background-color cljs-dev-tools-background}
-                                              :justify :end
-                                              :children [[rc/hyperlink-href
-                                                          ;:class  "app-db-path--label"
-                                                          :label "ONLY AFTER"
-                                                          :style {:margin-left      common/gs-7s
-                                                                  :background-color cljs-dev-tools-background}
-                                                          :attr {:rel "noopener noreferrer"}
-                                                          :target "_blank"
-                                                          :href utils/diff-link]]]
-                                             [rc/v-box
-                                              :class "data-viewer data-viewer--top-rule"
-                                              :style {:overflow-x "auto"
-                                                      :overflow-y "hidden"}
-                                              :children [(cond
-                                                           not-run? sub-not-run-msg
-                                                           unchanged-value? unchanged-value-msg
-                                                           diffable? [components/simple-render
-                                                                      diff-after
-                                                                      ["app-db-diff" path]]
-                                                           :else no-prev-value-msg)]]]]))]
+                            (when render-diff?
+                              (let [diffable?        (and value? previous-value?)
+                                    not-run?         (= (:order pod-info) [:sub/not-run])
+                                    previous-value   (:previous-value pod-info)
+                                    value            (:value pod-info)
+                                    unchanged-value? (get-in pod-info [:sub/traits :unchanged?] false)
+                                    [diff-before diff-after _] (clojure.data/diff previous-value value)]
+                                [rc/v-box
+                                 :children [[rc/v-box
+                                             :class "app-db-path--link"
+                                             :style {:background-color cljs-dev-tools-background}
+                                             :justify :end
+                                             :children [[rc/hyperlink-href
+                                                         ;:class  "app-db-path--label"
+                                                         :label "ONLY BEFORE"
+                                                         :style {:margin-left common/gs-7s}
+                                                         :attr {:rel "noopener noreferrer"}
+                                                         :target "_blank"
+                                                         :href utils/diff-link]]]
+                                            [rc/v-box
+                                             :class "data-viewer data-viewer--top-rule"
+                                             :style {:overflow-x "auto"
+                                                     :overflow-y "hidden"}
+                                             :children [(cond
+                                                          not-run? sub-not-run-msg
+                                                          unchanged-value? unchanged-value-msg
+                                                          diffable? [components/simple-render
+                                                                     diff-before
+                                                                     ["app-db-diff" path]]
+                                                          :else no-prev-value-msg)]]
+                                            [rc/v-box
+                                             :class "app-db-path--link"
+                                             :style {:background-color cljs-dev-tools-background}
+                                             :justify :end
+                                             :children [[rc/hyperlink-href
+                                                         ;:class  "app-db-path--label"
+                                                         :label "ONLY AFTER"
+                                                         :style {:margin-left      common/gs-7s
+                                                                 :background-color cljs-dev-tools-background}
+                                                         :attr {:rel "noopener noreferrer"}
+                                                         :target "_blank"
+                                                         :href utils/diff-link]]]
+                                            [rc/v-box
+                                             :class "data-viewer data-viewer--top-rule"
+                                             :style {:overflow-x "auto"
+                                                     :overflow-y "hidden"}
+                                             :children [(cond
+                                                          not-run? sub-not-run-msg
+                                                          unchanged-value? unchanged-value-msg
+                                                          diffable? [components/simple-render
+                                                                     diff-after
+                                                                     ["app-db-diff" path]]
+                                                          :else no-prev-value-msg)]]]]))
                             (when open?
                               [rc/gap-f :size pod-padding])]]]]))
 
@@ -349,7 +335,7 @@
     [rc/v-box
      :size "1"
      :style {:overflow-y "auto"}
-     :children [(if (and (empty? all-subs) @*finished-animation?)
+     :children [(if (empty? all-subs)
                   [no-pods]
                   [pod-header-column-titles])
                 [rc/v-box

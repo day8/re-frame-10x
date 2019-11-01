@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Removed
+
+* Remove dependency on react-flip-move. This caused a conflict with an application level dependency and adds very little
+  value to 10x itself so was deemed unnecessary complexity. *Potentially albeit unlikely breaking change* if you depend
+  on react-flip-move in your application and do not have it already in your own project's dependencies. In that case
+  simple add `react-flip-move` as an npm dependency for shadow-cljs users, or the `cljsjs/react-flip-move` package for
+  everyone else.
+
 ### Changed
 
 * Upgrade todomvc example shadow-cljs to 2.8.67

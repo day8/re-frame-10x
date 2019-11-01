@@ -2,7 +2,6 @@
   (:require [devtools.prefs]
             [devtools.formatters.core]
             [day8.re-frame-10x.utils.utils :as utils]
-            [day8.re-frame-10x.utils.animated :as animated]
             [day8.re-frame-10x.view.components :as components]
             [day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.core :as rf]
             [day8.re-frame-10x.inlined-deps.reagent.v0v8v1.reagent.core :as r]
@@ -26,9 +25,6 @@
 (def pod-border-color "#e3e9ed")
 (def pod-border-edge (str "1px solid " pod-border-color))
 (def border-radius "3px")
-
-(def *finished-animation? (r/atom true))
-(def animation-duration 150)
 
 (def app-db-styles
   [:#--re-frame-10x--
@@ -177,8 +173,7 @@
                            :left-offset 3
                            :top-offset -4
                            :tooltip "Remove this inspector"
-                           :on-click #(do (reset! *finished-animation? false)
-                                          (rf/dispatch [:app-db/remove-path id]))]]]]])
+                           :on-click #(rf/dispatch [:app-db/remove-path id])]]]]])
 
 
 (defn pod [{:keys [id path open? diff?] :as pod-info}]
@@ -190,85 +185,75 @@
      :children [[pod-header pod-info]
                 [rc/v-box
                  :class (when open? "app-db-path--pod-border")
-                 :children [[animated/component
-                             (animated/v-box-options
-                               {:enter-animation "accordionVertical"
-                                :leave-animation "accordionVertical"
-                                :duration        animation-duration})
-                             (when open?
+                 :children [(when open?
+                              [rc/v-box
+                               :class "data-viewer"
+                               :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
+                                       :overflow-x "auto"
+                                       :overflow-y "hidden"}
+                               :children [[components/simple-render
+                                           (get-in @app-db-after path)
+                                           ["app-db-path" path]
+
+                                           #_{:todos [1 2 3]}
+                                           #_(get-in @app-db path)
+                                           #_[rc/h-box
+                                              :align :center
+                                              :children [[:button.subtree-button
+                                                          [:span.subtree-button-string
+                                                           (str path)]]
+                                                         [:img
+                                                          {:src      (str "data:image/svg+xml;utf8," delete)
+                                                           :style    {:cursor "pointer"
+                                                                      :height "10px"}
+                                                           :on-click #(rf/dispatch [:app-db/remove-path path])}]]]
+                                           #_[path]]
+
+                                          #_"---main-section---"]])]
+                           (when render-diff?
+                             (let [app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
+                                   [diff-before diff-after _] (when render-diff?
+                                                                (clojure.data/diff (get-in @app-db-before path)
+                                                                                   (get-in @app-db-after path)))]
                                [rc/v-box
-                                :class "data-viewer"
-                                :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
-                                        :overflow-x "auto"
-                                        :overflow-y "hidden"}
-                                :children [[components/simple-render
-                                            (get-in @app-db-after path)
-                                            ["app-db-path" path]
-
-                                            #_{:todos [1 2 3]}
-                                            #_(get-in @app-db path)
-                                            #_[rc/h-box
-                                               :align :center
-                                               :children [[:button.subtree-button
-                                                           [:span.subtree-button-string
-                                                            (str path)]]
-                                                          [:img
-                                                           {:src      (str "data:image/svg+xml;utf8," delete)
-                                                            :style    {:cursor "pointer"
-                                                                       :height "10px"}
-                                                            :on-click #(rf/dispatch [:app-db/remove-path path])}]]]
-                                            #_[path]]
-
-                                           #_"---main-section---"]])]
-                            [animated/component
-                             (animated/v-box-options
-                               {:enter-animation "accordionVertical"
-                                :leave-animation "accordionVertical"
-                                :duration        animation-duration})
-                             (when render-diff?
-                               (let [app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
-                                     [diff-before diff-after _] (when render-diff?
-                                                                  (clojure.data/diff (get-in @app-db-before path)
-                                                                                     (get-in @app-db-after path)))]
-                                 [rc/v-box
-                                  :children [[rc/v-box
-                                              :class "app-db-path--link"
-                                              :style {:background-color cljs-dev-tools-background}
-                                              :justify :end
-                                              :children [[rc/hyperlink-href
-                                                          ;:class  "app-db-path--label"
-                                                          :label "ONLY BEFORE"
-                                                          :style {:margin-left common/gs-7s}
-                                                          :attr {:rel "noopener noreferrer"}
-                                                          :target "_blank"
-                                                          :href utils/diff-link]]]
-                                             [rc/v-box
-                                              :class "data-viewer data-viewer--top-rule"
-                                              :style {:overflow-x "auto"
-                                                      :overflow-y "hidden"}
-                                              :children [[components/simple-render
-                                                          diff-before
-                                                          ["app-db-diff" path]]]]
-                                             [rc/v-box
-                                              :class "app-db-path--link"
-                                              :style {:background-color cljs-dev-tools-background}
-                                              :justify :end
-                                              :children [[rc/hyperlink-href
-                                                          ;:class  "app-db-path--label"
-                                                          :label "ONLY AFTER"
-                                                          :style {:margin-left common/gs-7s}
-                                                          :attr {:rel "noopener noreferrer"}
-                                                          :target "_blank"
-                                                          :href utils/diff-link]]]
-                                             [rc/v-box
-                                              :class "data-viewer data-viewer--top-rule"
-                                              :style {:overflow-x "auto"
-                                                      :overflow-y "hidden"}
-                                              :children [[components/simple-render
-                                                          diff-after
-                                                          ["app-db-diff" path]]]]]]))]
-                            (when open?
-                              [rc/gap-f :size pod-padding])]]]]))
+                                :children [[rc/v-box
+                                            :class "app-db-path--link"
+                                            :style {:background-color cljs-dev-tools-background}
+                                            :justify :end
+                                            :children [[rc/hyperlink-href
+                                                        ;:class  "app-db-path--label"
+                                                        :label "ONLY BEFORE"
+                                                        :style {:margin-left common/gs-7s}
+                                                        :attr {:rel "noopener noreferrer"}
+                                                        :target "_blank"
+                                                        :href utils/diff-link]]]
+                                           [rc/v-box
+                                            :class "data-viewer data-viewer--top-rule"
+                                            :style {:overflow-x "auto"
+                                                    :overflow-y "hidden"}
+                                            :children [[components/simple-render
+                                                        diff-before
+                                                        ["app-db-diff" path]]]]
+                                           [rc/v-box
+                                            :class "app-db-path--link"
+                                            :style {:background-color cljs-dev-tools-background}
+                                            :justify :end
+                                            :children [[rc/hyperlink-href
+                                                        ;:class  "app-db-path--label"
+                                                        :label "ONLY AFTER"
+                                                        :style {:margin-left common/gs-7s}
+                                                        :attr {:rel "noopener noreferrer"}
+                                                        :target "_blank"
+                                                        :href utils/diff-link]]]
+                                           [rc/v-box
+                                            :class "data-viewer data-viewer--top-rule"
+                                            :style {:overflow-x "auto"
+                                                    :overflow-y "hidden"}
+                                            :children [[components/simple-render
+                                                        diff-after
+                                                        ["app-db-diff" path]]]]]]))
+                           (when open?
+                             [rc/gap-f :size pod-padding])]]]))
 
 
 (defn no-pods []
@@ -308,27 +293,20 @@
   (let [pods @(rf/subscribe [:app-db/paths])]
     [rc/v-box
      :size "1"
-     :children [(if (and (empty? pods) @*finished-animation?)
+     :children [(if (empty? pods)
                   [no-pods]
                   [pod-header-column-titles])
-                [animated/component
-                 (animated/v-box-options
-                   {:on-finish #(reset! *finished-animation? true)
-                    :duration  animation-duration
-                    :style     {:flex       "1 1 0px"
-                                :overflow-x "hidden"
-                                :overflow-y "auto"}})
-                 (for [p pods]
-                   ^{:key (:id p)}
-                   [pod p])]]]))
+                (for [p pods]
+                  ^{:key (:id p)}
+                  [pod p])]]))
 
 
 (defn render [app-db]
   [rc/v-box
    :size "1"
-   :style {:margin-right common/gs-19s
+   :style {:margin-right common/gs-19s}
            ;:overflow     "hidden"
-           }
+
    :children [[panel-header]
               [pod-section]
               [rc/gap-f :size common/gs-19s]]])
