@@ -1,8 +1,21 @@
-(defproject day8.re-frame/re-frame-10x "0.4.5-SNAPSHOT"
+(defproject day8.re-frame/re-frame-10x "see :git-version below https://github.com/arrdem/lein-git-version"
   :description "Become 10x more productive when developing and debugging re-frame applications."
   :url "https://github.com/day8/re-frame-10x"
   :license {:name "MIT"}
+
   :min-lein-version "2.9.1"
+
+  :git-version
+  {:status-to-version
+   (fn [{:keys [tag version branch ahead ahead? dirty?] :as git}]
+     (assert (re-find #"\d+\.\d+\.\d+" tag)
+       "Tag is assumed to be a raw SemVer version")
+     (if (and tag (not ahead?) (not dirty?))
+       tag
+       (let [[_ prefix patch] (re-find #"(\d+\.\d+)\.(\d+)" tag)
+             patch            (Long/parseLong patch)
+             patch+           (inc patch)]
+         (format "%s.%d-%s-SNAPSHOT" prefix patch+ ahead))))}
 
   :dependencies [[org.clojure/clojure "1.10.1" :scope "provided"]
                  [org.clojure/clojurescript "1.10.520" :scope "provided"]
@@ -14,24 +27,18 @@
                  [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]
                  [cljsjs/create-react-class "15.6.3-1" :exclusions [cljsjs/react]]]
 
-  :plugins [[thomasa/mranderson "0.5.1"]
-            [lein-less "RELEASE"]]
+  :plugins [[me.arrdem/lein-git-version "2.0.3"]
+            [thomasa/mranderson         "0.5.1"]
+            [lein-less                  "RELEASE"]]
 
   :deploy-repositories [["clojars" {:sign-releases false
-                                    :url "https://clojars.org/repo"
-                                    :username :env/CLOJARS_USERNAME
-                                    :password :env/CLOJARS_PASSWORD}]]
+                                    :url           "https://clojars.org/repo"
+                                    :username      :env/CLOJARS_USERNAME
+                                    :password      :env/CLOJARS_PASSWORD}]]
 
   :source-paths ["src" "gen-src"]
 
-  :release-tasks [["vcs" "assert-committed"]
-                  ["change" "version" "leiningen.release/bump-version" "release"]
-                  ["vcs" "commit"]
-                  ["vcs" "tag" "--no-sign"]
-                  ["deploy" "clojars"]
-                  ["change" "version" "leiningen.release/bump-version"]
-                  ["vcs" "commit"]
-                  ["vcs" "push"]]
+  :release-tasks [["deploy" "clojars"]]
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
