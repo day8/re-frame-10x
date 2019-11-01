@@ -1,3 +1,10 @@
+[![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/day8/re-frame-10x?style=flat)
+[![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
+![GitHub issues](https://img.shields.io/github/issues-raw/day8/re-frame-10x?style=flat)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/day8/re-frame-10x)
+![GitHub](https://img.shields.io/github/license/day8/re-frame-10x?style=flat)
+
 # re-frame-10x
 
 `re-frame-10x` lets you instrument, and then inspect, the inner workings of a running `re-frame` application. It presents as a programmer's dashboard, delivering curated insight and illumination.
@@ -9,6 +16,7 @@ It helps you find false assumptions faster.
 
 Branch | React Version | Status | Artifact
 ----------|--------|--------|--------
+`develop` | React 16.9+ | In Progress | n/a
 `master` | React 16 | [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
 `-` | React 15 | `-` | `[day8.re-frame/re-frame-10x "0.3.7"]`
 
