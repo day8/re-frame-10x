@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## [[0.4.5] - 2019-11-01](https://github.com/day8/re-frame-10x/runs/284984341)
+
 ### Added
 
 - Enable programmatically opening or closing panel. See [#210](https://github.com/day8/re-frame-10x/pull/210). Thanks to
@@ -15,6 +17,8 @@ All notable changes to this project will be documented in this file. This change
 - Upgrade todomvc example shadow-cljs to 2.8.69.
 - Upgrade todomvc example karma to 4.4.1.
 - Upgrade todomvc example karma-junit-reporter to 2.0.1.
+- Migrate to me.arrdem/lein-git-version.
+- Migrate to continuous deployment for releases via GitHub Actions.
 
 ### Fixed
 
