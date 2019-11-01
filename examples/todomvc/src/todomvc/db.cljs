@@ -80,8 +80,8 @@
   (fn [cofx _]
     ;; put the localstore todos into the coeffect under :local-store-todos
     (assoc cofx :local-store-todos
-              ;; read in todos from localstore, and process into a sorted map
-              (into (sorted-map
+                ;; read in todos from localstore, and process into a sorted map
+                (into (sorted-map)
                       (some->> (.getItem js/localStorage ls-key)
-                               (cljs.reader/read-string))))))) ;; EDN map -> map
+                               (cljs.reader/read-string)))))) ;; EDN map -> map
 
