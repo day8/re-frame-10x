@@ -1,6 +1,8 @@
-name: ci
+name: cd
 on:
   push:
+    tags:
+      "*"
     paths-ignore:
       - "docs/**"
       - ".gitignore"
@@ -11,8 +13,8 @@ on:
       - "source-deps.sh"
 
 jobs:
-  build:
-    name: Karma Test Runner
+  test:
+    name: Test
     runs-on: ubuntu-18.04
     container:
       image: circleci/clojure:openjdk-11-lein-2.9.1-node-browsers
@@ -38,3 +40,21 @@ jobs:
       - name: Compiler Sample Project for Production
         run: sudo lein with-profile prod do clean, compile
         working-directory: "examples/todomvc"
+  release:
+    name: Release
+    needs: test
+    runs-on: ubuntu-18.04
+    container:
+      image: circleci/clojure:openjdk-11-lein-2.9.1-node-browsers
+      env:
+        LEIN_ROOT: "true"
+        JVM_OPTS: -Xmx4g
+    steps:
+      - uses: actions/checkout@master
+      - name: Fix Broken JDK Keystore
+        run: |
+          sudo bash -c "/usr/bin/printf '\xfe\xed\xfe\xed\x00\x00\x00\x02\x00\x00\x00\x00\xe2\x68\x6e\x45\xfb\x43\xdf\xa4\xd9\x92\xdd\x41\xce\xb6\xb2\x1c\x63\x30\xd7\x92' > /etc/ssl/certs/java/cacerts"
+          sudo /var/lib/dpkg/info/ca-certificates-java.postinst configure
+      - name: lein release
+        run: |
+          sudo CLOJARS_USERNAME=${{ secrets.CLOJARS_USERNAME }} CLOJARS_PASSWORD=${{ secrets.CLOJARS_PASSWORD }} GITHUB_USERNAME=${{ github.actor }} GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} lein release
