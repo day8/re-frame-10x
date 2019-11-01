@@ -3,6 +3,23 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Added
+
+- Enable programmatically opening or closing panel. See [#210](https://github.com/day8/re-frame-10x/pull/210). Thanks to
+  [@mainej](https://github.com/mainej).
+
+### Changed
+
+- Upgrade zprint to 0.5.1 to fix "string/ends-with?" warning. See [#253](https://github.com/day8/re-frame-10x/pull/253).
+  Thanks to [@Quezion](https://github.com/Quezion).
+- Upgrade todomvc example shadow-cljs to 2.8.69.
+- Upgrade todomvc example karma to 4.4.1.
+- Upgrade todomvc example karma-junit-reporter to 2.0.1.
+
+### Fixed
+
+- Fix bug in todomvc example local storage load that prevented app startup completing successfully.
+
 ### Removed
 
 * Remove dependency on react-flip-move. This caused a conflict with an application level dependency and adds very little
@@ -10,6 +27,8 @@ All notable changes to this project will be documented in this file. This change
   on react-flip-move in your application and do not have it already in your own project's dependencies. In that case
   simple add `react-flip-move` as an npm dependency for shadow-cljs users, or the `cljsjs/react-flip-move` package for
   everyone else.
+
+## [0.4.4] - 2019-10-14
 
 ### Changed
 
