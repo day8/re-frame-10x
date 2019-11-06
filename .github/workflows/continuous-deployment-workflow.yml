@@ -2,15 +2,7 @@ name: cd
 on:
   push:
     tags:
-      "*"
-    paths-ignore:
-      - "docs/**"
-      - ".gitignore"
-      - "CHANGELOG.md"
-      - "DEVELOPERS.md"
-      - "LICENSE"
-      - "README.md"
-      - "source-deps.sh"
+      - "v?[0-9]+.[0-9]+.[0-9]+*"
 
 jobs:
   test:
