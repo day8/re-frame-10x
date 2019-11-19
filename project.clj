@@ -1,25 +1,9 @@
-(defproject day8.re-frame/re-frame-10x "see :git-version below https://github.com/arrdem/lein-git-version"
+(defproject    day8.re-frame/re-frame-10x "lein-git-inject/version"
   :description "Become 10x more productive when developing and debugging re-frame applications."
-  :url "https://github.com/day8/re-frame-10x"
-  :license {:name "MIT"}
+  :url         "https://github.com/day8/re-frame-10x"
+  :license     {:name "MIT"}
 
   :min-lein-version "2.9.1"
-
-  :git-version
-  {:status-to-version
-   (fn [{:keys [tag version branch ahead ahead? dirty?] :as git-status}]
-     (if-not (string? tag)
-       ;; If git-status is nil (i.e. IntelliJ reading project.clj) then return an empty version.
-       "_"
-       (if (and (not ahead?) (not dirty?))
-         tag
-         (let [[_ major minor patch suffix] (re-find #"v?(\d+)\.(\d+)\.(\d+)(-.+)?" tag)]
-           (if (nil? major)
-             ;; If tag is poorly formatted then return GIT-TAG-INVALID
-             "GIT-TAG-INVALID"
-             (let [patch' (try (Long/parseLong patch) (catch Throwable _ 0))
-                   patch+ (inc patch')]
-               (str major "." minor "." patch+ suffix "-" ahead "-SNAPSHOT")))))))}
 
   :dependencies [[org.clojure/clojure "1.10.1" :scope "provided"]
                  [org.clojure/clojurescript "1.10.520" :scope "provided"]
@@ -31,9 +15,11 @@
                  [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]
                  [cljsjs/create-react-class "15.6.3-1" :exclusions [cljsjs/react]]]
 
-  :plugins [[me.arrdem/lein-git-version "2.0.3"]
-            [thomasa/mranderson         "0.5.1"]
-            [lein-less                  "RELEASE"]]
+  :plugins      [[day8/lein-git-inject "0.0.2"]
+                 [thomasa/mranderson   "0.5.1"]
+                 [lein-less            "RELEASE"]]
+
+  :middleware   [leiningen.git-inject/middleware]
 
   :deploy-repositories [["clojars" {:sign-releases false
                                     :url           "https://clojars.org/repo"
