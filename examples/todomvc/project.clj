@@ -11,7 +11,7 @@
                  [day8.re-frame/re-frame-10x "0.4.4"]
                  [secretary "1.2.3"]]
 
-  :plugins      [[day8/lein-git-inject "0.0.2"]
+  :plugins      [[day8/lein-git-inject "0.0.4"]
                  [lein-shadow          "0.1.6"]]
 
   :middleware   [leiningen.git-inject/middleware]
