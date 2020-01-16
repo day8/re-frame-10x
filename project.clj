@@ -15,7 +15,7 @@
                  [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]
                  [cljsjs/create-react-class "15.6.3-1" :exclusions [cljsjs/react]]]
 
-  :plugins      [[day8/lein-git-inject "0.0.6"]
+  :plugins      [[day8/lein-git-inject "0.0.11"]
                  [thomasa/mranderson   "0.5.1"]
                  [lein-less            "RELEASE"]]
 
