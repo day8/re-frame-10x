@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Fixed
+
+- Fix icon rendering differences between some browsers. Everything should now 
+  be using inline SVGs instead of a mix of SVG data URLs and unicode characters.
+  Specifically results in a better experience with Edge (EdgeHTML, not Chromium
+  based) and Firefox.
+
 ## [[0.4.5] - 2019-11-01](https://github.com/day8/re-frame-10x/runs/284984341)
 
 ### Added
