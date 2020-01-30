@@ -21,6 +21,8 @@
 
   :middleware   [leiningen.git-inject/middleware]
 
+  :git-inject   {:version-pattern #"(\d+\.\d+\.\d+)"}
+
   :deploy-repositories [["clojars" {:sign-releases false
                                     :url           "https://clojars.org/repo"
                                     :username      :env/CLOJARS_USERNAME
