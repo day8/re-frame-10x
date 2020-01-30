@@ -311,3 +311,7 @@ If you want to work on re-frame-10x, see [DEVELOPERS.md](DEVELOPERS.md).
 * [pause](https://thenounproject.com/icon/1376662/) by Bhuvan from the Noun Project
 * [play]() by Bhuvan from the Noun Project
 * [Log Out](https://thenounproject.com/icon/54484/) by Arthur Shlain from the Noun Project
+* [Arrow Up](https://thenounproject.com/search/?q=up%20arrow&i=1921080#) by Alice Design from the Noun Project
+* [Arrow Down](https://thenounproject.com/term/down/1920957/#) by Alice Design from the Noun Project
+* [Arrow Left](https://thenounproject.com/term/arrow/1920815/#) by Alice Design from the Noun Project
+* [Arrow Right](https://thenounproject.com/term/right/1920795/#) by Alice Design from the Noun Project

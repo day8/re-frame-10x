@@ -15,12 +15,11 @@
             [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.core :refer [css style]]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :refer [px]]
             [day8.re-frame-10x.view.history :as history]
+            [day8.re-frame-10x.svgs :as svgs]
             [re-frame.trace]
             [day8.re-frame-10x.utils.re-com :as rc]
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
-
-(def triangle-down (macros/slurp-macro "day8/re_frame_10x/images/triangle-down.svg"))
 
 (defn tab-button
   [panel-id title]
@@ -28,18 +27,12 @@
     [rc/v-box
      :style {:margin-bottom "-8px"
              :z-index       1}
-     :children [[:button {:class    (str "tab button bm-heading-text " (when (= selected-tab panel-id) "active"))
-                          :on-click #(rf/dispatch [:settings/selected-tab panel-id])} title]
-                [:img {:src   (str "data:image/svg+xml;utf8," triangle-down)
-                       :style {:opacity (if (= selected-tab panel-id) "1" "0")}}]]]))
-
-(def open-external (macros/slurp-macro "day8/re_frame_10x/images/logout.svg"))
-(def settings-svg (macros/slurp-macro "day8/re_frame_10x/images/wrench.svg"))
-(def orange-settings-svg (macros/slurp-macro "day8/re_frame_10x/images/orange-wrench.svg"))
-(def reload (macros/slurp-macro "day8/re_frame_10x/images/reload.svg"))
-(def reload-disabled (macros/slurp-macro "day8/re_frame_10x/images/reload-disabled.svg"))
-(def skip-to-end (macros/slurp-macro "day8/re_frame_10x/images/skip-to-end.svg"))
-(def skip-to-end-disabled (macros/slurp-macro "day8/re_frame_10x/images/skip-to-end-disabled.svg"))
+     :children [[rc/button
+                 :class (str "tab " (when (= selected-tab panel-id) "active"))
+                 :label title
+                 :on-click #(rf/dispatch [:settings/selected-tab panel-id])]
+                [svgs/triangle-down
+                 :style {:opacity (if (= selected-tab panel-id) "1" "0")}]]]))
 
 (def outer-margins {:margin (str "0px " common/gs-19s)})
 
@@ -72,18 +65,18 @@
      :children [(when showing-settings?
                   [:button {:class    "bm-active-button"
                             :on-click #(rf/dispatch [:settings/toggle-settings])} "Done"])
-                [:img.nav-icon.noselect
-                 {:title    "Settings"
-                  :src      (str "data:image/svg+xml;utf8,"
-                                 (if showing-settings? orange-settings-svg settings-svg))
-                  :on-click #(rf/dispatch [:settings/toggle-settings])}]
+                [rc/button
+                 :attr     {:title "Settings"}
+                 :style    {:width "40px"}
+                 :label    [svgs/settings
+                            :fill (if showing-settings? "#F2994A" "white")]
+                 :on-click #(rf/dispatch [:settings/toggle-settings])]
                 (when-not external-window?
-                  [:img.nav-icon.active.noselect
-                   {:title    "Pop out"
-                    :src      (str "data:image/svg+xml;utf8,"
-                                   open-external)
-                    :on-click #(rf/dispatch-sync [:global/launch-external])}])]]))
-
+                  [rc/button
+                   :attr     {:title "Pop out"}
+                   :style    {:width "40px"}
+                   :on-click #(rf/dispatch-sync [:global/launch-external])
+                   :label    [svgs/open-external]])]]))
 
 (defn settings-header [external-window?]
   [[rc/h-box
@@ -134,8 +127,10 @@
                                     (rf/dispatch [:epochs/previous-epoch]))
                      :title    "Previous epoch"}
                     {:class "arrow__disabled"
+                     :style {:cursor "not-allowed"}
                      :title "There are no previous epochs"})
-                  "◀"]
+                  [svgs/left
+                   :fill (if older-epochs-available? "#6EC0E6" "#cfd8de")]]
                  [event-name]
                  [:span.arrow.epoch-nav
                   (if newer-epochs-available?
@@ -143,8 +138,10 @@
                                     (rf/dispatch [:epochs/next-epoch]))
                      :title    "Next epoch"}
                     {:class "arrow__disabled"
+                     :style {:cursor "not-allowed"}
                      :title "There are no later epochs"})
-                  "▶"]
+                  [svgs/right
+                   :fill (if newer-epochs-available? "#6EC0E6" "#cfd8de")]]
                  [rc/v-box
                   :gap common/gs-5s
                   :children
@@ -152,20 +149,19 @@
                     (if newer-epochs-available?
                       {:on-click #(do (rf/dispatch [:component/set-direction :next])
                                       (rf/dispatch [:epochs/most-recent-epoch]))
+                       :style {:cursor "pointer"}
                        :title    "Skip to latest epoch"}
                       {:class "arrow__disabled"
+                       :style {:cursor "not-allowed"}
                        :title "Already showing latest epoch"})
-                    [:img
-                     {:src      (str "data:image/svg+xml;utf8," (if newer-epochs-available? skip-to-end skip-to-end-disabled))
-                      :style    {:cursor        (if newer-epochs-available? "pointer" "default")
-                                 :height        "10px"
-                                 :margin-bottom "-1px"}}]]
+                    [svgs/skip-to-end
+                     :fill (if newer-epochs-available? "#6EC0E6" "#cfd8de")]]
                    [:span.arrow.epoch-aux-nav
                     {:on-click #(rf/dispatch [:history/toggle-history])
                      :title    "Show event history"}
                     (if showing-history?
-                      "▲"
-                      "▼")]]]]]
+                      [svgs/up-arrow]
+                      [svgs/down-arrow])]]]]]
      [rc/gap-f :size common/gs-12s]
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))
@@ -199,7 +195,7 @@
                    :class "panel-content-tabs"
                    :justify :between
                    :children [[rc/h-box
-                               :gap "7px"
+                               ;:gap "7px"
                                :align :end
                                :height "50px"
                                :children [[tab-button :event "Event"]
@@ -223,10 +219,7 @@
                                              :label [rc/h-box
                                                      :align :center
                                                      :gap "3px"
-                                                     :children [[:img
-                                                                 {:src   (str "data:image/svg+xml;utf8," reload)
-                                                                  :style {:cursor "pointer"
-                                                                          :height "23px"}}]
+                                                     :children [[svgs/reload]
                                                                 "replay"]]
                                              :on-click #(do (rf/dispatch [:component/set-direction :next])
                                                             (rf/dispatch [:epochs/replay]))]

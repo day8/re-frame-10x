@@ -8,9 +8,10 @@
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.view.components :as components]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :as units]
+            [day8.re-frame-10x.svgs :as svgs]
             [clojure.data])
-  (:require-macros [day8.re-frame-10x.utils.macros :as macros]
-                   [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
+  (:require-macros
+    [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
 ;(s/def ::query-v any?)
 ;(s/def ::dyn-v any?)
@@ -19,7 +20,6 @@
 ;(s/def ::query-cache (s/map-of ::query-cache-params ::deref))
 ;(assert (s/valid? ::query-cache (rc/deref-or-value-peek subs/query->reaction)))
 
-(def copy (macros/slurp-macro "day8/re_frame_10x/images/copy.svg"))
 
 (defn sub-tag-class [type]
   (case type
@@ -117,7 +117,7 @@
                                   :on-click (handler-fn (rf/dispatch [:subs/open-pod? id (not open?)]))}
                            :child [rc/box
                                    :margin "auto"
-                                   :child [:span.arrow (if open? "▼" "▶")]]]]]
+                                   :child [:span.arrow (if open? [svgs/up-arrow :fill "#6EC0E6"] [svgs/down-arrow :fill "#6EC0E6"])]]]]]
 
               #_[rc/box
                  ;:width "64px"                                ;; (100-36)px from box above

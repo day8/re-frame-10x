@@ -7,17 +7,12 @@
             [day8.re-frame-10x.inlined-deps.reagent.v0v8v1.reagent.core :as r]
             [day8.re-frame-10x.utils.re-com :as rc :refer [close-button css-join]]
             [day8.re-frame-10x.common-styles :as common]
+            [day8.re-frame-10x.svgs :as svgs]
             [clojure.data])
-  (:require-macros [day8.re-frame-10x.utils.macros :as macros]
-                   [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
+  (:require-macros
+    [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
-(def delete (macros/slurp-macro "day8/re_frame_10x/images/delete.svg"))
-(def snapshot (macros/slurp-macro "day8/re_frame_10x/images/snapshot.svg"))
-(def snapshot-ready (macros/slurp-macro "day8/re_frame_10x/images/snapshot-ready.svg"))
-(def round-arrow (macros/slurp-macro "day8/re_frame_10x/images/round-arrow.svg"))
-(def arrow-right (macros/slurp-macro "day8/re_frame_10x/images/arrow-right.svg"))
-(def copy (macros/slurp-macro "day8/re_frame_10x/images/copy.svg"))
-(def trash (macros/slurp-macro "day8/re_frame_10x/images/trash.svg"))
+#_(def delete (macros/slurp-macro "day8/re_frame_10x/images/delete.svg"))
 
 (def cljs-dev-tools-background "#e8ffe8")
 (def pod-gap "-1px") ;; Overlap pods by 1px to avoid adjoining borders causing 2px borders
@@ -130,7 +125,11 @@
                                   :on-click (handler-fn (rf/dispatch [:app-db/set-path-visibility id (not open?)]))}
                            :child [rc/box
                                    :margin "auto"
-                                   :child [:span.arrow (if open? "▼" "▶")]]]]]
+                                   :child [:span.arrow (if open?
+                                                         [svgs/up-arrow
+                                                          :fill "#6EC0E6"]
+                                                         [svgs/down-arrow
+                                                          :fill "#6EC0E6"])]]]]]
 
               [rc/h-box
                :background-color "white"
@@ -262,7 +261,7 @@
    :gap common/gs-12s
    :align :start
    :align-self :start
-   :children [[:img {:src (str "data:image/svg+xml;utf8," round-arrow)}]
+   :children [[svgs/round-arrow]
               [rc/label
                :style {:width      "160px"
                        :margin-top "22px"}

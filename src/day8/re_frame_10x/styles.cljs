@@ -34,8 +34,13 @@
 (def css-reset
   [:#--re-frame-10x--
    {:all "initial"}
-   [:* "*:before" "*:after"
-    {:all "unset"}]
+
+   ;; TODO Commenting this out *might* cause some styling regressions but
+   ;; if we need to reset, then reset some specific known properties, don't
+   ;; unset all browser defaults as this caused serious rendering differences
+   ;; between browsers!
+   ;; [:* "*:before" "*:after"
+   ;;  {:all "unset"}]
 
 
    ;; /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
@@ -373,8 +378,6 @@
                   :user-select      "none"}]
     [:span.arrow__disabled {:color  "#cfd8de"
                             :cursor "auto"}]
-    [:span.arrow.epoch-nav {:min-width "16px"
-                            :max-width "16px"}]
     [:span.arrow.epoch-aux-nav {:min-width   "12px"
                                 :max-width   "12px"
                                 :height      "9px"

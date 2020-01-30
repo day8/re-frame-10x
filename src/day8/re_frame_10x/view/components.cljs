@@ -7,6 +7,7 @@
             [day8.re-frame-10x.inlined-deps.reagent.v0v8v1.reagent.core :as r]
             [devtools.prefs]
             [devtools.formatters.core]
+            [day8.re-frame-10x.svgs :as svgs]
             ["react-highlight.js" :as react-highlightjs]
             ["highlight.js/lib/languages/clojure"])
   (:require-macros [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]]))
@@ -107,7 +108,7 @@
        {:class (str "re-frame-10x--object" (when @expanded? " expanded"))}
        [:span {:class    "toggle"
                :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
-        [:button.expansion-button (if @expanded? "▼" "▶")]]
+        [:button.expansion-button (if @expanded? [svgs/up-arrow :fill "#6EC0E6"] [svgs/down-arrow :fill "#6EC0E6"])]]
        (if (and @expanded? (cljs-devtools-has-body (get-object jsonml) (get-config jsonml)))
          (jsonml->hiccup
            (cljs-devtools-body
