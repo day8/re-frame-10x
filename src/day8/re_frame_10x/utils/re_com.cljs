@@ -267,10 +267,13 @@
 (defn box
   "Returns hiccup which produces a box, which is generally used as a child of a v-box or an h-box.
    By default, it also acts as a container for further child compenents, or another h-box or v-box"
-  [& {:keys [size width height min-width min-height max-width max-height justify align align-self margin padding child class style attr]
+  [& {:keys [size scroll h-scroll v-scroll width height min-width min-height max-width max-height justify align align-self margin padding child class style attr]
       :or   {size "none"}
       :as   args}]
   (box-base :size size
+            :scroll scroll
+            :h-scroll h-scroll
+            :v-scroll v-scroll
             :width width
             :height height
             :min-width min-width
