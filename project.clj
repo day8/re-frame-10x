@@ -7,7 +7,7 @@
 
   :dependencies [[org.clojure/clojure "1.10.1" :scope "provided"]
                  [org.clojure/clojurescript "1.10.597" :scope "provided"]
-                 [reagent "0.9.0-rc1" :scope "provided"]
+                 [reagent "0.9.1" :scope "provided"]
                  [re-frame "0.11.0-rc1" :scope "provided"]
                  [binaryage/devtools "0.9.10"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
@@ -39,7 +39,7 @@
                                                                               reagent
                                                                               net.cgrand/macrovich
                                                                               org.clojure/tools.logging]]
-                                                   ^:source-dep [reagent "0.9.0-rc1"
+                                                   ^:source-dep [reagent "0.9.1"
                                                                  :exclusions [org.clojure/clojurescript
                                                                               cljsjs/react
                                                                               cljsjs/react-dom
