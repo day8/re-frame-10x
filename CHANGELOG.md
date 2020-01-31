@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## [0.4.7] - 2020-01-31
+
 ### Fixed
 
 - Fix app-db v-scroll regression introduced in 0.4.5.
