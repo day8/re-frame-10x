@@ -35,13 +35,8 @@
   [:#--re-frame-10x--
    {:all "initial"}
 
-   ;; TODO Commenting this out *might* cause some styling regressions but
-   ;; if we need to reset, then reset some specific known properties, don't
-   ;; unset all browser defaults as this caused serious rendering differences
-   ;; between browsers!
-   ;; [:* "*:before" "*:after"
-   ;;  {:all "unset"}]
-
+   [(s/not "svg"
+     {:all "unset"})]
 
    ;; /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
    {:line-height "1.15"
