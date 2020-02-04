@@ -40,7 +40,7 @@
 (def container-styles
   [:#--re-frame-10x--
    [:.container--replay-button
-    {:width  "65px"   ;; common/gs-81s - 2 * (7px padding + 1px border)
+    {:width  common/gs-81
      :height "29px"}] ;; common/gs-31s - 2 * 1px border
    [:.container--info-button
     {:border-radius    "50%"
