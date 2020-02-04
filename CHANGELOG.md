@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Fixed
+
+- Fix app-db diff regression introduced in 0.4.5.
+
 ## [0.4.7] - 2020-01-31
 
 ### Fixed
