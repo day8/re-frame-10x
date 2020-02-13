@@ -35,13 +35,11 @@
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
                           :dependencies ^:replace [^:source-dep [re-frame "0.11.0"
-                                                                 :exclusions [org.clojure/clojurescript
-                                                                              reagent
+                                                                 :exclusions [reagent
                                                                               net.cgrand/macrovich
                                                                               org.clojure/tools.logging]]
                                                    ^:source-dep [reagent "0.9.1"
-                                                                 :exclusions [org.clojure/clojurescript
-                                                                              cljsjs/react
+                                                                 :exclusions [cljsjs/react
                                                                               cljsjs/react-dom
                                                                               cljsjs/react-dom-server]]
                                                    ; We need a source-dep on Garden, as there are breaking changes between
