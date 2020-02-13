@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.view.history
   (:require [day8.re-frame-10x.utils.re-com :as rc]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.core :as rf]
+            [day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.core :as rf]
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
 

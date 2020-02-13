@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.view.container
   (:require-macros [day8.re-frame-10x.utils.macros :as macros])
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.core :as rf]
+  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.core :as rf]
             [re-frame.db :as db]
             [day8.re-frame-10x.view.event :as event]
             [day8.re-frame-10x.view.app-db :as app-db]
