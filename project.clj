@@ -9,7 +9,7 @@
                  [org.clojure/clojurescript "1.10.597" :scope "provided"]
                  [reagent "0.9.1" :scope "provided"]
                  [re-frame "0.11.0" :scope "provided"]
-                 [binaryage/devtools "0.9.11"]
+                 [binaryage/devtools "1.0.0"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
                  [zprint "0.5.1"]
                  [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]
