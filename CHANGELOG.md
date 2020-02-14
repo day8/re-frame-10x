@@ -3,11 +3,35 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### [[0.5.1] - 2020-02-13](https://github.com/day8/re-frame-10x/runs/443412121?check_suite_focus=true)
+
+### Fixed
+
+- Fix undeclared variable compiler warnings caused by manual dependency inlining in 0.5.0.
+
+
+### [[0.5.0] - 2020-02-13]](https://github.com/day8/re-frame-10x/runs/443393433?check_suite_focus=true)
+
 ### Fixed
 
 - Fix app-db diff regression introduced in 0.4.5.
 - Fix styling override regressions introduced in 0.4.6.
 - Fix squashed replay button icon
+
+### Changed
+
+- Upgrade react to [16.9.0](https://reactjs.org/blog/2019/08/08/react-v16.9.0.html)
+- Upgrade reagent to [0.9.1](https://github.com/reagent-project/reagent/blob/master/CHANGELOG.md#091-2020-01-15)
+- Upgrade re-frame to [0.11.0](https://github.com/day8/re-frame/blob/master/CHANGELOG.md#0110-2020-01-20)
+- Upgrade binaryage/devtools to [1.0.0](https://github.com/binaryage/cljs-devtools/releases/tag/v1.0.0)
+
+New versions of reagent and re-frame were inlined by hand due to 
+[benedekfazekas/mranderson#44](https://github.com/benedekfazekas/mranderson/issues/44)
+or similar issue.
+
+### Removed
+
+- Remove cljsjs/create-react-class dependency. Fixes [#247](https://github.com/day8/re-frame-10x/issues/247)
 
 ## [0.4.7] - 2020-01-31
 
