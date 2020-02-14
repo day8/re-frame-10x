@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## [[0.5.2] - 2020-02-14](https://github.com/day8/re-frame-10x/runs/444976485?check_suite_focus=true)
+
 ### Fixed
 
 - Fix shadow-cljs compiler warning for react dependencies greater than 16.9.0.
