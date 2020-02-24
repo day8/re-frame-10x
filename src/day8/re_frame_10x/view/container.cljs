@@ -236,19 +236,38 @@
                    [rc/hyperlink
                     :label "Dismiss"
                     :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])
-                [rc/box
+                [rc/h-box
                  :v-scroll :on
                  :height "100%"
                  :style {:margin-left common/gs-19s}
-                 :child (case @selected-tab
-                          :event [event/render]
-                          :fx [fx/render]
-                          :app-db [app-db/render db/app-db]
-                          :subs [subs/render]
-                          :views [views/render]
-                          :parts [parts/render]
-                          :timing [timing/render]
-                          :traces [traces/render]
-                          :debug [debug/render]
-                          :settings [settings/render]
-                          [app-db/render db/app-db])]]]))
+                 :children
+                 [[rc/box
+                   :style (if (not= @selected-tab :event) {:display "none" :visibility "hidden"} {})
+                   :child [event/render]]
+                  [rc/box
+                   :style (if (not= @selected-tab :fx) {:display "none" :visibility "hidden"} {})
+                   :child [fx/render]]
+                  [rc/box
+                   :style (if (not= @selected-tab :app-db) {:display "none" :visibility "hidden"} {})
+                   :child [app-db/render db/app-db]]
+                  [rc/box
+                   :style (if (not= @selected-tab :subs) {:display "none" :visibility "hidden"} {})
+                   :child [subs/render]]
+                  [rc/box
+                   :style (if (not= @selected-tab :views) {:display "none" :visibility "hidden"} {})
+                   :child [views/render]]
+                  [rc/box
+                   :style (if (not= @selected-tab :parts) {:display "none" :visibility "hidden"} {})
+                   :child [parts/render]]
+                  [rc/box
+                   :style (if (not= @selected-tab :timing) {:display "none" :visibility "hidden"} {})
+                   :child [timing/render]]
+                  [rc/box
+                   :style (if (not= @selected-tab :traces) {:display "none" :visibility "hidden"} {})
+                   :child [traces/render]]
+                  [rc/box
+                   :style (if (not= @selected-tab :debug) {:display "none" :visibility "hidden"} {})
+                   :child [debug/render]]
+                  [rc/box
+                   :style (if (not= @selected-tab :settings) {:display "none" :visibility "hidden"} {})
+                   :child [settings/render]]]]]]))
