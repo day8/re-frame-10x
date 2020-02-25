@@ -3,7 +3,7 @@
 This panel allows you to look deeply into the execution trace of your event handler.
 
 With Clojure, execution happens form-by-form, so tracing Clojure code involves: 
-  - showing what forms exected 
+  - showing what forms executed 
   - the order in which they executed 
   - the argument values for each 
   - the return value for each
@@ -21,15 +21,6 @@ Source code for the event handler is shown at the top.
 Beneath that, the form by form execution trace is shown row after row - the first form executed is shown as the first row, then the next form executed is the next row, etc. The first form - the one at the top - will likely be somewhat small and nested. A leaf of the forms tree. The last form executed will be the entire body of the `fn`.
 
 The indent level of a trace row indicates "the depth" of the form being executed from a source code point of view, and to assist with orientation, when you mouse-hover over a row of trace, the associated source code is highlighted within the display at the top.
-
-
-### Show Me
-
-Source code for the event handler is shown at the top. 
-
-Beneath that, the form by form exection trace is shown row after row - the first form executed is shown as the first row, then the next form executed is the next row, etc. The first form - the one at the top - will likely be somewhat small and nested. A leaf of the forms tree. The last form exectuted will be the entire body of the `fn`.
-
-The indent level of a trace row indicates "the depth" of the form being executed from a source code point of view, and to assist with orientation, when you mouse-hover over a row of trace, the associated source code is highlighted within the display at the top..
 
 ![Estim8 demo](/docs/images/estim8-demo.png)
 
