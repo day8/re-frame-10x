@@ -34,10 +34,10 @@
 (defn log-trace? [trace]
   (let [render-operation? (or (= (:op-type trace) :render)
                               (= (:op-type trace) :componentWillUnmount))
-        component-path    (get-in trace [:tags :component-path] "")]
+        component-name    (get-in trace [:tags :component-name] "")]
     (if-not render-operation?
       true
-      (not (str/includes? component-path "devtools outer")))))
+      (not (str/includes? component-name "devtools outer")))))
 
 (defn disable-tracing! []
   (re-frame.trace/remove-trace-cb ::cb))

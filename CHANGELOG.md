@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Changed
+
+- Upgrade reagent to [0.10.0](https://github.com/reagent-project/reagent/blob/master/CHANGELOG.md#0100-2020-03-06)
+
+### Fixed
+
+- Replaced use of removed `reagent.interop` namespace macros with `goog.object` equivalent. Might use `binaryage/oops`
+  in future but that will require dep inlining so this is OK for now as a quick fix for reagent 0.10.0.
+- Replaced use of `component/component-path` with `component/component-name`.
+- Use `reagent.dom/render` instead of deprecated `reagent.core/render` fn in example.
+
 ## [[0.5.2] - 2020-02-14](https://github.com/day8/re-frame-10x/runs/444976485?check_suite_focus=true)
 
 ### Fixed
