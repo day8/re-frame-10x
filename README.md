@@ -24,9 +24,13 @@ Branch    | React Version | Status | Artifact
 
 re-frame-10x Version | React Version     | Reagent Versions
 -------------------- | ----------------- | ----------------
+`0.6.x`              | React 16.13.0     | 0.10.x |
 `0.5.x`              | React 16.9.0      | 0.9.x |
 `0.4.3`              | React 16 - 16.8.6 | 0.8.x | 
 `0.3.7`              | React 15          | 0.6.0 - 0.7.0 |
+
+**Note**: If also using re-com then on upgrading to reagent 0.10.0 you also
+require re-com 2.8.0.
 
 ## Show Me
 [Conduit demo with re-frame-10x](https://jacekschae.github.io/conduit-re-frame-10x-demo/)
