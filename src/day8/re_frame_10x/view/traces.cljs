@@ -5,7 +5,8 @@
             [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as r]
             [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
             [day8.re-frame-10x.utils.re-com :as rc]
-            [day8.re-frame-10x.svgs :as svgs]))
+            [day8.re-frame-10x.svgs :as svgs]
+            [day8.re-frame-10x.material :as material]))
 
 (defn query->fn [query]
   (if (= :contains (:filter-type query))
@@ -42,7 +43,10 @@
                                                                 :re-frame.router/fsm-trigger "trace--fsm-trigger"
                                                                 nil)])}
                                 [:td.trace--toggle
-                                 [:button.expansion-button (if show-row? [svgs/up-arrow :fill "#6EC0E6"] [svgs/down-arrow :fill "#6EC0E6"])]]
+                                 [:button.expansion-button
+                                  (if show-row?
+                                    [material/arrow-drop-down :fill "#6EC0E6"]
+                                    [material/arrow-right :fill "#6EC0E6"])]]
                                 [:td.trace--op
                                  [:span.op-string {:on-click (fn [ev]
                                                                (add-filter filter-items (name op-type) :contains)

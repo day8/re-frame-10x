@@ -15,6 +15,7 @@
             [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.core :refer [css style]]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :refer [px]]
             [day8.re-frame-10x.view.history :as history]
+            [day8.re-frame-10x.material :as material]
             [day8.re-frame-10x.svgs :as svgs]
             [re-frame.trace]
             [day8.re-frame-10x.utils.re-com :as rc]
@@ -68,7 +69,7 @@
                 [rc/button
                  :attr     {:title "Settings"}
                  :style    {:width "40px"}
-                 :label    [svgs/settings
+                 :label    [material/settings
                             :fill (if showing-settings? "#F2994A" "white")]
                  :on-click #(rf/dispatch [:settings/toggle-settings])]
                 (when-not external-window?
@@ -76,7 +77,7 @@
                    :attr     {:title "Pop out"}
                    :style    {:width "40px"}
                    :on-click #(rf/dispatch-sync [:global/launch-external])
-                   :label    [svgs/open-external]])]]))
+                   :label    [material/open-in-new :fill "#FFF"]])]]))
 
 (defn settings-header [external-window?]
   [[rc/h-box
@@ -129,7 +130,7 @@
                     {:class "arrow__disabled"
                      :style {:cursor "not-allowed"}
                      :title "There are no previous epochs"})
-                  [svgs/left
+                  [material/arrow-left
                    :fill (if older-epochs-available? "#6EC0E6" "#cfd8de")]]
                  [event-name]
                  [:span.arrow.epoch-nav
@@ -140,7 +141,7 @@
                     {:class "arrow__disabled"
                      :style {:cursor "not-allowed"}
                      :title "There are no later epochs"})
-                  [svgs/right
+                  [material/arrow-right
                    :fill (if newer-epochs-available? "#6EC0E6" "#cfd8de")]]
                  [rc/v-box
                   :gap common/gs-5s
@@ -154,14 +155,14 @@
                       {:class "arrow__disabled"
                        :style {:cursor "not-allowed"}
                        :title "Already showing latest epoch"})
-                    [svgs/skip-to-end
+                    [material/skip-next
                      :fill (if newer-epochs-available? "#6EC0E6" "#cfd8de")]]
                    [:span.arrow.epoch-aux-nav
                     {:on-click #(rf/dispatch [:history/toggle-history])
                      :title    "Show event history"}
                     (if showing-history?
-                      [svgs/up-arrow]
-                      [svgs/down-arrow])]]]]]
+                      [material/unfold-less]
+                      [material/unfold-more])]]]]]
      [rc/gap-f :size common/gs-12s]
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))
@@ -219,7 +220,7 @@
                                              :label [rc/h-box
                                                      :align :center
                                                      :gap "3px"
-                                                     :children [[svgs/reload]
+                                                     :children [[material/refresh  :fill "#6EC0E6"]
                                                                 "replay"]]
                                              :on-click #(do (rf/dispatch [:component/set-direction :next])
                                                             (rf/dispatch [:epochs/replay]))]
