@@ -36,7 +36,8 @@
 ;; We don't have a strong opinion.
 ;;
 (defroute "/" [] (dispatch [:set-showing :all]))
-(defroute "/:filter" [filter] (dispatch [:set-showing (keyword filter)]))
+
+(defroute #"/([a-z]+)" [filter] (dispatch [:set-showing (keyword filter)]))
 
 (def history
   (doto (History.)
