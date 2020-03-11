@@ -1,5 +1,5 @@
 (ns day8.re-frame-10x.subs
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.core :as rf]
+  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
             [day8.re-frame-10x.metamorphic :as metam]
             [day8.re-frame-10x.utils.utils :as utils]
             [clojure.string :as str]

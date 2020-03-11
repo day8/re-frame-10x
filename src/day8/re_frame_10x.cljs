@@ -13,8 +13,9 @@
             [reagent.ratom :as ratom]
             [goog.object :as gob]
             [re-frame.interop :as interop]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v9v1.reagent.core :as r]))
+            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as r]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.dom :as rdom]))
 
 (goog-define debug? false)
 
@@ -218,12 +219,12 @@
 
 (defn inject-devtools! []
   (styles/inject-trace-styles js/document)
-  (r/render [devtools-outer {:panel-type :inline
-                             :debug?     debug?}] (panel-div)))
+  (rdom/render [devtools-outer {:panel-type :inline
+                                :debug?     debug?}] (panel-div)))
 
 (defn traced-result [trace-id fragment-id]
   ;; TODO: this is not terribly efficient, figure out how to get the index of the trace directly.
-  (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.db/app-db [:traces :all-traces])))]
+  (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.db/app-db [:traces :all-traces])))]
     (get-in trace [:tags :code fragment-id :result])))
 
 (defn init-db! []

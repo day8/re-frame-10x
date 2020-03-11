@@ -1,6 +1,7 @@
 (ns day8.re-frame-10x.events
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v9v1.reagent.core :as r]
+  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as r]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.dom :as rdom]
             [cljs.tools.reader.edn]
             [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
             [day8.re-frame-10x.utils.localstorage :as localstorage]
@@ -255,7 +256,7 @@
 
     (styles/inject-trace-styles popup-document)
     (goog.object/set popup-window "onunload" #(rf/dispatch [:global/external-closed]))
-    (r/render
+    (rdom/render
       [(r/create-class
          {:display-name           "devtools outer external"
           :component-did-mount    (fn []

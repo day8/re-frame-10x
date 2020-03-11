@@ -3,8 +3,9 @@
             [day8.re-frame-10x.view.components :as components]
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :as units]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v9v1.reagent.core :as reagent]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.core :as rf]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as reagent]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.dom :as rdom]
+            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
             [zprint.core :as zp]
             [goog.string]
             [clojure.string :as str]
@@ -140,12 +141,12 @@
     (reagent/create-class
       {:component-will-update
        (fn event-expression-component-will-update [this]
-         (let [node (reagent/dom-node this)]
+         (let [node (rdom/dom-node this)]
            (reset! scroll-pos {:top (.-scrollTop node) :left (.-scrollLeft node)})))
 
        :component-did-update
        (fn event-expression-component-did-update [this]
-         (let [node (reagent/dom-node this)]
+         (let [node (rdom/dom-node this)]
            (set! (.-scrollTop node) (:top @scroll-pos))
            (set! (.-scrollLeft node) (:left @scroll-pos))))
 
