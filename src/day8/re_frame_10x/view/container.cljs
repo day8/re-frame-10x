@@ -243,32 +243,42 @@
                  :style {:margin-left common/gs-19s}
                  :children
                  [[rc/box
+                   :size "1"
                    :style (if (not= @selected-tab :event) {:display "none" :visibility "hidden"} {})
                    :child [event/render]]
                   [rc/box
+                   :size "1"
                    :style (if (not= @selected-tab :fx) {:display "none" :visibility "hidden"} {})
                    :child [fx/render]]
                   [rc/box
+                   :size "1"
                    :style (if (not= @selected-tab :app-db) {:display "none" :visibility "hidden"} {})
                    :child [app-db/render db/app-db]]
                   [rc/box
+                   :size "1"
                    :style (if (not= @selected-tab :subs) {:display "none" :visibility "hidden"} {})
                    :child [subs/render]]
                   [rc/box
+                   :size "1"
                    :style (if (not= @selected-tab :views) {:display "none" :visibility "hidden"} {})
                    :child [views/render]]
                   [rc/box
+                   :size "1"
                    :style (if (not= @selected-tab :parts) {:display "none" :visibility "hidden"} {})
                    :child [parts/render]]
                   [rc/box
+                   :size "1"
                    :style (if (not= @selected-tab :timing) {:display "none" :visibility "hidden"} {})
                    :child [timing/render]]
                   [rc/box
+                   :size "1"
                    :style (if (not= @selected-tab :traces) {:display "none" :visibility "hidden"} {})
                    :child [traces/render]]
                   [rc/box
+                   :size "1"
                    :style (if (not= @selected-tab :debug) {:display "none" :visibility "hidden"} {})
                    :child [debug/render]]
                   [rc/box
+                   :size "1"
                    :style (if (not= @selected-tab :settings) {:display "none" :visibility "hidden"} {})
                    :child [settings/render]]]]]]))
