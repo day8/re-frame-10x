@@ -19,7 +19,7 @@
   (reagent/atom x))
 
 (defn ratom? [x]
-  (satisfies? reagent.ratom/IReactiveAtom x))
+  (satisfies? ratom/IReactiveAtom x))
 
 (defn deref? [x]
   (satisfies? IDeref x))

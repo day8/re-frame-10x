@@ -194,7 +194,7 @@
 (defn purge-event-queue
   "Remove all events queued for processing"
   []
-  (router/purge re-frame.router/event-queue))
+  (router/purge router/event-queue))
 
 ;; -- Event Processing Callbacks  ---------------------------------------------
 
@@ -216,12 +216,12 @@
   ([f]
    (add-post-event-callback f f))   ;; use f as its own identifier
   ([id f]
-   (router/add-post-event-callback re-frame.router/event-queue id f)))
+   (router/add-post-event-callback router/event-queue id f)))
 
 
 (defn remove-post-event-callback
   [id]
-  (router/remove-post-event-callback re-frame.router/event-queue id))
+  (router/remove-post-event-callback router/event-queue id))
 
 
 ;; --  Deprecation ------------------------------------------------------------
