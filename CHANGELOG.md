@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## [0.6.2] - 2020-04-08
+
+### Fixed
+
+- Fix regressions caused during manual inlining of dependencies.
+
+## [0.6.1] - 2020-04-05
+
+### Changed
+
+- Replace all icons with material design icons for a more consistent look and feel.
+- Improve performance of switching tabs.
+
+### Fixed
+
+- Various minor styling bugs.
+- Exception in todomvc example route.
+
 ## [0.6.0] - 2020-03-08
 
 ### Changed
