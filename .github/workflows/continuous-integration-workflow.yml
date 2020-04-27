@@ -25,6 +25,20 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('project.clj') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+      - name: npm cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/project.clj') }}-${{ hashFiles('**/deps.cljs') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Sample Project shadow-cljs compiler cache
+        uses: actions/cache@v1
+        with:
+          path: examples/todomvc/.shadow-cljs
+          key: ${{ runner.os }}-shadow-cljs-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-shadow-cljs-
       - run: lein test
       - name: Install re-frame-10x for Sample Projects
         run: lein install
