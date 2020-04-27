@@ -43,10 +43,10 @@ jobs:
       - name: Install re-frame-10x for Sample Projects
         run: lein install
       - name: Compile Sample Project for Development
-        run: lein with-profile dev do clean, compile
+        run: lein with-profile dev do clean, shadow compile app
         working-directory: "examples/todomvc"
       - name: Compiler Sample Project for Production
-        run: lein with-profile prod do clean, compile
+        run: lein with-profile prod do clean, shadow release app
         working-directory: "examples/todomvc"
       - name: Slack notification
         uses: homoluctus/slatify@v2.0.1
