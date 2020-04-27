@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Changed
+
+- Upgrade to ClojureScript [1.10.748](https://clojurescript.org/news/2020-04-24-release). 
+  Required by recent shadow-cljs releases which in turn will enable faster
+  GitHub Action builds.
+
 ## [0.6.2] - 2020-04-08
 
 ### Fixed
