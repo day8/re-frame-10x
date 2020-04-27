@@ -18,6 +18,7 @@
 ;; -- Debugging aids ----------------------------------------------------------
 ;; we love https://github.com/binaryage/cljs-devtools
 (devtools/install!)
+
 ;; so that println writes to `console.log`
 (enable-console-print!)
 
