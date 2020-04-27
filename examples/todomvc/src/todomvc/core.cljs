@@ -14,7 +14,6 @@
   (:import [goog History]
            [goog.history EventType]))
 
-
 ;; -- Debugging aids ----------------------------------------------------------
 ;; we love https://github.com/binaryage/cljs-devtools
 (devtools/install!)
