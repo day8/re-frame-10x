@@ -64,6 +64,7 @@
   (let [event-trace @(rf/subscribe [:epochs/current-event-trace])]
     [rc/v-box
      :class "event-panel"
+     :style {:width "100%"}
      :gap common/gs-19s
      :children [[event-section "Coeffects" (get-in event-trace [:tags :coeffects])]
                 [event-section "Effects" (get-in event-trace [:tags :effects])]

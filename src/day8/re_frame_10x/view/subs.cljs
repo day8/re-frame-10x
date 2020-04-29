@@ -383,7 +383,8 @@
   []
   [rc/v-box
    :size "1"
-   :style {:margin-right common/gs-19s}
+   :style {:margin-right common/gs-19s
+           :width "100%"}
    :children [[panel-header]
               [filter-section]
               [pod-section]

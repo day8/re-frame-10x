@@ -167,6 +167,9 @@
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))
 
+(defn tab-styles [selected-tab tab-name]
+  (if (not= selected-tab tab-name) {:display "none" :visibility "hidden"} {:width "100%"}))
+
 (defn devtools-inner [opts]
   (let [selected-tab      (rf/subscribe [:settings/selected-tab])
         panel-type        (:panel-type opts)
@@ -244,41 +247,41 @@
                  :children
                  [[rc/box
                    :size "1"
-                   :style (if (not= @selected-tab :event) {:display "none" :visibility "hidden"} {})
+                   :style (tab-styles @selected-tab :event)
                    :child [event/render]]
                   [rc/box
                    :size "1"
-                   :style (if (not= @selected-tab :fx) {:display "none" :visibility "hidden"} {})
+                   :style (tab-styles @selected-tab :fx)
                    :child [fx/render]]
                   [rc/box
                    :size "1"
-                   :style (if (not= @selected-tab :app-db) {:display "none" :visibility "hidden"} {})
+                   :style (tab-styles @selected-tab :app-db)
                    :child [app-db/render db/app-db]]
                   [rc/box
                    :size "1"
-                   :style (if (not= @selected-tab :subs) {:display "none" :visibility "hidden"} {})
+                   :style (tab-styles @selected-tab :subs)
                    :child [subs/render]]
                   [rc/box
                    :size "1"
-                   :style (if (not= @selected-tab :views) {:display "none" :visibility "hidden"} {})
+                   :style (tab-styles @selected-tab :views)
                    :child [views/render]]
                   [rc/box
                    :size "1"
-                   :style (if (not= @selected-tab :parts) {:display "none" :visibility "hidden"} {})
+                   :style (tab-styles @selected-tab :parts)
                    :child [parts/render]]
                   [rc/box
                    :size "1"
-                   :style (if (not= @selected-tab :timing) {:display "none" :visibility "hidden"} {})
+                   :style (tab-styles @selected-tab :timing)
                    :child [timing/render]]
                   [rc/box
                    :size "1"
-                   :style (if (not= @selected-tab :traces) {:display "none" :visibility "hidden"} {})
+                   :style (tab-styles @selected-tab :traces)
                    :child [traces/render]]
                   [rc/box
                    :size "1"
-                   :style (if (not= @selected-tab :debug) {:display "none" :visibility "hidden"} {})
+                   :style (tab-styles @selected-tab :debug)
                    :child [debug/render]]
                   [rc/box
                    :size "1"
-                   :style (if (not= @selected-tab :settings) {:display "none" :visibility "hidden"} {})
+                   :style (tab-styles @selected-tab :settings)
                    :child [settings/render]]]]]]))
