@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## [0.6.3] - 2020-04-30
+
 ### Fixed
 
 - Fix width and overflow styles to enable scrolling large app-db horizontally.
