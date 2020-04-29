@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Fixed
+
+- Fix width and overflow styles to enable scrolling large app-db horizontally.
+  Thanks to [@marianafantini](https://github.com/marianafantini). See [#259](https://github.com/day8/re-frame-10x/pull/259).
+
 ### Changed
 
 - Upgrade ClojureScript to [1.10.748](https://clojurescript.org/news/2020-04-24-release). 
