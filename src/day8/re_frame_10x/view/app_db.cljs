@@ -306,7 +306,7 @@
   [rc/v-box
    :size "1"
    :style {:margin-right common/gs-19s
-           :overflow "scroll"}
+           :overflow "auto"}
            ;:overflow     "hidden"
 
    :children [[panel-header]
