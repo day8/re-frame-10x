@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Fixed
+
+- Fix scroll bar showing when not required on app-db view. Thanks to [@marianafantini](https://github.com/marianafantini).
+  See [#260](https://github.com/day8/re-frame-10x/pull/260).
+
 ## [0.6.3] - 2020-04-30
 
 ### Fixed
