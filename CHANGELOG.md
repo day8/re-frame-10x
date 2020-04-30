@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## [0.6.4] - 2020-05-01
+
 ### Fixed
 
 - Fix scroll bar showing when not required on app-db view. Thanks to [@marianafantini](https://github.com/marianafantini).
