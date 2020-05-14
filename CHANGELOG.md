@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Fixed
+
+- Revert change from 0.6.1 to improve performance of switching tabs. This change
+  caused 100% CPU usuage on a single core when performing simple unrelated
+  interactions on a page, such as hovering over a button with hover styles. 
+  For fast machines with many cores it was not recognisable but for slower 
+  machines already under load it slows things down to a crawl. 
+
 ## [0.6.4] - 2020-05-01
 
 ### Fixed
