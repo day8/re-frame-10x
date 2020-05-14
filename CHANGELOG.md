@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## [0.6.5] - 2020-05-15
+
 ### Fixed
 
 - Revert change from 0.6.1 to improve performance of switching tabs. This change
