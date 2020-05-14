@@ -240,48 +240,19 @@
                    [rc/hyperlink
                     :label "Dismiss"
                     :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])
-                [rc/h-box
+                [rc/box
                  :v-scroll :on
                  :height "100%"
                  :style {:margin-left common/gs-19s}
-                 :children
-                 [[rc/box
-                   :size "1"
-                   :style (tab-styles @selected-tab :event)
-                   :child [event/render]]
-                  [rc/box
-                   :size "1"
-                   :style (tab-styles @selected-tab :fx)
-                   :child [fx/render]]
-                  [rc/box
-                   :size "1"
-                   :style (tab-styles @selected-tab :app-db)
-                   :child [app-db/render db/app-db]]
-                  [rc/box
-                   :size "1"
-                   :style (tab-styles @selected-tab :subs)
-                   :child [subs/render]]
-                  [rc/box
-                   :size "1"
-                   :style (tab-styles @selected-tab :views)
-                   :child [views/render]]
-                  [rc/box
-                   :size "1"
-                   :style (tab-styles @selected-tab :parts)
-                   :child [parts/render]]
-                  [rc/box
-                   :size "1"
-                   :style (tab-styles @selected-tab :timing)
-                   :child [timing/render]]
-                  [rc/box
-                   :size "1"
-                   :style (tab-styles @selected-tab :traces)
-                   :child [traces/render]]
-                  [rc/box
-                   :size "1"
-                   :style (tab-styles @selected-tab :debug)
-                   :child [debug/render]]
-                  [rc/box
-                   :size "1"
-                   :style (tab-styles @selected-tab :settings)
-                   :child [settings/render]]]]]]))
+                 :child (case @selected-tab
+                          :event [event/render]
+                          :fx [fx/render]
+                          :app-db [app-db/render db/app-db]
+                          :subs [subs/render]
+                          :views [views/render]
+                          :parts [parts/render]
+                          :timing [timing/render]
+                          :traces [traces/render]
+                          :debug [debug/render]
+                          :settings [settings/render]
+                          [app-db/render db/app-db])]]]))
