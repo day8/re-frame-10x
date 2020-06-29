@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This change
 
 - Upgrade binaryage/devtools to 1.0.2
 - Upgrade ClojureScript to 1.10.773
+- Upgrade shadow-cljs to 2.9.10
 
 ## [0.6.5] - 2020-05-15
 
