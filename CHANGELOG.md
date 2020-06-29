@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+### Changed
+
+- Upgrade binaryage/devtools to 1.0.2
+
 ## [0.6.5] - 2020-05-15
 
 ### Fixed

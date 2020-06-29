@@ -16,7 +16,7 @@
 
   :middleware   [leiningen.git-inject/middleware]
 
-  :profiles {:dev  {:dependencies [[binaryage/devtools "1.0.0"]]}}
+  :profiles {:dev  {:dependencies [[binaryage/devtools "1.0.2"]]}}
 
   :source-paths ["src" "../../src" "../../gen-src"]
 
