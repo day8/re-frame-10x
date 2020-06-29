@@ -7,7 +7,7 @@
                  [thheller/shadow-cljs "2.9.10"]
                  [reagent "0.10.0"]
                  [re-frame "0.12.0"]
-                 [day8.re-frame/tracing "0.5.3"]
+                 [day8.re-frame/tracing "0.5.6"]
                  [day8.re-frame/re-frame-10x "0.6.0"]
                  [secretary "1.2.3"]]
 

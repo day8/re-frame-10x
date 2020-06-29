@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Changed
 
+- Upgrade [re-frame-tracing to 0.5.6](https://github.com/day8/re-frame-debux/blob/master/CHANGELOG.md)
 - Upgrade binaryage/devtools to 1.0.2
 - Upgrade ClojureScript to 1.10.773
 - Upgrade shadow-cljs to 2.9.10
