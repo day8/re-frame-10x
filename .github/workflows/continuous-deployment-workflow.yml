@@ -69,6 +69,17 @@ jobs:
       - name: Run lein release
         run: |
           CLOJARS_USERNAME=${{ secrets.CLOJARS_USERNAME }} CLOJARS_TOKEN=${{ secrets.CLOJARS_TOKEN }} GITHUB_USERNAME=${{ github.actor }} GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} lein release
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            [Changelog](https://github.com/day8/re-frame-10x/blob/${{ github.ref }}/CHANGELOG.md)
+          draft: false
+          prerelease: false
       - name: Slack notification
         uses: homoluctus/slatify@v2.0.1
         if: always()
