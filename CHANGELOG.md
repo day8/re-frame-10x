@@ -1,7 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## Unreleased
+## [0.6.7] - 2020-07-08
+
+### Fixed
+
+- Quick fox for Issue #270 - Broken Code formatting in Events tab
+
+## [0.6.6] - 2020-06-29
 
 ### Changed
 
