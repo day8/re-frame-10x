@@ -165,12 +165,13 @@
                after            (subs form-str end-index)]
            ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
            ;; Possibly relevant? https://stackoverflow.com/questions/21926083/failed-to-execute-removechild-on-node
-           ^{:key (pr-str highlighted-form)}
+           ^{:key (gensym)}
            [rc/box
             :style {:max-height       (when-not show-all-code? (str (* 10 17) "px")) ;; Add scrollbar after 10 lines
                     :overflow         "auto"
                     :border           code-border
-                    :background-color common/white-background-color}
+                    :background-color common/white-background-color
+                    :white-space      "pre"} ;; TODO: This is a quick fix for issue #270
             :attr {:on-double-click (handler-fn (rf/dispatch [:code/set-show-all-code? (not show-all-code?)]))}
             :child (if (some? highlighted-form)
                      [components/highlight {:language "clojure"}
