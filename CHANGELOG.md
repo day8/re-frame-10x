@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Fixed
 
-- Quick fox for Issue #270 - Broken Code formatting in Events tab
+- Quick fix for Issue #270 - Broken Code formatting in Events tab
 
 ## [0.6.6] - 2020-06-29
 
