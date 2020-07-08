@@ -69,6 +69,10 @@ jobs:
       - name: Run lein release
         run: |
           CLOJARS_USERNAME=${{ secrets.CLOJARS_USERNAME }} CLOJARS_TOKEN=${{ secrets.CLOJARS_TOKEN }} GITHUB_USERNAME=${{ github.actor }} GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} lein release
+      # This creates a 'GitHub Release' from the tag and includes link to the CHANGELOG
+      # at that point in the Git history. We do not use draft or prerelease features as
+      # we always want the latest release to show in the right hand column of the project
+      # page regardless of if it is a stable release.
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
