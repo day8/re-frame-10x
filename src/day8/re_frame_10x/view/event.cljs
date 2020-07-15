@@ -252,10 +252,12 @@
     :align :end
     :style {:margin-bottom "2px"}
     :children [[rc/checkbox
-                :style {:align :end}
                 :model execution-order?
                 :label "show trace in execution order"
                 :on-change (handler-fn (rf/dispatch [:code/set-execution-order (not execution-order?)]))] 
+               [rc/box
+                :size "1"
+                :child ""]
                [repl-msg-area]
                [rc/box
                 :size "1"
