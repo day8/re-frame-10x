@@ -85,18 +85,6 @@
             ;; Schedule a trace to be emitted after a render if there is nothing else scheduled after that render.
             ;; This signals the end of the epoch.
 
-            #_(swap! do-after-render-trace-scheduled?
-                     (fn [scheduled?]
-                       (js/console.log "Setting up scheduled after" scheduled?)
-                       (if scheduled?
-                         scheduled?
-                         (do (reagent.impl.batching/do-after-render ;; a do-after-flush would probably be a better spot to put this if it existed.
-                               (fn []
-                                 (js/console.log "Do after render" reagent.impl.batching/render-queue)
-                                 (reset! do-after-render-trace-scheduled? false)
-                                 (when (false? (.-scheduled? reagent.impl.batching/render-queue))
-                                   (trace/with-trace {:op-type :reagent/quiescent}))))
-                             true))))
             (real-next-tick (fn []
                               (trace/with-trace {:op-type :raf}
                                                 (f)

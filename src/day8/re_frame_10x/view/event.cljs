@@ -116,24 +116,65 @@
            :padding          "0px 3px"}
    :child [components/simple-render (:result line) [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]]])
 
+(defn- re-seq-idx 
+  ([re s] (re-seq-idx re s 0))
+  ([re s offset]  ;; copied from re-seq* impl https://github.com/clojure/clojurescript/blob/0efe8fede9e06b8e1aa2fcb3a1c70f66cad6392e/src/main/cljs/cljs/core.cljs#L10014
+   (when-some [matches (.exec re s)]
+     (let [match-str (aget matches 0)
+           match-vals (if (== (.-length matches) 1)
+                        match-str
+                        (vec matches))
+           match-index (.-index matches)]
+       (cons [match-vals, (+ offset match-index)]
+             (lazy-seq
+              (let [post-idx (+ (.-index matches)
+                                (max 1 (.-length match-str)))]
+                (when (<= post-idx (.-length s))
+                  (re-seq-idx re (subs s post-idx) (+ offset post-idx))))))))))
+
+(defn remove-whitespace-reindex
+  "removes excess whitespace from a form and then returns a map of the index"
+  [s]
+  (let [new (clojure.string/replace s #"\s+" " ")
+        reindex (loop [ind []  ;; comment this
+                       i-s 0
+                       i-new 0]
+                  (cond 
+                    (= (count new) i-new) (conj ind (count s))
+                    (= (nth s i-s) (nth new i-new)) (recur (conj ind i-s) (inc i-s) (inc i-new))
+                    :else (recur ind (inc i-s) i-new)))]
+    [new reindex]))
+
 (defn find-bounds
   "Try and find the bounds of the form we are searching for. Uses some heuristics to
   try and avoid matching partial forms, e.g. 'default-|weeks| for the form 'weeks."
-  [form-str search-str]
-  (let [re     (re-pattern (str "(\\s|\\(|\\[|\\{)" "(" (goog.string.regExpEscape search-str) ")"))
-        result (.exec re form-str)]
-    (if (some? result)
-      (let [index        (.-index result)
-            pre-match    (aget result 1)
-            matched-form (aget result 2)
-            index        (+ index (count pre-match))]
-        [index (+ index (count matched-form))])
+  [form-str search-str num-seen]
+  (if (nil? search-str)
+    [0 0]  ;; on mouse out etc
+    (let [[form-str reindex]   (remove-whitespace-reindex form-str) ;; match without whitespace
+          esc-str    (goog.string.regExpEscape search-str)
+          regex      (str "(\\s|\\(|\\[|\\{)" "(" esc-str ")(\\s|\\)|\\]|\\})")
+          re         (re-pattern regex)
+          results    (re-seq-idx re form-str)]
+      ;; (js/console.log "FIND-BOUNDS" form-str  regex reindex results) 
+      (if (and search-str num-seen (seq results) (>= (count results)  num-seen))
+        (let [result                              (nth results (dec num-seen))
+              [[_ pre-match matched-form] index]  result
+              index                               (+ index (count pre-match))
+              start                               (nth reindex index)
+              stop                                (nth reindex (+ index (count matched-form)))]
+          [start stop])
       ;; If the regex fails, fall back to string index just in case.
-      (let [start  (str/index-of form-str search-str)
-            length (if (and (some? search-str) (some? start))
-                     (count (pr-str search-str))
-                     0)]
-        [start (+ start length)]))))
+        (let [start  (some->> form-str 
+                              (str/index-of (pr-str search-str))
+                              (nth reindex))
+              length (if (some? start)
+                       (count (pr-str search-str))
+                       1)
+              end    (some->> start
+                              (+ length)
+                              (nth reindex))]
+          [start end])))))
 
 (defn event-expression
   []
@@ -159,7 +200,7 @@
          (let [highlighted-form @(rf/subscribe [:code/highlighted-form])
                form-str         @(rf/subscribe [:code/current-zprint-form])
                show-all-code?   @(rf/subscribe [:code/show-all-code?])
-               [start-index end-index] (find-bounds form-str (zp/zprint-str highlighted-form))
+               [start-index end-index] (find-bounds form-str (:form highlighted-form) (:num-seen highlighted-form))
                before           (subs form-str 0 start-index)
                highlight        (subs form-str start-index end-index)
                after            (subs form-str end-index)]
@@ -235,9 +276,10 @@
 
 
 (defn event-fragments
-  [fragments code-exec-id]
+  [unordered-fragments code-exec-id]
   (let [code-open? @(rf/subscribe [:code/code-open?])
-        max-frags  50]
+        max-frags  50
+        fragments unordered-fragments #_(sort-by :syntax-order unordered-fragments)]
     [rc/v-box
      :size "1"
      :style {:overflow-y "auto"}
@@ -249,8 +291,8 @@
                       [rc/v-box
                        :class "code-fragment"
                        :style {:margin-top (when-not first? "-1px")}
-                       :attr {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form (:form frag)]))
-                              :on-mouse-leave (handler-fn (rf/dispatch [:code/exit-hover-form (:form frag)]))}
+                       :attr {:on-mouse-enter (handler-fn (rf/dispatch [:code/hover-form frag]))
+                              :on-mouse-leave (handler-fn (rf/dispatch [:code/exit-hover-form frag]))}
                        :children [[rc/h-box
                                    :children [[indent-block (:indent-level frag) first?]
                                               [code-header code-exec-id frag]]]
