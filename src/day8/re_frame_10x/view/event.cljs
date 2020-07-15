@@ -116,7 +116,8 @@
            :padding          "0px 3px"}
    :child [components/simple-render (:result line) [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]]])
 
-(defn- re-seq-idx 
+(defn- re-seq-idx
+  "Like re-seq but returns matches and indices"
   ([re s] (re-seq-idx re s 0))
   ([re s offset]  ;; copied from re-seq* impl https://github.com/clojure/clojurescript/blob/0efe8fede9e06b8e1aa2fcb3a1c70f66cad6392e/src/main/cljs/cljs/core.cljs#L10014
    (when-some [matches (.exec re s)]
@@ -135,14 +136,15 @@
 (defn remove-whitespace-reindex
   "removes excess whitespace from a form and then returns a map of the index"
   [s]
-  (let [new (clojure.string/replace s #"\s+" " ")
-        reindex (loop [ind []  ;; comment this
+  (let [new (clojure.string/replace s #"\s+" " ") ;; generate a new string with whitespace replaced 
+        reindex (loop [ind []     ;; Build up an index between the string with and without whitespace
                        i-s 0
                        i-new 0]
                   (cond 
-                    (= (count new) i-new) (conj ind (count s))
-                    (= (nth s i-s) (nth new i-new)) (recur (conj ind i-s) (inc i-s) (inc i-new))
-                    :else (recur ind (inc i-s) i-new)))]
+                    (= (count new) i-new) (conj ind (count s)) ;; we have reached the end of both strings
+                    (= (nth s i-s) (nth new i-new)) 
+                       (recur (conj ind i-s) (inc i-s) (inc i-new)) ;; when we have a match save the index
+                    :else (recur ind (inc i-s) i-new)))]    ;; no match (whitespace) increment the index on the orignal string
     [new reindex]))
 
 (defn find-bounds
@@ -244,22 +246,28 @@
 
 (defn repl-section
   []
-  [rc/h-box
-   :height "23px"
-   :align :end
-   :style {:margin-bottom "2px"}
-   :children [[repl-msg-area]
-              [rc/box
-               :size "1"
-               :child ""]
-              [rc/hyperlink
-               :label "repl requires"
-               :style {:margin-right common/gs-7s}
-               :attr {:title "Copy to the clipboard, the require form to set things up for the \"repl\" links below"}
+  (let [execution-order?    @(rf/subscribe [:code/execution-order?])]
+   [rc/h-box
+    :height "23px"
+    :align :end
+    :style {:margin-bottom "2px"}
+    :children [[rc/checkbox
+                :style {:align :end}
+                :model execution-order?
+                :label "show trace in execution order"
+                :on-change (handler-fn (rf/dispatch [:code/set-execution-order (not execution-order?)]))] 
+               [repl-msg-area]
+               [rc/box
+                :size "1"
+                :child ""]
+               [rc/hyperlink
+                :label "repl requires"
+                :style {:margin-right common/gs-7s}
+                :attr {:title "Copy to the clipboard, the require form to set things up for the \"repl\" links below"}
                ;; Doing this in a list would be nicer, but doesn't let us use ' as it will be expanded before we can create the string.
-               :on-click #(do (utils/copy-to-clipboard "(require '[day8.re-frame-10x])")
-                              (rf/dispatch [:code/repl-msg-state :start]))]
-              [rc/hyperlink-info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]])
+                :on-click #(do (utils/copy-to-clipboard "(require '[day8.re-frame-10x])")
+                               (rf/dispatch [:code/repl-msg-state :start]))]
+               [rc/hyperlink-info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]]))
 
 
 (defn indent-block
@@ -277,9 +285,12 @@
 
 (defn event-fragments
   [unordered-fragments code-exec-id]
-  (let [code-open? @(rf/subscribe [:code/code-open?])
-        max-frags  50
-        fragments unordered-fragments #_(sort-by :syntax-order unordered-fragments)]
+  (let [code-open?       @(rf/subscribe [:code/code-open?])
+        max-frags        50
+        execution-order? @(rf/subscribe [:code/execution-order?])
+        fragments        (if execution-order?
+                           unordered-fragments 
+                           (sort-by :syntax-order unordered-fragments))]
     [rc/v-box
      :size "1"
      :style {:overflow-y "auto"}

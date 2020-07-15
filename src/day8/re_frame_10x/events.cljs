@@ -802,6 +802,12 @@
     (assoc-in code-open? open?-path open?)))
 
 (rf/reg-event-db
+ :code/set-execution-order
+ [(rf/path [:code :execution-order?])]
+ (fn [_ [_ execution-order?]]
+   execution-order?))
+
+(rf/reg-event-db
   :code/hover-form
   [(rf/path [:code :highlighted-form])]
   (fn [form [_ new-form]]

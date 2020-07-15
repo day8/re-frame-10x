@@ -697,6 +697,12 @@
     (zp/zprint-str form)))
 
 (rf/reg-sub
+ :code/execution-order?
+ :<- [:code/root]
+ (fn [code _]
+   (get code :execution-order? true)))
+
+(rf/reg-sub
   :code/code-open?
   :<- [:code/root]
   (fn [code _]
