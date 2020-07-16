@@ -133,19 +133,28 @@
                 (when (<= post-idx (.-length s))
                   (re-seq-idx re (subs s post-idx) (+ offset post-idx))))))))))
 
-(defn remove-whitespace-reindex
-  "removes excess whitespace from a form and then returns a map of the index"
+(defn collapse-whitespace-and-index
+  "given a string argument `s` it will return a vector of two values:
+     - a modified version of `s`, call it s'
+     - a vector of indexes, v
+   s' will be a copy of s in which all consecutive whitespace is collapsed to one whitespace
+   v  will be a vector of index for characters in s' back to the original s
+   For example:
+      (collapse-whitespace-and-index \"a b  c\")
+   will return
+       [\"a b c\" [0 1 2 3 5]]     ;; notice that the 4 is not there
+   " 
   [s]
-  (let [new (clojure.string/replace s #"\s+" " ") ;; generate a new string with whitespace replaced 
-        reindex (loop [ind []     ;; Build up an index between the string with and without whitespace
+  (let [s' (clojure.string/replace s #"\s+" " ") ;; generate a new string with whitespace replaced 
+        v (loop [v []     ;; Build up an index between the string with and without whitespace
                        i-s 0
-                       i-new 0]
+                       i-s' 0] 
                   (cond 
-                    (= (count new) i-new) (conj ind (count s)) ;; we have reached the end of both strings
-                    (= (nth s i-s) (nth new i-new)) 
-                       (recur (conj ind i-s) (inc i-s) (inc i-new)) ;; when we have a match save the index
-                    :else (recur ind (inc i-s) i-new)))]    ;; no match (whitespace) increment the index on the orignal string
-    [new reindex]))
+                    (= (count s') i-s') (conj v (count s)) ;; we have reached the end of both strings
+                    (= (nth s i-s) (nth s' i-s')) 
+                       (recur (conj v i-s) (inc i-s) (inc i-s')) ;; when we have a match save the index
+                    :else (recur v (inc i-s) i-s')))]    ;; no match (whitespace) increment the index on the orignal string
+    [s' v]))
 
 (defn find-bounds
   "Try and find the bounds of the form we are searching for. Uses some heuristics to
@@ -153,7 +162,7 @@
   [form-str search-str num-seen]
   (if (nil? search-str)
     [0 0]  ;; on mouse out etc
-    (let [[form-str reindex]   (remove-whitespace-reindex form-str) ;; match without whitespace
+    (let [[form-str reindex]   (collapse-whitespace-and-index form-str) ;; match without whitespace
           esc-str    (goog.string.regExpEscape search-str)
           regex      (str "(\\s|\\(|\\[|\\{)" "(" esc-str ")(\\s|\\)|\\]|\\})")
           re         (re-pattern regex)
