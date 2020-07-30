@@ -10,6 +10,7 @@
             [reagent.impl.util :as util]
             [reagent.impl.component :as component]
             [reagent.impl.batching :as batch]
+            [reagent.impl.template :as tmpl]
             [reagent.ratom :as ratom]
             [goog.object :as gob]
             [re-frame.interop :as interop]
@@ -31,11 +32,12 @@
                                        {})
                           :operation (operation-name c)}
                          (if util/*non-reactive*
-                           (reagent.impl.component/do-render c)
+                           (reagent.impl.component/do-render c tmpl/deafult-compiler)
                            (let [rat        (gob/get c "cljsRatom")
                                  _          (batch/mark-rendered c)
                                  res        (if (nil? rat)
-                                              (ratom/run-in-reaction #(reagent.impl.component/do-render c) c "cljsRatom"
+                                              (ratom/run-in-reaction #(reagent.impl.component/do-render c tmpl/default-compiler)
+                                                                     c "cljsRatom"
                                                                      batch/queue-render reagent.impl.component/rat-opts)
                                               (._run rat false))
                                  cljs-ratom (gob/get c "cljsRatom")] ;; actually a reaction
