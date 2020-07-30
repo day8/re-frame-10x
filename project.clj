@@ -6,15 +6,15 @@
   :min-lein-version "2.9.1"
 
   :dependencies [[org.clojure/clojure "1.10.1" :scope "provided"]
-                 [org.clojure/clojurescript "1.10.597" :scope "provided"]
-                 [reagent "0.9.1" :scope "provided"]
-                 [re-frame "0.11.0" :scope "provided"]
-                 [binaryage/devtools "1.0.0"]
+                 [org.clojure/clojurescript "1.10.773" :scope "provided"]
+                 [reagent "0.10.0" :scope "provided"]
+                 [re-frame "0.12.0" :scope "provided"]
+                 [binaryage/devtools "1.0.2"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
                  [zprint "0.5.1"]
                  [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]]
 
-  :plugins      [[day8/lein-git-inject "0.0.11"]
+  :plugins      [[day8/lein-git-inject "0.0.14"]
                  [thomasa/mranderson   "0.5.1"]
                  [lein-less            "RELEASE"]]
 
@@ -25,7 +25,7 @@
   :deploy-repositories [["clojars" {:sign-releases false
                                     :url           "https://clojars.org/repo"
                                     :username      :env/CLOJARS_USERNAME
-                                    :password      :env/CLOJARS_PASSWORD}]]
+                                    :password      :env/CLOJARS_TOKEN}]]
 
   :source-paths ["src" "gen-src"]
 
@@ -33,11 +33,11 @@
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
-                          :dependencies ^:replace [^:source-dep [re-frame "0.11.0"
+                          :dependencies ^:replace [^:source-dep [re-frame "0.12.0"
                                                                  :exclusions [reagent
                                                                               net.cgrand/macrovich
                                                                               org.clojure/tools.logging]]
-                                                   ^:source-dep [reagent "0.9.1"
+                                                   ^:source-dep [reagent "0.10.0"
                                                                  :exclusions [cljsjs/react
                                                                               cljsjs/react-dom
                                                                               cljsjs/react-dom-server]]

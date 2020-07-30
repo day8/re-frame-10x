@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.view.container
   (:require-macros [day8.re-frame-10x.utils.macros :as macros])
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.core :as rf]
+  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
             [re-frame.db :as db]
             [day8.re-frame-10x.view.event :as event]
             [day8.re-frame-10x.view.app-db :as app-db]
@@ -15,6 +15,7 @@
             [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.core :refer [css style]]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :refer [px]]
             [day8.re-frame-10x.view.history :as history]
+            [day8.re-frame-10x.material :as material]
             [day8.re-frame-10x.svgs :as svgs]
             [re-frame.trace]
             [day8.re-frame-10x.utils.re-com :as rc]
@@ -68,7 +69,7 @@
                 [rc/button
                  :attr     {:title "Settings"}
                  :style    {:width "40px"}
-                 :label    [svgs/settings
+                 :label    [material/settings
                             :fill (if showing-settings? "#F2994A" "white")]
                  :on-click #(rf/dispatch [:settings/toggle-settings])]
                 (when-not external-window?
@@ -76,7 +77,7 @@
                    :attr     {:title "Pop out"}
                    :style    {:width "40px"}
                    :on-click #(rf/dispatch-sync [:global/launch-external])
-                   :label    [svgs/open-external]])]]))
+                   :label    [material/open-in-new :fill "#FFF"]])]]))
 
 (defn settings-header [external-window?]
   [[rc/h-box
@@ -129,7 +130,7 @@
                     {:class "arrow__disabled"
                      :style {:cursor "not-allowed"}
                      :title "There are no previous epochs"})
-                  [svgs/left
+                  [material/arrow-left
                    :fill (if older-epochs-available? "#6EC0E6" "#cfd8de")]]
                  [event-name]
                  [:span.arrow.epoch-nav
@@ -140,7 +141,7 @@
                     {:class "arrow__disabled"
                      :style {:cursor "not-allowed"}
                      :title "There are no later epochs"})
-                  [svgs/right
+                  [material/arrow-right
                    :fill (if newer-epochs-available? "#6EC0E6" "#cfd8de")]]
                  [rc/v-box
                   :gap common/gs-5s
@@ -154,17 +155,20 @@
                       {:class "arrow__disabled"
                        :style {:cursor "not-allowed"}
                        :title "Already showing latest epoch"})
-                    [svgs/skip-to-end
+                    [material/skip-next
                      :fill (if newer-epochs-available? "#6EC0E6" "#cfd8de")]]
                    [:span.arrow.epoch-aux-nav
                     {:on-click #(rf/dispatch [:history/toggle-history])
                      :title    "Show event history"}
                     (if showing-history?
-                      [svgs/up-arrow]
-                      [svgs/down-arrow])]]]]]
+                      [material/unfold-less]
+                      [material/unfold-more])]]]]]
      [rc/gap-f :size common/gs-12s]
      [rc/line :size "2px" :color common/sidebar-heading-divider-color]
      [right-hand-buttons external-window?]]))
+
+(defn tab-styles [selected-tab tab-name]
+  (if (not= selected-tab tab-name) {:display "none" :visibility "hidden"} {:width "100%"}))
 
 (defn devtools-inner [opts]
   (let [selected-tab      (rf/subscribe [:settings/selected-tab])
@@ -219,7 +223,7 @@
                                              :label [rc/h-box
                                                      :align :center
                                                      :gap "3px"
-                                                     :children [[svgs/reload]
+                                                     :children [[material/refresh  :fill "#6EC0E6"]
                                                                 "replay"]]
                                              :on-click #(do (rf/dispatch [:component/set-direction :next])
                                                             (rf/dispatch [:epochs/replay]))]
@@ -236,38 +240,19 @@
                    [rc/hyperlink
                     :label "Dismiss"
                     :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])
-                [rc/h-box
+                [rc/box
                  :v-scroll :on
                  :height "100%"
                  :style {:margin-left common/gs-19s}
-                 :children
-                 [[rc/box
-                   :style (if (not= @selected-tab :event) {:display "none" :visibility "hidden"} {})
-                   :child [event/render]]
-                  [rc/box
-                   :style (if (not= @selected-tab :fx) {:display "none" :visibility "hidden"} {})
-                   :child [fx/render]]
-                  [rc/box
-                   :style (if (not= @selected-tab :app-db) {:display "none" :visibility "hidden"} {})
-                   :child [app-db/render db/app-db]]
-                  [rc/box
-                   :style (if (not= @selected-tab :subs) {:display "none" :visibility "hidden"} {})
-                   :child [subs/render]]
-                  [rc/box
-                   :style (if (not= @selected-tab :views) {:display "none" :visibility "hidden"} {})
-                   :child [views/render]]
-                  [rc/box
-                   :style (if (not= @selected-tab :parts) {:display "none" :visibility "hidden"} {})
-                   :child [parts/render]]
-                  [rc/box
-                   :style (if (not= @selected-tab :timing) {:display "none" :visibility "hidden"} {})
-                   :child [timing/render]]
-                  [rc/box
-                   :style (if (not= @selected-tab :traces) {:display "none" :visibility "hidden"} {})
-                   :child [traces/render]]
-                  [rc/box
-                   :style (if (not= @selected-tab :debug) {:display "none" :visibility "hidden"} {})
-                   :child [debug/render]]
-                  [rc/box
-                   :style (if (not= @selected-tab :settings) {:display "none" :visibility "hidden"} {})
-                   :child [settings/render]]]]]]))
+                 :child (case @selected-tab
+                          :event [event/render]
+                          :fx [fx/render]
+                          :app-db [app-db/render db/app-db]
+                          :subs [subs/render]
+                          :views [views/render]
+                          :parts [parts/render]
+                          :timing [timing/render]
+                          :traces [traces/render]
+                          :debug [debug/render]
+                          :settings [settings/render]
+                          [app-db/render db/app-db])]]]))

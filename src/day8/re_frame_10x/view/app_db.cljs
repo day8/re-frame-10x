@@ -3,11 +3,12 @@
             [devtools.formatters.core]
             [day8.re-frame-10x.utils.utils :as utils]
             [day8.re-frame-10x.view.components :as components]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v9v1.reagent.core :as r]
+            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as r]
             [day8.re-frame-10x.utils.re-com :as rc :refer [close-button css-join]]
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.svgs :as svgs]
+            [day8.re-frame-10x.material :as material]
             [clojure.data])
   (:require-macros
     [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
@@ -86,9 +87,10 @@
    :style {:margin-top common/gs-19s}
    :children [[rc/button
                :class "bm-muted-button app-db-panel-button"
-               :label [rc/v-box
+               :label [rc/h-box
                        :align :center
-                       :children ["+ path inspector"]]
+                       :children [[material/add :fill "#6EC0E6"]
+                                  "path inspector"]]
                :on-click #(rf/dispatch [:app-db/create-path])]]])
 
 
@@ -126,9 +128,9 @@
                            :child [rc/box
                                    :margin "auto"
                                    :child [:span.arrow (if open?
-                                                         [svgs/up-arrow
+                                                         [material/arrow-drop-down
                                                           :fill "#6EC0E6"]
-                                                         [svgs/down-arrow
+                                                         [material/arrow-right
                                                           :fill "#6EC0E6"])]]]]]
 
               [rc/h-box
@@ -303,7 +305,8 @@
 (defn render [app-db]
   [rc/v-box
    :size "1"
-   :style {:margin-right common/gs-19s}
+   :style {:margin-right common/gs-19s
+           :overflow "auto"}
            ;:overflow     "hidden"
 
    :children [[panel-header]

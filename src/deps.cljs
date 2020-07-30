@@ -1,4 +1,4 @@
-{:npm-deps {"react"              "^16.9.0"
-            "react-dom"          "^16.9.0"
-            "highlight.js"       "9.15.10"
+{:npm-deps {"react"              "^16.13.0"
+            "react-dom"          "^16.13.0"
+            "highlight.js"       "9.18.1"
             "react-highlight.js" "1.0.7"}}

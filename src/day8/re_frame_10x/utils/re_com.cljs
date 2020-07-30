@@ -1,9 +1,10 @@
 (ns day8.re-frame-10x.utils.re-com
   "Shameless pilfered from re-com."
   (:require-macros [day8.re-frame-10x.utils.re-com :refer [handler-fn]])
-  (:require [day8.re-frame-10x.inlined-deps.reagent.v0v9v1.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
+  (:require [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
             [clojure.string :as string]
-            [day8.re-frame-10x.common-styles :as common]))
+            [day8.re-frame-10x.common-styles :as common]
+            [day8.re-frame-10x.material :as material]))
 
 (defn px
   "takes a number (and optional :negative keyword to indicate a negative value) and returns that number as a string with 'px' at the end"
@@ -519,12 +520,10 @@
   [url]
   [hyperlink-href
    :label [box
-           :class "container--info-button"
+           ;:class "container--info-button"
            :justify :center
            :align :center
-           :child [:span {:style {:font-size   "11px"
-                                  :font-weight "bold"}}
-                   "?"]]
+           :child [material/help :fill "#6EC0E6"]]
    :attr {:rel "noopener noreferrer"}
    :target "_blank"
    :href url])

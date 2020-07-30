@@ -20,14 +20,25 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('project.clj') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+      - name: npm cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/project.clj') }}-${{ hashFiles('**/deps.cljs') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Sample Project shadow-cljs compiler cache
+        uses: actions/cache@v1
+        with:
+          path: examples/todomvc/.shadow-cljs
+          key: ${{ runner.os }}-shadow-cljs-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-shadow-cljs-
       - run: lein test
       - name: Install re-frame-10x for Sample Projects
         run: lein install
-      - name: Compile Sample Project for Development
-        run: lein with-profile dev do clean, compile
-        working-directory: "examples/todomvc"
-      - name: Compiler Sample Project for Production
-        run: lein with-profile prod do clean, compile
+      - name: Compile Sample Project
+        run: lein with-profile dev do clean, shadow compile app
         working-directory: "examples/todomvc"
       - name: Slack notification
         uses: homoluctus/slatify@v2.0.1
@@ -57,7 +68,22 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Run lein release
         run: |
-          CLOJARS_USERNAME=${{ secrets.CLOJARS_USERNAME }} CLOJARS_PASSWORD=${{ secrets.CLOJARS_PASSWORD }} GITHUB_USERNAME=${{ github.actor }} GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} lein release
+          CLOJARS_USERNAME=${{ secrets.CLOJARS_USERNAME }} CLOJARS_TOKEN=${{ secrets.CLOJARS_TOKEN }} GITHUB_USERNAME=${{ github.actor }} GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} lein release
+      # This creates a 'GitHub Release' from the tag and includes link to the CHANGELOG
+      # at that point in the Git history. We do not use draft or prerelease features as
+      # we always want the latest release to show in the right hand column of the project
+      # page regardless of if it is a stable release.
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            [Changelog](https://github.com/day8/re-frame-10x/blob/${{ github.ref }}/CHANGELOG.md)
+          draft: false
+          prerelease: false
       - name: Slack notification
         uses: homoluctus/slatify@v2.0.1
         if: always()

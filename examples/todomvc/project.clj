@@ -1,21 +1,22 @@
 (defproject todomvc-re-frame "lein-git-inject/version"
   :dependencies [[org.clojure/clojure        "1.10.1"]
-                 [org.clojure/clojurescript  "1.10.597"
+                 [org.clojure/clojurescript  "1.10.773"
                   :exclusions [com.google.javascript/closure-compiler-unshaded
-                               org.clojure/google-closure-library]]
-                 [thheller/shadow-cljs "2.8.83"]
-                 [reagent "0.9.1"]
-                 [re-frame "0.11.0"]
-                 [day8.re-frame/tracing "0.5.3"]
-                 [day8.re-frame/re-frame-10x "0.5.0-rc1-SNAPSHOT"]
+                               org.clojure/google-closure-library
+                               org.clojure/google-closure-library-third-party]]
+                 [thheller/shadow-cljs "2.9.10"]
+                 [reagent "0.10.0"]
+                 [re-frame "0.12.0"]
+                 [day8.re-frame/tracing "0.5.6"]
+                 [day8.re-frame/re-frame-10x "0.6.6"]
                  [secretary "1.2.3"]]
 
-  :plugins      [[day8/lein-git-inject "0.0.6"]
+  :plugins      [[day8/lein-git-inject "0.0.14"]
                  [lein-shadow          "0.1.6"]]
 
   :middleware   [leiningen.git-inject/middleware]
 
-  :profiles {:dev  {:dependencies [[binaryage/devtools "1.0.0"]]}}
+  :profiles {:dev  {:dependencies [[binaryage/devtools "1.0.2"]]}}
 
   :source-paths ["src" "../../src" "../../gen-src"]
 

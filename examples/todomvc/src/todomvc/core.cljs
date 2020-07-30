@@ -2,6 +2,7 @@
   (:require-macros [secretary.core :refer [defroute]])
   (:require [goog.events :as events]
             [reagent.core :as reagent]
+            [reagent.dom :as rdom]
             [re-frame.core :refer [dispatch dispatch-sync]]
             [secretary.core :as secretary]
     ;; These two are only required to make the compiler
@@ -13,10 +14,10 @@
   (:import [goog History]
            [goog.history EventType]))
 
-
 ;; -- Debugging aids ----------------------------------------------------------
 ;; we love https://github.com/binaryage/cljs-devtools
 (devtools/install!)
+
 ;; so that println writes to `console.log`
 (enable-console-print!)
 
@@ -35,7 +36,8 @@
 ;; We don't have a strong opinion.
 ;;
 (defroute "/" [] (dispatch [:set-showing :all]))
-(defroute "/:filter" [filter] (dispatch [:set-showing (keyword filter)]))
+
+(defroute #"/([a-z]+)" [filter] (dispatch [:set-showing (keyword filter)]))
 
 (def history
   (doto (History.)
@@ -56,6 +58,6 @@
       ;; Render the UI into the HTML's <div id="app" /> element
       ;; The view function `todomvc.views/todo-app` is the
       ;; root view for the entire UI.
-      (reagent/render [todomvc.views/todo-app]
-                      (.getElementById js/document "app")))
+      (rdom/render [todomvc.views/todo-app]
+                   (.getElementById js/document "app")))
 

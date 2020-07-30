@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.view.fx
   (:require [day8.re-frame-10x.utils.re-com :as rc]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.core :as rf]
+            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.view.components :as components]
             [zprint.core :as zp]
@@ -64,6 +64,7 @@
   (let [event-trace @(rf/subscribe [:epochs/current-event-trace])]
     [rc/v-box
      :class "event-panel"
+     :style {:width "100%"}
      :gap common/gs-19s
      :children [[event-section "Coeffects" (get-in event-trace [:tags :coeffects])]
                 [event-section "Effects" (get-in event-trace [:tags :effects])]

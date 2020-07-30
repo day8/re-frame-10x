@@ -30,88 +30,102 @@
 (def text-color common/default-text-color)
 (def text-color-muted common/text-color-muted)
 
-
 (def css-reset
   [:#--re-frame-10x--
    {:all "initial"}
 
-   [(s/not "svg"
-     {:all "unset"})]
+   [:h1 :h2 :h3 :h4 :h5 :h6
+    :div :p
+    :pre :code
+    :a :b :i :span
+    :li :ol :ul
+    :br
+    :img
+    :table :tbody :td :tfoot :th :thead :tr
+    :button :input :option :select
+    {:all "unset"}
+    [:&:before :&:after
+     {:all "unset"}]]
 
-   ;; /*! abridged from normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
-   {:line-height "1.15"
-    :font-size   "14px"}
-   [:h1 {:font-size "2em"
-         :margin    "0.67em 0"}]
-   [:div :nav :h1 :h2 :h3 :h4 :h5 :h6 {:display "block"}]
-   [:pre {:font-family "monospace"
-          :white-space "pre"
-          :font-size   (em 1)}]
+   ;; /*! abridged from normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
+   {:line-height              "1.15"
+    :-webkit-text-size-adjust "100%"}
 
-   ;; Text-level semantics
-   [(s/a) (s/a s/visited) {:color  text-color
-                           :cursor "pointer"}
-    [:&:hover {:color           "#23527c"
-               :text-decoration "underline"}]]
+   [:h1
+    {:font-size (em 2)
+     :margin    "0.67em 0"}]
 
-   [:code {:font-family "monospace"
-           :font-size   (em 1)}]
-   [:small {:font-size (percent 80)}]
-   [:sub :sup {:font-size      (percent 75)
-               :line-height    0
-               :position       "relative"
-               :vertical-align "baseline"}]
-   [:sub {:bottom (em -0.25)}]
-   [:sup {:top (em -0.5)}]
-   [:img {:border-style "none"}]
-   [:option {:display "block"}]
-   [:button :input :optgroup :select :textarea
+   [:pre
+    {:font-family "monospace, monospace"
+     :font-size   (em 1)}]
+
+   [:b
+    {:font-weight "bolder"}]
+
+   [:code
+    {:font-family "monospace, monospace"
+     :font-size   (em 1)}]
+
+   [:button
+    :input
+    :select
+    :textarea
     {:font-family common/font-stack
      :font-size   (percent 100)
-     :padding     [[(px 3) (px 3) (px 1) (px 3)]]
-     :border      [[(px 1) "solid" medium-gray]]}]
-   [:button :input {:overflow "visible"}]
-   #_[:button :select [(s/& s/focus) {:outline [[medium-gray "dotted" (px 1)]]}]]
+     :line-height 1.15
+     :margin      0}]
+
+   [:button
+    :input
+    {:overflow "visible"}]
+
+   [:button
+    :select
+    {:text-transform "none"}]
+
    [:button
     (s/html (s/attr= "type" "button"))
     (s/attr= "type" "reset")
     (s/attr= "type" "submit")
     {:-webkit-appearance "button"}]
+
+   ["button::-moz-focus-inner"
+    (str (s/attr= "type" "button") "::-moz-focus-inner")
+    (str (s/attr= "type" "reset")  "::-moz-focus-inner")
+    (str (s/attr= "type" "submit") "::-moz-focus-inner")
+    {:border-style "none"
+     :padding      "0"}]
+
+   [:button:-moz-focusring
+    (str (s/attr= "type" "button") ":-moz-focusring")
+    (str (s/attr= "type" "reset")  ":-moz-focusring")
+    (str (s/attr= "type" "submit") ":-moz-focusring")
+    {:outline "1px dotted ButtonText"}]
+
+   [:textarea
+    {:overflow "auto"}]
+
+   ;; additional custom CSS resets
+   [(s/a) (s/a s/visited) {:color  text-color
+                           :cursor "pointer"}
+       [:&:hover {:color           "#23527c"
+                  :text-decoration "underline"}]]
+
+   [:option {:display "block"}]
+
+   [:input :optgroup :select :textarea
+    {:padding     [[(px 3) (px 3) (px 1) (px 3)]]
+     :border      [[(px 1) "solid" medium-gray]]}]
+
+   [:select [(s/& s/focus) {:outline [[medium-gray "dotted" (px 1)]]}]]
+
    [(s/input (s/attr= "type" "checkbox"))
     {:-webkit-appearance "checkbox"
      :box-sizing         "border-box"
      :margin-top         "3px"}]
 
-   [:button:-moz-focusring
-    (s/attr= "type" "button")
-    ;; Couldn't figure out // Restore the focus styles unset by the previous rule.
-    {:outline "1px dotted ButtonText"}]
-
-   [:textarea
-    {:overflow "auto"}]
-   ;; Skipping IE 10-
-
-   [(s/attr= "type" "search") {:-webkit-appearance "textfield"
-                               :outline-offset     (px -2)}]
-   [:ol
-    {:display                "block"
-     :list-style-type        "decimal"
-     "-webkit-margin-before" "1em"
-     "-webkit-margin-after"  "1em"
-     "-webkit-margin-start"  "0px"
-     "-webkit-margin-end"    "0px"
-     "-webkit-padding-start" "40px"}]
    [:li {:display    "list-item"
          :text-align "-webkit-match-parent"}]
-   [:button {:overflow               "visible"
-             :border                 0
-             :-webkit-font-smoothing "inherit"
-             :letter-spacing         "inherit"
-             :background             "none"
-             #_#_:cursor "pointer"}]
-   [:img {:max-width (percent 100)
-          :height    "auto"
-          :border    "0"}]
 
    [:table :thead :tbody :tfoot :tr :th :td
     {:display                           "block"
@@ -364,19 +378,20 @@
     {:display "flex"
      :flex    "0 0 auto"}]
    [:.nav {:background common/sidebar-background-color
-           :height     (px 50)
+           :height     (px 81)
            :color      "white"}
     [:span.arrow {:color            common/blue-modern-color ;; Should this be a button instead of a span?
                   :background-color common/standard-background-color
-                  :padding          (px 5)
+                  :padding          (px 4)
+                  :width            (px 24)
+                  :height           (px 24)
                   :cursor           "pointer"
                   :user-select      "none"}]
     [:span.arrow__disabled {:color  "#cfd8de"
                             :cursor "auto"}]
-    [:span.arrow.epoch-aux-nav {:min-width   "12px"
-                                :max-width   "12px"
-                                :height      "9px"
-                                :line-height "9px"}]
+    [:span.arrow.epoch-aux-nav {:padding (px 4)
+                                :width   (px 24)
+                                :height  (px 24)}]
     [:span.event-header {:color            common/default-text-color
                          :background-color common/standard-background-color
                          :padding          (px 5)

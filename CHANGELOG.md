@@ -1,7 +1,82 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## Unreleased
+## [0.6.7] - 2020-07-08
+
+### Fixed
+
+- Quick fix for Issue #270 - Broken Code formatting in Events tab
+
+## [0.6.6] - 2020-06-29
+
+### Changed
+
+- Upgrade [re-frame-tracing to 0.5.6](https://github.com/day8/re-frame-debux/blob/master/CHANGELOG.md)
+- Upgrade binaryage/devtools to 1.0.2
+- Upgrade ClojureScript to 1.10.773
+- Upgrade shadow-cljs to 2.9.10
+
+## [0.6.5] - 2020-05-15
+
+### Fixed
+
+- Revert change from 0.6.1 to improve performance of switching tabs. This change
+  caused 100% CPU usuage on a single core when performing simple unrelated
+  interactions on a page, such as hovering over a button with hover styles. 
+  For fast machines with many cores it was not recognisable but for slower 
+  machines already under load it slows things down to a crawl. 
+
+## [0.6.4] - 2020-05-01
+
+### Fixed
+
+- Fix scroll bar showing when not required on app-db view. Thanks to [@marianafantini](https://github.com/marianafantini).
+  See [#260](https://github.com/day8/re-frame-10x/pull/260).
+
+## [0.6.3] - 2020-04-30
+
+### Fixed
+
+- Fix width and overflow styles to enable scrolling large app-db horizontally.
+  Thanks to [@marianafantini](https://github.com/marianafantini). See [#259](https://github.com/day8/re-frame-10x/pull/259).
+
+### Changed
+
+- Upgrade ClojureScript to [1.10.748](https://clojurescript.org/news/2020-04-24-release). 
+  Required by recent shadow-cljs releases which in turn will enable faster
+  GitHub Action builds.
+- Upgrade shadow-cljs to 2.8.104 for [faster builds with a valid compiler cache on GitHub Actions](https://github.com/thheller/shadow-cljs/issues/673#issuecomment-619564184).
+
+## [0.6.2] - 2020-04-08
+
+### Fixed
+
+- Fix regressions caused during manual inlining of dependencies.
+
+## [0.6.1] - 2020-04-05
+
+### Changed
+
+- Replace all icons with material design icons for a more consistent look and feel.
+- Improve performance of switching tabs.
+
+### Fixed
+
+- Various minor styling bugs.
+- Exception in todomvc example route.
+
+## [0.6.0] - 2020-03-08
+
+### Changed
+
+- Upgrade reagent to [0.10.0](https://github.com/reagent-project/reagent/blob/master/CHANGELOG.md#0100-2020-03-06)
+
+### Fixed
+
+- Replaced use of removed `reagent.interop` namespace macros with `goog.object` equivalent. Might use `binaryage/oops`
+  in future but that will require dep inlining so this is OK for now as a quick fix for reagent 0.10.0.
+- Replaced use of `component/component-path` with `component/component-name`.
+- Use `reagent.dom/render` instead of deprecated `reagent.core/render` fn in example.
 
 ## [[0.5.2] - 2020-02-14](https://github.com/day8/re-frame-10x/runs/444976485?check_suite_focus=true)
 

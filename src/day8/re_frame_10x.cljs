@@ -7,64 +7,38 @@
             [day8.re-frame-10x.db :as trace.db]
             [re-frame.trace :as trace :include-macros true]
             [clojure.string :as str]
-            [reagent.interop :refer-macros [$ $!]]
             [reagent.impl.util :as util]
             [reagent.impl.component :as component]
             [reagent.impl.batching :as batch]
             [reagent.ratom :as ratom]
             [goog.object :as gob]
             [re-frame.interop :as interop]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v9v1.reagent.core :as r]))
+            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as r]
+            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.dom :as rdom]))
 
 (goog-define debug? false)
 
-;; from https://github.com/reagent-project/reagent/blob/3fd0f1b1d8f43dbf169d136f0f905030d7e093bd/src/reagent/impl/component.cljs#L274
-(defn fiber-component-path [fiber]
-  (let [name   (some-> fiber
-                       ($ :type)
-                       ($ :displayName))
-        parent (some-> fiber
-                       ($ :return))
-        path   (some-> parent
-                       fiber-component-path
-                       (str " > "))
-        res    (str path name)]
-    (when-not (empty? res) res)))
-
-(defn component-path [c]
-  ;; Alternative branch for React 16
-  (if-let [fiber (some-> c ($ :_reactInternalFiber))]
-    (fiber-component-path fiber)
-    (component/component-path c)))
-
-(defn comp-name [c]
-  (let [n (or (component-path c)
-              (some-> c .-constructor util/fun-name))]
-    (if-not (empty? n)
-      n
-      "")))
-
-(def operation-name (memoize (fn [component] (last (str/split (component-path component) #" > ")))))
+(def operation-name (memoize (fn [c] (last (str/split (component/component-name c) #" > ")))))
 
 (def static-fns
   {:render
    (fn mp-render []                                         ;; Monkeypatched render
      (this-as c
        (trace/with-trace {:op-type   :render
-                          :tags      (if-let [path (component-path c)]
-                                       {:component-path path}
+                          :tags      (if-let [component-name (component/component-name c)]
+                                       {:component-name component-name}
                                        {})
                           :operation (operation-name c)}
                          (if util/*non-reactive*
                            (reagent.impl.component/do-render c)
-                           (let [rat        ($ c :cljsRatom)
+                           (let [rat        (gob/get c "cljsRatom")
                                  _          (batch/mark-rendered c)
                                  res        (if (nil? rat)
                                               (ratom/run-in-reaction #(reagent.impl.component/do-render c) c "cljsRatom"
                                                                      batch/queue-render reagent.impl.component/rat-opts)
                                               (._run rat false))
-                                 cljs-ratom ($ c :cljsRatom)] ;; actually a reaction
+                                 cljs-ratom (gob/get c "cljsRatom")] ;; actually a reaction
                              (trace/merge-trace!
                                {:tags {:reaction      (interop/reagent-id cljs-ratom)
                                        :input-signals (when cljs-ratom
@@ -99,9 +73,9 @@
               :componentWillUnmount
               (fn [] (this-as c
                        (trace/with-trace {:op-type   key
-                                          :operation (last (str/split (comp-name c) #" > "))
-                                          :tags      {:component-path (component-path c)
-                                                      :reaction       (interop/reagent-id ($ c :cljsRatom))}})
+                                          :operation (last (str/split (component/component-name c) #" > "))
+                                          :tags      {:component-name (component/component-name c)
+                                                      :reaction       (interop/reagent-id (gob/get c "cljsRatom"))}})
                        (.call (real-custom-wrapper key f) c c)))
 
               (real-custom-wrapper key f))))
@@ -111,18 +85,6 @@
             ;; Schedule a trace to be emitted after a render if there is nothing else scheduled after that render.
             ;; This signals the end of the epoch.
 
-            #_(swap! do-after-render-trace-scheduled?
-                     (fn [scheduled?]
-                       (js/console.log "Setting up scheduled after" scheduled?)
-                       (if scheduled?
-                         scheduled?
-                         (do (reagent.impl.batching/do-after-render ;; a do-after-flush would probably be a better spot to put this if it existed.
-                               (fn []
-                                 (js/console.log "Do after render" reagent.impl.batching/render-queue)
-                                 (reset! do-after-render-trace-scheduled? false)
-                                 (when (false? (.-scheduled? reagent.impl.batching/render-queue))
-                                   (trace/with-trace {:op-type :reagent/quiescent}))))
-                             true))))
             (real-next-tick (fn []
                               (trace/with-trace {:op-type :raf}
                                                 (f)
@@ -245,12 +207,12 @@
 
 (defn inject-devtools! []
   (styles/inject-trace-styles js/document)
-  (r/render [devtools-outer {:panel-type :inline
-                             :debug?     debug?}] (panel-div)))
+  (rdom/render [devtools-outer {:panel-type :inline
+                                :debug?     debug?}] (panel-div)))
 
 (defn traced-result [trace-id fragment-id]
   ;; TODO: this is not terribly efficient, figure out how to get the index of the trace directly.
-  (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v0v11v0.re-frame.db/app-db [:traces :all-traces])))]
+  (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.db/app-db [:traces :all-traces])))]
     (get-in trace [:tags :code fragment-id :result])))
 
 (defn init-db! []
