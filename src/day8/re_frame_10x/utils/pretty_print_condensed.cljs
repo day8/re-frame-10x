@@ -220,7 +220,9 @@
   (*print-fn* x)
   nil)
 
-(deftype LimitedStringBufferWriter [sb max-string-length ^:mutable over-limit?]
+(deftype LimitedStringBufferWriter [^StringBuffer sb
+                                    max-string-length
+                                    ^:mutable over-limit?]
   IWriter
   (-write [_ s]
     (when-not over-limit?

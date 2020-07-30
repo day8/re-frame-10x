@@ -32,8 +32,8 @@
                                        {})
                           :operation (operation-name c)}
                          (if util/*non-reactive*
-                           (reagent.impl.component/do-render c tmpl/deafult-compiler)
-                           (let [rat        (gob/get c "cljsRatom")
+                           (reagent.impl.component/do-render c tmpl/default-compiler)
+                           (let [^clj rat   (gob/get c "cljsRatom")
                                  _          (batch/mark-rendered c)
                                  res        (if (nil? rat)
                                               (ratom/run-in-reaction #(reagent.impl.component/do-render c tmpl/default-compiler)
@@ -65,9 +65,10 @@
                 (trace/with-trace {:op-type   :render
                                    :tags      {:component-path (component-path c)}
                                    :operation (last (str/split name #" > "))}
-                                  (real-renderer c)))))
+                  (real-renderer c)))))
 
-    (set! reagent.impl.component/static-fns static-fns)
+    ;; XXX: static-fns is gone in 1.0.0. Not sure what it was.
+    #_(set! component/static-fns static-fns )
 
     (set! reagent.impl.component/custom-wrapper
           (fn [key f]
