@@ -186,7 +186,7 @@
       :else
       (let [;; Does `.getName` even work in CLJS? -- @noprompt
             ex-message (util/format "Unable to convert from %s to %s"
-                                    (.getName unit)
+                                    ^String (.getName x) ;; XXX: probably a bug?
                                     (name unit))
             ;; TODO: This needs to be populated with more helpful
             ;; data.
