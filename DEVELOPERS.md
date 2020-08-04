@@ -7,7 +7,7 @@ application, but in many cases is all you need to work on re-frame-10x.
 
 ```console
 $ cd examples/todomvc
-$ lein do clean, figwheel
+$ lein do clean, dev-auto
 ```
 
 ### Setting up re-frame-10x for development (more advanced)
