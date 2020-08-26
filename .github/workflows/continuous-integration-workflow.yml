@@ -22,21 +22,21 @@ jobs:
           # All of the Git history is required for day8/lein-git-inject to determine the version string.
           fetch-depth: 0
       - name: Maven cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: /root/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('project.clj') }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: npm cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/project.clj') }}-${{ hashFiles('**/deps.cljs') }}
           restore-keys: |
             ${{ runner.os }}-npm-
       - name: Sample Project shadow-cljs compiler cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: examples/todomvc/.shadow-cljs
           key: ${{ runner.os }}-shadow-cljs-${{ github.sha }}
