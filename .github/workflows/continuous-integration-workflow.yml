@@ -17,7 +17,10 @@ jobs:
       # Source: https://github.com/day8/dockerfile-for-dev-ci-image
       image: day8au/dev-ci:0.0.8
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          # All of the Git history is required for day8/lein-git-inject to determine the version string.
+          fetch-depth: 0
       - name: Maven cache
         uses: actions/cache@v1
         with:
