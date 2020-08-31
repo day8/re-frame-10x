@@ -266,9 +266,8 @@
        {:border-bottom  [[(px 1) "dotted" light-purple]]
         :padding-bottom 0}]]]
 
-    ["&:hover"
-     {".trace--toggle"
-      {:color text-color}}]
+    ["&:hover.trace--toggle"
+      {:color text-color}]
     ["th" "td"
      ["&:first-child" {:padding-left "7px"}]
      ["&:last-child" {:padding-right "7px"}]]]
