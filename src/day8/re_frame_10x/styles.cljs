@@ -124,8 +124,10 @@
      :box-sizing         "border-box"
      :margin-top         "3px"}]
 
-   [:li {:display    "list-item"
-         :text-align "-webkit-match-parent"}]
+   [:li {:display "list-item"}]
+   [:li
+    ^{:prefix true :vendors [:webkit]}
+    {:text-align "match-parent" }]
 
    [:table :thead :tbody :tfoot :tr :th :td
     {:display                           "block"
