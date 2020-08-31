@@ -476,7 +476,7 @@
      "-ms-hyphens"     "auto"
      "-moz-hyphens"    "auto"
      "-webkit-hyphens" "auto"
-     "hypens"          "auto"}]])
+     "hyphens"          "auto"}]])
 
 (def highlight-js-solarized
   ;; From https://github.com/isagalaev/highlight.js/blob/master/src/styles/solarized-light.css
