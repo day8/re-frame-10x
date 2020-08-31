@@ -517,13 +517,13 @@
 (def at-keyframes-styles
   (let [slide? false]
     [(at-keyframes :pulse-previous-re-frame-10x
-                   [:from {:color "white"
-                           :left  (when slide? "-100%")}]
-                   [:to {:left (when slide? "0%")}])
+                   [:from (merge {:color "white"}
+                                 (when slide? :left "-100%"))]
+                   [:to (when slide? {:left  "0%"})])
      (at-keyframes :pulse-next-re-frame-10x
-                   [:from {:color "white"
-                           :left  (when slide? "100%")}]
-                   [:to {:left (when slide? "0%")}])
+                   [:from (merge {:color "white"}
+                                 (when slide? {:left "100%"}))]
+                   [:to (when slide? {:left "0%"})])
      (at-keyframes :fade-clipboard-msg-re-frame-10x
                    [:0% {:margin-left "100px"}]
                    [:5% {:margin-left "0px"
