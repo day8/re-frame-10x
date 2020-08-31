@@ -90,16 +90,16 @@
     {:-webkit-appearance "button"}]
 
    ["button::-moz-focus-inner"
-    (str (s/attr= "type" "button") "::-moz-focus-inner")
-    (str (s/attr= "type" "reset")  "::-moz-focus-inner")
-    (str (s/attr= "type" "submit") "::-moz-focus-inner")
+    "input[type=button]::-moz-focus-inner"
+    "input[type=reset]::-moz-focus-inner"
+    "input[type=submit]::-moz-focus-inner"
     {:border-style "none"
      :padding      "0"}]
 
    [:button:-moz-focusring
-    (str (s/attr= "type" "button") ":-moz-focusring")
-    (str (s/attr= "type" "reset")  ":-moz-focusring")
-    (str (s/attr= "type" "submit") ":-moz-focusring")
+    "input[type=button]:-moz-focusring"
+    "input[type=reset]:-moz-focusring"
+    "input[type=submit]:-moz-focusring"
     {:outline "1px dotted ButtonText"}]
 
    [:textarea
