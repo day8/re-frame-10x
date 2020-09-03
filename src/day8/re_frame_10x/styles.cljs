@@ -12,7 +12,10 @@
             [day8.re-frame-10x.view.event :as event]
             [day8.re-frame-10x.view.fx :as fx]
             [day8.re-frame-10x.view.container :as container]
-            [day8.re-frame-10x.view.history :as history]))
+            [day8.re-frame-10x.view.history :as history])
+  (:require-macros
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.selectors :refer [defpseudoclass
+                                                                           defpseudoelement]]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -29,6 +32,9 @@
 (def yellow common/yellow)
 (def text-color common/default-text-color)
 (def text-color-muted common/text-color-muted)
+
+(defpseudoclass -moz-focusring)
+(defpseudoelement -moz-focus-inner)
 
 (def css-reset
   [:#--re-frame-10x--
@@ -89,17 +95,17 @@
     (s/attr= "type" "submit")
     {:-webkit-appearance "button"}]
 
-   ["button::-moz-focus-inner"
-    "input[type=button]::-moz-focus-inner"
-    "input[type=reset]::-moz-focus-inner"
-    "input[type=submit]::-moz-focus-inner"
+   [((s/button) -moz-focus-inner)
+    ((s/attr= "type" "button") -moz-focus-inner)
+    ((s/attr= "type" "reset") -moz-focus-inner)
+    ((s/attr= "type" "submit") -moz-focus-inner)
     {:border-style "none"
      :padding      "0"}]
 
-   [:button:-moz-focusring
-    "input[type=button]:-moz-focusring"
-    "input[type=reset]:-moz-focusring"
-    "input[type=submit]:-moz-focusring"
+   [((s/button) -moz-focusring)
+    ((s/attr= "type" "button") -moz-focusring)
+    ((s/attr= "type" "reset") -moz-focusring)
+    ((s/attr= "type" "submit") -moz-focusring)
     {:outline "1px dotted ButtonText"}]
 
    [:textarea
