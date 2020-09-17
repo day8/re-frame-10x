@@ -224,14 +224,14 @@
   IWriter
   (-write [_ s]
     (when-not over-limit?
-      (if (<= max-string-length (.getLength sb))
+      (if (<= max-string-length (.getLength ^js sb))
         (set! over-limit? true)
         (.append sb s)))
     sb)
   (-flush [_] nil)
   ICounted
   (-count [_]
-    (.getLength sb))
+    (.getLength ^js sb))
   ILimited
   (-limited? [_]
     over-limit?))

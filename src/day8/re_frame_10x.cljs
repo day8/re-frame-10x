@@ -37,7 +37,7 @@
                                  res        (if (nil? rat)
                                               (ratom/run-in-reaction #(reagent.impl.component/do-render c) c "cljsRatom"
                                                                      batch/queue-render reagent.impl.component/rat-opts)
-                                              (._run rat false))
+                                              (._run ^js rat false))
                                  cljs-ratom (gob/get c "cljsRatom")] ;; actually a reaction
                              (trace/merge-trace!
                                {:tags {:reaction      (interop/reagent-id cljs-ratom)
