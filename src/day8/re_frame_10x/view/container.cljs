@@ -240,19 +240,22 @@
                    [rc/hyperlink
                     :label "Dismiss"
                     :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])
-                [rc/box
-                 :v-scroll :on
-                 :height "100%"
-                 :style {:margin-left common/gs-19s}
-                 :child (case @selected-tab
-                          :event [event/render]
-                          :fx [fx/render]
-                          :app-db [app-db/render db/app-db]
-                          :subs [subs/render]
-                          :views [views/render]
-                          :parts [parts/render]
-                          :timing [timing/render]
-                          :traces [traces/render]
-                          :debug [debug/render]
-                          :settings [settings/render]
-                          [app-db/render db/app-db])]]]))
+                [rc/v-box
+                 :class "tab-wrapper"
+                 :size "1"
+                 :style {:margin-left common/gs-19s
+                         :overflow-y  (if (contains? #{:event :fx :parts :timing :debug :settings} @selected-tab)
+                                        "auto"
+                                        "initial")}
+                 :children [(case @selected-tab
+                              :event [event/render]
+                              :fx [fx/render]
+                              :app-db [app-db/render db/app-db]
+                              :subs [subs/render]
+                              :views [views/render]
+                              :parts [parts/render]
+                              :timing [timing/render]
+                              :traces [traces/render]
+                              :debug [debug/render]
+                              :settings [settings/render]
+                              [app-db/render db/app-db])]]]]))
