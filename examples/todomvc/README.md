@@ -26,7 +26,7 @@ really required to get the job done. So lean and minimal is no longer a goal.
 
 4. Clean build
    ```
-   lein do clean, figwheel
+   lein watch 
    ```
 
 5. Wait for step 4 to do the compile, and then run the built app:
@@ -39,7 +39,7 @@ really required to get the job done. So lean and minimal is no longer a goal.
 
 1. Compile
    ```
-   lein do clean, with-profile prod compile
+   lein shadow release app 
    ```
 
 2. Open the following in your browser
