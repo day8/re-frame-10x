@@ -11,7 +11,7 @@
                  [re-frame "0.12.0" :scope "provided"]
                  [binaryage/devtools "1.0.2"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
-                 [zprint "0.5.1"]
+                 [zprint "1.0.1"]
                  [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]]
 
   :plugins      [[day8/lein-git-inject "0.0.14"]
