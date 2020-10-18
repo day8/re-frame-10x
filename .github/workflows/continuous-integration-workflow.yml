@@ -57,7 +57,7 @@ jobs:
         working-directory: "examples/todomvc"
       - name: Slack notification
         uses: homoluctus/slatify@v2.0.1
-        if: (failure() || cancelled()) && github.event_name == "push"
+        if: (failure() || cancelled()) && github.event_name == 'push'
         with:
           type: ${{ job.status }}
           job_name: re-frame-10x Tests
