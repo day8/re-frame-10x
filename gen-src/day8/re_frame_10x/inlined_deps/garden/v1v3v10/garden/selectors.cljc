@@ -1,4 +1,4 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.selectors
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors
   "Macros and functions for working with CSS selectors."
   (:require
    [clojure.string :as string])
@@ -13,7 +13,7 @@
      (:refer-clojure :exclude [+ - > empty first map meta not time]))
   #?(:cljs
      (:require-macros
-      [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.selectors :refer [defselector
+      [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors :refer [defselector
                                 defid
                                 defpseudoclass
                                 defpseudoelement
@@ -582,7 +582,7 @@
     (defselector a)
     ;; => #'user/a
     (a \":hover\")
-    ;; => #<CSSSelector day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.selectors.CSSSelector@7c42c2a9>
+    ;; => #<CSSSelector day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors.CSSSelector@7c42c2a9>
     (css-selector a)
     ;; => \"a\"
     (css-selector (a \":hover\"))
@@ -623,7 +623,7 @@
     (defpseudoclass hover)
     ;; => #'user/hover
     (hover)
-    ;; => #<CssSelector day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.selectors.CssSelector@2a0ca6e1>
+    ;; => #<CssSelector day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors.CssSelector@2a0ca6e1>
     (p/selector (a hover))
     ;; => \"a:hover\"
 
@@ -667,7 +667,7 @@
     (defpseudoelement first-letter)
     ;; => #'user/first-letter
     (first-letter)
-    ;; => #<CssSelector day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.selectors.CssSelector@20aef718>
+    ;; => #<CssSelector day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors.CssSelector@20aef718>
     (p/selector (p first-letter))
     ;; => \"p::first-letter\"
 

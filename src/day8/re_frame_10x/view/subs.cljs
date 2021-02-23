@@ -7,7 +7,7 @@
             [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.view.components :as components]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :as units]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units]
             [day8.re-frame-10x.svgs :as svgs]
             [clojure.data]
             [day8.re-frame-10x.material :as material])

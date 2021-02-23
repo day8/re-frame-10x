@@ -1,12 +1,12 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.color
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color
   "Utilities for color creation, conversion, and manipulation."
   (:refer-clojure :exclude [complement])
   #?(:cljs
      (:require-macros
-      [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.color :refer [defcolor-operation]]))
+      [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :refer [defcolor-operation]]))
   (:require
    [clojure.string :as string]
-   [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.util :as util])
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.util :as util])
   #?(:clj
      (:import clojure.lang.IFn)))
 
@@ -180,7 +180,7 @@
                (* l (inc s))
                (- (+ l s) (* l s)))
           m1 (- (* 2 l) m2)
-          [r g b] (map #(Math/round (* % 0xff))
+          [r g b] (map #(int (+ 0.5 (* % 0xff)))
                        [(hue->rgb m1 m2 (+ h (/ 1.0 3)))
                         (hue->rgb m1 m2 h)
                         (hue->rgb m1 m2 (- h (/ 1.0 3)))])]
@@ -293,7 +293,7 @@
   color* *)
 
 (defcolor-operation
-  ^{:doc "Multiply the RGB components of two or more colors."
+  ^{:doc "Divide the RGB components of two or more colors."
     :arglists '([a] [a b] [a b & more])}
   color-div /)
 
@@ -387,6 +387,10 @@
      (let [d (util/clip 1 179 distance-from-complement)]
          (hue-rotations color 0 d (- d)))))
 
+(defn- abs
+  [x]
+  (if (neg? x) (- x) x))
+
 (defn tetrad
   "Given a color return a quadruple of four colors which are
   equidistance on the color wheel (ie. a pair of complements). An
@@ -395,7 +399,7 @@
   ([color]
      (tetrad color 90))
   ([color angle]
-     (let [a (util/clip 1 90 (Math/abs (:magnitude angle angle)))
+     (let [a (util/clip 1 90 (abs (:magnitude angle angle)))
            color-2 (rotate-hue color a)]
        [(rotate-hue color 0)
         (complement color)
@@ -410,7 +414,7 @@
      (shades color 10))
   ([color step]
      (let [c (as-hsl color)]
-       (for [i (range 1 (Math/floor (/ 100.0 step)))]
+       (for [i (range 1 (int (/ 100.0 step)))]
          (assoc c :lightness (* i step))))))
 
 ;; ---------------------------------------------------------------------

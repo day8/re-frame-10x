@@ -1,9 +1,9 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.def
-  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.types]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.util :as util]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.core])
-  (:import day8.re_frame_10x.inlined_deps.garden.v1v3v9.garden.types.CSSFunction
-           day8.re_frame_10x.inlined_deps.garden.v1v3v9.garden.types.CSSAtRule))
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.def
+  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.util :as util]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core])
+  (:import day8.re_frame_10x.inlined_deps.garden.v1v3v10.garden.types.CSSFunction
+           day8.re_frame_10x.inlined_deps.garden.v1v3v10.garden.types.CSSAtRule))
 
 (defmacro defstyles
   "Convenience macro equivalent to `(def name (list styles*))`."
@@ -13,7 +13,7 @@
 (defmacro defstylesheet
   "Convenience macro equivalent to `(def name (css opts? styles*))`."
   [name & styles]
-  `(def ~name (day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.core/css ~@styles)))
+  `(def ~name (day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core/css ~@styles)))
 
 (defmacro defrule
   "Define a function for creating rules. If only the `name` argument is
@@ -45,7 +45,7 @@
   defcssfn
   "Define a function for creating custom CSS functions. The generated
   function will automatically create an instance of
-  `day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.types.CSSFunction` of which the `:args` field will be set
+  `day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types.CSSFunction` of which the `:args` field will be set
   to whatever the return value of the original function is. The
   `:function` field will be set to `(str name)`.
 
@@ -57,7 +57,7 @@
       ;; => #'user/url
 
       (url \"http://fonts.googleapis.com/css?family=Lato\")
-      ;; => #day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.types.CSSFunction{:function \"url\", :args \"http://fonts.googleapis.com/css?family=Lato\"}
+      ;; => #day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types.CSSFunction{:function \"url\", :args \"http://fonts.googleapis.com/css?family=Lato\"}
 
       (css (url \"http://fonts.googleapis.com/css?family=Lato\"))
       ;; => url(http://fonts.googleapis.com/css?family=Lato) 
@@ -72,13 +72,13 @@
       ;; => #'user/attr
 
       (attr :vertical :length)
-      ;; => #day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.types.CSSFunction{:function \"url\", :args [:vertical :length]}
+      ;; => #day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types.CSSFunction{:function \"url\", :args [:vertical :length]}
 
       (css (attr :vertical :length))
       ;; => \"attr(vertical length)\"
 
       (attr :end-of-quote :string :inherit) 
-      ;; => #day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.types.CSSFunction{:function \"url\", :args [:end-of-quote [:string :inherit]]}
+      ;; => #day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types.CSSFunction{:function \"url\", :args [:end-of-quote [:string :inherit]]}
 
       (css (attr :end-of-quote :string :inherit))
       ;; => \"attr(end-of-quote string, inherit)\""

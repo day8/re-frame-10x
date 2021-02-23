@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.common-styles
-  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :refer [px em]]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.compiler :refer [render-css]]))
+  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px em]]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :refer [render-css]]))
 
 ;; TODO: Switch these to BM (or just use BM defs if available)
 

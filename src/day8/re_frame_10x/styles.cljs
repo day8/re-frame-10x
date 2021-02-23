@@ -1,9 +1,9 @@
 (ns day8.re-frame-10x.styles
-  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.core :as garden]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :as units :refer [em px percent]]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.color :as color]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.selectors :as s]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
+  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core :as garden]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units :refer [em px percent]]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors :as s]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.utils.re-com :as rc]
             [day8.re-frame-10x.view.app-db :as app-db]
@@ -14,8 +14,8 @@
             [day8.re-frame-10x.view.container :as container]
             [day8.re-frame-10x.view.history :as history])
   (:require-macros
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.selectors :refer [defpseudoclass
-                                                                           defpseudoelement]]))
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors :refer [defpseudoclass
+                                                                            defpseudoelement]]))
 
 (def background-gray common/background-gray)
 (def background-gray-hint common/background-gray-hint)
@@ -133,7 +133,7 @@
    [:li {:display "list-item"}]
    [:li
     ^{:prefix true :vendors [:webkit]}
-    {:text-align "match-parent" }]
+    {:text-align "match-parent"}]
 
    [:table :thead :tbody :tfoot :tr :th :td
     {:display                           "block"

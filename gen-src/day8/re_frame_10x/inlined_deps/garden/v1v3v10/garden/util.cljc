@@ -1,15 +1,15 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.util
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.util
   "Utility functions used by Garden."
   (:require
    [clojure.string :as str]
-   [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.types :as t]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types :as t]
    #?@(:cljs
        [[goog.string]
         [goog.string.format]]))
   #?(:clj
      (:refer-clojure :exclude [format]))
   #?(:clj
-     (:import day8.re_frame_10x.inlined_deps.garden.v1v3v9.garden.types.CSSAtRule)))
+     (:import day8.re_frame_10x.inlined_deps.garden.v1v3v10.garden.types.CSSAtRule)))
 
 ;; ---------------------------------------------------------------------
 ;; String utilities

@@ -1,9 +1,9 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.arithmetic
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.arithmetic
   "Generic arithmetic operators for computing sums, differences,
    products, and quotients between CSSUnits, CSSColors, and numbers."
   (:refer-clojure :exclude [+ - * /])
-  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :as u :refer [unit?]]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.color :as c :refer [color?]]))
+  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as u :refer [unit?]]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as c :refer [color?]]))
 
 ;; The motivation for the functions in this namespace is the
 ;; contention that working with unit arithmetic functions (`px+`,

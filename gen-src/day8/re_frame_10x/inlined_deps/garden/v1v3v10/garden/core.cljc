@@ -1,6 +1,6 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.core
+(ns day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core
   "Convert Clojure data structures to CSS."
-  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.compiler :as compiler]))
+  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :as compiler]))
 
 (defn ^String css
   "Convert a variable number of Clojure data structure to a string of

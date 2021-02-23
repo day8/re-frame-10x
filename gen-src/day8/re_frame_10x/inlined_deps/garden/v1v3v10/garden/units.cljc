@@ -1,19 +1,19 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units
   "Functions and macros for working with CSS units."
   (:refer-clojure :exclude [rem])
   #?@(:clj
      [(:require
-       [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.types :as types]
-       [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.util :as util])
+       [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types :as types]
+       [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.util :as util])
       (:import
-       [day8.re_frame_10x.inlined_deps.garden.v1v3v9.garden.types CSSUnit])])
+       [day8.re_frame_10x.inlined_deps.garden.v1v3v10.garden.types CSSUnit])])
   #?@(:cljs
       [(:require
         [cljs.reader :refer [read-string]]
-        [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.types :as types :refer [CSSUnit]]
-        [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.util :as util])
+        [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types :as types :refer [CSSUnit]]
+        [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.util :as util])
        (:require-macros
-        [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :refer [defunit]])]))
+        [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [defunit]])]))
 
 ;;;; ## Unit families
 
@@ -184,13 +184,10 @@
         (convert x unit))
 
       :else
-      (let [;; Does `.getName` even work in CLJS? -- @noprompt
-            ex-message (util/format "Unable to convert from %s to %s"
-                                    (.getName type)
+      (let [ex-message (util/format "Unable to convert %s to %s"
+                                    x
                                     (name unit))
-            ;; TODO: This needs to be populated with more helpful
-            ;; data.
-            ex-data {:given {:type type
+            ex-data {:given {:x x
                              :unit unit}}]
         (throw
          (ex-info ex-message ex-data))))))

@@ -1,4 +1,4 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.media
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.media
   "Utility functions for working with media queries.")
 
 ;; See: http://www.w3.org/TR/css3-mediaqueries/#media1

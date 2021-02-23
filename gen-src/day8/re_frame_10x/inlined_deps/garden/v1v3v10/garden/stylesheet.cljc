@@ -1,11 +1,11 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.stylesheet
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet
   "Utility functions for CSS properties, directives and functions."
-  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.util :as util]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.color :as color]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.types :as t])
+  (:require [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.util :as util]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]
+            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types :as t])
   #?(:clj
-      (:import day8.re_frame_10x.inlined_deps.garden.v1v3v9.garden.types.CSSFunction
-               day8.re_frame_10x.inlined_deps.garden.v1v3v9.garden.types.CSSAtRule)))
+      (:import day8.re_frame_10x.inlined_deps.garden.v1v3v10.garden.types.CSSFunction
+               day8.re_frame_10x.inlined_deps.garden.v1v3v10.garden.types.CSSAtRule)))
 
 ;;;; ## Stylesheet helpers
 

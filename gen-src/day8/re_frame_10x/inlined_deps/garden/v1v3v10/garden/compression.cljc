@@ -1,4 +1,4 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.compression
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compression
   "Stylesheet compression utilities."
   #?(:clj
      (:import (java.io StringReader StringWriter)

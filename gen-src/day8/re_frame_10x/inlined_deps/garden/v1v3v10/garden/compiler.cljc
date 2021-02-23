@@ -1,21 +1,21 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.compiler
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler
   "Functions for compiling Clojure data structures to CSS."
   (:require
    [clojure.string :as string]
-   #?(:clj  [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.color :as color]
-      :cljs [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.color :as color :refer [CSSColor]])
-   [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.compression :as compression]
-   [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.selectors :as selectors]
-   [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.units :as units]
-   [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.util :as util]
+   #?(:clj  [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]
+      :cljs [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color :refer [CSSColor]])
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compression :as compression]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors :as selectors]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.util :as util]
    #?(:cljs
-      [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.types :refer [CSSUnit CSSFunction CSSAtRule]]))
+      [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types :refer [CSSUnit CSSFunction CSSAtRule]]))
   #?(:cljs
      (:require-macros
-      [day8.re-frame-10x.inlined-deps.garden.v1v3v9.garden.compiler :refer [with-media-query-context with-selector-context]]))
+      [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :refer [with-media-query-context with-selector-context]]))
   #?(:clj
-     (:import (day8.re_frame_10x.inlined_deps.garden.v1v3v9.garden.types CSSUnit CSSFunction CSSAtRule)
-              (day8.re_frame_10x.inlined_deps.garden.v1v3v9.garden.color CSSColor))))
+     (:import (day8.re_frame_10x.inlined_deps.garden.v1v3v10.garden.types CSSUnit CSSFunction CSSAtRule)
+              (day8.re_frame_10x.inlined_deps.garden.v1v3v10.garden.color CSSColor))))
 
 ;; ---------------------------------------------------------------------
 ;; Compiler flags
