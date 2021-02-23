@@ -15,8 +15,9 @@
                  [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]]
 
   :plugins      [[day8/lein-git-inject "0.0.14"]
-                 [thomasa/mranderson   "0.5.1"]
-                 [lein-less            "RELEASE"]]
+                 [thomasa/mranderson   "0.5.3"]
+                 [lein-less            "RELEASE"]
+                 [lein-ancient         "0.6.15"]]
 
   :middleware   [leiningen.git-inject/middleware]
 
