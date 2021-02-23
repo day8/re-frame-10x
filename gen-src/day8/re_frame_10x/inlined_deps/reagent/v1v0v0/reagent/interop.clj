@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.interop)
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.interop)
 
 ; taken from cljs.core
 ; https://github.com/binaryage/cljs-oops/issues/14

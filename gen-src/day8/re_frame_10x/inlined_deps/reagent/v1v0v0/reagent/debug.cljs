@@ -1,5 +1,5 @@
-(ns day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.debug
-  (:require-macros [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.debug]))
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug
+  (:require-macros [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug]))
 
 (def ^:const has-console (exists? js/console))
 

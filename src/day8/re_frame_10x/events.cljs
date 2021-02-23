@@ -1,7 +1,7 @@
 (ns day8.re-frame-10x.events
   (:require [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as r]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.dom :as rdom]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
             [cljs.tools.reader.edn]
             [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
             [day8.re-frame-10x.utils.localstorage :as localstorage]

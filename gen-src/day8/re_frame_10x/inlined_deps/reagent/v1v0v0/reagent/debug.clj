@@ -1,20 +1,20 @@
-(ns day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.debug
+(ns day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug
   (:refer-clojure :exclude [prn println time])
   (:require [cljs.analyzer :as analyzer]))
 
 (defmacro log
   "Print with console.log, if it exists."
   [& forms]
-  `(when reagent.debug.has-console
+  `(when day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug.has-console
      (.log js/console ~@forms)))
 
 (defmacro warn
   "Print with console.warn."
   [& forms]
   (when *assert*
-    `(when reagent.debug.has-console
-       (.warn (if reagent.debug.tracking
-                reagent.debug.track-console js/console)
+    `(when day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug.has-console
+       (.warn (if day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug.tracking
+                day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug.track-console js/console)
               (str "Warning: " ~@forms)))))
 
 (defmacro warn-unless
@@ -27,9 +27,9 @@
   "Print with console.error."
   [& forms]
   (when *assert*
-    `(when reagent.debug.has-console
-       (.error (if reagent.debug.tracking
-                 reagent.debug.track-console js/console)
+    `(when day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug.has-console
+       (.error (if day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug.tracking
+                 day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug.track-console js/console)
                (str ~@forms)))))
 
 (defmacro println

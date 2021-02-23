@@ -1,7 +1,7 @@
-(ns day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.impl.batching
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.batching
   (:refer-clojure :exclude [flush])
-  (:require [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.debug :refer-macros [assert-some]]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.impl.util :refer [is-client]]))
+  (:require [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug :refer-macros [assert-some]]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.util :refer [is-client]]))
 
 ;;; Update batching
 
@@ -17,11 +17,12 @@
   (if-not is-client
     fake-raf
     (let [w js/window]
-      (or (.-requestAnimationFrame w)
-          (.-webkitRequestAnimationFrame w)
-          (.-mozRequestAnimationFrame w)
-          (.-msRequestAnimationFrame w)
-          fake-raf))))
+      (.bind (or (.-requestAnimationFrame w)
+                 (.-webkitRequestAnimationFrame w)
+                 (.-mozRequestAnimationFrame w)
+                 (.-msRequestAnimationFrame w)
+                 fake-raf)
+             w))))
 
 (defn compare-mount-order
   [^clj c1 ^clj c2]

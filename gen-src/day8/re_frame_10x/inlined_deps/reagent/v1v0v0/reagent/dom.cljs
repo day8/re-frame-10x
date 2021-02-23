@@ -1,9 +1,11 @@
-(ns day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.dom
+(ns day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom
   (:require [react-dom :as react-dom]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.impl.util :as util]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.impl.template :as tmpl]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.impl.batching :as batch]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.ratom :as ratom]))
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.util :as util]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.template :as tmpl]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.input :as input]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.batching :as batch]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.protocols :as p]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as ratom]))
 
 (defonce ^:private roots (atom {}))
 
@@ -16,7 +18,7 @@
     (react-dom/render (comp) container
       (fn []
         (binding [util/*always-update* false]
-          (swap! roots assoc container [comp container])
+          (swap! roots assoc container comp)
           (batch/flush-after-render)
           (if (some? callback)
             (callback)))))))
@@ -33,11 +35,16 @@
 
   Returns the mounted component instance."
   ([comp container]
-   (render comp container nil))
-  ([comp container callback]
+   (render comp container tmpl/default-compiler))
+  ([comp container callback-or-compiler]
    (ratom/flush!)
-   (let [f (fn []
-             (tmpl/as-element (if (fn? comp) (comp) comp)))]
+   (let [[compiler callback] (if (fn? callback-or-compiler)
+                               [tmpl/default-compiler callback-or-compiler]
+                               ;; TODO: Callback option doesn't make sense now that
+                               ;; val is compiler object, not map.
+                               [callback-or-compiler (:callback callback-or-compiler)])
+         f (fn []
+             (p/as-element compiler (if (fn? comp) (comp) comp)))]
      (render-comp f container callback))))
 
 (defn unmount-component-at-node
@@ -49,8 +56,6 @@
   "Returns the root DOM node of a mounted component."
   [this]
   (react-dom/findDOMNode this))
-
-(set! tmpl/find-dom-node dom-node)
 
 (defn force-update-all
   "Force re-rendering of all mounted Reagent components. This is
@@ -64,6 +69,6 @@
   of indirection, for example by using `(render [#'foo])` instead."
   []
   (ratom/flush!)
-  (doseq [v (vals @roots)]
-    (apply re-render-component v))
+  (doseq [[container comp] @roots]
+    (re-render-component comp container))
   (batch/flush-after-render))

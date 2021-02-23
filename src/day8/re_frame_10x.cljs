@@ -14,8 +14,8 @@
             [goog.object :as gob]
             [re-frame.interop :as interop]
             [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as r]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.dom :as rdom]))
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]))
 
 (goog-define debug? false)
 

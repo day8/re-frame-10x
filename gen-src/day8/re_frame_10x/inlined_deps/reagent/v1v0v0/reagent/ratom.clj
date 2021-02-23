@@ -1,16 +1,16 @@
-(ns day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.ratom
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom
   (:refer-clojure :exclude [run!])
-  (:require [reagent.debug :as d]
-            [reagent.interop :as interop]))
+  (:require [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug :as d]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.interop :as interop]))
 
 (defmacro reaction [& body]
-  `(reagent.ratom/make-reaction
+  `(day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom/make-reaction
     (fn [] ~@body)))
 
 (defmacro run!
   "Runs body immediately, and runs again whenever atoms deferenced in the body change. Body should side effect."
   [& body]
-  `(let [co# (reagent.ratom/make-reaction (fn [] ~@body)
+  `(let [co# (day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom/make-reaction (fn [] ~@body)
                                          :auto-run true)]
      (deref co#)
      co#))
@@ -38,14 +38,14 @@
                             [body nil]))
         add-destroy (when destroy
                       `(let [destroy# ~destroy]
-                         (if (reagent.ratom/reactive?)
+                         (if (day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom/reactive?)
                            (when (nil? (.-destroy ~v))
                              (set! (.-destroy ~v) destroy#))
                            (destroy#))))
         asserting (if *assert* true false)]
-    `(let [~v (reagent.ratom/with-let-values ~k)]
+    `(let [~v (day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom/with-let-values ~k)]
        (when ~asserting
-         (when-some [^clj c# reagent.ratom/*ratom-context*]
+         (when-some [^clj c# day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom/*ratom-context*]
            (when (== (.-generation ~v) (.-ratomGeneration c#))
              (d/error "Warning: The same with-let is being used more "
                       "than once in the same reactive context."))

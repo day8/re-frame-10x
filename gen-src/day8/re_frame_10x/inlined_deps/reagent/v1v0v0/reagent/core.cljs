@@ -1,16 +1,16 @@
-(ns day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core
-  (:require-macros [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core])
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core
+  (:require-macros [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core])
   (:refer-clojure :exclude [partial atom flush])
   (:require [react :as react]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.impl.template :as tmpl]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.impl.component :as comp]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.impl.util :as util]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.impl.batching :as batch]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.ratom :as ratom]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.debug :as deb :refer-macros [assert-some assert-component
-                                                                                                 assert-js-object assert-new-state
-                                                                                                 assert-callable]]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.dom :as dom]))
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.template :as tmpl]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.component :as comp]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.util :as util]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.batching :as batch]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.protocols :as p]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as ratom]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug :as deb :refer-macros [assert-some assert-component
+                                                  assert-js-object assert-new-state
+                                                  assert-callable]]))
 
 (def is-client util/is-client)
 
@@ -46,8 +46,8 @@
 (defn as-element
   "Turns a vector of Hiccup syntax into a React element. Returns form
   unchanged if it is not a vector."
-  [form]
-  (tmpl/as-element form))
+  ([form] (p/as-element tmpl/default-compiler form))
+  ([form compiler] (p/as-element compiler form)))
 
 (defn adapt-react-class
   "Returns an adapter for a native React class, that may be used
@@ -60,45 +60,10 @@
   "Returns an adapter for a Reagent component, that may be used from
   React, for example in JSX. A single argument, props, is passed to
   the component, converted to a map."
-  [c]
-  (assert-some c "Component")
-  (comp/reactify-component c))
-
-(defn render
-  "Render a Reagent component into the DOM. The first argument may be
-  either a vector (using Reagent's Hiccup syntax), or a React element.
-  The second argument should be a DOM node.
-
-  Optionally takes a callback that is called when the component is in place.
-
-  Returns the mounted component instance."
-  {:deprecated "0.10.0"}
-  ([comp container]
-   (dom/render comp container))
-  ([comp container callback]
-   (dom/render comp container callback)))
-
-(defn unmount-component-at-node
-  "Remove a component from the given DOM node."
-  {:deprecated "0.10.0"}
-  [container]
-  (dom/unmount-component-at-node container))
-
-(defn force-update-all
-  "Force re-rendering of all mounted Reagent components. This is
-  probably only useful in a development environment, when you want to
-  update components in response to some dynamic changes to code.
-
-  Note that force-update-all may not update root components. This
-  happens if a component 'foo' is mounted with `(render [foo])` (since
-  functions are passed by value, and not by reference, in
-  ClojureScript). To get around this you'll have to introduce a layer
-  of indirection, for example by using `(render [#'foo])` instead."
-  {:deprecated "0.10.0"}
-  []
-  (ratom/flush!)
-  (dom/force-update-all)
-  (batch/flush-after-render))
+  ([c] (reactify-component c tmpl/default-compiler))
+  ([c compiler]
+   (assert-some c "Component")
+   (comp/reactify-component c compiler)))
 
 (defn create-class
   "Creates JS class based on provided Clojure map, for example:
@@ -140,8 +105,10 @@
   Object.assign to merge partial state into the current state.
 
   React built-in static methods or properties are automatically defined as statics."
-  [spec]
-  (comp/create-class spec))
+  ([spec]
+   (comp/create-class spec tmpl/default-compiler))
+  ([spec compiler]
+   (comp/create-class spec compiler)))
 
 
 (defn current-component
@@ -208,12 +175,6 @@
   [this]
   (assert-component this)
   (comp/get-argv this))
-
-(defn dom-node
-  "Returns the root DOM node of a mounted component."
-  {:deprecated "0.10.0"}
-  [this]
-  (dom/dom-node this))
 
 (defn class-names
   "Function which normalizes and combines class values to a string
@@ -352,7 +313,7 @@
 
   rswap! works like swap!, except that recursive calls to rswap! on
   the same atom are allowed – and it always returns nil."
-  [a f & args]
+  [^IAtom a f & args]
   {:pre [(satisfies? IAtom a)
          (ifn? f)]}
   (if (.-rswapping a)
@@ -388,3 +349,26 @@
   "Works just like clojure.core/partial, but the result can be compared with ="
   [f & args]
   (util/make-partial-fn f args))
+
+(defn create-compiler
+  "Creates Compiler object with given `opts`,
+  this can be passed to `render`, `as-element` and other functions to control
+  how they turn the Reagent-style Hiccup into React components and elements."
+  [opts]
+  (tmpl/create-compiler opts))
+
+(defn set-default-compiler!
+  "Globally sets the Compiler object used by `render`, `as-element` and other
+  calls by default, when no `compiler` parameter is provided.
+
+  Use `nil` value to restore the original default compiler."
+  [compiler]
+  (tmpl/set-default-compiler! (if (nil? compiler)
+                                tmpl/default-compiler*
+                                compiler)))
+
+(defn render
+  {:deprecated "0.10.0"}
+  [& _]
+  (throw (js/Error. "Reagent.core/render function was moved to day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom namespace in Reagent v1.0."))
+  nil)

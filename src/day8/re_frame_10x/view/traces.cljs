@@ -2,7 +2,7 @@
   (:require [day8.re-frame-10x.view.components :as components]
             [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
             [clojure.string :as str]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as r]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
             [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
             [day8.re-frame-10x.utils.re-com :as rc]
             [day8.re-frame-10x.svgs :as svgs]

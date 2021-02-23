@@ -4,7 +4,7 @@
             [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
             [clojure.string :as str]
             [day8.re-frame-10x.utils.re-com :as rc]
-            [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as r]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
             [devtools.prefs]
             [devtools.formatters.core]
             [day8.re-frame-10x.material :as material]
