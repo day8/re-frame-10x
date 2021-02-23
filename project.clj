@@ -8,7 +8,7 @@
   :dependencies [[org.clojure/clojure "1.10.1" :scope "provided"]
                  [org.clojure/clojurescript "1.10.773" :scope "provided"]
                  [reagent "0.10.0" :scope "provided"]
-                 [re-frame "0.12.0" :scope "provided"]
+                 [re-frame "1.1.2" :scope "provided"]
                  [binaryage/devtools "1.0.2"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
                  [zprint "1.0.1"]
@@ -34,7 +34,7 @@
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
-                          :dependencies ^:replace [^:source-dep [re-frame "0.12.0"
+                          :dependencies ^:replace [^:source-dep [re-frame "1.1.2"
                                                                  :exclusions [reagent
                                                                               net.cgrand/macrovich
                                                                               org.clojure/tools.logging]]

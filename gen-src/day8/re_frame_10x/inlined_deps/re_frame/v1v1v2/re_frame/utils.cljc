@@ -1,12 +1,12 @@
-(ns day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.utils
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.utils
   (:require
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.loggers :refer [console]]))
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.loggers :refer [console]]))
 
 (defn dissoc-in
   "Dissociates an entry from a nested associative structure returning a new
   nested structure. keys is a sequence of keys. Any empty maps that result
   will not be present in the new structure.
-  The key thing is that 'm' remains identical? to istelf if the path was never present"
+  The key thing is that 'm' remains identical? to itself if the path was never present"
   [m [k & ks :as keys]]
   (if ks
     (if-let [nextmap (get m k)]
@@ -22,3 +22,11 @@
   (if (vector? v)
     (first v)
     (console :error "re-frame: expected a vector, but got:" v)))
+
+(defn apply-kw
+  "Like apply, but f takes keyword arguments and the last argument is
+  not a seq but a map with the arguments for f"
+  [f & args]
+  {:pre [(map? (last args))]}
+  (apply f (apply concat
+                  (butlast args) (last args))))

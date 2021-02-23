@@ -1,8 +1,8 @@
-(ns day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.interceptor
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.interceptor
   (:require
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.loggers :refer [console]]
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.interop :refer [empty-queue debug-enabled?]]
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.trace :as trace :include-macros true]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.loggers :refer [console]]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.interop :refer [empty-queue debug-enabled?]]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.trace :as trace :include-macros true]
     [clojure.set :as set]))
 
 
@@ -15,7 +15,6 @@
 
 
 (defn ->interceptor
-  "Create an interceptor from named arguments"
   [& {:as m :keys [id before after]}]
   (when debug-enabled?
     (if-let [unknown-keys (seq (set/difference
@@ -24,7 +23,7 @@
       (console :error "re-frame: ->interceptor" m "has unknown keys:" unknown-keys)))
   {:id     (or id :unnamed)
    :before before
-   :after  after })
+   :after  after})
 
 ;; -- Effect Helpers  -----------------------------------------------------------------------------
 
@@ -110,11 +109,6 @@
 
 
 (defn enqueue
-  "Add a collection of `interceptors` to the end of `context's` execution `:queue`.
-  Returns the updated `context`.
-
-  In an advanced case, this function could allow an interceptor to add new
-  interceptors to the `:queue` of a context."
   [context interceptors]
   (update context :queue
           (fnil into empty-queue)
@@ -124,8 +118,11 @@
 (defn- context
   "Create a fresh context"
   ([event interceptors]
-  (-> {}
+   (-> {}
       (assoc-coeffect :event event)
+      ;; Some interceptors, like `trim-v` and `unwrap`, alter event so capture
+      ;; the original for use cases such as tracing.
+      (assoc-coeffect :original-event event)
       (enqueue interceptors)))
   ([event interceptors db]      ;; only used in tests, probably a hack, remove ?  XXX
    (-> (context event interceptors)
@@ -153,7 +150,7 @@
        {:before  (fn [context] ...)     ;; returns possibly modified context
         :after   (fn [context] ...)}    ;; `identity` would be a noop
 
-   Walks the queue of iterceptors from beginning to end, calling the
+   Walks the queue of interceptors from beginning to end, calling the
    `:before` fn on each, then reverse direction and walk backwards,
    calling the `:after` fn on each.
 
@@ -171,7 +168,7 @@
       :stack     <a collection of interceptors already walked>}
 
    `context` has `:coeffects` and `:effects` which, if this was a web
-   server, would be somewhat anologous to `request` and `response`
+   server, would be somewhat analogous to `request` and `response`
    respectively.
 
    `coeffects` will contain data like `event` and the initial

@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.loggers
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.loggers
   (:require
    [clojure.set :refer [difference]]
    #?@(:clj [[clojure.string :as str]
@@ -41,8 +41,6 @@
 
 
 (defn set-loggers!
-  "Change the set (or a subset) of logging functions used by re-frame.
-  `new-loggers` should be a map with the same keys as `loggers` (above)"
   [new-loggers]
   (assert  (empty? (difference (set (keys new-loggers)) (-> @loggers keys set))) "Unknown keys in new-loggers")
   (swap! loggers merge new-loggers))

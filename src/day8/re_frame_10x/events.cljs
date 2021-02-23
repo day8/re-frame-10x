@@ -1,5 +1,5 @@
 (ns day8.re-frame-10x.events
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
+  (:require [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
             [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as r]
             [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.dom :as rdom]
             [cljs.tools.reader.edn]

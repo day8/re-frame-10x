@@ -1,10 +1,10 @@
-(ns day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.trace
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.trace
   "Tracing for re-frame.
   Alpha quality, subject to change/break at any time."
   #?(:cljs (:require-macros [net.cgrand.macrovich :as macros]
-                            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.trace :refer [finish-trace with-trace merge-trace!]]))
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.interop :as interop]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.loggers :refer [console]]
+                            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.trace :refer [finish-trace with-trace merge-trace!]]))
+  (:require [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.interop :as interop]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.loggers :refer [console]]
             #?(:clj [net.cgrand.macrovich :as macros])
             #?(:cljs [goog.functions])))
 

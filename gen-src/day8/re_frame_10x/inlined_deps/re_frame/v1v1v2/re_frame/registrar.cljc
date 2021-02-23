@@ -1,9 +1,10 @@
-(ns day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.registrar
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.registrar
   "In many places, re-frame asks you to associate an `id` (keyword)
   with a `handler` (function).  This namespace contains the
   central registry of such associations."
-  (:require  [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.interop :refer [debug-enabled?]]
-             [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.loggers :refer [console]]))
+  (:require  [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.interop :refer [debug-enabled?]]
+             [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.loggers :refer [console]]
+             [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.settings :as settings]))
 
 
 ;; kinds of handlers
@@ -35,7 +36,7 @@
 (defn register-handler
   [kind id handler-fn]
   (when debug-enabled?                                       ;; This is in a separate when so Closure DCE can run
-    (when (get-handler kind id false)
+    (when (and (not (settings/loaded?)) (get-handler kind id false))
       (console :warn "re-frame: overwriting" (str kind) "handler for:" id)))   ;; allow it, but warn. Happens on figwheel reloads.
   (swap! kind->id->handler assoc-in [kind id] handler-fn)
   handler-fn)    ;; note: returns the just registered handler

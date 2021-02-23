@@ -1,44 +1,21 @@
-(ns day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.fx
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.fx
   (:require
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.router      :as router]
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.db          :refer [app-db]]
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.interceptor :refer [->interceptor]]
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.interop     :refer [set-timeout!]]
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.events      :as events]
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.registrar   :as registrar :refer [get-handler clear-handlers register-handler]]
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.loggers     :refer [console]]
-    [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.trace :as trace :include-macros true]))
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.router      :as router]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db          :refer [app-db]]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.interceptor :refer [->interceptor]]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.interop     :refer [set-timeout!]]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.events      :as events]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.registrar   :refer [get-handler clear-handlers register-handler]]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.loggers     :refer [console]]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.trace :as trace :include-macros true]))
 
 
 ;; -- Registration ------------------------------------------------------------
 
 (def kind :fx)
-(assert (registrar/kinds kind))
+(assert (day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.registrar/kinds kind))
 
 (defn reg-fx
-  "Register the given effect `handler` for the given `id`.
-
-  `id` is keyword, often namespaced.
-  `handler` is a side-effecting function which takes a single argument and whose return
-  value is ignored.
-
-  Example Use
-  -----------
-
-  First, registration ... associate `:effect2` with a handler.
-
-  (reg-fx
-     :effect2
-     (fn [value]
-        ... do something side-effect-y))
-
-  Then, later, if an event handler were to return this effects map ...
-
-  {...
-   :effect2  [1 2]}
-
-   ... then the `handler` `fn` we registered previously, using `reg-fx`, will be
-   called with an argument of `[1 2]`."
   [id handler]
   (register-handler kind id handler))
 
@@ -64,17 +41,23 @@
   value for that key - so in the example above the effect handler for :dispatch
   will be given one arg `[:hello 42]`.
 
-  You cannot rely on the ordering in which effects are executed."
+  You cannot rely on the ordering in which effects are executed, other than that
+  `:db` is guaranteed to be executed first."
   (->interceptor
     :id :do-fx
     :after (fn do-fx-after
              [context]
              (trace/with-trace
                {:op-type :event/do-fx}
-               (doseq [[effect-key effect-value] (:effects context)]
-                 (if-let [effect-fn (get-handler kind effect-key false)]
-                   (effect-fn effect-value)
-                   (console :error "re-frame: no handler registered for effect:" effect-key ". Ignoring.")))))))
+               (let [effects            (:effects context)
+                     effects-without-db (dissoc effects :db)]
+                 ;; :db effect is guaranteed to be handled before all other effects.
+                 (when-let [new-db (:db effects)]
+                   ((get-handler kind :db false) new-db))
+                 (doseq [[effect-key effect-value] effects-without-db]
+                   (if-let [effect-fn (get-handler kind effect-key false)]
+                     (effect-fn effect-value)
+                     (console :warn "re-frame: no handler registered for effect:" effect-key ". Ignoring."))))))))
 
 ;; -- Builtin Effect Handlers  ------------------------------------------------
 
@@ -93,14 +76,45 @@
 ;;    {:dispatch-later [ (when (> 3 5) {:ms 200 :dispatch [:conditioned-out]})
 ;;                       {:ms 100 :dispatch [:another-one]}]}
 ;;
+(defn dispatch-later
+  [{:keys [ms dispatch] :as effect}]
+  (if (or (empty? dispatch) (not (number? ms)))
+    (console :error "re-frame: ignoring bad :dispatch-later value:" effect)
+    (set-timeout! #(router/dispatch dispatch) ms)))
+
 (reg-fx
   :dispatch-later
   (fn [value]
-    (doseq [{:keys [ms dispatch] :as effect} (remove nil? value)]
-        (if (or (empty? dispatch) (not (number? ms)))
-          (console :error "re-frame: ignoring bad :dispatch-later value:" effect)
-          (set-timeout! #(router/dispatch dispatch) ms)))))
+    (if (map? value)
+      (dispatch-later value)
+      (doseq [effect (remove nil? value)]
+        (dispatch-later effect)))))
 
+;; :fx
+;;
+;; Handle one or more effects. Expects a collection of vectors (tuples) of the
+;; form [effect-key effect-value]. `nil` entries in the collection are ignored
+;; so effects can be added conditionally.
+;;
+;; usage:
+;;
+;; {:fx [[:dispatch [:event-id "param"]]
+;;       nil
+;;       [:http-xhrio {:method :post
+;;                     ...}]]}
+;;
+
+(reg-fx
+  :fx
+  (fn [seq-of-effects]
+    (if-not (sequential? seq-of-effects)
+      (console :error "re-frame: \":fx\" effect expects a seq, but was given " (type seq-of-effects))
+      (doseq [[effect-key effect-value] (remove nil? seq-of-effects)]
+        (when (= :db effect-key)
+          (console :warn "re-frame: \":fx\" effect should not contain a :db effect"))
+        (if-let [effect-fn (get-handler kind effect-key false)]
+          (effect-fn effect-value)
+          (console :warn "re-frame: in \":fx\" effect found " effect-key " which has no associated handler. Ignoring."))))))
 
 ;; :dispatch
 ;;

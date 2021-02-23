@@ -1,15 +1,15 @@
-(ns day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.events
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.db          :refer [app-db]]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.utils       :refer [first-in-vector]]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.interop     :refer [empty-queue debug-enabled?]]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.registrar   :as registrar :refer [get-handler register-handler]]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.loggers     :refer [console]]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.interceptor :as  interceptor]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.trace       :as trace :include-macros true]))
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.events
+  (:require [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db          :refer [app-db]]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.utils       :refer [first-in-vector]]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.interop     :refer [empty-queue debug-enabled?]]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.registrar   :refer [get-handler register-handler]]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.loggers     :refer [console]]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.interceptor :as  interceptor]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.trace       :as trace :include-macros true]))
 
 
 (def kind :event)
-(assert (registrar/kinds kind))
+(assert (day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.registrar/kinds kind))
 
 (defn- flatten-and-remove-nils
   "`interceptors` might have nested collections, and contain nil elements.

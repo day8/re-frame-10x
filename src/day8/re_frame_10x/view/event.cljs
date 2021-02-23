@@ -5,7 +5,7 @@
             [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units]
             [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.core :as reagent]
             [day8.re-frame-10x.inlined-deps.reagent.v0v10v0.reagent.dom :as rdom]
-            [day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.core :as rf]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
             [zprint.core :as zp]
             [goog.string]
             [clojure.string :as str]

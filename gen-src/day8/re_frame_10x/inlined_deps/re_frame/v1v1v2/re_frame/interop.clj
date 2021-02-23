@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.inlined-deps.re-frame.v0v12v0.re-frame.interop
+(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.interop
   (:import [java.util.concurrent Executor Executors]))
 
 
@@ -20,6 +20,8 @@
 ;; your side-effects are all managed by effect handlers, then hopefully this will
 ;; allow you to write some useful tests that can run on the JVM.
 
+(defn on-load
+  [listener]) ;; no-op
 
 (defonce ^:private executor (Executors/newSingleThreadExecutor))
 
