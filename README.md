@@ -19,8 +19,8 @@ It helps you find false assumptions faster.
 
 Branch    | React Version      | Status | Artifact
 ----------|--------------------|--------|--------
-`master`  | React 17+        |  &#128165; [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
-`-`       | React 16.9 - 16.13 | `-`    | `[day8.re-frame/re-frame-10x "0.7.0"]`
+`master`  | React 17+        |  &#128165; [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) | Not ready. 
+`-`       | React 16.9 - 16.13 | `-`    |  `[day8.re-frame/re-frame-10x "0.7.0"]`
 `-`       | React 15           | `-`    | `[day8.re-frame/re-frame-10x "0.3.7"]`
 
 **Important**: Please note the following compatibility table:
