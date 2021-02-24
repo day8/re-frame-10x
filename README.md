@@ -17,22 +17,23 @@ It helps you find false assumptions faster.
 
 ### Build Status
 
-Branch    | React Version | Status | Artifact
-----------|---------------|--------|--------
-`master`  | React 16.9+   | [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
-`-`       | React 15      | `-`    | `[day8.re-frame/re-frame-10x "0.3.7"]`
+Branch    | React Version      | Status | Artifact
+----------|--------------------|--------|--------
+`master`  | React 17+        |  &#128165; [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
+`-`       | React 16.9 - 16.13 | `-`    | `[day8.re-frame/re-frame-10x "0.7.0"]`
+`-`       | React 15           | `-`    | `[day8.re-frame/re-frame-10x "0.3.7"]`
 
 **Important**: Please note the following compatibility table:
 
 re-frame-10x Version | React Version     | Reagent Versions
 -------------------- | ----------------- | ----------------
-`0.6.x`              | React 16.13.0     | 0.10.x |
+`master` &#128165;   | React 17          | 1.0.0 | 
+`0.6.x` | `0.7.x`    | React 16.13.0     | 0.10.x |
 `0.5.x`              | React 16.9.0      | 0.9.x |
 `0.4.3`              | React 16 - 16.8.6 | 0.8.x | 
 `0.3.7`              | React 15          | 0.6.0 - 0.7.0 |
 
-**Note**: If also using re-com then on upgrading to reagent 0.10.0 you also
-require re-com 2.8.0.
+**Note**: If also using re-com then on upgrading to reagent you may also need to upgrade re-com.
 
 ## Show Me
 [Conduit demo with re-frame-10x](https://jacekschae.github.io/conduit-re-frame-10x-demo/)
