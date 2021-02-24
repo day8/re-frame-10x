@@ -5,14 +5,16 @@
 
   :min-lein-version "2.9.1"
 
-  :dependencies [[org.clojure/clojure "1.10.1" :scope "provided"]
-                 [org.clojure/clojurescript "1.10.773" :scope "provided"]
-                 [reagent "1.0.0" :scope "provided"]
-                 [re-frame "1.1.2" :scope "provided"]
-                 [binaryage/devtools "1.0.2"]
-                 [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
-                 [zprint "1.0.1"]
-                 [cljsjs/react-highlight "1.0.7-2" :exclusions [cljsjs/react]]]
+  :dependencies [[org.clojure/clojure                  "1.10.1"   :scope "provided"]
+                 [org.clojure/clojurescript            "1.10.773" :scope "provided"]
+                 [reagent                              "1.0.0"    :scope "provided"]
+                 [re-frame                             "1.1.2"    :scope "provided"]
+                 [binaryage/devtools                   "1.0.2"]
+                 [com.yahoo.platform.yui/yuicompressor "2.4.8"
+                  :exclusions [rhino/js]]
+                 [zprint                               "1.0.1"]
+                 [cljsjs/react-highlight               "1.0.7-2"
+                  :exclusions [cljsjs/react]]]
 
   :plugins      [[day8/lein-git-inject "0.0.14"]
                  [thomasa/mranderson   "0.5.3"]
