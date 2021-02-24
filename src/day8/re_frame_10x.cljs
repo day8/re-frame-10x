@@ -5,109 +5,21 @@
             [day8.re-frame-10x.subs]
             [day8.re-frame-10x.events]
             [day8.re-frame-10x.db :as trace.db]
-            [re-frame.trace :as trace :include-macros true]
-            [clojure.string :as str]
-            [reagent.impl.util :as util]
-            [reagent.impl.component :as component]
-            [reagent.impl.batching :as batch]
-            [reagent.ratom :as ratom]
-            [goog.object :as gob]
-            [re-frame.interop :as interop]
+            [day8.reagent.impl.component]
+            [day8.reagent.impl.batching]
             [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
             [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
             [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]))
 
 (goog-define debug? false)
 
-(def operation-name (memoize (fn [c] (last (str/split (component/component-name c) #" > ")))))
-
-(def static-fns
-  {:render
-   (fn mp-render []                                         ;; Monkeypatched render
-     (this-as c
-       (trace/with-trace {:op-type   :render
-                          :tags      (if-let [component-name (component/component-name c)]
-                                       {:component-name component-name}
-                                       {})
-                          :operation (operation-name c)}
-                         (if util/*non-reactive*
-                           (reagent.impl.component/do-render c)
-                           (let [rat        (gob/get c "cljsRatom")
-                                 _          (batch/mark-rendered c)
-                                 res        (if (nil? rat)
-                                              (ratom/run-in-reaction #(reagent.impl.component/do-render c) c "cljsRatom"
-                                                                     batch/queue-render reagent.impl.component/rat-opts)
-                                              (._run ^js rat false))
-                                 cljs-ratom (gob/get c "cljsRatom")] ;; actually a reaction
-                             (trace/merge-trace!
-                               {:tags {:reaction      (interop/reagent-id cljs-ratom)
-                                       :input-signals (when cljs-ratom
-                                                        (map interop/reagent-id (gob/get cljs-ratom "watching" :none)))}})
-                             res)))))})
-
-
-(defonce real-custom-wrapper reagent.impl.component/custom-wrapper)
-(defonce real-next-tick reagent.impl.batching/next-tick)
-(defonce real-schedule reagent.impl.batching/schedule)
-(defonce do-after-render-trace-scheduled? (atom false))
-
-(defn monkey-patch-reagent []
-  (let [#_#_real-renderer reagent.impl.component/do-render]
-
-
-
-    #_(set! reagent.impl.component/do-render
-            (fn [c]
-              (let [name (comp-name c)]
-                (js/console.log c)
-                (trace/with-trace {:op-type   :render
-                                   :tags      {:component-path (component-path c)}
-                                   :operation (last (str/split name #" > "))}
-                                  (real-renderer c)))))
-
-    (set! reagent.impl.component/static-fns static-fns)
-
-    (set! reagent.impl.component/custom-wrapper
-          (fn [key f]
-            (case key
-              :componentWillUnmount
-              (fn [] (this-as c
-                       (trace/with-trace {:op-type   key
-                                          :operation (last (str/split (component/component-name c) #" > "))
-                                          :tags      {:component-name (component/component-name c)
-                                                      :reaction       (interop/reagent-id (gob/get c "cljsRatom"))}})
-                       (.call (real-custom-wrapper key f) c c)))
-
-              (real-custom-wrapper key f))))
-
-    (set! reagent.impl.batching/next-tick
-          (fn [f]
-            ;; Schedule a trace to be emitted after a render if there is nothing else scheduled after that render.
-            ;; This signals the end of the epoch.
-
-            (real-next-tick (fn []
-                              (trace/with-trace {:op-type :raf}
-                                                (f)
-                                                (trace/with-trace {:op-type :raf-end})
-                                                (when (false? (.-scheduled? reagent.impl.batching/render-queue))
-                                                  (trace/with-trace {:op-type :reagent/quiescent})))))))
-
-
-
-    #_(set! reagent.impl.batching/schedule
-            (fn []
-              (reagent.impl.batching/do-after-render
-                (fn []
-                  (when @do-after-render-trace-scheduled?
-                    (trace/with-trace {:op-type :do-after-render})
-                    (reset! do-after-render-trace-scheduled? false))))
-              (real-schedule)))))
-
+#_(defonce real-schedule reagent.impl.batching/schedule)
+#_(defonce do-after-render-trace-scheduled? (atom false))
 
 (defn init-tracing!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
   []
-  (monkey-patch-reagent))
+  #_(monkey-patch-reagent))
 
 
 (defn resizer-style [draggable-area]
