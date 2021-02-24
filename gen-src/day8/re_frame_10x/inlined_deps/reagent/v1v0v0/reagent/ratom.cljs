@@ -7,6 +7,8 @@
             [clojure.set :as s]
             [goog.object :as obj]))
 
+(set! *warn-on-infer* false)
+
 (declare flush!)
 
 (declare ^:dynamic *ratom-context*)
