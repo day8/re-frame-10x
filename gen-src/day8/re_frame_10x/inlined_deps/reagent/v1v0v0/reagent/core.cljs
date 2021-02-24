@@ -9,8 +9,8 @@
             [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.impl.protocols :as p]
             [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as ratom]
             [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.debug :as deb :refer-macros [assert-some assert-component
-                                                  assert-js-object assert-new-state
-                                                  assert-callable]]))
+                                                                                                assert-js-object assert-new-state
+                                                                                                assert-callable]]))
 
 (def is-client util/is-client)
 
