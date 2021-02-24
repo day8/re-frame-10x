@@ -1,18 +1,20 @@
 (defproject todomvc-re-frame "lein-git-inject/version"
-  :dependencies [[org.clojure/clojure        "1.10.1"]
+  :dependencies [[org.clojure/clojure        "1.10.2"]
                  [org.clojure/clojurescript  "1.10.773"
                   :exclusions [com.google.javascript/closure-compiler-unshaded
                                org.clojure/google-closure-library
                                org.clojure/google-closure-library-third-party]]
-                 [thheller/shadow-cljs "2.11.4"]
-                 [reagent "0.10.0"]
-                 [re-frame "0.12.0"]
-                 [day8.re-frame/tracing "0.5.6"]
-                 [day8.re-frame/re-frame-10x "0.6.6"]
+                 [thheller/shadow-cljs "2.11.18"]
+                 [reagent "1.0.0"]
+                 [re-frame "1.1.2"]
+                 [day8.re-frame/tracing "0.6.0"]
+                 [com.yahoo.platform.yui/yuicompressor "2.4.8" :exclusions [rhino/js]]
+                 [zprint "1.0.1"]
                  [secretary "1.2.3"]]
 
   :plugins      [[day8/lein-git-inject "0.0.14"]
-                 [lein-shadow          "0.3.1"]]
+                 [lein-shadow          "0.3.1"]
+                 [lein-ancient         "0.6.15"]]
 
   :middleware   [leiningen.git-inject/middleware]
 
