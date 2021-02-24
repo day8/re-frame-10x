@@ -53,11 +53,13 @@
                           cljs-ratom (gobj/get c "cljsRatom")]
                       (trace/merge-trace!
                         {:tags {:reaction (interop/reagent-id cljs-ratom)
-                                :intput-signals (when cljs-ratom
-                                                  (map interop/reagent-id (gobj/get cljs-ratom "watching" :none)))}})
+                                :input-signals (when cljs-ratom
+                                                 (map interop/reagent-id (gobj/get cljs-ratom "watching" :none)))}})
                       res)))))))
 
-(set! reagent.impl.component/wrap-funs wrap-funs)
+(defn patch-wrap-funs
+  []
+  (set! reagent.impl.component/wrap-funs wrap-funs))
 
 (defonce original-custom-wrapper reagent.impl.component/custom-wrapper)
 
@@ -75,4 +77,6 @@
         (.call (original-custom-wrapper key f) c c)))
     (original-custom-wrapper key f)))
 
-(set! reagent.impl.component/custom-wrapper custom-wrapper)
+(defn patch-custom-wrapper
+  []
+  (set! reagent.impl.component/custom-wrapper custom-wrapper))

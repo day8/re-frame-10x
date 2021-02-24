@@ -19,4 +19,6 @@
         (when (false? (.-scheduled? reagent.impl.batching/render-queue))
           (trace/with-trace {:op-type :reagent/quiescent}))))))
 
-(set! reagent.impl.batching/next-tick next-tick)
+(defn patch-next-tick
+  []
+  (set! reagent.impl.batching/next-tick next-tick))

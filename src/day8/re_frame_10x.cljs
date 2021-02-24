@@ -5,8 +5,8 @@
             [day8.re-frame-10x.subs]
             [day8.re-frame-10x.events]
             [day8.re-frame-10x.db :as trace.db]
-            [day8.reagent.impl.component]
-            [day8.reagent.impl.batching]
+            [day8.reagent.impl.component :refer [patch-wrap-funs patch-custom-wrapper]]
+            [day8.reagent.impl.batching :refer [patch-next-tick]]
             [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
             [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
             [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]))
@@ -19,7 +19,9 @@
 (defn init-tracing!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
   []
-  #_(monkey-patch-reagent))
+  (patch-custom-wrapper)
+  (patch-wrap-funs)
+  (patch-next-tick))
 
 
 (defn resizer-style [draggable-area]
