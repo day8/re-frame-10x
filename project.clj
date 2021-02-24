@@ -8,7 +8,7 @@
   :dependencies [[org.clojure/clojure                  "1.10.2"   :scope "provided"]
                  [org.clojure/clojurescript            "1.10.773" :scope "provided"]
                  [reagent                              "1.0.0"    :scope "provided"]
-                 [re-frame                             "1.1.2"    :scope "provided"]
+                 [re-frame                             "1.2.0"    :scope "provided"]
                  [binaryage/devtools                   "1.0.2"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8"
                   :exclusions [rhino/js]]
