@@ -28,7 +28,7 @@ Branch    | React Version      | Status | Artifact
 re-frame-10x Version | React Version     | Reagent Versions
 -------------------- | ----------------- | ----------------
 `master` &#128165;   | React 17          | 1.0.0 | 
-`0.6.x` | `0.7.x`    | React 16.13.0     | 0.10.x |
+`0.6.x` / `0.7.x`    | React 16.13.0     | 0.10.x |
 `0.5.x`              | React 16.9.0      | 0.9.x |
 `0.4.3`              | React 16 - 16.8.6 | 0.8.x | 
 `0.3.7`              | React 15          | 0.6.0 - 0.7.0 |
