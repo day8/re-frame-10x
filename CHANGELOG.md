@@ -2,7 +2,19 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
-## [Unreleased]
+## [1.0.0] - 2021-02-25
+
+This version has been upgraded to support the latest re-frame 1.1.x, reagent 1.0.x and React 17.
+
+It does NOT support earlier versions, especially of reagent prior to 1.0.0 or React 16.
+
+### Changed
+
+- Upgrade re-frame to 1.1.2
+- Upgrade reagent to 1.0.0 (incl React 17.0.1)
+- Upgrade garden to 1.3.10 
+
+## [0.7.0] - 2020-07-16
 
 ### Changed
 
