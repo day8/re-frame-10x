@@ -1,8 +1,8 @@
 (ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.interop
   (:require [goog.async.nextTick]
             [goog.events :as events]
-            [reagent.core]
-            [reagent.ratom]))
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as reagent.core]
+            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent.ratom]))
 
 (defn on-load
       [listener]
