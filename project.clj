@@ -5,7 +5,7 @@
 
   :min-lein-version "2.9.1"
 
-  :dependencies [[org.clojure/clojure                  "1.10.1"   :scope "provided"]
+  :dependencies [[org.clojure/clojure                  "1.10.2"   :scope "provided"]
                  [org.clojure/clojurescript            "1.10.773" :scope "provided"]
                  [reagent                              "1.0.0"    :scope "provided"]
                  [re-frame                             "1.1.2"    :scope "provided"]
