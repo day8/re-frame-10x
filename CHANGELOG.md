@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+### Fixed
+
+- Migrate componentWillUpdate to getSnapshotBeforeUpdate. Fixes [#274](https://github.com/day8/re-frame-10x/issues/274)
+
 ## [1.0.0] - 2021-02-25
 
 This version has been upgraded to support the latest re-frame 1.1.x, reagent 1.0.x and React 17.

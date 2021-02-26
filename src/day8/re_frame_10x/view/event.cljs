@@ -191,8 +191,8 @@
   []
   (let [scroll-pos (atom {:top 0 :left 0})]
     (reagent/create-class
-      {:component-will-update
-       (fn event-expression-component-will-update [this]
+      {:get-snapshot-before-update
+       (fn event-expression-get-snapshot-before-update [this old-argv new-argv]
          (let [node (rdom/dom-node this)]
            (reset! scroll-pos {:top (.-scrollTop node) :left (.-scrollLeft node)})))
 
