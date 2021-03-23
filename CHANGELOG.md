@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+### Fixed
+
+- Replace react-highlight.js with re-highlight. Fixes day8/re-frame-template#150 and [#288](https://github.com/day8/re-frame-10x/issues/288)
+
 ## [1.0.1] - 2021-02-26
 
 ### Fixed
