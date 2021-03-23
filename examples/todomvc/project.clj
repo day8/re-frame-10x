@@ -11,6 +11,7 @@
                  [com.yahoo.platform.yui/yuicompressor "2.4.8"
                   :exclusions [rhino/js]]
                  [zprint                               "1.0.1"]
+                 [superstructor/re-highlight           "0.0.1"]
                  [secretary                            "1.2.3"]]
 
   :plugins      [[day8/lein-git-inject "0.0.14"]

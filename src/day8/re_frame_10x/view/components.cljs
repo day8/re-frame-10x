@@ -8,7 +8,7 @@
             [devtools.prefs]
             [devtools.formatters.core]
             [day8.re-frame-10x.material :as material]
-            ["react-highlight.js" :as react-highlightjs]
+            [re-highlight.core :as re-highlight]
             ["highlight.js/lib/languages/clojure"])
   (:require-macros [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]]))
 
@@ -218,8 +218,4 @@
    :class (str "rft-tag noselect " class)
    :child [:span {:style {:margin "auto"}} label]])
 
-;; shadow-cljs uses the react-highlight NPM package, whereas figwheel etc use a CLJSJS package. The CLJSJS package
-;; unfortunately incorrectly 'unwraps' the default export making the two incompatible. So we must check if we can
-;; use the default export first, otherwise use the ns directly.
-;; See: https://github.com/cljsjs/packages/blob/master/react-highlight/resources/main.js
-(def highlight (r/adapt-react-class (or react-highlightjs/default react-highlightjs)))
+(def highlight re-highlight/highlight)
