@@ -15,26 +15,17 @@ delivering curated insight and illumination.
 
 It helps you find false assumptions faster.
 
+### Compatibility Matrix
 
-### Build Status
+Reagent Versions  | React Versions      | re-frame-10x Artifact | Status |
+----------------- | ------------------- | --------------------- | ------ | 
+`1.0.x`           | `17.x`              | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x?style=for-the-badge&logo=clojure&logoColor=fff)](https://clojars.org/day8.re-frame/re-frame-10x) | [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) |
+`0.10.x`          | `16.13.x`           | `[day8.re-frame/re-frame-10x "0.7.0"]` | Frozen |
+`0.9.x`           | `16.9.x`            |  `[day8.re-frame/re-frame-10x "0.5.2"]` | Frozen |
+`0.8.x`           | `16.x.x` - `16.8.6` | `[day8.re-frame/re-frame-10x "0.4.3"]` | Frozen |
+`0.6.x` - `0.7.x` | `15.x`              | `[day8.re-frame/re-frame-10x "0.3.7"]` | Frozen |
 
-Branch    | React Version      | Status | Artifact
-----------|--------------------|--------|--------
-`master`  | React 17+        |  [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x?style=for-the-badge&logo=clojure&logoColor=fff)](https://clojars.org/day8.re-frame/re-frame-10x) 
-`-`       | React 16.9 - 16.13 | `-`    |  `[day8.re-frame/re-frame-10x "0.7.0"]`
-`-`       | React 15           | `-`    | `[day8.re-frame/re-frame-10x "0.3.7"]`
-
-**Important**: Please note the following compatibility table:
-
-re-frame-10x Version | React Version     | Reagent Versions
--------------------- | ----------------- | ----------------
-`1.0.0`              | React 17          | 1.0.0 | 
-`0.6.x` / `0.7.x`    | React 16.13.0     | 0.10.x |
-`0.5.x`              | React 16.9.0      | 0.9.x |
-`0.4.3`              | React 16 - 16.8.6 | 0.8.x | 
-`0.3.7`              | React 15          | 0.6.0 - 0.7.0 |
-
-**Note**: If also using re-com then on upgrading to reagent you may also need to upgrade re-com.
+**Note**: If also using [re-com](https://github.com/day8/re-com) then on upgrading reagent you may also need to upgrade re-com.
 
 ## Show Me
 [Conduit demo with re-frame-10x](https://jacekschae.github.io/conduit-re-frame-10x-demo/)
