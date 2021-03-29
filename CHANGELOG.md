@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+### Fixed
+
+- Remove `deps.cljs` dependency on `react` and `react-dom` as `reagent` provides these dependencies transitively. Fixes issue reported
+in [#188](https://github.com/day8/re-frame-10x/issues/188#issuecomment-487717223).
+
 ## [1.0.2] - 2021-03-23
 
 ### Fixed
