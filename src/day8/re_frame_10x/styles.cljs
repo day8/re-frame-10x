@@ -4,6 +4,7 @@
             [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors :as s]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
+            [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
             [day8.re-frame-10x.common-styles :as common]
             [day8.re-frame-10x.utils.re-com :as rc]
             [day8.re-frame-10x.view.app-db :as app-db]
@@ -36,7 +37,7 @@
 (defpseudoclass -moz-focusring)
 (defpseudoelement -moz-focus-inner)
 
-(def css-reset
+(defglobal css-reset
   [:#--re-frame-10x--
    {:all "initial"}
 
@@ -539,8 +540,7 @@
 
 
 (def panel-styles
-  (apply garden/css [css-reset
-                     [:#--re-frame-10x-- rc/re-com-css]
+  (apply garden/css [[:#--re-frame-10x-- rc/re-com-css]
                      [:#--re-frame-10x-- highlight-js-solarized]
                      common/blue-modern
                      re-frame-trace-styles
