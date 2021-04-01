@@ -39,7 +39,9 @@ jobs:
             ${{ runner.os }}-shadow-cljs-
       - run: lein test
       - name: Compile Sample Project
-        run: npx shadow-cljs compile app
+        run: |
+          npm install
+          npx shadow-cljs compile app
         working-directory: "examples/todomvc"
       - name: Slack notification
         uses: homoluctus/slatify@v2.0.1
