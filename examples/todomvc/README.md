@@ -24,9 +24,10 @@ really required to get the job done. So lean and minimal is no longer a goal.
    cd re-frame/examples/todomvc
    ```
 
-4. Clean build
+4. Build
    ```
-   lein watch 
+   npm install
+   npx shadow-cljs watch app
    ```
 
 5. Wait for step 4 to do the compile, and then run the built app:
