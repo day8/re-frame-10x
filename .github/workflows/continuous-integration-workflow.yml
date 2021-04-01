@@ -49,14 +49,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-shadow-cljs-
       - run: lein test
-      - name: Install re-frame-10x for Sample Projects
-        run: lein install
       - name: Compile Sample Project
-        run: |
-          pwd
-          ls -a
-          ls ../..
-          lein with-profile dev do clean, shadow compile app
+        run: npx shadow-cljs compile app
         working-directory: "examples/todomvc"
       - name: Slack notification
         uses: homoluctus/slatify@v2.0.1
