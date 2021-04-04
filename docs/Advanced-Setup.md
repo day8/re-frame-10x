@@ -34,5 +34,20 @@ re-frame-10x is designed for development time debugging. The overhead that it im
 There may be more hurdles to cross after this one, Here Be Dragons, if you figure it out, let us know!
 
 ## Using Shadow CLJS?
+On `shadow-cljs.edn` add the following:
+```clj
+{:dependencies [;; your other dependencies
+                [day8.re-frame/tracing "0.6.2"]
+                [binaryage/devtools "1.0.2"]
+                [day8.re-frame/re-frame-10x "1.0.2"]]
 
-Dependencies will be automatically installed via shadow-cljs's `deps.cljs` transitive dependency mechanism.     
+ :builds {:app {:modules {:app {:preloads [devtools.preload day8.re-frame-10x.preload]}}
+                :dev {:compiler-options {:closure-defines {re-frame.trace.trace-enabled? true
+                                                           day8.re-frame.tracing.trace-enabled? true}}}
+                :release {:build-options
+                          {:ns-aliases
+                           {day8.re-frame.tracing day8.re-frame.tracing-stubs}}}}}}
+```
+
+
+Otherwise, if using `deps.cljs` manage your dependencies, then they will be automatically installed via shadow-cljs's `deps.cljs` transitive dependency mechanism.     
