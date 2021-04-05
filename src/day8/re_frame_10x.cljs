@@ -1,15 +1,16 @@
 (ns day8.re-frame-10x
-  (:require [day8.re-frame-10x.utils.re-com :as rc]
-            [day8.re-frame-10x.styles :as styles]
-            [day8.re-frame-10x.view.container :as container]
-            [day8.re-frame-10x.subs]
-            [day8.re-frame-10x.events]
-            [day8.re-frame-10x.db :as trace.db]
-            [day8.reagent.impl.component :refer [patch-wrap-funs patch-custom-wrapper]]
-            [day8.reagent.impl.batching :refer [patch-next-tick]]
-            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
-            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]))
+  (:require
+    [day8.re-frame-10x.utils.re-com :as rc]
+    [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.view.container :as container]
+    [day8.re-frame-10x.subs]
+    [day8.re-frame-10x.events]
+    [day8.re-frame-10x.db :as trace.db]
+    [day8.reagent.impl.component :refer [patch-wrap-funs patch-custom-wrapper]]
+    [day8.reagent.impl.batching :refer [patch-next-tick]]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]))
 
 (goog-define debug? false)
 
@@ -115,12 +116,14 @@
       panel
       (let [new-panel (.createElement js/document "div")]
         (.setAttribute new-panel "id" id)
+        (.setAttribute new-panel "class" (str
+                                           #_(styles/unset) " "
+                                           (styles/normalize)))
         (.appendChild (.-body js/document) new-panel)
         (js/window.focus new-panel)
         new-panel))))
 
 (defn inject-devtools! []
-  (styles/inject-trace-styles js/document)
   (rdom/render [devtools-outer {:panel-type :inline
                                 :debug?     debug?}] (panel-div)))
 

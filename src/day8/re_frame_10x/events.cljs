@@ -1,22 +1,23 @@
 (ns day8.re-frame-10x.events
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
-            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
-            [cljs.tools.reader.edn]
-            [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
-            [day8.re-frame-10x.utils.localstorage :as localstorage]
-            [reagent.impl.batching :as batching]
-            [clojure.string :as str]
-            [goog.object]
-            [goog.string]
-            [re-frame.db]
-            [re-frame.interop]
-            [re-frame.core]
-            [re-frame.trace]
-            [day8.re-frame-10x.view.container :as container]
-            [day8.re-frame-10x.styles :as styles]
-            [clojure.set :as set]
-            [day8.re-frame-10x.metamorphic :as metam]))
+  (:require
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
+    [cljs.tools.reader.edn]
+    [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
+    [day8.re-frame-10x.utils.localstorage :as localstorage]
+    [reagent.impl.batching :as batching]
+    [clojure.string :as str]
+    [goog.object]
+    [goog.string]
+    [re-frame.db]
+    [re-frame.interop]
+    [re-frame.core]
+    [re-frame.trace]
+    [day8.re-frame-10x.view.container :as container]
+    [day8.re-frame-10x.styles :as styles]
+    [clojure.set :as set]
+    [day8.re-frame-10x.metamorphic :as metam]))
 
 (defn fixed-after
   ;; Waiting on https://github.com/day8/re-frame/issues/447
@@ -220,6 +221,12 @@
   (fn [db [_ follows-events?]]
     follows-events?))
 
+(rf/reg-event-db
+  :settings/set-ambiance
+  [(rf/path [:settings :ambiance]) (fixed-after #(localstorage/save! "ambiance" %))]
+  (fn [db [_ ambiance]]
+    ambiance))
+
 ;; Global
 
 (defn mount [popup-window popup-document]
@@ -253,8 +260,7 @@
                                    (some-> @window-position-interval js/clearInterval)
                                    nil)]
 
-
-    (styles/inject-trace-styles popup-document)
+    (styles/inject-popup-styles! popup-document)
     (goog.object/set popup-window "onunload" #(rf/dispatch [:global/external-closed]))
     (rdom/render
       [(r/create-class
@@ -850,10 +856,3 @@
   [(rf/path [:errors])]
   (fn [errors _]
     (dissoc errors :popup-failed?)))
-
-;;
-
-(rf/reg-event-db
-  :history/toggle-history
-  (fn [db _]
-    (update-in db [:history :showing-history?] not)))

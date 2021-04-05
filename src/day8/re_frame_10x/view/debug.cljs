@@ -1,8 +1,9 @@
 (ns day8.re-frame-10x.view.debug
-  (:require [day8.re-frame-10x.utils.re-com :as rc]
-            [day8.re-frame-10x.view.components :as components]
-            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-            [day8.re-frame-10x.metamorphic :as metam]))
+  (:require
+    [day8.re-frame-10x.utils.re-com :as rc]
+    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.metamorphic :as metam]))
 
 (defn render []
   [rc/v-box
@@ -16,11 +17,11 @@
     [rc/label :label (str "Current epoch ID " (prn-str @(rf/subscribe [:epochs/current-epoch-id])))]
 
     [:h2 "Subscriptions"]
-    [components/simple-render @(rf/subscribe [:subs/current-epoch-sub-state]) ["debug-subs"]]
+    [cljs-devtools/simple-render @(rf/subscribe [:subs/current-epoch-sub-state]) ["debug-subs"]]
     [:h2 "pre epoch"]
-    [components/simple-render @(rf/subscribe [:subs/intra-epoch-subs]) ["pre-epoch-subs"]]
+    [cljs-devtools/simple-render @(rf/subscribe [:subs/intra-epoch-subs]) ["pre-epoch-subs"]]
     [:h2 "match state"]
-    [components/simple-render @(rf/subscribe [:epochs/current-match-state]) ["match-state"]]
+    [cljs-devtools/simple-render @(rf/subscribe [:epochs/current-match-state]) ["match-state"]]
 
 
     [rc/label :label "Epochs"]

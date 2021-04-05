@@ -97,6 +97,12 @@
   (fn [settings]
     (:app-db-follows-events? settings)))
 
+(rf/reg-sub
+  :settings/ambiance
+  :<- [:settings/root]
+  (fn [settings]
+    (:ambiance settings)))
+
 ;; App DB
 
 (rf/reg-sub
@@ -771,9 +777,3 @@
   (fn [errors _]
     (:popup-failed? errors)))
 
-;;
-
-(rf/reg-sub
-  :history/showing-history?
-  (fn [db _]
-    (get-in db [:history :showing-history?])))

@@ -1,18 +1,21 @@
 (ns day8.re-frame-10x.view.traces
-  (:require [day8.re-frame-10x.view.components :as components]
-            [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
-            [clojure.string :as str]
-            [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
-            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-            [day8.re-frame-10x.utils.re-com :as rc]
-            [day8.re-frame-10x.svgs :as svgs]
-            [day8.re-frame-10x.material :as material]))
+  (:require
+    [clojure.string :as string]
+    [day8.re-frame-10x.view.components :as components]
+    [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.utils.re-com :as rc]
+    [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.svgs :as svgs]
+    [day8.re-frame-10x.material :as material]
+    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]))
 
 (defn query->fn [query]
   (if (= :contains (:filter-type query))
     (fn [trace]
-      (str/includes? (str/lower-case (str (:operation trace) " " (:op-type trace)))
-                     (:query query)))
+      (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
+                        (:query query)))
     (fn [trace]
       (< (:query query) (:duration trace)))))
 
@@ -25,28 +28,18 @@
       (->>
         visible-traces
         (map-indexed (fn [index {:keys [op-type id operation tags duration] :as trace}]
-                       (let [show-row? (get-in @trace-detail-expansions [:overrides id]
+                       (let [ambiance  (rf/subscribe [:settings/ambiance])
+                             show-row? (get-in @trace-detail-expansions [:overrides id]
                                                (:show-all? @trace-detail-expansions))
                              op-name   (if (vector? operation)
                                          (second operation)
-                                         operation)
-                             #_#__ (js/console.log (devtools/header-api-call tags))]
+                                         operation)]
                          (list [:tr {:key      id
                                      :on-click #(rf/dispatch [:traces/toggle-trace id])
-                                     :class    (str/join " " ["trace--trace"
-                                                              (case op-type
-                                                                :sub/create "trace--sub-create"
-                                                                :sub/run "trace--sub-run"
-                                                                :sub/dispose "trace--sub-run"
-                                                                :event "trace--event"
-                                                                :render "trace--render"
-                                                                :re-frame.router/fsm-trigger "trace--fsm-trigger"
-                                                                nil)])}
-                                [:td.trace--toggle
-                                 [:button.expansion-button
-                                  (if show-row?
-                                    [material/arrow-drop-down :fill "#6EC0E6"]
-                                    [material/arrow-right :fill "#6EC0E6"])]]
+                                     :class    (styles/trace-item @ambiance op-type)}
+                                [:td
+                                 [components/expansion-button
+                                  {:open? show-row?}]]
                                 [:td.trace--op
                                  [:span.op-string {:on-click (fn [ev]
                                                                (add-filter filter-items (name op-type) :contains)
@@ -63,7 +56,7 @@
                                    (when-let [[_ & params] (or (get tags :query-v)
                                                                (get tags :event))]
                                      (->> (map pp/pretty-condensed params)
-                                          (str/join ", ")
+                                          (string/join ", ")
                                           (pp/truncate-string :middle 40)))]]]
                                 (if debug?
                                   [:td.trace--meta
@@ -75,18 +68,18 @@
                                  [:tr.trace--details {:key       (str id "-details")
                                                       :tab-index 0}
                                   [:td]
-                                  [:td.trace--details-tags {:col-span 2
-                                                            :on-click #(.log js/console trace)}
-                                   [:div.trace--details-tags-text
-                                    (let [tag-str (prn-str tags)]
-                                      (str (subs tag-str 0 400)
-                                           (when (< 400 (count tag-str))
-                                             " ...")))]]
-                                  [:td.trace--meta.trace--details-icon
-                                   {:on-click #(.log js/console tags)}]])))))))))
+                                  [:td
+                                   {:col-span 2
+                                    :on-click #(.log js/console trace)}
+                                   [cljs-devtools/simple-render tags []]]
+                                  #_[:td
+                                     [components/icon-button
+                                      {:icon [material/content-copy]
+                                       :on-click #(js/console.log tags)}]]])))))))))
 
 (defn render []
-  (let [filter-input            (r/atom "")
+  (let [ambiance                (rf/subscribe [:settings/ambiance])
+        filter-input            (r/atom "")
         filter-items            (rf/subscribe [:traces/filter-items])
         filter-type             (r/atom :contains)
         input-error             (r/atom false)
@@ -118,40 +111,59 @@
                                      (reset! input-error false)
                                      (add-filter filter-items @filter-input @filter-type))))]
         [rc/v-box
-         :class "tab-contents"
-         :size "1"
+         :size     "1"
          :children [[rc/v-box
-                     :class "filter"
+                     :class    "filter"
                      :children [[:div.filter-control
-                                 [:ul.filter-categories "show: "
-                                  [:li.filter-category {:class    (when (contains? @categories :event) "active")
-                                                        :on-click #(rf/dispatch [:traces/toggle-categories #{:event}])}
-                                   "events"]
-                                  [:li.filter-category {:class    (when (contains? @categories :sub/run) "active")
-                                                        :on-click #(rf/dispatch [:traces/toggle-categories #{:sub/run :sub/create :sub/dispose}])}
-                                   "subscriptions"]
-                                  [:li.filter-category {:class    (when (contains? @categories :render) "active")
-                                                        :on-click #(rf/dispatch [:traces/toggle-categories #{:render}])}
-                                   "reagent"]
-                                  [:li.filter-category {:class    (when (contains? @categories :re-frame.router/fsm-trigger) "active")
-                                                        :on-click #(rf/dispatch [:traces/toggle-categories #{:re-frame.router/fsm-trigger :componentWillUnmount}])}
-                                   "internals"]]
+                                 [:ul
+                                  {:class (styles/trace-filter-categories @ambiance)}
+                                  "show: "
+                                  (let [active? (contains? @categories :event)]
+                                    [:li
+                                     {:class    (when active? "active")
+                                      :on-click #(rf/dispatch [:traces/toggle-categories #{:event}])}
+                                     (if active?
+                                       [material/check-box]
+                                       [material/check-box-outline-blank])
+                                     "events"])
+                                  (let [active? (contains? @categories :sub/run)]
+                                    [:li {:class    (when active?  "active")
+                                          :on-click #(rf/dispatch [:traces/toggle-categories #{:sub/run :sub/create :sub/dispose}])}
+                                     (if active?
+                                       [material/check-box]
+                                       [material/check-box-outline-blank])
+                                     "subscriptions"])
+                                  (let [active? (contains? @categories :render)]
+                                    [:li {:class    (when active? "active")
+                                          :on-click #(rf/dispatch [:traces/toggle-categories #{:render}])}
+                                     (if active?
+                                       [material/check-box]
+                                       [material/check-box-outline-blank])
+                                     "reagent"])
+                                  (let [active? (contains? @categories :re-frame.router/fsm-trigger)]
+                                    [:li {:class    (when active? "active")
+                                          :on-click #(rf/dispatch [:traces/toggle-categories #{:re-frame.router/fsm-trigger :componentWillUnmount}])}
+                                     (if active?
+                                       [material/check-box]
+                                       [material/check-box-outline-blank])
+                                     "internals"])]
                                  [rc/checkbox
-                                  :model show-epoch-traces?
+                                  :model     show-epoch-traces?
                                   :on-change #(rf/dispatch [:trace-panel/update-show-epoch-traces? %])
-                                  :label "Only show traces for this epoch?"]
-                                 [:div.filter-fields
-                                  [:select {:value     @filter-type
-                                            :on-change #(reset! filter-type (keyword (.. % -target -value)))}
-                                   [:option {:value "contains"} "contains"]
-                                   [:option {:value "slower-than"} "slower than"]]
-                                  [:div.filter-control-input {:style {:margin-left 10}}
-                                   [components/search-input {:on-save     save-query
-                                                             :on-change   #(reset! filter-input (.. % -target -value))
-                                                             :placeholder "Type to filter traces"}]
-                                   (if @input-error
-                                     [:div.input-error {:style {:color "red" :margin-top 5}}
-                                      "Please enter a valid number."])]]]
+                                  :label     "Only show traces for this epoch?"]
+                                 [rc/h-box
+                                  :class (styles/trace-filter-fields @ambiance)
+                                  :children [[:select  {:value     @filter-type
+                                                        :on-change #(reset! filter-type (keyword (.. % -target -value)))}
+                                              [:option {:value "contains"} "contains"]
+                                              [:option {:value "slower-than"} "slower than"]]
+                                             [:div.search
+                                              [components/search-input {:on-save     save-query
+                                                                        :on-change   #(reset! filter-input (.. % -target -value))
+                                                                        :placeholder "Type to filter traces"}]
+                                              (if @input-error
+                                                [:div.input-error {:style {:color "red" :margin-top 5}}
+                                                 "Please enter a valid number."])]]]]
                                 [:ul.filter-items
                                  (map (fn [item]
                                         ^{:key (:id item)}
@@ -162,10 +174,8 @@
                                           (:filter-type item) ": " [:span.filter-item-string (:query item)]]])
                                       @filter-items)]]]
                     [rc/box
-                     :size "1"
-                     :style {:padding-top "20px"
-                             :margin      "0px 10px"
-                             :overflow    "auto"}
+                     :size  "1"
+                     :class (styles/trace-table @ambiance)
                      :child [:table
                              [:thead>tr
                               [:th {:style {:padding 0}}

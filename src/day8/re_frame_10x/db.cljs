@@ -21,6 +21,7 @@
                                                                               id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}}))
         num-epochs                 (localstorage/get "retained-epochs" 25)
         follows-events?            (localstorage/get "app-db-follows-events?" true)
+        ambiance                   (localstorage/get "ambiance" :bright)
         categories                 (localstorage/get "categories" #{:event :sub/run :sub/create :sub/dispose})]
     (when using-trace?
       (rf/dispatch [:global/enable-tracing]))
@@ -32,6 +33,7 @@
     (rf/dispatch [:settings/set-low-level-trace low-level-trace])
     (rf/dispatch [:settings/set-number-of-retained-epochs num-epochs])
     (rf/dispatch [:settings/app-db-follows-events? follows-events?])
+    (rf/dispatch [:settings/set-ambiance ambiance])
     (rf/dispatch [:settings/debug? debug?])
     ;; Important that window dimensions are set before we open an external window.
     (rf/dispatch [:settings/external-window-dimensions external-window-dimensions])

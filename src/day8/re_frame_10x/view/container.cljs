@@ -1,261 +1,234 @@
 (ns day8.re-frame-10x.view.container
-  (:require-macros [day8.re-frame-10x.utils.macros :as macros])
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-            [re-frame.db :as db]
-            [day8.re-frame-10x.view.event :as event]
-            [day8.re-frame-10x.view.app-db :as app-db]
-            [day8.re-frame-10x.view.subs :as subs]
-            [day8.re-frame-10x.view.views :as views]
-            [day8.re-frame-10x.view.traces :as traces]
-            [day8.re-frame-10x.view.fx :as fx]
-            [day8.re-frame-10x.view.parts :as parts]
-            [day8.re-frame-10x.view.timing :as timing]
-            [day8.re-frame-10x.view.debug :as debug]
-            [day8.re-frame-10x.view.settings :as settings]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core :refer [css style]]
-            [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
-            [day8.re-frame-10x.view.history :as history]
-            [day8.re-frame-10x.material :as material]
-            [day8.re-frame-10x.svgs :as svgs]
-            [re-frame.trace]
-            [day8.re-frame-10x.utils.re-com :as rc]
-            [day8.re-frame-10x.common-styles :as common]
-            [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
+  (:require-macros
+    [day8.re-frame-10x.utils.macros :as macros])
+  (:require
+    [re-frame.db :as db]
+    [re-frame.trace]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core :refer [css style]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
+    [day8.re-frame-10x.view.epochs :as epochs]
+    [day8.re-frame-10x.view.components :as components]
+    [day8.re-frame-10x.view.event :as event]
+    [day8.re-frame-10x.view.app-db :as app-db]
+    [day8.re-frame-10x.view.subs :as subs]
+    [day8.re-frame-10x.view.views :as views]
+    [day8.re-frame-10x.view.traces :as traces]
+    [day8.re-frame-10x.view.fx :as fx]
+    [day8.re-frame-10x.view.parts :as parts]
+    [day8.re-frame-10x.view.timing :as timing]
+    [day8.re-frame-10x.view.debug :as debug]
+    [day8.re-frame-10x.view.settings :as settings]
+    [day8.re-frame-10x.material :as material]
+    [day8.re-frame-10x.svgs :as svgs]
+    [day8.re-frame-10x.utils.re-com :as rc]
+    [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
+
+(def outer-margins {:margin (str "0px " styles/gs-19s)})
+
+#_(defglobal container-styles
+    [:#--re-frame-10x--
+     [:.container--replay-button
+      {:width  styles/gs-81
+       :height "29px"}] ;; styles/gs-31s - 2 * 1px border
+     [:.container--info-button
+      {:border-radius    "50%"
+       :color            "white"
+       :background-color styles/blue-modern-color
+       :width            styles/gs-12s
+       :height           styles/gs-12s}]
+     [:.pulse-previous
+      {:animation-duration "1000ms"
+       :animation-name     "pulse-previous-re-frame-10x"}]    ;; Defined in day8.re-frame-10x.styles/at-keyframes
+     [:.pulse-next
+      {:animation-duration "1000ms"
+       :animation-name     "pulse-next-re-frame-10x"}]])
+
+
+
+
+
+
+
+(defn replay-button
+  []
+  (let [current-event @(rf/subscribe [:epochs/current-event])]
+    (when (some? current-event)
+      [components/icon-button
+       {:icon     [material/refresh]
+        :label    "Replay"
+        :title    "Replay"
+        :on-click #(do (rf/dispatch [:component/set-direction :next])
+                       (rf/dispatch [:epochs/replay]))}])))
+
+(defn replay-help-button
+  []
+  (let [current-event @(rf/subscribe [:epochs/current-event])]
+    (when (some? current-event)
+      [components/hyperlink-info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"])))
+
+(defclass tab-button-style
+  [ambiance active?]
+  {:z-index 1}
+  [:.rc-button ;; .tab .tab.active
+   {:background     (if (= :bright ambiance)
+                      (if active? :#fff styles/nord1)
+                      (if active? styles/nord1 styles/nord4))
+    :color          (if (= :bright ambiance)
+                      (if active? styles/nord0 styles/nord4)
+                      (if active? styles/nord5 styles/nord0))
+    :padding        [[styles/gs-2 styles/gs-12]]
+    :margin-right   styles/gs-5s
+    :border-top     [[(px 1) :solid styles/nord3]]
+    :border-left    [[(px 1) :solid styles/nord3]]
+    :border-right   [[(px 1) :solid styles/nord3]]
+    :border-radius  [[(px 3) (px 3) 0 0]]
+    :font-size      (px 14)
+    :font-family    styles/font-stack
+    :font-weight    400}
+   (when-not active?
+     [:&:hover
+      {:cursor           :pointer
+       :background-color :#fff
+       :color            styles/nord1}])])
 
 (defn tab-button
   [panel-id title]
-  (let [selected-tab @(rf/subscribe [:settings/selected-tab])]
+  (let [ambiance     @(rf/subscribe [:settings/ambiance])
+        selected-tab @(rf/subscribe [:settings/selected-tab])
+        active?      (= panel-id selected-tab)]
     [rc/v-box
-     :style {:margin-bottom "-8px"
-             :z-index       1}
+     :class    (tab-button-style ambiance active?)
      :children [[rc/button
-                 :class (str "tab " (when (= selected-tab panel-id) "active"))
-                 :label title
-                 :on-click #(rf/dispatch [:settings/selected-tab panel-id])]
-                [svgs/triangle-down
-                 :style {:opacity (if (= selected-tab panel-id) "1" "0")}]]]))
+                 :label    title
+                 :on-click #(rf/dispatch [:settings/selected-tab panel-id])]]]))
 
-(def outer-margins {:margin (str "0px " common/gs-19s)})
+(defclass tab-buttons-style
+  [ambiance]
+  {:composes     (styles/navigation-border-top ambiance)
+   :padding-left styles/gs-19})
 
-
-(def container-styles
-  [:#--re-frame-10x--
-   [:.container--replay-button
-    {:width  common/gs-81
-     :height "29px"}] ;; common/gs-31s - 2 * 1px border
-   [:.container--info-button
-    {:border-radius    "50%"
-     :color            "white"
-     :background-color common/blue-modern-color
-     :width            common/gs-12s
-     :height           common/gs-12s}]
-   [:.pulse-previous
-    {:animation-duration "1000ms"
-     :animation-name     "pulse-previous-re-frame-10x"}]    ;; Defined in day8.re-frame-10x.styles/at-keyframes
-   [:.pulse-next
-    {:animation-duration "1000ms"
-     :animation-name     "pulse-next-re-frame-10x"}]])
-
-
-
-(defn right-hand-buttons [external-window?]
-  (let [selected-tab      (rf/subscribe [:settings/selected-tab])
-        showing-settings? (= @selected-tab :settings)]
+(defn tab-buttons
+  [{:keys [debug?]}]
+  (let [ambiance @(rf/subscribe [:settings/ambiance])]
     [rc/h-box
-     :align :center
-     :children [(when showing-settings?
-                  [:button {:class    "bm-active-button"
-                            :on-click #(rf/dispatch [:settings/toggle-settings])} "Done"])
-                [rc/button
-                 :attr     {:title "Settings"}
-                 :style    {:width "40px"}
-                 :label    [material/settings
-                            :fill (if showing-settings? "#F2994A" "white")]
-                 :on-click #(rf/dispatch [:settings/toggle-settings])]
-                (when-not external-window?
-                  [rc/button
-                   :attr     {:title "Pop out"}
-                   :style    {:width "40px"}
-                   :on-click #(rf/dispatch-sync [:global/launch-external])
-                   :label    [material/open-in-new :fill "#FFF"]])]]))
+     :class    (tab-buttons-style ambiance)
+     :justify  :between
+     :children [[rc/h-box
+                 ;:gap "7px"
+                 :align :end
+                 :height styles/gs-31s
+                 :children [[tab-button :event "Event"]
+                            [tab-button :fx "fx"]
+                            [tab-button :app-db "app-db"]
+                            [tab-button :subs "Subs"]
+                            (when debug?
+                              [tab-button :parts "Parts"])
+                            ;[tab-button :views "Views"]
+                            [tab-button :traces "Trace"]
+                            [tab-button :timing "Timing"]
+                            (when debug?
+                              [tab-button :debug "Debug"])]]
+                [rc/h-box
+                 :align    :center
+                 :padding  (str "0 " styles/gs-19s " 0 0")  ; "0px 19px 0px 7px"
+                 :gap      styles/gs-12s
+                 :children [;; TODO: add 'Replay' text, and smaller icon.
+                            [replay-button]
+                            ;; TODO: help smaller than what is currently to indicate Reply button is more important/relationship. e.g. just question mark, no button.
+                            [replay-help-button]]]]]))
 
-(defn settings-header [external-window?]
-  [[rc/h-box
-    :align :center
-    :size "auto"
-    :gap common/gs-12s
-    :children [[rc/label :class "bm-title-text" :label "Settings"]]]
-   ;; TODO: this line needs to be between Done and other buttons
-   [rc/gap-f :size common/gs-12s]
-   [rc/line :size "2px" :color common/sidebar-heading-divider-color]
-   [rc/gap-f :size common/gs-12s]
-   [right-hand-buttons external-window?]])
+(defclass warning-style
+  [ambiance]
+  {:background-color styles/nord13
+   :word-wrap        :break-word
+   :margin-left      styles/gs-19
+   :margin-right     styles/gs-19})
 
+(defn warnings
+  [external-window?]
+  (let [ambiance   @(rf/subscribe [:settings/ambiance])
+        unloading? @(rf/subscribe [:global/unloading?])]
+    [:<>
+     (when (and external-window? unloading?)
+       [:h1
+        {:class (warning-style ambiance)}
+        "Host window has closed. Reopen external window to continue tracing."])
+     (when-not (re-frame.trace/is-trace-enabled?)
+       [:h1
+        {:class (warning-style ambiance)}
+        "Tracing is not enabled. Please set "
+        ;; Note this Closure define is in re-frame, not re-frame-10x
+        [:pre "{re-frame.trace.trace-enabled? true}"] " in " [:pre ":closure-defines"]])]))
 
-(defn event-name
+(defclass error-style
+  [ambiance]
+  {:background-color styles/nord11
+   :margin-left      styles/gs-19
+   :margin-right     styles/gs-19})
+
+(defn errors
+  [external-window?]
+  (let [ambiance      @(rf/subscribe [:settings/ambiance])
+        popup-failed? @(rf/subscribe [:errors/popup-failed?])]
+    (when (and (not external-window?) popup-failed?)
+      [:h1
+       {:class (error-style ambiance)}
+       "Couldn't open external window. Check if popups are allowed?"
+       [rc/hyperlink
+        :label    "Dismiss"
+        :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])))
+
+(defclass tab-content-style
+  [ambiance selected-tab]
+  {:color       (if (= :bright ambiance) styles/nord0 styles/nord5)
+   :margin-top  styles/gs-19s
+   :margin-left styles/gs-19s
+   :overflow-y  (if (contains? #{:event :fx :parts :timing :debug :settings} selected-tab)
+                  "auto"
+                  "initial")})
+
+(defn tab-content
   []
-  (let [direction          @(rf/subscribe [:component/direction])
-        current-event      @(rf/subscribe [:epochs/current-event])
-        beginning-trace-id @(rf/subscribe [:epochs/beginning-trace-id])
-        event-str          (if (some? current-event)
-                             (pp/truncate 400 :end current-event)
-                             "No event")]
-    ^{:key beginning-trace-id}
+  (let [ambiance     @(rf/subscribe [:settings/ambiance])
+        selected-tab @(rf/subscribe [:settings/selected-tab])]
     [rc/v-box
-     :size "auto"
-     :style {:max-height       "42px"                       ;42 is exactly 2 lines which is perhaps neater than common/gs-50s (which would allow 3 lines to be seen)
-             :overflow-x       "hidden"
-             :overflow-y       "auto"
-             :background-color common/standard-background-color
-             :font-style       (if (some? current-event) "normal" "italic")}
-     :children [[:span
-                 {:class (str "event-header dont-break-out " (if (= :previous direction) "pulse-previous" "pulse-next"))
-                  :style {:position "relative"}}
-                 event-str]]]))
+     :class    (tab-content-style ambiance selected-tab)   ;;"tab-wrapper"
+     :size     "1"
+     :children [(case selected-tab
+                  :event    [event/render]
+                  :fx       [fx/render]
+                  :app-db   [app-db/render db/app-db]
+                  :subs     [subs/render]
+                  :views    [views/render]
+                  :parts    [parts/render]
+                  :timing   [timing/render]
+                  :traces   [traces/render]
+                  :debug    [debug/render]
+                  :settings [settings/render]
 
+                  [app-db/render db/app-db])]]))
 
-(defn standard-header [external-window?]
-  (let [older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])
-        newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])
-        showing-history?        @(rf/subscribe [:history/showing-history?])]
-    [[rc/h-box
-      :align :center
-      :size "auto"
-      :gap common/gs-12s
-      :children [[:span.arrow.epoch-nav
-                  (if older-epochs-available?
-                    {:on-click #(do (rf/dispatch [:component/set-direction :previous])
-                                    (rf/dispatch [:epochs/previous-epoch]))
-                     :title    "Previous epoch"}
-                    {:class "arrow__disabled"
-                     :style {:cursor "not-allowed"}
-                     :title "There are no previous epochs"})
-                  [material/arrow-left
-                   :fill (if older-epochs-available? "#6EC0E6" "#cfd8de")]]
-                 [event-name]
-                 [:span.arrow.epoch-nav
-                  (if newer-epochs-available?
-                    {:on-click #(do (rf/dispatch [:component/set-direction :next])
-                                    (rf/dispatch [:epochs/next-epoch]))
-                     :title    "Next epoch"}
-                    {:class "arrow__disabled"
-                     :style {:cursor "not-allowed"}
-                     :title "There are no later epochs"})
-                  [material/arrow-right
-                   :fill (if newer-epochs-available? "#6EC0E6" "#cfd8de")]]
-                 [rc/v-box
-                  :gap common/gs-5s
-                  :children
-                  [[:span.arrow.epoch-aux-nav
-                    (if newer-epochs-available?
-                      {:on-click #(do (rf/dispatch [:component/set-direction :next])
-                                      (rf/dispatch [:epochs/most-recent-epoch]))
-                       :style {:cursor "pointer"}
-                       :title    "Skip to latest epoch"}
-                      {:class "arrow__disabled"
-                       :style {:cursor "not-allowed"}
-                       :title "Already showing latest epoch"})
-                    [material/skip-next
-                     :fill (if newer-epochs-available? "#6EC0E6" "#cfd8de")]]
-                   [:span.arrow.epoch-aux-nav
-                    {:on-click #(rf/dispatch [:history/toggle-history])
-                     :title    "Show event history"}
-                    (if showing-history?
-                      [material/unfold-less]
-                      [material/unfold-more])]]]]]
-     [rc/gap-f :size common/gs-12s]
-     [rc/line :size "2px" :color common/sidebar-heading-divider-color]
-     [right-hand-buttons external-window?]]))
+(defclass devtools-inner-style
+  [ambiance]
+  {:composes (styles/background ambiance)})
 
-(defn tab-styles [selected-tab tab-name]
-  (if (not= selected-tab tab-name) {:display "none" :visibility "hidden"} {:width "100%"}))
-
-(defn devtools-inner [opts]
-  (let [selected-tab      (rf/subscribe [:settings/selected-tab])
-        panel-type        (:panel-type opts)
+(defn devtools-inner [{:keys [panel-type debug?]}]
+  (let [ambiance          @(rf/subscribe [:settings/ambiance])
+        selected-tab      @(rf/subscribe [:settings/selected-tab])
         external-window?  (= panel-type :popup)
-        unloading?        (rf/subscribe [:global/unloading?])
-        popup-failed?     @(rf/subscribe [:errors/popup-failed?])
-        showing-settings? (= @selected-tab :settings)
-        current-event     @(rf/subscribe [:epochs/current-event])
-        showing-history?  @(rf/subscribe [:history/showing-history?])]
+        showing-settings? (= selected-tab :settings)]
     [rc/v-box
-     :class "panel-content"
-     :width "100%"
-     :style {:background-color common/standard-background-color}
-     :children [(if showing-settings?
-                  [rc/h-box
-                   :class "panel-content-top nav"
-                   :style {:padding "0px 19px"}
-                   :children (settings-header external-window?)]
-                  [rc/h-box
-                   :class "panel-content-top nav"
-                   :style {:padding "0px 19px"}
-                   :children (standard-header external-window?)])
-                (when showing-history?
-                  [history/render])
-                (when-not showing-settings?
-                  [rc/h-box
-                   :class "panel-content-tabs"
-                   :justify :between
-                   :children [[rc/h-box
-                               ;:gap "7px"
-                               :align :end
-                               :height "50px"
-                               :children [[tab-button :event "Event"]
-                                          [tab-button :fx "fx"]
-                                          [tab-button :app-db "app-db"]
-                                          [tab-button :subs "Subs"]
-                                          (when (:debug? opts)
-                                            [tab-button :parts "Parts"])
-                                          ;[tab-button :views "Views"]
-                                          [tab-button :traces "Trace"]
-                                          [tab-button :timing "Timing"]
-                                          (when (:debug? opts)
-                                            [tab-button :debug "Debug"])]]
-                              (when (some? current-event)
-                                [rc/h-box
-                                 :align :center
-                                 :padding "0px 19px 0px 7px"
-                                 :gap "4px"
-                                 :children [[rc/button
-                                             :class "bm-muted-button container--replay-button"
-                                             :label [rc/h-box
-                                                     :align :center
-                                                     :gap "3px"
-                                                     :children [[material/refresh  :fill "#6EC0E6"]
-                                                                "replay"]]
-                                             :on-click #(do (rf/dispatch [:component/set-direction :next])
-                                                            (rf/dispatch [:epochs/replay]))]
-                                            [rc/hyperlink-info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"]]])]])
-                [rc/line :color "#EEEEEE"]
-                (when (and external-window? @unloading?)
-                  [:h1.host-closed "Host window has closed. Reopen external window to continue tracing."])
-                (when-not (re-frame.trace/is-trace-enabled?)
-                  [:h1.host-closed {:style {:word-wrap "break-word"}} "Tracing is not enabled. Please set "
-                   ;; Note this Closure define is in re-frame, not re-frame-10x
-                   [:pre "{\"re_frame.trace.trace_enabled_QMARK_\" true}"] " in " [:pre ":closure-defines"]])
-                (when (and (not external-window?) popup-failed?)
-                  [:h1.errors "Couldn't open external window. Check if popups are allowed?"
-                   [rc/hyperlink
-                    :label "Dismiss"
-                    :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])
-                [rc/v-box
-                 :class "tab-wrapper"
-                 :size "1"
-                 :style {:margin-left common/gs-19s
-                         :overflow-y  (if (contains? #{:event :fx :parts :timing :debug :settings} @selected-tab)
-                                        "auto"
-                                        "initial")}
-                 :children [(case @selected-tab
-                              :event [event/render]
-                              :fx [fx/render]
-                              :app-db [app-db/render db/app-db]
-                              :subs [subs/render]
-                              :views [views/render]
-                              :parts [parts/render]
-                              :timing [timing/render]
-                              :traces [traces/render]
-                              :debug [debug/render]
-                              :settings [settings/render]
-                              [app-db/render db/app-db])]]]]))
+     :class    (devtools-inner-style ambiance)
+     :width    "100%"
+     :children [(if-not showing-settings?
+                  [:<>
+                   [epochs/navigation external-window?]
+                   [tab-buttons {:debug? debug?}]]
+                  [settings/navigation external-window?])
+                [warnings external-window?]
+                [errors external-window?]
+                [tab-content]]]))
+

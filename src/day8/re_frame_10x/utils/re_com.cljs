@@ -1,10 +1,11 @@
 (ns day8.re-frame-10x.utils.re-com
   "Shameless pilfered from re-com."
   (:require-macros [day8.re-frame-10x.utils.re-com :refer [handler-fn]])
-  (:require [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
-            [clojure.string :as string]
-            [day8.re-frame-10x.common-styles :as common]
-            [day8.re-frame-10x.material :as material]))
+  (:require
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
+    [clojure.string :as string]
+    [day8.re-frame-10x.material :as material]))
 
 (defn px
   "takes a number (and optional :negative keyword to indicate a negative value) and returns that number as a string with 'px' at the end"
@@ -516,17 +517,7 @@
          :align :start
          :child the-button]))))
 
-(defn hyperlink-info
-  [url]
-  [hyperlink-href
-   :label [box
-           ;:class "container--info-button"
-           :justify :center
-           :align :center
-           :child [material/help :fill "#6EC0E6"]]
-   :attr {:rel "noopener noreferrer"}
-   :target "_blank"
-   :href url])
+
 
 
 (defn link [{:keys [label href style]}]
@@ -559,6 +550,40 @@
                                       style)
                     :disabled  disabled?
                     :checked   (boolean model)
+                    :on-change (handler-fn (callback-fn))}
+                   attr)]
+                (when label
+                  [:span
+                   {:class    label-class
+                    :style    (merge (flex-child-style "none")
+                                     {:padding-left "8px"
+                                      :cursor       cursor}
+                                     label-style)
+                    :on-click (handler-fn (callback-fn))}
+                   label])]]))
+
+(defn radio-button
+  "I return the markup for a radio button, with an optional RHS label"
+  [& {:keys [model value on-change label disabled? label-class label-style class style attr]
+      :as   args}]
+  (let [cursor      "default"
+        model       (deref-or-value model)
+        disabled?   (deref-or-value disabled?)
+        callback-fn #(when (and on-change (not disabled?))
+                      (on-change value))]  ;; call on-change with the :value arg
+    [h-box
+     :class    (str "noselect rc-radio-button-wrapper")
+     :align    :start
+     :children [[:input
+                 (merge
+                   {:class     (str "rc-radio-button " class)
+                    :style     (merge
+                                 (flex-child-style "none")
+                                 {:cursor cursor}
+                                 style)
+                    :type      "radio"
+                    :disabled  disabled?
+                    :checked   (= model value)
                     :on-change (handler-fn (callback-fn))}
                    attr)]
                 (when label
@@ -609,6 +634,7 @@
   e.g. {:padding (css-join common/gs-12s (px 25))}"
   (clojure.string/join " " args))
 
-(def re-com-css
-  [[:.display-flex {:display "flex"}]
+(defglobal re-com-css
+  [:#--re-frame-10x--
+   [:.display-flex {:display "flex"}]
    [:.display-inline-flex {:display "flex"}]])
