@@ -1,7 +1,7 @@
 (ns day8.re-frame-10x.svgs)
 
 (defn triangle-down
-  [& {:keys [style]
+  [& {:keys [style fill]
       :or   {style {}}}]
   [:svg {:height "7px"
          :viewBox "0 0 12 7"
@@ -11,7 +11,7 @@
     [:g {:id "Polygon"}
      [:use {:href "#path0_fill"
             :transform "matrix(-1 9.54098e-18 -9.54098e-18 -1 2356 47)"
-            :fill "#6EC0E6"}]]]
+            :fill fill}]]]
    [:defs
     [:path {:id "path0_fill"
             :d "M 6.05481 0L 12 7L 0 7L 6.05481 0Z"}]]])
