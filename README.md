@@ -171,23 +171,23 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
   
   ```cljs
   :builds
- {:client
-  {:target     :browser
-   :output-dir "resources/public/js"
-   :modules
-   {:client
-    {:init-fn todomvc.core/main}}
-   :devtools
-   {:preloads [day8.re-frame-10x.preload]}
-   :dev
-   {:compiler-options
-    {:closure-defines
-     {re-frame.trace.trace-enabled?        true
-      day8.re-frame.tracing.trace-enabled? true}}}
-   :release
-   {:build-options
-    {:ns-aliases
-     {day8.re-frame.tracing day8.re-frame.tracing-stubs}}}}}}
+  {:client
+   {:target     :browser
+    :output-dir "resources/public/js"
+    :modules
+    {:client
+     {:init-fn todomvc.core/main}}
+    :devtools
+    {:preloads [day8.re-frame-10x.preload]}
+    :dev
+    {:compiler-options
+     {:closure-defines
+      {re-frame.trace.trace-enabled?        true
+       day8.re-frame.tracing.trace-enabled? true}}}
+    :release
+    {:build-options
+     {:ns-aliases
+      {day8.re-frame.tracing day8.re-frame.tracing-stubs}}}}}}
   ```
 
   For example using [cljsbuild](https://github.com/emezeske/lein-cljsbuild) and Leiningen update your `project.clj`:
