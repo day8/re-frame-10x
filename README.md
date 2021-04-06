@@ -1,8 +1,3 @@
-<!-- [![CI](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci)
-[![CD](https://github.com/day8/re-frame-10x/workflows/cd/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=cd)
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/day8/re-frame-10x?style=flat)](https://github.com/day8/re-frame-10x/tags) 
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/day8/re-frame-10x?style=for-the-badge&logo=github)](https://github.com/day8/re-frame-10x/pulls)
--->
 [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x?style=for-the-badge&logo=clojure&logoColor=fff)](https://clojars.org/day8.re-frame/re-frame-10x)
 [![GitHub issues](https://img.shields.io/github/issues-raw/day8/re-frame-10x?style=for-the-badge&logo=github)](https://github.com/day8/re-frame-10x/issues)
 [![GitHub](https://img.shields.io/github/license/day8/re-frame-10x?style=for-the-badge)](https://github.com/day8/re-frame-10x/blob/master/LICENSE)
@@ -14,18 +9,6 @@ running `re-frame` application. It presents as a programmer's dashboard,
 delivering curated insight and illumination.
 
 It helps you find false assumptions faster.
-
-### Compatibility Matrix
-
-Reagent Versions  | React Versions      | re-frame-10x Artifact | Status |
------------------ | ------------------- | --------------------- | ------ | 
-`1.0.x`           | `17.x`              | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x?style=for-the-badge&logo=clojure&logoColor=fff)](https://clojars.org/day8.re-frame/re-frame-10x) | [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) |
-`0.10.x`          | `16.13.x`           | `[day8.re-frame/re-frame-10x "0.7.0"]` | Frozen |
-`0.9.x`           | `16.9.x`            |  `[day8.re-frame/re-frame-10x "0.5.2"]` | Frozen |
-`0.8.x`           | `16.x.x` - `16.8.6` | `[day8.re-frame/re-frame-10x "0.4.3"]` | Frozen |
-`0.6.x` - `0.7.x` | `15.x`              | `[day8.re-frame/re-frame-10x "0.3.7"]` | Frozen |
-
-**Note**: If also using [re-com](https://github.com/day8/re-com) then on upgrading reagent you may also need to upgrade re-com.
 
 ## Show Me
 [Conduit demo with re-frame-10x](https://jacekschae.github.io/conduit-re-frame-10x-demo/)
@@ -149,31 +132,63 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ### IMPORTANT PREREQUISITES
 
-* You **must** have a [`:main`](https://clojurescript.org/reference/compiler-options#main) specified in your `:compiler` config for the `:preloads` and `:closure-defines` to take effect
+* You **must** have a [`:main`](https://clojurescript.org/reference/compiler-options#main) specified in your `:compiler` config or a `:module` (shadow-cljs) for the `:preloads` and `:closure-defines` to take effect
 * You **must** be running with the Closure define `goog.DEBUG` as `true`. This is the default under `:optimizations :none`.
 * You **must** be using `:optimizations :none`.
-* You **should** be using re-frame 0.10.5 or later. Earlier versions may partly work, but are not supported.
+* You **should** be using re-frame 1.2.0 or later. Earlier versions may work, but are not supported.
 
-If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://shadow-cljs.github.io/docs/UsersGuide.html) see the docs on [advanced setups](/docs/Advanced-Setup.md) for other ways to install re-frame-10x.
+If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/Advanced-Setup.md) for other ways to install re-frame-10x.
 
 [![Clojars Project](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x.svg)](https://clojars.org/day8.re-frame/re-frame-10x)
 
 ### Easy setup
 
-- Update your re-frame dependency to at least `0.10.5` - `[re-frame "0.10.5"]`.
+- Update your re-frame dependency to at least `1.2.0` - `[re-frame "1.2.0"]`.
 
-- Add re-frame-10x as a dev dependency by placing `[day8.re-frame/re-frame-10x "VERSION"]` within `:profiles :dev :dependencies`, where `"VERSION"` is the version shown above. For example:
+- Add re-frame-10x as a dev dependency by placing `[day8.re-frame/re-frame-10x "1.0.2"]` within `:dependencies`
+
+  - For shadow-cljs, within `dependencies`. For example:
+
+  ```cljs
+  :dependencies
+  [[day8.re-frame/tracing      "0.6.2"]
+   [day8.re-frame/re-frame-10x "1.0.2"]]
+  ```
+
+  - For Leiningen, within `:profiles :dev :dependencies`. For example:
 
   ```cljs
   :profiles
      {:dev
-        {:dependencies [[some-other-package  "0.1.0"]
-                        [day8.re-frame/re-frame-10x "VERSION (see version above)"]] }}
+        {:dependencies [[day8.re-frame/tracing      "0.6.2"] 
+                        [day8.re-frame/re-frame-10x "1.0.2"]] }}
   ```
 
-  **For versions < 0.4.0:** If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`.
 
 - Locate your compiler config for your development build and add `:closure-defines` and `:preloads` to enable re-frame-10x.
+
+  For example using [shadow-cljs](https://shadow-cljs.github.io/docs/UsersGuide.html) update your `shadow-cljs.edn`:
+  
+  ```cljs
+  :builds
+ {:client
+  {:target     :browser
+   :output-dir "resources/public/js"
+   :modules
+   {:client
+    {:init-fn todomvc.core/main}}
+   :devtools
+   {:preloads [day8.re-frame-10x.preload]}
+   :dev
+   {:compiler-options
+    {:closure-defines
+     {re-frame.trace.trace-enabled?        true
+      day8.re-frame.tracing.trace-enabled? true}}}
+   :release
+   {:build-options
+    {:ns-aliases
+     {day8.re-frame.tracing day8.re-frame.tracing-stubs}}}}}}
+  ```
 
   For example using [cljsbuild](https://github.com/emezeske/lein-cljsbuild) and Leiningen update your `project.clj`:
 
@@ -208,6 +223,20 @@ If you don't meet those pre-requisites, or you are using [Shadow CLJS](https://s
 
 
 [cljs-devtools](https://github.com/binaryage/cljs-devtools) is not required to use re-frame-10x, but it is highly recommended.
+
+### Compatibility Matrix
+
+Reagent Versions  | React Versions      | re-frame-10x Artifact | Status |
+----------------- | ------------------- | --------------------- | ------ | 
+`1.0.x`           | `17.x`              | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x?style=for-the-badge&logo=clojure&logoColor=fff)](https://clojars.org/day8.re-frame/re-frame-10x) | [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) |
+`0.10.x`          | `16.13.x`           | `[day8.re-frame/re-frame-10x "0.7.0"]` | Frozen |
+`0.9.x`           | `16.9.x`            |  `[day8.re-frame/re-frame-10x "0.5.2"]` | Frozen |
+`0.8.x`           | `16.x.x` - `16.8.6` | `[day8.re-frame/re-frame-10x "0.4.3"]` | Frozen |
+`0.6.x` - `0.7.x` | `15.x`              | `[day8.re-frame/re-frame-10x "0.3.7"]` | Frozen |
+
+**For versions < 0.4.0:** If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`.
+
+**Note**: If also using [re-com](https://github.com/day8/re-com) then on upgrading reagent you may also need to upgrade re-com.
 
 ### Code Tracing
 
