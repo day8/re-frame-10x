@@ -8,7 +8,7 @@
 running `re-frame` application. It presents as a programmer's dashboard, 
 delivering curated insight and illumination.
 
-It helps you find false assumptions faster.
+It helps you to find your false assumptions faster.
 
 ## Show Me
 [Conduit demo with re-frame-10x](https://jacekschae.github.io/conduit-re-frame-10x-demo/)
