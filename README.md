@@ -11,7 +11,6 @@ delivering curated insight and illumination.
 It helps you to find your false assumptions faster.
 
 ## Show Me
-[Conduit demo with re-frame-10x](https://jacekschae.github.io/conduit-re-frame-10x-demo/)
 
 <img src="docs/images/subs-10x.png" height="500px">
 
