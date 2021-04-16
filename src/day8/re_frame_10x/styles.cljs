@@ -392,7 +392,7 @@
    :-ms-user-select       :none
    :user-select           :none})
 
-(defclass trace-filter-categories
+(defclass category-filters
   [ambiance]
   {:list-style :none
    :display    :flex

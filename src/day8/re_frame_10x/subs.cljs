@@ -155,10 +155,6 @@
 
 ;;
 
-(rf/reg-sub
-  :traces/trace-root
-  (fn [db _]
-    (:traces db)))
 
 (rf/reg-sub
   :trace-panel/root
@@ -170,35 +166,26 @@
   (fn [db _]
     (get-in db [:traces :filter-items])))
 
-(rf/reg-sub
-  :traces/expansions
-  (fn [db _]
-    (get-in db [:traces :expansions])))
 
-(rf/reg-sub
-  :traces/categories
-  (fn [db _]
-    (get-in db [:traces :categories])))
+#_(rf/reg-sub
+    :traces/all-traces ;; ::all
+    :<- [:traces/trace-root]
+    (fn [traces _]
+      (:all-traces traces)))
 
-(rf/reg-sub
-  :traces/all-traces
-  :<- [:traces/trace-root]
-  (fn [traces _]
-    (:all-traces traces)))
+#_(rf/reg-sub ;; ::count
+    :traces/number-of-traces ;; ::count
+    :<- [:traces/all-traces]
+    (fn [traces _]
+      (count traces)))
 
-(rf/reg-sub
-  :traces/number-of-traces
-  :<- [:traces/all-traces]
-  (fn [traces _]
-    (count traces)))
-
-(rf/reg-sub
-  :traces/current-event-traces
-  :<- [:traces/all-traces]
-  :<- [:epochs/beginning-trace-id]
-  :<- [:epochs/ending-trace-id]
-  (fn [[traces beginning ending] _]
-    (into [] (utils/id-between-xf beginning ending) traces)))
+#_(rf/reg-sub
+    :traces/current-event-traces ;; filter-by-selected-epoch
+    :<- [:traces/all-traces]
+    :<- [:epochs/beginning-trace-id]
+    :<- [:epochs/ending-trace-id]
+    (fn [[traces beginning ending] _]
+      (into [] (utils/id-between-xf beginning ending) traces)))
 
 (defn filter-ignored-views [[traces filtered-views] _]
   (let [munged-ns (->> filtered-views
@@ -223,11 +210,17 @@
   :<- [:settings/filtered-view-trace]
   filter-ignored-views)
 
+#_(rf/reg-sub
+    :trace-panel/show-epoch-traces? ::filter-by-selected-epoch
+    :<- [:trace-panel/root]
+    (fn [trace-root]
+      (:show-epoch-traces? trace-root)))
+
 (rf/reg-sub
-  :trace-panel/show-epoch-traces?
-  :<- [:trace-panel/root]
-  (fn [trace-root]
-    (:show-epoch-traces? trace-root)))
+  :traces/visible
+  :<- [:trace-panel/show-epoch-traces?]
+  :<- [:traces/current-event-visible-traces]
+  :<- [:traces/all-visible-traces])
 
 ;;
 
