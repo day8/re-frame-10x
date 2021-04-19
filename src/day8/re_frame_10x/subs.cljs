@@ -1,10 +1,12 @@
 (ns day8.re-frame-10x.subs
-  (:require [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-            [day8.re-frame-10x.metamorphic :as metam]
-            [day8.re-frame-10x.utils.utils :as utils]
-            [clojure.string :as str]
-            [cljs.spec.alpha :as s]
-            [zprint.core :as zp]))
+  (:require
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.metamorphic :as metam]
+    [day8.re-frame-10x.utils.utils :as utils]
+    [day8.re-frame-10x.traces.subs :as traces.subs]
+    [clojure.string :as str]
+    [cljs.spec.alpha :as s]
+    [zprint.core :as zp]))
 
 (rf/reg-sub
   :settings/root
@@ -155,75 +157,6 @@
 
 ;;
 
-
-(rf/reg-sub
-  :trace-panel/root
-  (fn [db _]
-    (:trace-panel db)))
-
-(rf/reg-sub
-  :traces/filter-items
-  (fn [db _]
-    (get-in db [:traces :filter-items])))
-
-
-#_(rf/reg-sub
-    :traces/all-traces ;; ::all
-    :<- [:traces/trace-root]
-    (fn [traces _]
-      (:all-traces traces)))
-
-#_(rf/reg-sub ;; ::count
-    :traces/number-of-traces ;; ::count
-    :<- [:traces/all-traces]
-    (fn [traces _]
-      (count traces)))
-
-#_(rf/reg-sub
-    :traces/current-event-traces ;; filter-by-selected-epoch
-    :<- [:traces/all-traces]
-    :<- [:epochs/beginning-trace-id]
-    :<- [:epochs/ending-trace-id]
-    (fn [[traces beginning ending] _]
-      (into [] (utils/id-between-xf beginning ending) traces)))
-
-(defn filter-ignored-views [[traces filtered-views] _]
-  (let [munged-ns (->> filtered-views
-                       (map (comp munge :ns-str))
-                       (set))]
-    (into []
-          ;; Filter out view namespaces we don't care about.
-          (remove
-            (fn [trace] (and (metam/render? trace)
-                             (contains? munged-ns (subs (:operation trace) 0 (str/last-index-of (:operation trace) "."))))))
-          traces)))
-
-(rf/reg-sub
-  :traces/current-event-visible-traces
-  :<- [:traces/current-event-traces]
-  :<- [:settings/filtered-view-trace]
-  filter-ignored-views)
-
-(rf/reg-sub
-  :traces/all-visible-traces
-  :<- [:traces/all-traces]
-  :<- [:settings/filtered-view-trace]
-  filter-ignored-views)
-
-#_(rf/reg-sub
-    :trace-panel/show-epoch-traces? ::filter-by-selected-epoch
-    :<- [:trace-panel/root]
-    (fn [trace-root]
-      (:show-epoch-traces? trace-root)))
-
-(rf/reg-sub
-  :traces/visible
-  :<- [:trace-panel/show-epoch-traces?]
-  :<- [:traces/current-event-visible-traces]
-  :<- [:traces/all-visible-traces])
-
-;;
-
 (rf/reg-sub
   :global/unloading?
   (fn [db _]
@@ -348,7 +281,7 @@
 
 (rf/reg-sub
   :timing/total-epoch-time
-  :<- [:traces/current-event-traces]
+  :<- [::traces.subs/filtered-by-epoch]
   (fn [traces]
     (let [start-of-epoch (nth traces 0)
           end-of-epoch   (utils/last-in-vec traces)]
@@ -356,7 +289,7 @@
 
 (rf/reg-sub
   :timing/animation-frame-traces
-  :<- [:traces/current-event-traces]
+  :<- [::traces.subs/filtered-by-epoch]
   (fn [traces]
     (filter #(or (metam/request-animation-frame? %)
                  (metam/request-animation-frame-end? %))
@@ -379,7 +312,7 @@
 (rf/reg-sub
   :timing/animation-frame-time
   :<- [:timing/animation-frame-traces]
-  :<- [:traces/current-event-traces]
+  :<- [::traces.subs/filtered-by-epoch]
   (fn [[af-start-end epoch-traces] [_ frame-number]]
     (let [frame-pairs (partition 2 af-start-end)
           [start end] (nth frame-pairs (dec frame-number))
@@ -425,7 +358,7 @@
 
 (rf/reg-sub
   :timing/render-time
-  :<- [:traces/current-event-traces]
+  :<- [::traces.subs/filtered-by-epoch]
   (fn [traces]
     (let [start-of-render (first (filter metam/request-animation-frame? traces))
           end-of-epoch    (utils/last-in-vec traces)]
@@ -433,7 +366,7 @@
 
 (rf/reg-sub
   :timing/data-available?
-  :<- [:traces/current-event-traces]
+  :<- [::traces.subs/filtered-by-epoch]
   (fn [traces]
     (not (empty? traces))))
 
@@ -446,7 +379,7 @@
 
 (rf/reg-sub
   :subs/all-sub-traces
-  :<- [:traces/current-event-traces]
+  :<- [::traces.subs/filtered-by-epoch]
   (fn [traces]
     (filter metam/subscription? traces)))
 
@@ -672,7 +605,7 @@
 
 (rf/reg-sub
   :code/current-code
-  :<- [:traces/current-event-traces]
+  :<- [::traces.subs/filtered-by-epoch]
   (fn [traces _]
     (keep-indexed (fn [i trace]
                     (when-some [code (get-in trace [:tags :code])]

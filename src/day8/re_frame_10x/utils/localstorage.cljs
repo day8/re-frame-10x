@@ -1,8 +1,10 @@
 (ns day8.re-frame-10x.utils.localstorage
-  (:require [goog.storage.Storage]
-            [goog.storage.mechanism.HTML5LocalStorage]
-            [cljs.reader :as reader]
-            [clojure.string :as str])
+  (:require
+    [goog.storage.Storage]
+    [goog.storage.mechanism.HTML5LocalStorage]
+    [cljs.reader :as reader]
+    [clojure.string :as string]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf])
   (:refer-clojure :exclude [get]))
 
 (def storage (goog.storage.Storage. (goog.storage.mechanism.HTML5LocalStorage.)))
@@ -32,5 +34,18 @@
   "Deletes all re-frame-10x config keys"
   []
   (doseq [k (js/Object.keys js/localStorage)]
-    (when (str/starts-with? k safe-prefix)
+    (when (string/starts-with? k safe-prefix)
       (.remove storage k))))
+
+(defn after
+  [key]
+  (rf/after
+    (fn [x]
+      (save! key x))))
+
+(rf/reg-cofx
+  ::get
+  (fn [coeffects {:keys [key or]}]
+    (assoc coeffects
+      (keyword "local-storage" key)
+      (get key or))))

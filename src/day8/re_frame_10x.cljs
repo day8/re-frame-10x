@@ -4,8 +4,7 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.view.container :as container]
     [day8.re-frame-10x.subs]
-    [day8.re-frame-10x.events]
-    [day8.re-frame-10x.db :as trace.db]
+    [day8.re-frame-10x.events :as events]
     [day8.reagent.impl.component :refer [patch-wrap-funs patch-custom-wrapper]]
     [day8.reagent.impl.batching :refer [patch-next-tick]]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
@@ -17,12 +16,7 @@
 #_(defonce real-schedule reagent.impl.batching/schedule)
 #_(defonce do-after-render-trace-scheduled? (atom false))
 
-(defn init-tracing!
-  "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
-  []
-  (patch-custom-wrapper)
-  (patch-wrap-funs)
-  (patch-next-tick))
+
 
 
 (defn resizer-style [draggable-area]
@@ -123,20 +117,38 @@
         (js/window.focus new-panel)
         new-panel))))
 
-(defn inject-devtools! []
-  (rdom/render [devtools-outer {:panel-type :inline
-                                :debug?     debug?}] (panel-div)))
+
 
 (defn traced-result [trace-id fragment-id]
   ;; TODO: this is not terribly efficient, figure out how to get the index of the trace directly.
   (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db [:traces :all-traces])))]
     (get-in trace [:tags :code fragment-id :result])))
 
-(defn init-db! []
-  (trace.db/init-db debug?))
-
 (defn ^:export factory-reset! []
   (rf/dispatch [:settings/factory-reset]))
 
 (defn ^:export show-panel! [show-panel?]
   (rf/dispatch [:settings/show-panel? show-panel?]))
+
+;; --- NEW ---
+
+(defn patch!
+  "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
+  []
+  (patch-custom-wrapper)
+  (patch-wrap-funs)
+  (patch-next-tick))
+
+(defn inject!
+  []
+  (rf/clear-subscription-cache!)
+  (rdom/render
+    [devtools-outer
+     {:panel-type :inline
+      :debug?     debug?}] (panel-div)))
+
+(defn init!
+  []
+  (patch!)
+  (rf/dispatch-sync [::events/init {:debug? debug?}])
+  (inject!))

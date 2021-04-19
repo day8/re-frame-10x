@@ -1,7 +1,9 @@
 (ns day8.re-frame-10x.traces.subs
   (:require
+    [clojure.string :as string]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.utils.utils :as utils]))
+    [day8.re-frame-10x.utils.utils :as utils]
+    [day8.re-frame-10x.metamorphic :as metam]))
 
 (rf/reg-sub
   ::root
@@ -13,6 +15,12 @@
   :<- [::root]
   (fn [{:keys [categories]} _]
     categories))
+
+(rf/reg-sub
+  ::queries
+  :<- [::root]
+  (fn [{:keys [queries]} _]
+    queries))
 
 (rf/reg-sub
   ::expansions
@@ -43,13 +51,65 @@
   :<- [::all]
   :<- [::filter-by-selected-epoch?]
   :<- [:epochs/beginning-trace-id] ;; TODO
-  :<- [:epochs/ending-trace-id]
-  (fn [[traces filter-by-selected-epoch? beginning ending]]
+  :<- [:epochs/ending-trace-id]    ;; TODO
+  (fn [[traces filter-by-selected-epoch? beginning ending] _]
     (if-not filter-by-selected-epoch?
       traces
-      (into []
-            (utils/id-between-xf beginning ending) traces))))
+      (into [] (utils/id-between-xf beginning ending) traces))))
 
 (rf/reg-sub
   ::filtered-by-namespace
-  :<- [::filtered-by-epoch])
+  :<- [::filtered-by-epoch]
+  :<- [:settings/filtered-view-trace] ;; TODO
+  (fn [[traces namespaces] _]
+    (let [munged-namespaces (->> namespaces
+                                 (map (comp munge :ns-str))
+                                 (set))]
+      (into []
+            ;; Filter out view namespaces we don't care about.
+            (remove
+              (fn [trace] (and (metam/render? trace)
+                               (contains? munged-namespaces (subs (:operation trace) 0 (string/last-index-of (:operation trace) "."))))))
+            traces))))
+
+(rf/reg-sub
+  ::filtered-by-cached-subscriptions
+  :<- [::filtered-by-namespace]
+  (fn [traces _]
+    ;; Remove cached subscriptions. Could add this back in as a setting later
+    ;; but it's pretty low signal/noise 99% of the time.
+    (remove (fn [trace] (and (= :sub/create (:op-trace trace))
+                             (get-in trace [:tags :cached?])))
+            traces)))
+
+(rf/reg-sub
+  ::filtered-by-categories
+  :<- [::filtered-by-cached-subscriptions]
+  :<- [::categories]
+  (fn [[traces categories] _]
+    (if-not (seq categories)
+      traces
+      (filter (fn [trace] (when (contains? categories (:op-type trace)) trace))))))
+
+(defn query->fn [query]
+  (if (= :contains (:filter-type query))
+    (fn [trace]
+      (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
+                        (:query query)))
+    (fn [trace]
+      (< (:query query) (:duration trace)))))
+
+(rf/reg-sub
+  ::filtered-by-queries
+  :<- [::filtered-by-categories]
+  :<- [::queries]
+  (fn [[traces queries] _]
+    (if-not (seq queries)
+      traces
+      (filter (apply every-pred (map query->fn queries))))))
+
+(rf/reg-sub
+  ::sorted
+  :<- [::filtered-by-queries]
+  (fn [traces _]
+    (sort-by :id traces)))

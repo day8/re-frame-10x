@@ -9,65 +9,61 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.svgs :as svgs]
     [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]))
+    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
+    [day8.re-frame-10x.traces.subs :as subs]
+    [day8.re-frame-10x.traces.events :as events]))
 
-(defn query->fn [query]
-  (if (= :contains (:filter-type query))
-    (fn [trace]
-      (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
-                        (:query query)))
-    (fn [trace]
-      (< (:query query) (:duration trace)))))
+
 
 (defn add-filter [filter-items filter-input filter-type]
-  (rf/dispatch [:traces/add-filter filter-input filter-type]))
+  (rf/dispatch [::events/add-query filter-input filter-type]))
 
 
 
 (defn category-filters
   []
   (let [ambiance   @(rf/subscribe [:settings/ambiance])
-        categories @(rf/subscribe [:traces/categories])]
+        categories @(rf/subscribe [::subs/categories])]
     [:ul
      {:class (styles/category-filters ambiance)}
      "show: "
      (let [active? (contains? categories :event)]
        [:li
         {:class    (when active? "active")
-         :on-click #(rf/dispatch [:traces/toggle-categories #{:event}])}
+         :on-click #(rf/dispatch [::events/toggle-categories #{:event}])}
         (if active?
           [material/check-box]
           [material/check-box-outline-blank])
         "events"])
      (let [active? (contains? categories :sub/run)]
        [:li {:class    (when active?  "active")
-             :on-click #(rf/dispatch [:traces/toggle-categories #{:sub/run :sub/create :sub/dispose}])}
+             :on-click #(rf/dispatch [::events/toggle-categories #{:sub/run :sub/create :sub/dispose}])}
         (if active?
           [material/check-box]
           [material/check-box-outline-blank])
         "subscriptions"])
      (let [active? (contains? categories :render)]
        [:li {:class    (when active? "active")
-             :on-click #(rf/dispatch [:traces/toggle-categories #{:render}])}
+             :on-click #(rf/dispatch [::events/toggle-categories #{:render}])}
         (if active?
           [material/check-box]
           [material/check-box-outline-blank])
         "reagent"])
      (let [active? (contains? categories :re-frame.router/fsm-trigger)]
        [:li {:class    (when active? "active")
-             :on-click #(rf/dispatch [:traces/toggle-categories #{:re-frame.router/fsm-trigger :componentWillUnmount}])}
+             :on-click #(rf/dispatch [::events/toggle-categories #{:re-frame.router/fsm-trigger :componentWillUnmount}])}
         (if active?
           [material/check-box]
           [material/check-box-outline-blank])
         "internals"])]))
 
-(defn epoch-filter
+(defn selected-epoch-filter
   []
-  (let [show-epoch-traces? (rf/subscribe [:trace-panel/show-epoch-traces?])]
+  (let [filter-by-selected-epoch? (rf/subscribe [::subs/filter-by-selected-epoch?])]
     [rc/checkbox
-     :model     show-epoch-traces?
-     :on-change #(rf/dispatch [:trace-panel/update-show-epoch-traces? %])
-     :label     "Only show traces for this epoch?"]))
+     :model     filter-by-selected-epoch?
+     :on-change #(rf/dispatch [::events/set-filter-by-selected-epoch? %])
+     :label     "Only show traces for the selected epoch?"]))
 
 (defn manual-filter
   []
@@ -75,7 +71,7 @@
         filter-type             (r/atom :contains)
         filter-input            (r/atom "")
         input-error             (r/atom false)
-        filter-items (rf/subscribe [:traces/filter-items])
+        filter-items (rf/subscribe [::subs/queries])
         save-query         (fn [_]
                              (if (and (= @filter-type :slower-than)
                                       (js/isNaN (js/parseFloat @filter-input)))
@@ -106,7 +102,7 @@
                 [:li.filter-item
                  [:button.button
                   {:style    {:margin 0}
-                   :on-click #(rf/dispatch [:traces/remove-filter (:id item)])}
+                   :on-click #(rf/dispatch [::events/remove-query (:id item)])}
                   (:filter-type item) ": " [:span.filter-item-string (:query item)]]])
               @filter-items)]]])))
 
@@ -115,7 +111,7 @@
   [rc/v-box
    :children
    [[category-filters]
-    [epoch-filter]
+    [selected-epoch-filter]
     [manual-filter]]])
 
 (defn render-traces [visible-traces filter-items filter-input trace-detail-expansions]
@@ -131,7 +127,7 @@
                                          (second operation)
                                          operation)]
                          (list [:tr {:key      id
-                                     :on-click #(rf/dispatch [:traces/toggle-trace id])
+                                     :on-click #(rf/dispatch [::events/toggle-expansion id])
                                      :class    (styles/trace-item @ambiance op-type)}
                                 [:td
                                  [components/expansion-button
@@ -177,25 +173,9 @@
   []
   (let [ambiance                (rf/subscribe [:settings/ambiance])
         filter-input            (r/atom "")
-        filter-items            (rf/subscribe [:traces/filter-items])
-        categories              (rf/subscribe [:traces/categories])
-        trace-detail-expansions (rf/subscribe [:traces/expansions])
-        current-traces          (rf/subscribe [:traces/current-event-visible-traces])
-        show-epoch-traces?      (rf/subscribe [:trace-panel/show-epoch-traces?])
-        traces                  (rf/subscribe [:traces/all-visible-traces])
-
-        traces-to-filter   (if @show-epoch-traces?
-                             @current-traces
-                             @traces)
-
-        visible-traces     (cond->> traces-to-filter
-                                    ;; Remove cached subscriptions. Could add this back in as a setting later
-                                    ;; but it's pretty low signal/noise 99% of the time.
-                                    true (remove (fn [trace] (and (= :sub/create (:op-type trace))
-                                                                  (get-in trace [:tags :cached?]))))
-                                    (seq @categories) (filter (fn [trace] (when (contains? @categories (:op-type trace)) trace)))
-                                    (seq @filter-items) (filter (apply every-pred (map query->fn @filter-items)))
-                                    true (sort-by :id))]
+        filter-items            (rf/subscribe [::subs/queries])
+        visible-traces          (rf/subscribe [::subs/sorted])
+        trace-detail-expansions (rf/subscribe [::subs/expansions])]
     [rc/box
      :size  "1"
      :class (styles/trace-table @ambiance)
@@ -204,7 +184,7 @@
               [:th {:style {:padding 0}}
                [:button.text-button
                 {:style    {:cursor "pointer"}
-                 :on-click #(rf/dispatch [:traces/toggle-all-expansions])}
+                 :on-click #(rf/dispatch [::events/toggle-expansions])}
                 (if (:show-all? @trace-detail-expansions) "-" "+")]]
               [:th "operations"]
               [:th

@@ -6,6 +6,7 @@
     [cljs.tools.reader.edn]
     [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
     [day8.re-frame-10x.utils.localstorage :as localstorage]
+    [day8.re-frame-10x.traces.events :as traces.events]
     [reagent.impl.batching :as batching]
     [clojure.string :as str]
     [goog.object]
@@ -18,6 +19,62 @@
     [day8.re-frame-10x.styles :as styles]
     [clojure.set :as set]
     [day8.re-frame-10x.metamorphic :as metam]))
+
+(rf/reg-event-fx
+  ::init
+  [(rf/inject-cofx ::localstorage/get {:key "panel-width-ratio" :or 0.35})
+   (rf/inject-cofx ::localstorage/get {:key "show-panel" :or true})
+   (rf/inject-cofx ::localstorage/get {:key "selected-tab" :or :event})
+   (rf/inject-cofx ::localstorage/get {:key "filter-items" :or []})
+   (rf/inject-cofx ::localstorage/get {:key "app-db-json-ml-expansions" :or #{}})
+   (rf/inject-cofx ::localstorage/get {:key "external-window?" :or false})
+   (rf/inject-cofx ::localstorage/get {:key "external-window-dimensions" :or {:width 800 :height 800 :top 0 :left 0}})
+   (rf/inject-cofx ::localstorage/get {:key "show-epoch-traces?" :or true})
+   (rf/inject-cofx ::localstorage/get {:key "using-trace?" :or true})
+   (rf/inject-cofx ::localstorage/get {:key "ignored-events" :or {}})
+   (rf/inject-cofx ::localstorage/get {:key "low-level-trace" :or {:reagent true :re-frame true}})
+   (rf/inject-cofx ::localstorage/get {:key "filtered-view-trace" :or (let [id1 (random-uuid)
+                                                                            id2 (random-uuid)]
+                                                                        {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
+                                                                         id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}})})
+   (rf/inject-cofx ::localstorage/get {:key "retained-epochs" :or 25})
+   (rf/inject-cofx ::localstorage/get {:key "app-db-paths" :or {}})
+   (rf/inject-cofx ::localstorage/get {:key "app-db-follows-events?" :or true})
+   (rf/inject-cofx ::localstorage/get {:key "ambiance" :or :bright})
+   (rf/inject-cofx ::localstorage/get {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose}})
+   rf/unwrap]
+  (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
+               external-window? external-window-dimensions show-epoch-traces? using-trace?
+               ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
+               app-db-follow-events? ambiance categories]}
+       {:keys [debug?]}]
+    {:fx [(when using-trace?
+            [:dispatch [:global/enable-tracing]])
+          [:dispatch [:settings/panel-width% panel-width-ratio]]
+          [:dispatch [:settings/show-panel? show-panel]]
+          [:dispatch [:settings/selected-tab selected-tab]]
+          [:dispatch [:settings/set-ignored-events ignored-events]]
+          [:dispatch [:settings/set-filtered-view-trace filtered-view-trace]]
+          [:dispatch [:settings/set-low-level-trace low-level-trace]]
+          [:dispatch [:settings/set-number-of-retained-epochs retained-epochs]]
+          [:dispatch [:settings/app-db-follows-events? app-db-follow-events?]]
+          [:dispatch [:settings/set-ambiance ambiance]]
+          [:dispatch [:settings/debug? debug?]]
+          ;; Important that window dimensions are set before we open an external window.
+          [:dispatch [:settings/external-window-dimensions external-window-dimensions]]
+          (when external-window?
+            [:dispatch [:global/launch-external]])
+          [:dispatch [::traces.events/set-queries filter-items]]
+          [:dispatch [::traces.events/set-categories categories]]
+          [:dispatch [::traces.events/set-filter-by-selected-epoch? show-epoch-traces?]]
+          [:dispatch [:app-db/paths (into (sorted-map) app-db-paths)]]
+          [:dispatch [:app-db/set-json-ml-paths app-db-json-ml-expansions]]
+          [:dispatch [:global/add-unload-hook]]
+          [:dispatch [:app-db/reagent-id]]]}))
+
+
+
+;; --- OLD ----
 
 (defn fixed-after
   ;; Waiting on https://github.com/day8/re-frame/issues/447
@@ -365,90 +422,6 @@
   :global/unloading?
   (fn [db [_ unloading?]]
     (assoc-in db [:global :unloading?] unloading?)))
-
-;; Traces
-
-(defn save-filter-items [filter-items]
-  (localstorage/save! "filter-items" filter-items))
-
-(rf/reg-event-db
-  :traces/filter-items
-  (fn [db [_ filter-items]]
-    (save-filter-items filter-items)
-    (assoc-in db [:traces :filter-items] filter-items)))
-
-(rf/reg-event-db
-  :traces/add-filter
-  [(rf/path [:traces :filter-items])]
-  (fn [filter-items [_ filter-input filter-type]]
-    (let [new-db (when-not (some #(= filter-input (:query %)) filter-items) ;; prevent duplicate filter strings
-                   ;; if existing, remove prior filter for :slower-than
-                   ;; TODO: rework how time filters are used.
-                   (let [filter-items (if (and (= :slower-than filter-type)
-                                               (some #(= filter-type (:filter-type %)) filter-items))
-                                        (remove #(= :slower-than (:filter-type %)) filter-items)
-                                        filter-items)]
-                     ;; add new filter
-                     (conj filter-items {:id          (random-uuid)
-                                         :query       (if (= filter-type :contains)
-                                                        (str/lower-case filter-input)
-                                                        (js/parseFloat filter-input))
-                                         :filter-type filter-type})))]
-      (save-filter-items new-db)
-      new-db)))
-
-(rf/reg-event-db
-  :traces/remove-filter
-  [(rf/path [:traces :filter-items])]
-  (fn [filter-items [_ filter-id]]
-    (let [new-db (remove #(= (:id %) filter-id) filter-items)]
-      (save-filter-items new-db)
-      new-db)))
-
-(rf/reg-event-db
-  :traces/reset-filter-items
-  (fn [db _]
-    (let [new-db (dissoc-in db [:traces :filter-items])]
-      (save-filter-items (get-in new-db [:traces :filter-items]))
-      new-db)))
-
-(rf/reg-event-db
-  :traces/toggle-all-expansions
-  [(rf/path [:traces :expansions])]
-  (fn [trace-detail-expansions _]
-    (-> trace-detail-expansions
-        (assoc :overrides {})
-        (update :show-all? not))))
-
-(rf/reg-event-db
-  :traces/toggle-trace
-  [(rf/path [:traces :expansions])]
-  (fn [expansions [_ id]]
-    (let [showing? (get-in expansions [:overrides id] (:show-all? expansions))]
-      (update-in expansions [:overrides id] #(if showing? false (not %))))))
-
-(rf/reg-event-db
-  :traces/toggle-categories
-  [(rf/path [:traces :categories])]
-  (fn [categories [_ new-categories]]
-    (let [new-categories (if (set/superset? categories new-categories)
-                           (set/difference categories new-categories)
-                           (set/union categories new-categories))]
-      (localstorage/save! "categories" new-categories)
-      new-categories)))
-
-(rf/reg-event-db
-  :traces/set-categories
-  [(rf/path [:traces :categories])]
-  (fn [categories [_ new-categories]]
-    new-categories))
-
-
-(rf/reg-event-db
-  :trace-panel/update-show-epoch-traces?
-  [(rf/path [:trace-panel :show-epoch-traces?]) (fixed-after #(localstorage/save! "show-epoch-traces?" %))]
-  (fn [_ [k show-epoch-traces?]]
-    show-epoch-traces?))
 
 ;; App DB
 
