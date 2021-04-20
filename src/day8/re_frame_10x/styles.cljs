@@ -281,25 +281,27 @@
 
 (defclass section-header
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord5 nord1)
-   :color            (if (= :bright ambiance) nord0 nord6)
-   :border           [[(px 1) :solid nord4]]
-   :height           gs-31
-   :padding          [[0 gs-12]]
-   :font-size        (px 14)
-   :font-weight      :bold
-   :overflow         :hidden})
+  (let [[foreground background border] (if (= :bright ambiance)
+                                         [nord0 nord5 nord4]
+                                         [nord6 nord1 nord3])]
+    {:background-color background
+     :color            foreground
+     :border           [[(px 1) :solid border]]
+     :height           gs-31
+     :padding          [[0 gs-12]]
+     :font-size        (px 14)
+     :font-weight      :bold
+     :overflow         :hidden}))
 
 (defclass path-header-style
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord4 nord0)
+  {:background-color (if (= :bright ambiance) nord5 nord0)
    :color            (if (= :bright ambiance) nord0 nord5)
    :margin           (px 3)})
 
 (defclass path-text-input-style
   [ambiance]
-  {:background-color :transparent
-   #_#_:background-color (if (= :bright ambiance) nord4 nord0)
+  {:background-color (if (= :bright ambiance) nord5 nord0)
    :height           (px 25)
    :width            "-webkit-fill-available" ;; This took a bit of finding!
    :padding          [[0 gs-7]]
@@ -307,9 +309,9 @@
 
 (defclass pod-border
   [ambiance]
-  {:border-left      [[(px 1) :solid nord3]]
-   :border-right     [[(px 1) :solid nord3]]
-   :border-bottom    [[(px 1) :solid nord3]]})
+  {:border-left      [[(px 1) :solid nord4]]
+   :border-right     [[(px 1) :solid nord4]]
+   :border-bottom    [[(px 1) :solid nord4]]})
 
 (defclass pod-data
   [ambiance]
@@ -365,7 +367,7 @@
    {:display      :none
     :padding-left gs-7
     :margin-left  gs-7
-    :border-left  [[(px 1) :solid nord3]]
+    :border-left  [[(px 1) :solid nord4]]
     :cursor       :pointer
     :color        nord7}
    [:&:hover
@@ -377,10 +379,10 @@
 
 (defclass registrar
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord6 nord0)
+  {:background-color (if (= :bright ambiance) nord5 nord0)
    :color            nord7
    :list-style      :none
-   :border          [[(px 1) :solid nord3]]
+   :border          [[(px 1) :solid nord4]]
    :padding         0}
   [:pre
    {:padding      gs-12
@@ -407,15 +409,15 @@
     :align-items      :center
     :margin-left      gs-12
     :cursor           :pointer
-    :background-color (if (= :bright ambiance) nord4 nord1)
+    :background-color (if (= :bright ambiance) nord5 nord1)
     :border-radius    gs-2
-    :border           [[(px 1) :solid nord3]]
+    :border           [[(px 1) :solid nord4]]
     :padding          [[gs-5 gs-12]]}
    [:svg
     {:margin-right gs-5}]
    [:&.active
     :&:hover
-    {:background-color (if (= :bright ambiance) nord5 nord2)
+    {:background-color (if (= :bright ambiance) nord6 nord2)
      :color            (if (= :bright ambiance) nord1 nord5)}
     [:svg :path
      {:fill nord7}]]])
@@ -426,7 +428,7 @@
   [:select
    :input
    {:border :none
-    :background-color (if (= :bright ambiance) nord4 nord1)
+    :background-color (if (= :bright ambiance) nord6 nord1)
     :color            (if (= :bright ambiance) nord0 nord6)}]
   [:.search
    [:input
@@ -454,10 +456,10 @@
 
 (defclass trace-table
   [ambiance]
-  {:background-color nord6
+  {:background-color nord4
    :border-radius    gs-2}
   [:thead
-   {:background-color nord4}])
+   {:background-color nord5}])
 
 (defglobal at-keyframes-styles
   (let [slide? false]

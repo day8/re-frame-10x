@@ -39,11 +39,11 @@
    :align    :center
    :children [[path-inspector-button]]])
 
-(def pod-border-edge (str "1px solid " styles/nord3))
+(def pod-border-edge (str "1px solid " styles/nord4))
 
 (defclass pod-header-section-style
   [ambiance last?]
-  {:border-right (when-not last? [[(px 1) :solid styles/nord3]])})
+  {:border-right (when-not last? [[(px 1) :solid styles/nord4]])})
 
 (defn pod-header-section
   [& {:keys [size justify align gap width min-width background-color children attr last?]
