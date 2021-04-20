@@ -18,7 +18,8 @@
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.view.components :as components]
-    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]))
+    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]))
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
@@ -40,7 +41,7 @@
 (defn code-header
   [code-execution-id line]
   (let [ambiance         @(rf/subscribe [:settings/ambiance])
-        open?-path       [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]
+        open?-path       [@(rf/subscribe [::epochs.subs/selected-epoch-id]) code-execution-id (:id line)]
         max-column-width @(rf/subscribe [:code/max-column-width])
         trace-id         code-execution-id
         open?            (get-in @(rf/subscribe [:code/code-open?]) open?-path)
@@ -89,7 +90,7 @@
     [rc/box
      :size "1"
      :class (code-block-style ambiance)
-     :child [cljs-devtools/simple-render (:result line) [@(rf/subscribe [:epochs/current-epoch-id]) code-execution-id (:id line)]]]))
+     :child [cljs-devtools/simple-render (:result line) [@(rf/subscribe [::epochs.subs/selected-epoch-id]) code-execution-id (:id line)]]]))
 
 (defn- re-seq-idx
   "Like re-seq but returns matches and indices"
@@ -313,7 +314,7 @@
                        :children [[rc/h-box
                                    :children [[indent-block (:indent-level frag) first?]
                                               [code-header code-exec-id frag]]]
-                                  (when (get-in code-open? [@(rf/subscribe [:epochs/current-epoch-id]) code-exec-id id])
+                                  (when (get-in code-open? [@(rf/subscribe [::epochs.subs/selected-epoch-id]) code-exec-id id])
                                     [rc/h-box
                                      :children [[indent-block (:indent-level frag) false]
                                                 [code-block code-exec-id frag id]]])]])))
@@ -349,7 +350,7 @@
 
 
 (defn render []
-  (let [epoch-id @(rf/subscribe [:epochs/current-epoch-id])]
+  (let [epoch-id @(rf/subscribe [::epochs.subs/selected-epoch-id])]
     ;; Create a new id on each panel because Reagent can throw an exception if
     ;; the data provided in successive renders is sufficiently different.
     ^{:key epoch-id}

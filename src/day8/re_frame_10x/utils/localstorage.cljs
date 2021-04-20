@@ -47,5 +47,5 @@
   ::get
   (fn [coeffects {:keys [key or]}]
     (assoc coeffects
-      (keyword "local-storage" key)
+      (keyword key)
       (get key or))))

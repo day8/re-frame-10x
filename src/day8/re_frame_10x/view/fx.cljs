@@ -4,7 +4,8 @@
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
-    [day8.re-frame-10x.styles :as styles]))
+    [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]))
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
@@ -23,7 +24,7 @@
       [cljs-devtools/simple-render data [title] (styles/section-data ambiance)]]]))
 
 (defn render []
-  (let [event-trace @(rf/subscribe [:epochs/current-event-trace])]
+  (let [event-trace @(rf/subscribe [::epochs.subs/selected-event-trace])]
     [rc/v-box
      :style    {:width "100%"}
      :gap      styles/gs-19s

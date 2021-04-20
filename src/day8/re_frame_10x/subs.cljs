@@ -4,6 +4,7 @@
     [day8.re-frame-10x.metamorphic :as metam]
     [day8.re-frame-10x.utils.utils :as utils]
     [day8.re-frame-10x.traces.subs :as traces.subs]
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]
     [clojure.string :as str]
     [cljs.spec.alpha :as s]
     [zprint.core :as zp]))
@@ -114,13 +115,13 @@
 
 (rf/reg-sub
   :app-db/current-epoch-app-db-after
-  :<- [:epochs/current-event-trace]
+  :<- [::epochs.subs/selected-event-trace]
   (fn [trace _]
     (get-in trace [:tags :app-db-after])))
 
 (rf/reg-sub
   :app-db/current-epoch-app-db-before
-  :<- [:epochs/current-event-trace]
+  :<- [::epochs.subs/selected-event-trace]
   (fn [trace _]
     (get-in trace [:tags :app-db-before])))
 
@@ -174,108 +175,6 @@
   :<- [:snapshot/snapshot-root]
   (fn [snapshot _]
     (contains? snapshot :current-snapshot)))
-
-;;
-
-(rf/reg-sub
-  :epochs/epoch-root
-  (fn [db _]
-    (:epochs db)))
-
-(rf/reg-sub
-  :epochs/all-events-by-id
-  :<- [:epochs/epoch-root]
-  (fn [epochs _]
-    (->> (map (juxt key (comp :event :tags metam/matched-event :match-info val))
-              (:matches-by-id epochs))
-         (sort-by first >))))
-
-(rf/reg-sub
-  :epochs/current-match-state
-  :<- [:epochs/epoch-root]
-  :<- [:epochs/match-ids]
-  (fn [[epochs match-ids] _]
-    (let [current-id (:current-epoch-id epochs)
-          match      (cond
-                       (nil? current-id) (last (:matches epochs))
-                       (< current-id (first match-ids)) (first (:matches epochs))
-                       ;; This case seems impossible, but can happen if the user filters out
-                       ;; an event that they are 'on'.
-                       (> current-id (last match-ids)) (last (:matches epochs))
-                       :else (get (:matches-by-id epochs) current-id))]
-      match)))
-
-(rf/reg-sub
-  :epochs/current-match
-  :<- [:epochs/current-match-state]
-  (fn [match-state _]
-    (:match-info match-state)))
-
-(rf/reg-sub
-  :epochs/current-event-trace
-  :<- [:epochs/current-match]
-  (fn [match _]
-    (metam/matched-event match)))
-
-(rf/reg-sub
-  :epochs/current-event
-  :<- [:epochs/current-event-trace]
-  (fn [trace _]
-    (get-in trace [:tags :event])))
-
-(rf/reg-sub
-  :epochs/number-of-matches
-  :<- [:epochs/epoch-root]
-  (fn [epochs _]
-    (count (get epochs :matches))))
-
-(rf/reg-sub
-  :epochs/current-event-index
-  :<- [:epochs/epoch-root]
-  (fn [epochs _]
-    (:current-epoch-index epochs)))
-
-(rf/reg-sub
-  :epochs/current-epoch-id
-  :<- [:epochs/current-match]
-  (fn [epochs _]
-    (:id (first epochs))))
-
-(rf/reg-sub
-  :epochs/match-ids
-  :<- [:epochs/epoch-root]
-  (fn [epochs]
-    (:match-ids epochs)))
-
-(rf/reg-sub
-  :epochs/beginning-trace-id
-  :<- [:epochs/current-match]
-  (fn [match]
-    (:id (first match))))
-
-(rf/reg-sub
-  :epochs/ending-trace-id
-  :<- [:epochs/current-match]
-  (fn [match]
-    (:id (last match))))
-
-(rf/reg-sub
-  :epochs/older-epochs-available?
-  :<- [:epochs/current-epoch-id]
-  :<- [:epochs/match-ids]
-  (fn [[current ids]]
-    (and (< 1 (count ids))
-         (or (nil? current)
-             (> current (nth ids 0))))))
-
-(rf/reg-sub
-  :epochs/newer-epochs-available?
-  :<- [:epochs/current-epoch-id]
-  :<- [:epochs/match-ids]
-  (fn [[current ids]]
-    (and (< 1 (count ids))
-         (some? current)
-         (< current (utils/last-in-vec ids)))))
 
 ;;
 
@@ -336,7 +235,7 @@
 
 (rf/reg-sub
   :timing/event-processing-time
-  :<- [:epochs/current-match-state]
+  :<- [::epochs.subs/selected-match-state]
   (fn [match]
     (let [{:re-frame/keys [event-time event-handler-time event-dofx-time event-run-time]} (get match :timing)
           ;; The scope of tracing is:
@@ -385,19 +284,19 @@
 
 (rf/reg-sub
   :subs/subscription-info
-  :<- [:epochs/epoch-root]
+  :<- [::epochs.subs/root]
   (fn [epoch]
     (:subscription-info epoch)))
 
 (rf/reg-sub
   :subs/sub-state
-  :<- [:epochs/epoch-root]
+  :<- [::epochs.subs/root]
   (fn [epochs]
     (:sub-state epochs)))
 
 (rf/reg-sub
   :subs/current-epoch-sub-state
-  :<- [:epochs/current-match-state]
+  :<- [::epochs.subs/selected-match-state]
   (fn [match-state]
     (:sub-state match-state)))
 

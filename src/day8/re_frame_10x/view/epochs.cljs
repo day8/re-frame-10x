@@ -9,7 +9,9 @@
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]))
+    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.epochs.events :as epochs.events]))
 
 (defclass epoch-style
   [ambiance active?]
@@ -29,13 +31,13 @@
   (let [hover?     (r/atom false)]
     (fn [event id]
       (let [ambiance   @(rf/subscribe [:settings/ambiance])
-            current-id @(rf/subscribe [:epochs/current-epoch-id])
+            current-id @(rf/subscribe [::epochs.subs/selected-epoch-id])
             active?    (= id current-id)]
         [rc/h-box
          :class    (epoch-style ambiance active?)
          :align    :center
          :height   styles/gs-19s
-         :attr     {:on-click       #(when-not active? (rf/dispatch [:epochs/load-epoch id]))
+         :attr     {:on-click       #(when-not active? (rf/dispatch [::epochs.events/load id]))
                     :on-mouse-enter #(reset! hover? true)
                     :on-mouse-leave #(reset! hover? false)}
          :children [(if (or active? @hover?)
@@ -63,7 +65,7 @@
 (defn epochs
   []
   (let [ambiance   @(rf/subscribe [:settings/ambiance])
-        all-events @(rf/subscribe [:epochs/all-events-by-id])]
+        all-events @(rf/subscribe [::epochs.subs/events-by-id])]
     [rc/v-box
      :class    (epochs-style ambiance)
      :height   styles/gs-131s
@@ -78,33 +80,33 @@
 
 (defn prev-button
   []
-  (let [older-epochs-available? @(rf/subscribe [:epochs/older-epochs-available?])]
+  (let [older-epochs-available? @(rf/subscribe [::epochs.subs/older-epochs-available?])]
     [components/icon-button
      {:icon      [material/arrow-left]
       :title     (if older-epochs-available? "Previous epoch" "There are no previous epochs")
       :disabled? (not older-epochs-available?)
       :on-click  #(do (rf/dispatch [:component/set-direction :previous])
-                      (rf/dispatch [:epochs/previous-epoch]))}]))
+                      (rf/dispatch [::epochs.events/previous]))}]))
 
 (defn next-button
   []
-  (let [newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])]
+  (let [newer-epochs-available? @(rf/subscribe [::epochs.subs/newer-epochs-available?])]
     [components/icon-button
      {:icon      [material/arrow-right]
       :title     (if newer-epochs-available? "Next epoch" "There are no later epochs")
       :disabled? (not newer-epochs-available?)
       :on-click  #(do (rf/dispatch [:component/set-direction :next])
-                      (rf/dispatch [:epochs/next-epoch]))}]))
+                      (rf/dispatch [::epochs.events/next]))}]))
 
 (defn latest-button
   []
-  (let [newer-epochs-available? @(rf/subscribe [:epochs/newer-epochs-available?])]
+  (let [newer-epochs-available? @(rf/subscribe [::epochs.subs/newer-epochs-available?])]
     [components/icon-button
      {:icon      [material/skip-next]
       :title     (if newer-epochs-available? "Skip to latest epoch" "Already showig latest epoch")
       :disabled? (not newer-epochs-available?)
       :on-click  #(do (rf/dispatch [:component/set-direction :next])
-                      (rf/dispatch [:epochs/most-recent-epoch]))}]))
+                      (rf/dispatch [::epochs.events/most-recent]))}]))
 
 (defn left-buttons
   []

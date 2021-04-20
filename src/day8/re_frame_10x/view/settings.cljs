@@ -8,7 +8,9 @@
     [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
     [day8.re-frame-10x.view.components :as components]
     [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.styles :as styles]))
+    [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.epochs.events :as epochs.events]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")
@@ -98,7 +100,7 @@
    :style {:margin-left  styles/gs-12s                      ;; A bit of a hack, 19px already provided by parent, add 12 to get to 31 as requires by spec
            :margin-right styles/gs-19s}
    :children [(let [ambiance         @(rf/subscribe [:settings/ambiance])
-                    num-epochs       @(rf/subscribe [:epochs/number-of-matches])
+                    num-epochs       @(rf/subscribe [::epochs.subs/number-of-matches])
                     num-traces       @(rf/subscribe [::traces.subs/count])
                     epochs-to-retain (rf/subscribe [:settings/number-of-retained-epochs])]
 
@@ -122,7 +124,7 @@
                                :label [rc/v-box
                                        :align :center
                                        :children ["clear all epochs"]]
-                               :on-click #(rf/dispatch [:epochs/reset])]]]]
+                               :on-click #(rf/dispatch [::epochs.events/reset])]]]]
                  [[:p num-epochs " epochs currently retained, involving " num-traces " traces."]]
                  settings-box-81])
 

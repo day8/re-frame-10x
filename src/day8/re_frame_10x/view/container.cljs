@@ -24,7 +24,9 @@
     [day8.re-frame-10x.svgs :as svgs]
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
+    [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.epochs.events :as epochs.events]))
 
 (def outer-margins {:margin (str "0px " styles/gs-19s)})
 
@@ -54,18 +56,18 @@
 
 (defn replay-button
   []
-  (let [current-event @(rf/subscribe [:epochs/current-event])]
+  (let [current-event @(rf/subscribe [::epochs.subs/selected-event])]
     (when (some? current-event)
       [components/icon-button
        {:icon     [material/refresh]
         :label    "Replay"
         :title    "Replay"
         :on-click #(do (rf/dispatch [:component/set-direction :next])
-                       (rf/dispatch [:epochs/replay]))}])))
+                       (rf/dispatch [::epochs.events/replay]))}])))
 
 (defn replay-help-button
   []
-  (let [current-event @(rf/subscribe [:epochs/current-event])]
+  (let [current-event @(rf/subscribe [::epochs.subs/selected-event])]
     (when (some? current-event)
       [components/hyperlink-info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"])))
 

@@ -173,15 +173,17 @@
 (defclass button
   [ambiance]
   {:cursor           :pointer
-   :background-color (if (= :bright ambiance) nord4 nord0)
+   :background-color (if (= :bright ambiance) nord5 nord0)
    :color            (if (= :bright ambiance) nord0 nord5)
+   ;; TODO: why doesn't this default to 400?
+   :font-weight      400
    :border-radius    (px 2)
-   :border           [[(px 1) :solid nord3]]
+   :border           [[(px 1) :solid nord4]]
    :padding          [[gs-2 gs-5 gs-2 gs-5]]}
   [:svg :path
    {:fill (if (= :bright ambiance) nord0 nord5)}]
   [:&:hover
-   {:background-color (if (= :bright ambiance) nord5 nord2)
+   {:background-color (if (= :bright ambiance) nord6 nord2)
     :color            (if (= :bright ambiance) nord2 nord6)}
    [:svg :path
     {:fill (if (= :bright ambiance) nord2 nord6)}]])
@@ -279,9 +281,9 @@
 
 (defclass section-header
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord4 nord1)
+  {:background-color (if (= :bright ambiance) nord5 nord1)
    :color            (if (= :bright ambiance) nord0 nord6)
-   :border           [[(px 1) :solid nord3]]
+   :border           [[(px 1) :solid nord4]]
    :height           gs-31
    :padding          [[0 gs-12]]
    :font-size        (px 14)
@@ -296,7 +298,8 @@
 
 (defclass path-text-input-style
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord4 nord0)
+  {:background-color :transparent
+   #_#_:background-color (if (= :bright ambiance) nord4 nord0)
    :height           (px 25)
    :width            "-webkit-fill-available" ;; This took a bit of finding!
    :padding          [[0 gs-7]]

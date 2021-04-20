@@ -3,7 +3,8 @@
     [clojure.string :as string]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.utils.utils :as utils]
-    [day8.re-frame-10x.metamorphic :as metam]))
+    [day8.re-frame-10x.metamorphic :as metam]
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]))
 
 (rf/reg-sub
   ::root
@@ -50,8 +51,8 @@
   ::filtered-by-epoch
   :<- [::all]
   :<- [::filter-by-selected-epoch?]
-  :<- [:epochs/beginning-trace-id] ;; TODO
-  :<- [:epochs/ending-trace-id]    ;; TODO
+  :<- [::epochs.subs/beginning-trace-id]
+  :<- [::epochs.subs/ending-trace-id]
   (fn [[traces filter-by-selected-epoch? beginning ending] _]
     (if-not filter-by-selected-epoch?
       traces
@@ -89,7 +90,7 @@
   (fn [[traces categories] _]
     (if-not (seq categories)
       traces
-      (filter (fn [trace] (when (contains? categories (:op-type trace)) trace))))))
+      (filter (fn [trace] (when (contains? categories (:op-type trace)) trace)) traces))))
 
 (defn query->fn [query]
   (if (= :contains (:filter-type query))
@@ -106,7 +107,7 @@
   (fn [[traces queries] _]
     (if-not (seq queries)
       traces
-      (filter (apply every-pred (map query->fn queries))))))
+      (filter (apply every-pred (map query->fn queries)) traces))))
 
 (rf/reg-sub
   ::sorted

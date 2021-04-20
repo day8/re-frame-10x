@@ -11,7 +11,9 @@
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.traces.subs :as subs]
-    [day8.re-frame-10x.traces.events :as events]))
+    [day8.re-frame-10x.traces.events :as events]
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.epochs.events :as epochs.events]))
 
 
 
@@ -174,7 +176,7 @@
   (let [ambiance                (rf/subscribe [:settings/ambiance])
         filter-input            (r/atom "")
         filter-items            (rf/subscribe [::subs/queries])
-        visible-traces          (rf/subscribe [::subs/sorted])
+        visible-traces          @(rf/subscribe [::subs/sorted])
         trace-detail-expansions (rf/subscribe [::subs/expansions])]
     [rc/box
      :size  "1"
@@ -189,14 +191,14 @@
               [:th "operations"]
               [:th
                (str (count visible-traces) " traces")
-               [:span "(" [:button.text-button {:on-click #(rf/dispatch [:epochs/reset])} "clear"] ")"]]
+               [:span "(" [:button.text-button {:on-click #(rf/dispatch [::epochs.events/reset])} "clear"] ")"]]
               [:th {:style {:text-align "right"}} "meta"]]
              [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]))
 
 (defn render []
   (let [ambiance                (rf/subscribe [:settings/ambiance])
-        beginning               (rf/subscribe [:epochs/beginning-trace-id])
-        end                     (rf/subscribe [:epochs/ending-trace-id])]
+        beginning               (rf/subscribe [::epochs.subs/beginning-trace-id])
+        end                     (rf/subscribe [::epochs.subs/ending-trace-id])]
     [rc/v-box
      :size     "1"
      :children
