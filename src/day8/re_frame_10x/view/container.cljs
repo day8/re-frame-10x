@@ -26,7 +26,8 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
-    [day8.re-frame-10x.epochs.events :as epochs.events]))
+    [day8.re-frame-10x.epochs.events :as epochs.events]
+    [day8.re-frame-10x.settings.subs :as settings.subs]))
 
 (def outer-margins {:margin (str "0px " styles/gs-19s)})
 
@@ -100,7 +101,7 @@
 (defn tab-button
   [panel-id title]
   (let [ambiance     @(rf/subscribe [:settings/ambiance])
-        selected-tab @(rf/subscribe [:settings/selected-tab])
+        selected-tab @(rf/subscribe [::settings.subs/selected-tab])
         active?      (= panel-id selected-tab)]
     [rc/v-box
      :height   styles/gs-19s
@@ -197,7 +198,7 @@
 (defn tab-content
   []
   (let [ambiance     @(rf/subscribe [:settings/ambiance])
-        selected-tab @(rf/subscribe [:settings/selected-tab])]
+        selected-tab @(rf/subscribe [::settings.subs/selected-tab])]
     [rc/v-box
      :class    (tab-content-style ambiance selected-tab)   ;;"tab-wrapper"
      :size     "1"
@@ -221,7 +222,7 @@
 
 (defn devtools-inner [{:keys [panel-type debug?]}]
   (let [ambiance          @(rf/subscribe [:settings/ambiance])
-        selected-tab      @(rf/subscribe [:settings/selected-tab])
+        selected-tab      @(rf/subscribe [::settings.subs/selected-tab])
         external-window?  (= panel-type :popup)
         showing-settings? (= selected-tab :settings)]
     [rc/v-box

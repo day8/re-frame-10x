@@ -10,6 +10,7 @@
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.settings.subs :as settings.subs]
     [day8.re-frame-10x.epochs.events :as epochs.events]))
 
 (def comp-section-width "400px")
@@ -102,7 +103,7 @@
    :children [(let [ambiance         @(rf/subscribe [:settings/ambiance])
                     num-epochs       @(rf/subscribe [::epochs.subs/number-of-matches])
                     num-traces       @(rf/subscribe [::traces.subs/count])
-                    epochs-to-retain (rf/subscribe [:settings/number-of-retained-epochs])]
+                    epochs-to-retain (rf/subscribe [::settings.subs/number-of-retained-epochs])]
 
                 [settings-box
                  [[rc/h-box
@@ -155,7 +156,7 @@
                   [rc/v-box
                    :width comp-section-width
                    :gap vertical-gap
-                   :children (for [item @(rf/subscribe [:settings/ignored-events])
+                   :children (for [item @(rf/subscribe [::settings.subs/ignored-events])
                                    :let [id (:id item)]]
                                ^{:key id}
                                [closeable-text-box

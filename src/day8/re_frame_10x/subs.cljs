@@ -3,8 +3,9 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.metamorphic :as metam]
     [day8.re-frame-10x.utils.utils :as utils]
-    [day8.re-frame-10x.traces.subs :as traces.subs]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.settings.subs :as settings.subs]
+    [day8.re-frame-10x.traces.subs :as traces.subs]
     [clojure.string :as str]
     [cljs.spec.alpha :as s]
     [zprint.core :as zp]))
@@ -14,65 +15,6 @@
   (fn [db _]
     (get db :settings)))
 
-(rf/reg-sub
-  :settings/panel-width%
-  :<- [:settings/root]
-  (fn [settings _]
-    (get settings :panel-width%)))
-
-(rf/reg-sub
-  :settings/panel-width%-rounded
-  :<- [:settings/panel-width%]
-  ;; Rounds panel width to nearest n%
-  (fn [panel-width% [_ n]]
-    ;; https://stackoverflow.com/a/19621472
-    (/ (* (Math/ceil (/ (* panel-width% 100)
-                        n))
-          n)
-       100.0)))
-
-(rf/reg-sub
-  :settings/window-width
-  ;; Prefer window-width-rounded if you don't need the exact number of pixels.
-  :<- [:settings/root]
-  (fn [settings _]
-    (get settings :window-width)))
-
-(rf/reg-sub
-  :settings/window-width-rounded
-  :<- [:settings/window-width]
-  ;; Window width, rounded up to the nearest n pixels.
-  ;; Useful when you want to respond to window size changes
-  ;; but not too many of them.
-  (fn [width [_ n]]
-    (* (Math/ceil (/ width n))
-       n)))
-
-(rf/reg-sub
-  :settings/show-panel?
-  :<- [:settings/root]
-  (fn [settings _]
-    (get settings :show-panel?)))
-
-(rf/reg-sub
-  :settings/selected-tab
-  :<- [:settings/root]
-  (fn [settings _]
-    (if (:showing-settings? settings)
-      :settings
-      (get settings :selected-tab))))
-
-(rf/reg-sub
-  :settings/number-of-retained-epochs
-  :<- [:settings/root]
-  (fn [settings]
-    (:number-of-epochs settings)))
-
-(rf/reg-sub
-  :settings/ignored-events
-  :<- [:settings/root]
-  (fn [settings]
-    (sort-by :sort (vals (:ignored-events settings)))))
 
 (rf/reg-sub
   :settings/filtered-view-trace
@@ -568,7 +510,7 @@
 
 (rf/reg-sub
   :code/max-column-width
-  :<- [:settings/window-width-rounded 100]
+  :<- [::settings.subs/window-width-rounded 100]
   :<- [:code/single-character-width]
   ;; It seems like it would be possible to do something smarter responding to panel sizing,
   ;; but that introduces a lot of jank, so we just set to maximum possible window width.

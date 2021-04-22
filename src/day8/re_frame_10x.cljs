@@ -1,15 +1,16 @@
 (ns day8.re-frame-10x
   (:require
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.view.container :as container]
     [day8.re-frame-10x.subs]
+    [day8.re-frame-10x.settings.subs :as settings.subs]
     [day8.re-frame-10x.events :as events]
     [day8.reagent.impl.component :refer [patch-wrap-funs patch-custom-wrapper]]
-    [day8.reagent.impl.batching :refer [patch-next-tick]]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]))
+    [day8.reagent.impl.batching :refer [patch-next-tick]]))
 
 (goog-define debug? false)
 
@@ -29,11 +30,11 @@
   ;; Add clear button
   ;; Filter out different trace types
   (let [position             (r/atom :right)
-        panel-width%         (rf/subscribe [:settings/panel-width%])
-        showing?             (rf/subscribe [:settings/show-panel?])
+        panel-width%         (rf/subscribe [::settings.subs/panel-width%])
+        showing?             (rf/subscribe [::settings.subs/show-panel?])
         dragging?            (r/atom false)
         pin-to-bottom?       (r/atom true)
-        selected-tab         (rf/subscribe [:settings/selected-tab])
+        selected-tab         (rf/subscribe [::settings.subs/selected-tab])
         window-width         (r/atom js/window.innerWidth)
         handle-window-resize (do (rf/dispatch [:settings/window-width js/window.innerWidth]) ;; Set initial
                                  (fn [e]
