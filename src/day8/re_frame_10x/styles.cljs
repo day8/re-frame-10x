@@ -193,8 +193,13 @@
 
 (defclass hyperlink-info
   [ambiance]
-  {:background-color nord0
+  {#_#_:background-color nord0
    :border-radius "50%"}
+  [:svg ;; TODO: no border; fill the question.
+   {:background-color nord0
+    :width "18px"
+    :height "18px"
+    :border-radius "50%"}]
   [:svg :path
    {:fill nord4}]
   [:&:hover
@@ -203,16 +208,16 @@
 
 (defclass hljs
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord6 nord0)}
+  {:background-color (if (= :bright ambiance) nord-ghost-white nord0)}
   ["::selection"
    {:background (if (= :bright ambiance) nord5 nord2)}]
   [:.hljs
    {:display    :block
     :overflow-x :auto
     :padding    (em 0.5)
-    :background (if (= :bright ambiance) nord6 nord0)}]
+    :background (if (= :bright ambiance) nord-ghost-white nord0)}]
   [:.code-listing--highlighted
-   {:background  (if (= :bright ambiance) nord5 nord2)
+   {:background  (if (= :bright ambiance) nord13 nord2)
     :font-weight :bold}]
   [:.hljs
    :.hljs-subst
@@ -370,7 +375,7 @@
     :visibility  :hidden}]
   [:.re-frame-10x-code-fragment-content
    {:height   gs-19
-    :border   [[(px 1) :solid nord1]]
+    :border   [[(px 1) :solid nord4]]
     :overflow :hidden
     #_#_:padding  [[0 gs-5]]}]
   [:.re-frame-10x-code-fragment-button

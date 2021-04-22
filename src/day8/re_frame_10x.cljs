@@ -8,6 +8,7 @@
     [day8.re-frame-10x.view.container :as container]
     [day8.re-frame-10x.subs]
     [day8.re-frame-10x.settings.subs :as settings.subs]
+    [day8.re-frame-10x.settings.events :as settings.events]
     [day8.re-frame-10x.events :as events]
     [day8.reagent.impl.component :refer [patch-wrap-funs patch-custom-wrapper]]
     [day8.reagent.impl.batching :refer [patch-next-tick]]))
@@ -36,11 +37,11 @@
         pin-to-bottom?       (r/atom true)
         selected-tab         (rf/subscribe [::settings.subs/selected-tab])
         window-width         (r/atom js/window.innerWidth)
-        handle-window-resize (do (rf/dispatch [:settings/window-width js/window.innerWidth]) ;; Set initial
+        handle-window-resize (do (rf/dispatch [::settings.events/window-width js/window.innerWidth]) ;; Set initial
                                  (fn [e]
                                    ;; N.B. I don't think this should be a perf bottleneck.
                                    (let [window-width-val js/window.innerWidth]
-                                     (rf/dispatch [:settings/window-width window-width-val])
+                                     (rf/dispatch [::settings.events/window-width window-width-val])
                                      (reset! window-width window-width-val))))
         handle-keys          (fn [e]
                                (let [tag-name        (.-tagName (.-target e))
@@ -58,7 +59,7 @@
                                    (.preventDefault e)
                                    (let [width% (/ (- new-window-width x) new-window-width)]
                                      (when (<= width% 0.9)
-                                       (rf/dispatch [:settings/panel-width% width%])))
+                                       (rf/dispatch [::settings.events/panel-width% width%])))
                                    (reset! window-width new-window-width))))
         handle-mouse-up      (fn [e] (reset! dragging? false))]
     (r/create-class
@@ -122,14 +123,14 @@
 
 (defn traced-result [trace-id fragment-id]
   ;; TODO: this is not terribly efficient, figure out how to get the index of the trace directly.
-  (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db [:traces :all-traces])))]
+  (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db [:traces :all])))]
     (get-in trace [:tags :code fragment-id :result])))
 
 (defn ^:export factory-reset! []
-  (rf/dispatch [:settings/factory-reset]))
+  (rf/dispatch [::settings.events/factory-reset]))
 
 (defn ^:export show-panel! [show-panel?]
-  (rf/dispatch [:settings/show-panel? show-panel?]))
+  (rf/dispatch [::settings.events/show-panel? show-panel?]))
 
 ;; --- NEW ---
 

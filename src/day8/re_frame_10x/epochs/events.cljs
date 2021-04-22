@@ -19,12 +19,13 @@
 
 (rf/reg-event-fx
   ::receive-new-traces
-  (fn [{:keys [db]} [_ new-traces]]
+  [rf/trim-v]
+  (fn [{:keys [db]} [new-traces]]
     (if-let [filtered-traces (->> (filter log-trace? new-traces)
                                   (sort-by :id))]
       (let [number-of-epochs-to-retain (get-in db [:settings :number-of-epochs])
             events-to-ignore           (->> (get-in db [:settings :ignored-events]) vals (map :event-id) set)
-            previous-traces            (get-in db [:traces :all-traces] [])
+            previous-traces            (get-in db [:traces :all] [])
             parse-state                (get-in db [:epochs :parse-state] metam/initial-parse-state)
             {drop-re-frame :re-frame drop-reagent :reagent} (get-in db [:settings :low-level-trace])
             all-traces                 (reduce conj previous-traces filtered-traces)
@@ -84,7 +85,7 @@
                                                                 (or (when drop-reagent (metam/low-level-reagent-trace? trace))
                                                                     (when drop-re-frame (metam/low-level-re-frame-trace? trace)))))) all-traces)]
         {:db       (-> db
-                       (assoc-in [:traces :all-traces] retained-traces)
+                       (assoc-in [:traces :all] retained-traces)
                        (update :epochs (fn [epochs]
                                          (let [selected-index (:selected-epoch-index epochs)
                                                selected-id    (:selected-epoch-id epochs)]

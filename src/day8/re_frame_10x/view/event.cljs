@@ -58,7 +58,7 @@
                  :height "17px"
                  :style {:cursor "pointer"}
                  :attr  {:on-click (handler-fn (rf/dispatch [:code/set-code-visibility open?-path (not open?)]))}
-                 :child [components/expansion-button {:open? open?}]]
+                 :child [components/expansion-button {:open? open? :size styles/gs-19s}]]
                 [rc/h-box
                  :size     "1"
                  :style    {:overflow "hidden"}
@@ -70,7 +70,7 @@
                              :child [:code =>str (when (pos? result-length)
                                                    (pp/pr-str-truncated result-length (:result line)))]]]]
                 [components/icon-button
-                 {:icon     [material/content-copy]
+                 {:icon     [material/content-copy {:size "14px"}]
                   :title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
                   :on-click (handler-fn (do (utils/copy-to-clipboard (pr-str (list 'day8.re-frame-10x/traced-result trace-id (:id line))))
                                             (rf/dispatch [:code/repl-msg-state :start])))}]]]))
@@ -79,7 +79,7 @@
 (defclass code-block-style
   [ambiance]
   {:background-color (if (= :bright ambiance) styles/nord6 styles/nord0)
-   :border           [[(px 1) :solid styles/nord1]]
+   :border           [[(px 1) :solid styles/nord4]]
    :margin-top       (px -1)
    :overflow-x       :auto
    :overflow-y       :hidden
@@ -168,7 +168,7 @@
   {:composes      (styles/hljs ambiance)
    :max-height    (when-not show-all-code? (px (* 10 17)))  ;; Add scrollbar after 10 lines
    :overflow      :auto
-   :border        [[(px 1) :solid (if (= :bright ambiance) styles/nord3 styles/nord1)]]
+   :border        [[(px 1) :solid (if (= :bright ambiance) styles/nord4 styles/nord1)]]
    :border-radius styles/gs-2
    :white-space   :pre}) ;; TODO: This is a quick fix for issue #270
 
@@ -261,7 +261,8 @@
                 :size  "1"
                 :child ""]
                [components/icon-button
-                {:icon     [material/content-copy]
+                {:icon     [material/content-copy
+                            {:size "14px"}]
                  :label    "requires"
                  :title    "Copy to the clipboard, the require form to set things up for the \"repl\" links below"
                  ;; Doing this in a list would be nicer, but doesn't let us use ' as it will be expanded before we can create the string.
@@ -274,10 +275,10 @@
 (defclass indent-block-style
   [ambiance first?]
   (merge
-    {:background-color (if (= :bright ambiance) styles/nord4 styles/nord3)
-     :border-left      [[(px 1) :solid styles/nord1]]}
+    {:background-color (if (= :bright ambiance) styles/nord6 styles/nord3)
+     :border-left      [[(px 1) :solid styles/nord4]]}
     (when first?
-      {:border-top [[(px 1) :solid styles/nord1]]})))
+      {:border-top [[(px 1) :solid styles/nord4]]})))
 
 (defn indent-block
   [indent-level first?]

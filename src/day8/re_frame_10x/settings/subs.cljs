@@ -9,6 +9,7 @@
 
 (rf/reg-sub
   ::panel-width%
+  :<- [::root]
   (fn [{:keys [panel-width%]} _]
     panel-width%))
 

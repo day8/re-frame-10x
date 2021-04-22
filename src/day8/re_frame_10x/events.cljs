@@ -19,7 +19,8 @@
     [day8.re-frame-10x.styles :as styles]
     [clojure.set :as set]
     [day8.re-frame-10x.metamorphic :as metam]
-    [day8.re-frame-10x.epochs.events :as epochs.events]))
+    [day8.re-frame-10x.epochs.events :as epochs.events]
+    [day8.re-frame-10x.settings.events :as settings.events]))
 
 (rf/reg-event-fx
   ::init
@@ -52,15 +53,15 @@
     (js/console.log cofx)
     {:fx [(when using-trace?
             [:dispatch [:global/enable-tracing]])
-          [:dispatch [:settings/panel-width% panel-width-ratio]]
-          [:dispatch [:settings/show-panel? show-panel]]
-          [:dispatch [:settings/selected-tab selected-tab]]
+          [:dispatch [::settings.events/panel-width% panel-width-ratio]]
+          [:dispatch [::settings.events/show-panel? show-panel]]
+          [:dispatch [::settings.events/selected-tab selected-tab]]
           [:dispatch [:settings/set-ignored-events ignored-events]]
           [:dispatch [:settings/set-filtered-view-trace filtered-view-trace]]
           [:dispatch [:settings/set-low-level-trace low-level-trace]]
           [:dispatch [:settings/set-number-of-retained-epochs retained-epochs]]
           [:dispatch [:settings/app-db-follows-events? app-db-follow-events?]]
-          [:dispatch [:settings/set-ambiance ambiance]]
+          [:dispatch [::settings.events/set-ambiance ambiance]]
           [:dispatch [:settings/debug? debug?]]
           ;; Important that window dimensions are set before we open an external window.
           [:dispatch [:settings/external-window-dimensions external-window-dimensions]]
@@ -117,40 +118,6 @@
        (catch :default e
          nil)))
 
-(rf/reg-event-db
-  :settings/panel-width%
-  (fn [db [_ width%]]
-    (localstorage/save! "panel-width-ratio" (max width% 0.05))
-    (assoc-in db [:settings :panel-width%] (max width% 0.05))))
-
-(rf/reg-event-db
-  :settings/window-width
-  (fn [db [_ width]]
-    (assoc-in db [:settings :window-width] width)))
-
-(rf/reg-event-db
-  :settings/selected-tab
-  (fn [db [_ selected-tab]]
-    (localstorage/save! "selected-tab" selected-tab)
-    (assoc-in db [:settings :selected-tab] selected-tab)))
-
-(rf/reg-event-db
-  :settings/toggle-settings
-  (fn [db _]
-    (update-in db [:settings :showing-settings?] not)))
-
-(rf/reg-event-db
-  :settings/show-panel?
-  (fn [db [_ show-panel?]]
-    (localstorage/save! "show-panel" show-panel?)
-    (assoc-in db [:settings :show-panel?] show-panel?)))
-
-(rf/reg-event-db
-  :settings/factory-reset
-  (fn [db _]
-    (localstorage/delete-all-keys!)
-    (js/location.reload)
-    db))
 
 (rf/reg-event-db
   :settings/user-toggle-panel
@@ -272,12 +239,6 @@
   (fn [db [_ follows-events?]]
     follows-events?))
 
-(rf/reg-event-db
-  :settings/set-ambiance
-  [(rf/path [:settings :ambiance]) (fixed-after #(localstorage/save! "ambiance" %))]
-  (fn [db [_ ambiance]]
-    ambiance))
-
 ;; Global
 
 (defn mount [popup-window popup-document]
@@ -365,7 +326,7 @@
         {:db             (-> (:db ctx)
                              (assoc-in [:settings :external-window?] true)
                              (dissoc-in [:errors :popup-failed?]))
-         :dispatch-later [{:ms 200 :dispatch [:settings/show-panel? false]}]})
+         :dispatch-later [{:ms 200 :dispatch [::settings.events/show-panel? false]}]})
       {:db       (assoc-in (:db ctx) [:errors :popup-failed?] true)
        :dispatch [:global/external-closed]})))
 
@@ -374,7 +335,7 @@
   (fn [ctx _]
     (localstorage/save! "external-window?" false)
     {:db             (assoc-in (:db ctx) [:settings :external-window?] false)
-     :dispatch-later [{:ms 400 :dispatch [:settings/show-panel? true]}]}))
+     :dispatch-later [{:ms 400 :dispatch [::settings.events/show-panel? true]}]}))
 
 (rf/reg-event-db
   :settings/external-window-dimensions

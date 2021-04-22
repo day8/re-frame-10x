@@ -17,14 +17,15 @@
   [ambiance disabled?]
   {:cursor           (if disabled? :default :pointer)
    :border-radius    (px 3)
-   :background-color (if disabled? styles/nord2 styles/nord4)
+   :background-color (if disabled? styles/nord2 styles/nord5)
+   :border           [[(px 1) :solid (if disabled? styles/nord1 styles/nord4)]]
    :padding          styles/gs-2s
-   :font-weight      :bold}
+   :font-weight      400}
   [:svg :path
     {:fill styles/nord0}]
   (when-not disabled?
     [:&:hover
-     {:background-color styles/nord5}
+     {:background-color styles/nord6}
      [:svg :path
       {:fill styles/nord1}]]))
 

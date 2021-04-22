@@ -11,7 +11,8 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.settings.subs :as settings.subs]
-    [day8.re-frame-10x.epochs.events :as epochs.events]))
+    [day8.re-frame-10x.epochs.events :as epochs.events]
+    [day8.re-frame-10x.settings.events :as settings.events]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")
@@ -29,7 +30,7 @@
      {:class    (styles/done-button ambiance)
       :icon     [material/check-circle-outline]
       :label    "Done"
-      :on-click #(rf/dispatch [:settings/toggle-settings])}]))
+      :on-click #(rf/dispatch [::settings.events/toggle])}]))
 
 (defn right-buttons
   [external-window?]
@@ -219,12 +220,12 @@
                    :model     ambiance
                    :label     "dark"
                    :value     :dark
-                   :on-change #(rf/dispatch [:settings/set-ambiance %])]
+                   :on-change #(rf/dispatch [::settings.events/set-ambiance %])]
                   [rc/radio-button
                    :model     ambiance
                    :label     "bright"
                    :value     :bright
-                   :on-change #(rf/dispatch [:settings/set-ambiance %])]]])
+                   :on-change #(rf/dispatch [::settings.events/set-ambiance %])]]])
 
               [rc/line]
               (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
@@ -235,6 +236,6 @@
                    :label [rc/v-box
                            :align :center
                            :children ["Factory Reset"]]
-                   :on-click #(rf/dispatch [:settings/factory-reset])]]
+                   :on-click #(rf/dispatch [::settings.events/factory-reset])]]
                  [""]
                  settings-box-81])]])

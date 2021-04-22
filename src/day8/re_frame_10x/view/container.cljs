@@ -27,7 +27,8 @@
     [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.epochs.events :as epochs.events]
-    [day8.re-frame-10x.settings.subs :as settings.subs]))
+    [day8.re-frame-10x.settings.subs :as settings.subs]
+    [day8.re-frame-10x.settings.events :as settings.events]))
 
 (def outer-margins {:margin (str "0px " styles/gs-19s)})
 
@@ -108,7 +109,7 @@
      :class    (tab-button-style ambiance active?)
      :children [[rc/button
                  :label    title
-                 :on-click #(rf/dispatch [:settings/selected-tab panel-id])]]]))
+                 :on-click #(rf/dispatch [::settings.events/selected-tab panel-id])]]]))
 
 (defclass tab-buttons-style
   [ambiance]

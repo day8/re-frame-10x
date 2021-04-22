@@ -12,7 +12,8 @@
     [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.epochs.events :as epochs.events]
-    [day8.re-frame-10x.settings.subs :as settings.subs]))
+    [day8.re-frame-10x.settings.subs :as settings.subs]
+    [day8.re-frame-10x.settings.events :as settings.events]))
 
 (defclass epoch-style
   [ambiance active?]
@@ -124,7 +125,7 @@
   [components/icon-button
    {:icon     [material/settings]
     :title    "Settings"
-    :on-click #(rf/dispatch [:settings/toggle-settings])}])
+    :on-click #(rf/dispatch [::settings.events/toggle])}])
 
 
 
@@ -138,7 +139,7 @@
       :title (if (= ambiance :bright)
                "Dark ambiance"
                "Bright ambiance")
-      :on-click #(rf/dispatch [:settings/set-ambiance (if (= ambiance :bright) :dark :bright)])}]))
+      :on-click #(rf/dispatch [::settings.events/set-ambiance (if (= ambiance :bright) :dark :bright)])}]))
 
 (defn right-buttons
   [external-window?]
