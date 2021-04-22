@@ -43,7 +43,8 @@
 
 (defclass pod-header-section-style
   [ambiance last?]
-  {:border-right (when-not last? [[(px 1) :solid styles/nord4]])})
+  {:border-right (when-not last? [[(px 1) :solid styles/nord4]])
+   :padding-left (px 3)})
 
 (defn pod-header-section
   [& {:keys [size justify align gap width min-width background-color children attr last?]
@@ -69,19 +70,16 @@
      :height   styles/gs-31s
      :children [[pod-header-section
                  :children [[rc/box
-                             :width  styles/gs-31s
+                             :width  "30px"
                              :height styles/gs-31s
+                             :justify :center
+                             :align :center
                              :class  (styles/no-select ambiance)
                              :style  {:cursor "pointer"}
                              :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
                                       :on-click (handler-fn (rf/dispatch [:app-db/set-path-visibility id (not open?)]))}
-                             :child  [rc/box
-                                      :margin "auto"
-                                      :child [:span.arrow (if open?
-                                                            [material/arrow-drop-down
-                                                             :fill styles/nord7]
-                                                            [material/arrow-right
-                                                             :fill styles/nord7])]]]]]
+                             :child  [components/expansion-button {:open? open?
+                                                                   :size styles/gs-31s}]]]]
 
                 [rc/h-box
                  :class (styles/path-header-style ambiance)
@@ -97,18 +95,18 @@
                              :on-change       #(rf/dispatch [:app-db/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
                              :on-submit       #()                   ;; #(rf/dispatch [:app-db/add-path %])
                              :change-on-blur? false
-                             :placeholder     "Showing all of app-db. Try entering a path like [:todos 1]"]]]
+                             :placeholder     "enter an app-db path like [:todos 1]"]]]
                 [pod-header-section
-                 :width    styles/gs-50s
+                 :width    "49px"
+                 :justify  :center
+                 :align    :center
                  :attr     {:on-click (handler-fn (rf/dispatch [:app-db/set-diff-visibility id (not diff?)]))}
-                 :children [[rc/box
-                             :style {:margin "auto"}
-                             :child [rc/checkbox
-                                     :model diff?
-                                     :label ""
-                                     :style {:margin-left "6px"
-                                             :margin-top  "1px"}
-                                     :on-change #(rf/dispatch [:app-db/set-diff-visibility id (not diff?)])]]]]
+                 :children [[rc/checkbox
+                             :model diff?
+                             :label ""
+                             #_#_:style {:margin-left "6px"
+                                         :margin-top  "1px"}
+                             :on-change #(rf/dispatch [:app-db/set-diff-visibility id (not diff?)])]]]
                 [pod-header-section
                  :width    styles/gs-50s
                  :justify  :center
@@ -124,8 +122,8 @@
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [:app-db/current-epoch-app-db-after])]
     [rc/v-box
-     :style {:margin-bottom pod-gap
-             :margin-right  "1px"}
+     #_#_:style {:margin-bottom pod-gap
+                 :margin-right  "1px"}
      :children [[pod-header pod-info]
                 [rc/v-box
                  :class (when open? (styles/pod-border ambiance))
@@ -216,31 +214,39 @@
   [rc/h-box
    :height   styles/gs-19s
    :align    :center
-   :style    {:margin-right "1px"}
-   :children [[rc/box
+   :children [[rc/gap-f :size styles/gs-31s]
+              [rc/box
                :size  "1"
+               :height "31px"
+               #_#_:style   {:background-color "blue"}
                :child ""]
               [rc/box
-               :width   "51px"                                ;;  50px + 1 border
+               :width   styles/gs-50s                                ;;  50px + 1 border
                :justify :center
+               #_#_:style   {:background-color "pink"}
                :child   [rc/label :style {:font-size "9px"} :label "DIFFS"]]
               [rc/box
-               :width   "51px"                                ;;  50px + 1 border
+               :width   styles/gs-50s                                ;;  50px + 1 border
                :justify :center
+               #_#_:style   {:background-color "red"}
                :child   [rc/label :style {:font-size "9px"} :label "DELETE"]]
-              [rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
+              [rc/gap-f :size styles/gs-2s]
+              #_[rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
 
 (defn pod-section []
   (let [pods @(rf/subscribe [:app-db/paths])]
     [rc/v-box
      :size     "1"
-     :children [(if (empty? pods)
-                  [no-pods]
-                  [pod-header-column-titles])
-                (for [p pods]
-                  ^{:key (:id p)}
-                  [pod p])]]))
+     :children
+     (into
+       [(if (empty? pods)
+          [no-pods]
+          [pod-header-column-titles])]
+       (for [p pods]
+         [:<>
+          [pod p]
+          [rc/gap-f :size styles/gs-12s]]))]))
 
 
 (defn render [app-db]

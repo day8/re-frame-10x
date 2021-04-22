@@ -32,7 +32,7 @@
    :expandable-style                       (style {:white-space  :nowrap
                                                    :padding-left styles/gs-2})
    :expandable-inner-style                 (style {:margin-left (px -2)})
-   :item-style                             (style {:display     :flex
+   :item-style                             (style {:display     :inline-block
                                                    :white-space :nowrap
                                                    :border-left [[(px 2) :solid :pink]]
                                                    :padding     [[0 styles/gs-5 0 styles/gs-5]]
@@ -49,7 +49,7 @@
    :symbol-style                           (style {:color styles/nord8})
    :bool-style                             (style {:color styles/nord10})
    :native-reference-wrapper-style         (style {:position :relative
-                                                   :display  :flex})
+                                                   :display  :inline-block})
    :native-reference-style                 (style {:padding  [[0 (px 3)]]
                                                    :margin   [[(px -4) 0 (px -2)]]
                                                    :position :relative
@@ -106,7 +106,7 @@
    :instance-body-fields-table-style       (style {:border-spacing  0
                                                    :border-collapse :collapse
                                                    :margin-bottom   (px -2)
-                                                   :display         :flex})
+                                                   :display         :inline-block})
    :fields-header-style                    (style {:padding [[0 styles/gs-2]]})
    :protocol-method-name-style             (style {:margin-right (px 6)
                                                    :color        :red})
@@ -146,7 +146,7 @@
                                                    :min-height  (px 14)})
    :body-items-more-style                  (style {:background-color    :red
                                                    :min-width           styles/gs-50
-                                                   :display             :flex
+                                                   :display             :inline-block
                                                    :color               :pink
                                                    :cursor              :pointer
                                                    :line-height         (px 14)
@@ -156,7 +156,7 @@
                                                    :margin              [[(px 1) 0 0 0]]
                                                    :-webkit-user-select :none})
    :index-style                            (style {:min-width           styles/gs-50
-                                                   :display             :flex
+                                                   :display             :inline-block
                                                    ;:text-align          :right
                                                    ;:vertical-align      :top
                                                    :background-color    styles/nord2
@@ -179,7 +179,7 @@
 
 
 (def body-style-base
-  {:display          :flex
+  {:display          :inline-block
    :padding          [[styles/gs-2 styles/gs-12]]
    :border           [[(px 1) :solid styles/nord3]]
    :margin           (px 1)
@@ -302,11 +302,12 @@
 
 (defn prn-str-render?
   [data]
-  (or (string? data)
-      (instance? js/RegExp data)
-      (number? data)
-      (boolean? data)
-      (nil? data)))
+  false
+  #_(or (string? data)
+        (instance? js/RegExp data)
+        (number? data)
+        (boolean? data)
+        (nil? data)))
 
 (defn prn-str-render
   [data]

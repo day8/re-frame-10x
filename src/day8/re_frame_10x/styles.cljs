@@ -40,6 +40,9 @@
 (def nord14 "#A3BE8C")
 (def nord15 "#B48EAD")
 
+;; Extras
+(def nord-ghost-white "#F8F9FB")
+
 ;; Golden section, base 50
 (def gs-2 (px 2))
 (def gs-5 (px 5))
@@ -157,12 +160,12 @@
 (defclass navigation-border-top
   [ambiance]
   {:composes   (navigation ambiance)
-   :border-top [[gs-2 :solid nord1]]})
+   #_#_:border-top [[gs-2 :solid nord1]]})
 
 (defclass navigation-border-bottom
   [ambiance]
   {:composes      (navigation ambiance)
-   :border-bottom [[gs-2 :solid nord1]]})
+   #_#_:border-bottom [[gs-2 :solid nord1]]})
 
 (defclass hyperlink
   [ambiance]
@@ -286,12 +289,13 @@
                                          [nord6 nord1 nord3])]
     {:background-color background
      :color            foreground
+     #_#_:padding-left     gs-12s ;; TODO: this conflicts between fx and subs; need padding for fx but no padding for subs.
      :border           [[(px 1) :solid border]]
      :height           gs-31
-     :padding          [[0 gs-12]]
      :font-size        (px 14)
-     :font-weight      :bold
+     ;:font-weight      :bold ;; TODO same as above
      :overflow         :hidden}))
+
 
 (defclass path-header-style
   [ambiance]
@@ -301,11 +305,17 @@
 
 (defclass path-text-input-style
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord5 nord0)
+  {:background-color (if (= :bright ambiance) nord-ghost-white nord0)
    :height           (px 25)
    :width            "-webkit-fill-available" ;; This took a bit of finding!
    :padding          [[0 gs-7]]
-   :border           :none})
+   :border           :none}
+  [:&:focus
+   {:outline-color nord6}]
+  ["&::placeholder"
+   {:color nord3
+    :font-style :italic
+    :font-weight 300}])
 
 (defclass pod-border
   [ambiance]
@@ -315,14 +325,14 @@
 
 (defclass pod-data
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord6 nord0)
+  {:background-color (if (= :bright ambiance) nord-ghost-white nord0)
    :padding          [[0 gs-2]]
    :min-width        (px 100)})
 
 (defclass section-data
   [ambiance]
   {:composes         (pod-border ambiance)
-   :background-color (if (= :bright ambiance) nord6 nord0)
+   :background-color (if (= :bright ambiance) nord-ghost-white nord0)
    :padding-left     gs-12
    :overflow-x       :auto
    :overflow-y       :hidden})
@@ -348,7 +358,7 @@
 (defclass code-fragment
   [ambiance]
   {:color             (if (= :bright ambiance) nord0 nord4)
-   :background-color  (if (= :bright ambiance) nord4 nord0)}
+   :background-color  (if (= :bright ambiance) nord-ghost-white nord0)}
   [:.re-frame-10x-code-fragment-code
    {:margin-left gs-2
     :white-space :nowrap}]

@@ -126,10 +126,10 @@
     {:fill styles/nord1}]])
 
 (defn expansion-button
-  [{:keys [open?]}]
+  [{:keys [open? size]}]
   (let [ambiance @(rf/subscribe [:settings/ambiance])]
     [rc/box
      :class (expansion-button-style ambiance)
      :child (if open?
-              [material/arrow-drop-down]
-              [material/arrow-right])]))
+              [material/arrow-drop-down :size size]
+              [material/arrow-right :size size])]))

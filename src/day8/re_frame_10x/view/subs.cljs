@@ -155,18 +155,20 @@
                 ;; TODO: report if a sub was run multiple times
                 #_(when run-times
                     [:span "Warning: run " run-times " times"])
-
+                ;; TODO: label
                 [rc/h-box
                  :class    (styles/path-header-style ambiance)
                  :size     "auto"
                  :style    {:height       styles/gs-31s
                             :border-right pod-border-edge}
                  :align    :center
-                 :children [[rc/input-text
-                             :class     (styles/path-text-input-style ambiance)
-                             :width     "100%"
-                             :model     path
-                             :disabled? true]]]
+                 :children [[rc/label
+                             :label path]
+                            #_[rc/input-text
+                               :class     (styles/path-text-input-style ambiance)
+                               :width     "100%"
+                               :model     path
+                               :disabled? true]]]
 
                 [pod-header-section
                  :min-width styles/gs-50s
@@ -397,7 +399,7 @@
      [:input
       {:type        "text"
        :value       @filter-str
-       :placeholder "Type to filter subs"
+       :placeholder "filter" ;; TODO italtic same as app-db
        :on-change   #(rf/dispatch [:subs/set-filter
                                    (-> % .-target .-value)])}]]))
 

@@ -1,3 +1,4 @@
+;; TODO: remove parts entirely.
 (ns day8.re-frame-10x.view.parts
   (:require
     [re-frame.registrar]

@@ -81,8 +81,9 @@
     :color          (if (= :bright ambiance)
                       (if active? styles/nord0 styles/nord4)
                       (if active? styles/nord5 styles/nord0))
-    :padding        [[styles/gs-2 styles/gs-12]]
-    :margin-right   styles/gs-5s
+    :padding        [[0 styles/gs-12 (px 3) styles/gs-12]]
+    :height         styles/gs-19
+    :margin-right   styles/gs-5
     :border-top     [[(px 1) :solid styles/nord3]]
     :border-left    [[(px 1) :solid styles/nord3]]
     :border-right   [[(px 1) :solid styles/nord3]]
@@ -102,6 +103,7 @@
         selected-tab @(rf/subscribe [:settings/selected-tab])
         active?      (= panel-id selected-tab)]
     [rc/v-box
+     :height   styles/gs-19s
      :class    (tab-button-style ambiance active?)
      :children [[rc/button
                  :label    title
