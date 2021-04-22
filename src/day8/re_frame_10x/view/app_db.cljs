@@ -13,7 +13,8 @@
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.view.cljs-devtools                         :as cljs-devtools]
-    [day8.re-frame-10x.view.components                            :as components])
+    [day8.re-frame-10x.view.components                            :as components]
+    [day8.re-frame-10x.settings.subs :as settings.subs])
   (:require-macros
     [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
@@ -24,7 +25,7 @@
 
 (defn path-inspector-button
   []
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/button
      :class    (styles/button ambiance)
      :label    [rc/h-box
@@ -49,7 +50,7 @@
 (defn pod-header-section
   [& {:keys [size justify align gap width min-width background-color children attr last?]
       :or   {size "none" justify :start align :center}}]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class      (pod-header-section-style ambiance last?)
      :size       size
@@ -63,7 +64,7 @@
      :children   children]))
 
 (defn pod-header [{:keys [id path path-str open? diff?]}]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class    (styles/section-header ambiance)
      :align    :center
@@ -118,7 +119,7 @@
 
 
 (defn pod [{:keys [id path open? diff?] :as pod-info}]
-  (let [ambiance     @(rf/subscribe [:settings/ambiance])
+  (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [:app-db/current-epoch-app-db-after])]
     [rc/v-box

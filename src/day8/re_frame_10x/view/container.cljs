@@ -100,7 +100,7 @@
 
 (defn tab-button
   [panel-id title]
-  (let [ambiance     @(rf/subscribe [:settings/ambiance])
+  (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         selected-tab @(rf/subscribe [::settings.subs/selected-tab])
         active?      (= panel-id selected-tab)]
     [rc/v-box
@@ -117,7 +117,7 @@
 
 (defn tab-buttons
   [{:keys [debug?]}]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class    (tab-buttons-style ambiance)
      :justify  :between
@@ -154,7 +154,7 @@
 
 (defn warnings
   [external-window?]
-  (let [ambiance   @(rf/subscribe [:settings/ambiance])
+  (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
         unloading? @(rf/subscribe [:global/unloading?])]
     [:<>
      (when (and external-window? unloading?)
@@ -176,7 +176,7 @@
 
 (defn errors
   [external-window?]
-  (let [ambiance      @(rf/subscribe [:settings/ambiance])
+  (let [ambiance      @(rf/subscribe [::settings.subs/ambiance])
         popup-failed? @(rf/subscribe [:errors/popup-failed?])]
     (when (and (not external-window?) popup-failed?)
       [:h1
@@ -197,7 +197,7 @@
 
 (defn tab-content
   []
-  (let [ambiance     @(rf/subscribe [:settings/ambiance])
+  (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         selected-tab @(rf/subscribe [::settings.subs/selected-tab])]
     [rc/v-box
      :class    (tab-content-style ambiance selected-tab)   ;;"tab-wrapper"
@@ -221,7 +221,7 @@
   {:composes (styles/background ambiance)})
 
 (defn devtools-inner [{:keys [panel-type debug?]}]
-  (let [ambiance          @(rf/subscribe [:settings/ambiance])
+  (let [ambiance          @(rf/subscribe [::settings.subs/ambiance])
         selected-tab      @(rf/subscribe [::settings.subs/selected-tab])
         external-window?  (= panel-type :popup)
         showing-settings? (= selected-tab :settings)]

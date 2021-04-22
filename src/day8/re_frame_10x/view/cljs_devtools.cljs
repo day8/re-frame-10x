@@ -13,7 +13,8 @@
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.styles :as styles]))
+    [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.settings.subs :as settings.subs]))
 
 (def default-config @devtools.prefs/default-config)
 
@@ -242,7 +243,7 @@
    {:fill (if (= ambiance :bright) styles/nord0 styles/nord5)}])
 
 (defn data-structure [jsonml path]
-  (let [ambiance  (rf/subscribe [:settings/ambiance])
+  (let [ambiance  (rf/subscribe [::settings.subs/ambiance])
         expanded? (rf/subscribe [:app-db/node-expanded? path])]
     (fn [jsonml path]
       [:span
@@ -315,7 +316,7 @@
                  :margin "10px 0"}} (prn-str data)])
 
 (defn simple-render [data path & [class]]
-  (let [ambiance (rf/subscribe [:settings/ambiance])]
+  (let [ambiance (rf/subscribe [::settings.subs/ambiance])]
     (fn [data]
       [:div
        {:class (str (jsonml-style @ambiance) " " class)}

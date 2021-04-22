@@ -7,7 +7,8 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
     [day8.re-frame-10x.view.components :as components]
-    [day8.re-frame-10x.styles :as styles]))
+    [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.settings.subs :as settings.subs]))
 
 #_(defglobal timing-styles
     [:#--re-frame-10x--
@@ -42,7 +43,7 @@
    :border           [[(px 1) :solid styles/nord3]]})
 
 (defn timing-tag [label]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [components/tag (timing-tag-style ambiance) label]))
 
 (defn timing-section
@@ -70,7 +71,7 @@
    :overflow         :hidden})
 
 (defn render []
-  (let [ambiance               @(rf/subscribe [:settings/ambiance])
+  (let [ambiance               @(rf/subscribe [::settings.subs/ambiance])
         timing-data-available? @(rf/subscribe [:timing/data-available?])
         event-processing-time  @(rf/subscribe [:timing/event-processing-time])]
     (if timing-data-available?

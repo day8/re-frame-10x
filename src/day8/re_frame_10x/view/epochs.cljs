@@ -11,7 +11,8 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
-    [day8.re-frame-10x.epochs.events :as epochs.events]))
+    [day8.re-frame-10x.epochs.events :as epochs.events]
+    [day8.re-frame-10x.settings.subs :as settings.subs]))
 
 (defclass epoch-style
   [ambiance active?]
@@ -30,7 +31,7 @@
   []
   (let [hover?     (r/atom false)]
     (fn [event id]
-      (let [ambiance   @(rf/subscribe [:settings/ambiance])
+      (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
             current-id @(rf/subscribe [::epochs.subs/selected-epoch-id])
             active?    (= id current-id)]
         [rc/h-box
@@ -64,7 +65,7 @@
 
 (defn epochs
   []
-  (let [ambiance   @(rf/subscribe [:settings/ambiance])
+  (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
         all-events @(rf/subscribe [::epochs.subs/events-by-id])]
     [rc/v-box
      :class    (epochs-style ambiance)
@@ -129,7 +130,7 @@
 
 (defn ambiance-button
   []
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [components/icon-button
      {:icon (if (= ambiance :bright)
               [material/light-mode]
@@ -156,7 +157,7 @@
 
 (defn navigation
   [external-window?]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/v-box
      :children [[rc/h-box
                  :class    (navigation-style ambiance)

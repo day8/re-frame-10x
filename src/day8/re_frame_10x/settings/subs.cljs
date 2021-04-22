@@ -72,3 +72,35 @@
   :<- [::root]
   (fn [{:keys [ignored-events]} _]
     (sort-by :sort (vals ignored-events))))
+
+(rf/reg-sub
+  ::filtered-view-trace
+  :<- [::root]
+  (fn [{:keys [filtered-view-trace]} _]
+    (sort-by :sort (vals filtered-view-trace))))
+
+(rf/reg-sub
+  ::low-level-trace
+  ;; TODO: filter from traces panel
+  ;; TODO: eventually drop these low level traces after computing the state we need from them.
+  :<- [::root]
+  (fn [{:keys [low-level-trace]} _]
+    low-level-trace))
+
+(rf/reg-sub
+  ::debug?
+  :<- [::root]
+  (fn [{:keys [debug?]} _]
+    debug?))
+
+(rf/reg-sub
+  ::app-db-follows-events?
+  :<- [::root]
+  (fn [{:keys [app-db-follows-events?]} _]
+    app-db-follows-events?))
+
+(rf/reg-sub
+  ::ambiance
+  :<- [::root]
+  (fn [{:keys [ambiance]} _]
+    ambiance))

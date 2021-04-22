@@ -9,7 +9,8 @@
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.material :as material]))
+    [day8.re-frame-10x.material :as material]
+    [day8.re-frame-10x.settings.subs :as settings.subs]))
 
 
 (defclass icon-button-class
@@ -29,7 +30,7 @@
 
 (defn icon-button
   [{:keys [icon label title on-click disabled? class]}]
-  (let [ambiance  @(rf/subscribe [:settings/ambiance])
+  (let [ambiance  @(rf/subscribe [::settings.subs/ambiance])
         disabled? (rc/deref-or-value disabled?)]
     [rc/button
      :class    (str (icon-button-class ambiance disabled?) " " class)
@@ -54,7 +55,7 @@
 
 (defn hyperlink-info
   [url]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/hyperlink-href
      :class (styles/hyperlink-info ambiance)
      :label [rc/box
@@ -127,7 +128,7 @@
 
 (defn expansion-button
   [{:keys [open? size]}]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/box
      :class (expansion-button-style ambiance)
      :child (if open?

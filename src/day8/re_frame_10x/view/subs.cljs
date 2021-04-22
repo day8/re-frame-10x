@@ -14,7 +14,8 @@
     [day8.re-frame-10x.svgs :as svgs]
     [clojure.data]
     [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.styles :as styles])
+    [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.settings.subs :as settings.subs])
   (:require-macros
     [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
@@ -57,15 +58,15 @@
    :width    styles/gs-19})
 
 (defn sub-tag [type label]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [components/tag (sub-tag-style ambiance type) label]))
 
 (defn short-sub-tag [type label]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [components/tag (sub-tag-short-style ambiance type) label]))
 
 (defn title-tag [type title label]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/v-box
      ;:class    "noselect"
      :align    :center
@@ -87,7 +88,7 @@
    :padding          [[0 styles/gs-19]]})
 
 (defn panel-header []
-  (let [ambiance                  @(rf/subscribe [:settings/ambiance])
+  (let [ambiance                  @(rf/subscribe [::settings.subs/ambiance])
         created-count             (rf/subscribe [:subs/created-count])
         re-run-count              (rf/subscribe [:subs/re-run-count])
         destroyed-count           (rf/subscribe [:subs/destroyed-count])
@@ -126,7 +127,7 @@
 
 
 (defn pod-header [{:keys [id layer path open? diff? pin? run-times order]}]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class (styles/section-header ambiance)
      #_#_:class (str "app-db-path--header"
@@ -234,7 +235,7 @@
   (let [render-diff?    (and open? diff?)
         value?          (contains? pod-info :value)
         previous-value? (contains? pod-info :previous-value)]
-    (let [ambiance @(rf/subscribe [:settings/ambiance])]
+    (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
       [rc/v-box
        :style {:margin-bottom pod-gap
                :margin-right  "1px"}
@@ -357,7 +358,7 @@
         intra-epoch-subs @(rf/subscribe [:subs/intra-epoch-subs])
         sub-expansions   @(rf/subscribe [:subs/sub-expansions])
         sub-pins         @(rf/subscribe [:subs/sub-pins])
-        all-subs         (if @(rf/subscribe [:settings/debug?])
+        all-subs         (if @(rf/subscribe [::settings.subs/debug?])
                            (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
                            visible-subs)]
     [rc/v-box
@@ -392,7 +393,7 @@
 
 
 (defn filter-section []
-  (let [ambiance   @(rf/subscribe [:settings/ambiance])
+  (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
         filter-str (rf/subscribe [:subs/filter-str])]
     [:div
      {:class (styles/filter-style ambiance)}

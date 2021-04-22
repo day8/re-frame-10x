@@ -4,7 +4,8 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.utils.utils :as utils]
     [day8.re-frame-10x.metamorphic :as metam]
-    [day8.re-frame-10x.epochs.subs :as epochs.subs]))
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.settings.subs :as settings.subs]))
 
 (rf/reg-sub
   ::root
@@ -61,7 +62,7 @@
 (rf/reg-sub
   ::filtered-by-namespace
   :<- [::filtered-by-epoch]
-  :<- [:settings/filtered-view-trace] ;; TODO
+  :<- [::settings.subs/filtered-view-trace]
   (fn [[traces namespaces] _]
     (let [munged-namespaces (->> namespaces
                                  (map (comp munge :ns-str))

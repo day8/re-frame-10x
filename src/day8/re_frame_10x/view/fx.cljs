@@ -5,7 +5,8 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.epochs.subs :as epochs.subs]))
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.settings.subs :as settings.subs]))
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
@@ -14,7 +15,7 @@
 ;; Listing: a block of traced Clojure code, e.g. an event handler function
 
 (defn event-section [title data]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/v-box
      :children
      [[rc/h-box

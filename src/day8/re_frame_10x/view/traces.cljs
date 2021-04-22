@@ -13,7 +13,8 @@
     [day8.re-frame-10x.traces.subs :as subs]
     [day8.re-frame-10x.traces.events :as events]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
-    [day8.re-frame-10x.epochs.events :as epochs.events]))
+    [day8.re-frame-10x.epochs.events :as epochs.events]
+    [day8.re-frame-10x.settings.subs :as settings.subs]))
 
 
 
@@ -24,7 +25,7 @@
 
 (defn category-filters
   []
-  (let [ambiance   @(rf/subscribe [:settings/ambiance])
+  (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
         categories @(rf/subscribe [::subs/categories])]
     [:ul
      {:class (styles/category-filters ambiance)}
@@ -69,7 +70,7 @@
 
 (defn manual-filter
   []
-  (let [ambiance                (rf/subscribe [:settings/ambiance])
+  (let [ambiance                (rf/subscribe [::settings.subs/ambiance])
         filter-type             (r/atom :contains)
         filter-input            (r/atom "")
         input-error             (r/atom false)
@@ -117,12 +118,12 @@
     [manual-filter]]])
 
 (defn render-traces [visible-traces filter-items filter-input trace-detail-expansions]
-  (let [debug? @(rf/subscribe [:settings/debug?])]
+  (let [debug? @(rf/subscribe [::settings.subs/debug?])]
     (doall
       (->>
         visible-traces
         (map-indexed (fn [index {:keys [op-type id operation tags duration] :as trace}]
-                       (let [ambiance  (rf/subscribe [:settings/ambiance])
+                       (let [ambiance  (rf/subscribe [::settings.subs/ambiance])
                              show-row? (get-in @trace-detail-expansions [:overrides id]
                                                (:show-all? @trace-detail-expansions))
                              op-name   (if (vector? operation)
@@ -173,7 +174,7 @@
 
 (defn traces-table
   []
-  (let [ambiance                (rf/subscribe [:settings/ambiance])
+  (let [ambiance                (rf/subscribe [::settings.subs/ambiance])
         filter-input            (r/atom "")
         filter-items            (rf/subscribe [::subs/queries])
         visible-traces          @(rf/subscribe [::subs/sorted])
@@ -196,7 +197,7 @@
              [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]))
 
 (defn render []
-  (let [ambiance                (rf/subscribe [:settings/ambiance])
+  (let [ambiance                (rf/subscribe [::settings.subs/ambiance])
         beginning               (rf/subscribe [::epochs.subs/beginning-trace-id])
         end                     (rf/subscribe [::epochs.subs/ending-trace-id])]
     [rc/v-box

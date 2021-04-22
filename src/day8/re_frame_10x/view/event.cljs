@@ -19,7 +19,8 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.view.components :as components]
     [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
-    [day8.re-frame-10x.epochs.subs :as epochs.subs]))
+    [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.settings.subs :as settings.subs]))
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
@@ -40,7 +41,7 @@
 
 (defn code-header
   [code-execution-id line]
-  (let [ambiance         @(rf/subscribe [:settings/ambiance])
+  (let [ambiance         @(rf/subscribe [::settings.subs/ambiance])
         open?-path       [@(rf/subscribe [::epochs.subs/selected-epoch-id]) code-execution-id (:id line)]
         max-column-width @(rf/subscribe [:code/max-column-width])
         trace-id         code-execution-id
@@ -86,7 +87,7 @@
 
 (defn code-block
   [code-execution-id line]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/box
      :size "1"
      :class (code-block-style ambiance)
@@ -192,7 +193,7 @@
        :reagent-render
        (fn
          []
-         (let [ambiance         @(rf/subscribe [:settings/ambiance])
+         (let [ambiance         @(rf/subscribe [::settings.subs/ambiance])
                highlighted-form @(rf/subscribe [:code/highlighted-form])
                form-str         @(rf/subscribe [:code/current-zprint-form])
                show-all-code?   @(rf/subscribe [:code/show-all-code?])
@@ -242,7 +243,7 @@
 
 (defn repl-section
   []
-  (let [ambiance         @(rf/subscribe [:settings/ambiance])
+  (let [ambiance         @(rf/subscribe [::settings.subs/ambiance])
         execution-order? @(rf/subscribe [:code/execution-order?])]
    [rc/h-box
     :class    (repl-section-style ambiance)
@@ -280,7 +281,7 @@
 
 (defn indent-block
   [indent-level first?]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :children (into []
                  (for [num (range indent-level)]
@@ -291,7 +292,7 @@
 
 (defn event-fragments
   [unordered-fragments code-exec-id]
-  (let [ambiance         @(rf/subscribe [:settings/ambiance])
+  (let [ambiance         @(rf/subscribe [::settings.subs/ambiance])
         code-open?       @(rf/subscribe [:code/code-open?])
         max-frags        50
         execution-order? @(rf/subscribe [:code/execution-order?])
@@ -331,10 +332,10 @@
 
 (defn event-code
   []
-  (let [ambiance       @(rf/subscribe [:settings/ambiance])
+  (let [ambiance       @(rf/subscribe [::settings.subs/ambiance])
         code-traces    @(rf/subscribe [:code/current-code])
         code-execution (first code-traces)                  ;; Ignore multiple code executions for now
-        #_#_debug? @(rf/subscribe [:settings/debug?])
+        #_#_debug? @(rf/subscribe [::settings.subs/debug?])
         #_#_highlighted-form (rf/subscribe [:code/highlighted-form])]
     (if-not code-execution
       [no-event-instructions]

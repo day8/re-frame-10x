@@ -24,7 +24,7 @@
 
 (defn done-button
   []
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [components/icon-button
      {:class    (styles/done-button ambiance)
       :icon     [material/check-circle-outline]
@@ -47,7 +47,7 @@
 
 (defn navigation
   [external-window?]
-  (let [ambiance @(rf/subscribe [:settings/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class    (navigation-style ambiance)
      :align    :center
@@ -100,7 +100,7 @@
   [rc/v-box
    :style {:margin-left  styles/gs-12s                      ;; A bit of a hack, 19px already provided by parent, add 12 to get to 31 as requires by spec
            :margin-right styles/gs-19s}
-   :children [(let [ambiance         @(rf/subscribe [:settings/ambiance])
+   :children [(let [ambiance         @(rf/subscribe [::settings.subs/ambiance])
                     num-epochs       @(rf/subscribe [::epochs.subs/number-of-matches])
                     num-traces       @(rf/subscribe [::traces.subs/count])
                     epochs-to-retain (rf/subscribe [::settings.subs/number-of-retained-epochs])]
@@ -130,7 +130,7 @@
                  settings-box-81])
 
               [rc/line]
-              (let [follows-events? @(rf/subscribe [:settings/app-db-follows-events?])]
+              (let [follows-events? @(rf/subscribe [::settings.subs/app-db-follows-events?])]
                 [settings-box
                  [[rc/checkbox
                    :model follows-events?
@@ -140,7 +140,7 @@
                  settings-box-81])
 
               [rc/line]
-              (let [ambiance @(rf/subscribe [:settings/ambiance])]
+              (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
                 [settings-box
                  [[rc/h-box
                    :align :center
@@ -169,7 +169,7 @@
                  settings-box-131])
 
               [rc/line]
-              (let [ambiance @(rf/subscribe [:settings/ambiance])]
+              (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
                 [settings-box
                  [[rc/h-box
                    :align :center
@@ -185,7 +185,7 @@
                   [rc/v-box
                    :width comp-section-width
                    :gap vertical-gap
-                   :children (for [item @(rf/subscribe [:settings/filtered-view-trace])
+                   :children (for [item @(rf/subscribe [::settings.subs/filtered-view-trace])
                                    :let [id (:id item)]]
                                ^{:key id}
                                [closeable-text-box
@@ -198,22 +198,22 @@
                  settings-box-131])
 
               [rc/line]
-              (let [low-level-trace @(rf/subscribe [:settings/low-level-trace])]
+              (let [low-level-trace @(rf/subscribe [::settings.subs/low-level-trace])]
                 [settings-box
                  [[rc/label :label "Remove low level trace"]
                   [rc/checkbox
                    :model (:reagent low-level-trace)
                    :label "reagent internals"
-                   :on-change #(rf/dispatch [:settings/low-level-trace :reagent %])]
+                   :on-change #(rf/dispatch [::settings.subs/low-level-trace :reagent %])]
                   [rc/checkbox
                    :model (:re-frame low-level-trace)
                    :label "re-frame internals"
-                   :on-change #(rf/dispatch [:settings/low-level-trace :re-frame %])]]
+                   :on-change #(rf/dispatch [::settings.subs/low-level-trace :re-frame %])]]
                  [[:p "Most of the time, low level trace is noisy and you want it filtered out."]]
                  settings-box-131])
 
               [rc/line]
-              (let [ambiance @(rf/subscribe [:settings/ambiance])]
+              (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
                 [settings-box
                  [[rc/radio-button
                    :model     ambiance
@@ -227,7 +227,7 @@
                    :on-change #(rf/dispatch [:settings/set-ambiance %])]]])
 
               [rc/line]
-              (let [ambiance @(rf/subscribe [:settings/ambiance])]
+              (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
                 [settings-box
                  [[rc/button
                    :class (styles/button ambiance)

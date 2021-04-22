@@ -10,44 +10,6 @@
     [cljs.spec.alpha :as s]
     [zprint.core :as zp]))
 
-(rf/reg-sub
-  :settings/root
-  (fn [db _]
-    (get db :settings)))
-
-
-(rf/reg-sub
-  :settings/filtered-view-trace
-  :<- [:settings/root]
-  (fn [settings]
-    (sort-by :sort (vals (:filtered-view-trace settings)))))
-
-(rf/reg-sub
-  :settings/low-level-trace
-  ;; TODO: filter from traces panel
-  ;; TODO: eventually drop these low level traces after computing the state we need from them.
-  :<- [:settings/root]
-  (fn [settings]
-    (:low-level-trace settings)))
-
-(rf/reg-sub
-  :settings/debug?
-  :<- [:settings/root]
-  (fn [settings]
-    (:debug? settings)))
-
-(rf/reg-sub
-  :settings/app-db-follows-events?
-  :<- [:settings/root]
-  (fn [settings]
-    (:app-db-follows-events? settings)))
-
-(rf/reg-sub
-  :settings/ambiance
-  :<- [:settings/root]
-  (fn [settings]
-    (:ambiance settings)))
-
 ;; App DB
 
 (rf/reg-sub
