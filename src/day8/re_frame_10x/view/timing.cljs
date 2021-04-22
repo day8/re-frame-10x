@@ -8,7 +8,8 @@
     [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
     [day8.re-frame-10x.view.components :as components]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.settings.subs :as settings.subs]))
+    [day8.re-frame-10x.settings.subs :as settings.subs]
+    [day8.re-frame-10x.timing.subs :as timing.subs]))
 
 #_(defglobal timing-styles
     [:#--re-frame-10x--
@@ -40,7 +41,7 @@
   [ambiance]
   {:background-color (if (= :bright ambiance) styles/nord5 styles/nord1)
    :color            (if (= :bright ambiance) styles/nord1 styles/nord5)
-   :border           [[(px 1) :solid styles/nord3]]})
+   :border           [[(px 1) :solid styles/nord4]]})
 
 (defn timing-tag [label]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
@@ -64,7 +65,7 @@
   [ambiance]
   {:background-color (if (= :bright ambiance) styles/nord4 styles/nord0)
    :color            (if (= :bright ambiance) styles/nord0 styles/nord6)
-   :border           [[(px 1) :solid styles/nord3]]
+   :border           [[(px 1) :solid styles/nord5]]
    :border-radius    styles/gs-2
    :padding          styles/gs-12
    :margin           [[styles/gs-7 0]]
@@ -72,8 +73,8 @@
 
 (defn render []
   (let [ambiance               @(rf/subscribe [::settings.subs/ambiance])
-        timing-data-available? @(rf/subscribe [:timing/data-available?])
-        event-processing-time  @(rf/subscribe [:timing/event-processing-time])]
+        timing-data-available? @(rf/subscribe [::timing.subs/data-available?])
+        event-processing-time  @(rf/subscribe [::timing.subs/event-processing-time])]
     (if timing-data-available?
       [rc/v-box
        :class "timing-details"
@@ -85,7 +86,7 @@
                                :justify :center
                                :width   styles/gs-81s
                                :child   [:span "elapsed"]]
-                              [timing-section "" @(rf/subscribe [:timing/total-epoch-time])]
+                              [timing-section "" @(rf/subscribe [::timing.subs/total-epoch-time])]
                               [rc/hyperlink-href
                                :label  "guide me to greatness"
                                :class  (styles/hyperlink ambiance)
@@ -111,8 +112,8 @@
                               [:span "+"]
                               [timing-section "misc" (:timing/event-misc event-processing-time)]]]
                   (doall
-                    (for [frame (range 1 (inc @(rf/subscribe [:timing/animation-frame-count])))
-                          :let [frame-time @(rf/subscribe [:timing/animation-frame-time frame])]]
+                    (for [frame (range 1 (inc @(rf/subscribe [::timing.subs/animation-frame-count])))
+                          :let [frame-time @(rf/subscribe [::timing.subs/animation-frame-time frame])]]
                       (list
                         ;^{:key (str "af-line" frame)}
                         ;[rc/line :class "timing-details--line"]

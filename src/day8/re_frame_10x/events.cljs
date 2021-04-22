@@ -3,7 +3,7 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
-    [cljs.tools.reader.edn]
+    [day8.re-frame-10x.tools.edn :as tools.edn]
     [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
     [day8.re-frame-10x.utils.localstorage :as localstorage]
     [day8.re-frame-10x.traces.events :as traces.events]
@@ -20,7 +20,8 @@
     [clojure.set :as set]
     [day8.re-frame-10x.metamorphic :as metam]
     [day8.re-frame-10x.epochs.events :as epochs.events]
-    [day8.re-frame-10x.settings.events :as settings.events]))
+    [day8.re-frame-10x.settings.events :as settings.events]
+    [day8.re-frame-10x.app-db.events :as app-db.events]))
 
 (rf/reg-event-fx
   ::init
@@ -71,9 +72,9 @@
           [:dispatch [::traces.events/set-categories categories]]
           [:dispatch [::traces.events/set-filter-by-selected-epoch? show-epoch-traces?]]
           [:dispatch [:app-db/paths (into (sorted-map) app-db-paths)]]
-          [:dispatch [:app-db/set-json-ml-paths app-db-json-ml-expansions]]
+          [:dispatch [::app-db.events/set-json-ml-paths app-db-json-ml-expansions]]
           [:dispatch [:global/add-unload-hook]]
-          [:dispatch [:app-db/reagent-id]]]}))
+          [:dispatch [::app-db.events/reagent-id]]]}))
 
 
 
@@ -112,12 +113,6 @@
           (dissoc m k)))
       m)
     (dissoc m k)))
-
-(defn read-string-maybe [s]
-  (try (cljs.tools.reader.edn/read-string {:readers utils/default-readers} s)
-       (catch :default e
-         nil)))
-
 
 (rf/reg-event-db
   :settings/user-toggle-panel
@@ -171,7 +166,7 @@
   ignored-event-mw
   (fn [ignored-events [_ id event-str]]
     ;; TODO: this won't inform users if they type bad strings in.
-    (let [event (read-string-maybe event-str)]
+    (let [event (tools.edn/read-string-maybe event-str)]
       (-> ignored-events
           (assoc-in [id :event-str] event-str)
           (update-in [id :event-id] (fn [old-event] (if event event old-event)))))))
@@ -203,7 +198,7 @@
   filtered-view-trace-mw
   (fn [filtered-view-trace [_ id ns-str]]
     ;; TODO: this won't inform users if they type bad strings in.
-    (let [event (read-string-maybe ns-str)]
+    (let [event (tools.edn/read-string-maybe ns-str)]
       (-> filtered-view-trace
           (assoc-in [id :ns-str] ns-str)
           (update-in [id :ns] (fn [old-event] (if event event old-event)))))))
@@ -383,30 +378,15 @@
 (def app-db-path-mw
   [(rf/path [:app-db :paths]) (fixed-after #(localstorage/save! "app-db-paths" %))])
 
-(rf/reg-event-db
-  :app-db/create-path
-  app-db-path-mw
-  (fn [paths _]
-
-    (assoc paths (js/Date.now) {:diff? false :open? true :path nil :path-str "" :valid-path? true})))
 
 
 
-;; The core idea with :app-db/update-path and :app-db/update-path-blur
-;; is that we need to separate the users text input (`path-str`) with the
-;; parsing of that string (`path`). We let the user type any string that
-;; they like, and check it for validity on each change. If it is valid
-;; then we update `path` and mark the pod as valid. If it isn't valid then
-;; we don't update `path` and mark the pod as invalid.
-;;
-;; On blur of the input, we reset path-str to the last valid path, if
-;; the pod isn't currently valid.
 
 (rf/reg-event-db
   :app-db/update-path
   app-db-path-mw
   (fn [paths [_ path-id path-str]]
-    (let [path  (read-string-maybe path-str)
+    (let [path  (tools.edn/read-string-maybe path-str)
           paths (assoc-in paths [path-id :path-str] path-str)]
       (if (or (and (some? path)
                    (sequential? path))
@@ -475,39 +455,12 @@
                               nil))]
         (if (some? path)
           (do (localstorage/save! "app-db-paths" (cons path (get-in db [:app-db :paths])))
-              (rf/dispatch [:app-db/toggle-expansion [path]])
+              (rf/dispatch [::app-db.events/toggle-expansion [path]])
               (-> db
                   (update-in [:app-db :paths] #(cons path %))
                   (assoc-in [:app-db :search-string] "")))
           db))))
 
-(rf/reg-event-db
-  :app-db/search-string
-  (fn [db [_ search-string]]
-    (assoc-in db [:app-db :search-string] search-string)))
-
-(rf/reg-event-db
-  :app-db/set-json-ml-paths
-  [(rf/path [:app-db :json-ml-expansions])]
-  (fn [db [_ paths]]
-    (localstorage/save! "app-db-json-ml-expansions" paths)
-    paths))
-
-(rf/reg-event-db
-  :app-db/toggle-expansion
-  [(rf/path [:app-db :json-ml-expansions])]
-  (fn [paths [_ path]]
-    (let [new-paths (if (contains? paths path)
-                      (disj paths path)
-                      (conj paths path))]
-      (localstorage/save! "app-db-json-ml-expansions" new-paths)
-      new-paths)))
-
-(rf/reg-event-db
-  :app-db/reagent-id
-  [(rf/path [:app-db :reagent-id])]
-  (fn [paths _]
-    (re-frame.interop/reagent-id re-frame.db/app-db)))
 
 (rf/reg-event-db
   :snapshot/reset-current-epoch-app-db

@@ -14,7 +14,9 @@
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.settings.subs :as settings.subs]))
+    [day8.re-frame-10x.settings.subs :as settings.subs]
+    [day8.re-frame-10x.app-db.subs :as app-db.subs]
+    [day8.re-frame-10x.app-db.events :as app-db.events]))
 
 (def default-config @devtools.prefs/default-config)
 
@@ -244,12 +246,12 @@
 
 (defn data-structure [jsonml path]
   (let [ambiance  (rf/subscribe [::settings.subs/ambiance])
-        expanded? (rf/subscribe [:app-db/node-expanded? path])]
+        expanded? (rf/subscribe [::app-db.subs/node-expanded? path])]
     (fn [jsonml path]
       [:span
        {:class (jsonml-style @ambiance)}
        [:span {:class    (toggle-style @ambiance)
-               :on-click #(rf/dispatch [:app-db/toggle-expansion path])}
+               :on-click #(rf/dispatch [::app-db.events/toggle-expansion path])}
         [:button
          (if @expanded?
            [material/arrow-drop-down]

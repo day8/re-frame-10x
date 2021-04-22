@@ -14,7 +14,9 @@
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.view.cljs-devtools                         :as cljs-devtools]
     [day8.re-frame-10x.view.components                            :as components]
-    [day8.re-frame-10x.settings.subs :as settings.subs])
+    [day8.re-frame-10x.settings.subs :as settings.subs]
+    [day8.re-frame-10x.app-db.subs :as app-db.subs]
+    [day8.re-frame-10x.app-db.events :as app-db.events])
   (:require-macros
     [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
@@ -33,7 +35,7 @@
                 :children [[material/add
                             {:size styles/gs-19s}]
                            "path inspector"]]
-     :on-click #(rf/dispatch [:app-db/create-path])]))
+     :on-click #(rf/dispatch [::app-db.events/create-path])]))
 
 (defn panel-header []
   [rc/h-box
@@ -121,7 +123,7 @@
 (defn pod [{:keys [id path open? diff?] :as pod-info}]
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
-        app-db-after (rf/subscribe [:app-db/current-epoch-app-db-after])]
+        app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])]
     [rc/v-box
      #_#_:style {:margin-bottom pod-gap
                  :margin-right  "1px"}
@@ -154,7 +156,7 @@
 
                                           #_"---main-section---"]])
                             (when render-diff?
-                              (let [app-db-before (rf/subscribe [:app-db/current-epoch-app-db-before])
+                              (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
                                     [diff-before diff-after _] (when render-diff?
                                                                  (clojure.data/diff (get-in @app-db-before path)
                                                                                     (get-in @app-db-after path)))]
@@ -236,7 +238,7 @@
 
 
 (defn pod-section []
-  (let [pods @(rf/subscribe [:app-db/paths])]
+  (let [pods @(rf/subscribe [::app-db.subs/paths])]
     [rc/v-box
      :size     "1"
      :children
