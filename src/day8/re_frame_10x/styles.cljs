@@ -3,7 +3,7 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core :as garden]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :refer [render-css]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :refer [rgba]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :refer [rgb rgba as-hsla opacify transparentize]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors :as s]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
@@ -114,6 +114,63 @@
    {:color nord8
     :text-decoration :underline}])
 
+(defn syntax-color
+  [ambiance syntax-color-scheme key]
+  (let [signature (if (= :cljs-devtools)
+                    (rgba 100 255 100 1)
+                    (if (= :bright ambiance)
+                      nord-ghost-white
+                      nord0))]
+    (case key
+      :base-text-color      (if (= :cljs-devtools syntax-color-scheme)
+                              (rgb 0 0 0)
+                              (if (= :bright ambiance) nord0 nord6))
+      :signature-background (transparentize signature 0.92)
+      :type                 (if (= :cljs-devtools syntax-color-scheme)
+                              (rgb 0 160 220)
+                              nord7)
+
+      :type-text            (if (= :cljs-devtools syntax-color-scheme)
+                              (rgb 238 238 355)
+                              :pink)
+      :field                (syntax-color ambiance syntax-color-scheme :type)
+      :basis                (syntax-color ambiance syntax-color-scheme :type)
+      :meta (rgb 255 102 0)
+      :meta-text (rgb 238 238 238)
+      :protocol (rgb 41 59 163)
+      :method (rgb 41 59 163) ;; protocol
+      :ns (rgb 150 150 150)
+      :native (rgb 255 0 255)
+      :fn (rgb 30 130 30)
+      :lambda (rgb 30 130 30) ;; fn
+      :fn-args (rgb 170 130 20)
+      :custom-printing (rgb 255 255 200)
+      :circular-ref (rgb 255 0 0)
+      :nil (rgb 128 128 128)
+      :keyword (rgb  136 19 145)
+      :integer (rgb 28 0 207)
+      :float (rgb 28 136 207)
+      :float-nan (rgb 213 60 27)
+      :float-infinity (rgb 28 80 207)
+      :string (if (= :cljs-devtools syntax-color-scheme)
+                (rgb 196 26 22) nord14)
+      :expanded-string (rgb 255 100 100)
+      :symbol (if (= :cljs-devtools syntax-color-scheme)
+                (rgb 0 0 0) nord8)
+      :bool (rgb 0 153 153)
+      :fast-protocol (rgb 255 255 170)
+      :slow-protocol (rgb 238 238 238)
+      :more (rgb 255 255 255)
+      :more-background (rgb 153 153 153)
+      :index (rgb 0 0 0)
+      :index-background (rgb 221 221 221)
+      :field-spacer (rgb 204 204 204)
+      :native-reference-background (rgb 255 255 255)
+      :body-border (rgba 60 90 60 0.1)
+      :expanded-string-background (rgba 255 100 100 0.98) ;;expanded-string 0.4
+      :expanded-string-border (rgba 255 100 100 0.6) ;; expanded-string 0.4
+      :custom-printing-background (rgb 255 255 200) ;; custom-printing
+      nil)))
 
 
 
@@ -267,85 +324,93 @@
     {:fill nord5}]])
 
 (defclass hljs
-  [ambiance]
-  {:background-color (if (= :bright ambiance) nord-ghost-white nord0)}
-  ["::selection"
-   {:background (if (= :bright ambiance) nord5 nord2)}]
-  [:.hljs
-   {:display    :block
-    :overflow-x :auto
-    :padding    (em 0.5)
-    :background (if (= :bright ambiance) nord-ghost-white nord0)}]
-  [:.code-listing--highlighted
-   {:background  (if (= :bright ambiance) nord13 nord2)
-    :font-weight :bold}]
-  [:.hljs
-   :.hljs-subst
-   {:color (if (= :bright ambiance) nord0 nord4)}]
-  [:.hljs-selector.tag
-   {:color nord9}]
-  [:.hljs-selector-id
-   {:color nord7
-    :font-weight :bold}]
-  [:.hljs-selector-class
-   {:color nord7}]
-  [:.hljs-selector-attr
-   {:color nord7}]
-  [:.hljs-selector-pseudo
-   {:color nord8}]
-  [:.hljs-addition
-   {:color nord14}]
-  [:.hljs-deletion
-   {:color nord11}]
-  [:.hljs-built_in
-   :.hljs-type
-   {:color nord7}]
-  [:.hljs-class
-   {:color nord7}]
-  [:.hljs-function
-   {:color nord8}
-   ["> .hljs-title"
-    {:color nord8}]]
-  [:.hljs-keyword
-   :.hljs-literal
-   {:color nord9}]
-  [:.hljs-symbol
-   {:color nord13}]
-  [:.hljs-number
-   {:color nord15}]
-  [:.hljs-regexp
-   {:color nord13}]
+  [ambiance syntax-color-scheme]
+  {:background-color (syntax-color ambiance syntax-color-scheme :signature-background)}
+  [:.hljs-type
+   {:color (syntax-color ambiance syntax-color-scheme :type)}]
   [:.hljs-string
-   {:color nord14}]
-  [:.hljs-params
-   {:color nord4}]
-  [:.hljs-comment
-   {:color nord3}]
-  [:.hljs-doctag
-   {:color nord7}]
-  [:.hljs-meta
-   :.hljs-meta-keyword
-   {:color nord10}]
-  [:.hljs-meta-string
-   {:color nord14}]
-  [:.hljs-attr
-   {:color nord7}]
-  [:.hljs-attribute
-   {:color nord4}]
-  [:.hljs-builtin-name
-   {:color nord9}]
+   {:color (syntax-color ambiance syntax-color-scheme :string)}]
   [:.hljs-name
-   {:color nord8}]
-  [:.hljs-section
-   {:color nord8}]
-  [:.hljs-tag
-   {:color nord9}]
-  [:.hljs-variable
-   {:color nord4}]
-  [:.hljs-template-variable
-   {:color nord4}]
-  [:.hljs-template-tag
-   {:color nord10}])
+   {:color (syntax-color ambiance syntax-color-scheme :symbol)}]
+  [:.hljs-literal
+   {:color (syntax-color ambiance syntax-color-scheme :bool)}])
+
+;[:.hljs-built_in
+; :.hljs-type
+; {:color nord7}]
+  ;["::selection"
+  ; {:background (if (= :bright ambiance) nord5 nord2)}]
+  ;[:.hljs
+  ; {:display    :block
+  ;  :overflow-x :auto
+  ;  :padding    (em 0.5)}]
+  ;[:.code-listing--highlighted
+  ; {:background  (if (= :bright ambiance) nord13 nord2)
+  ;  :font-weight :bold}]
+  ;[:.hljs
+  ; :.hljs-subst
+  ; {:color (if (= :bright ambiance) nord0 nord4)}]
+  ;[:.hljs-selector.tag
+  ; {:color nord9}]
+  ;[:.hljs-selector-id
+  ; {:color nord7
+  ;  :font-weight :bold}]
+  ;[:.hljs-selector-class
+  ; {:color nord7}]
+  ;[:.hljs-selector-attr
+  ; {:color nord7}]
+  ;[:.hljs-selector-pseudo
+  ; {:color nord8}]
+  ;[:.hljs-addition
+  ; {:color nord14}]
+  ;[:.hljs-deletion
+  ; {:color nord11}]
+
+  ;[:.hljs-class
+  ; {:color nord7}]
+  ;[:.hljs-function
+  ; {:color nord8}
+  ; ["> .hljs-title"
+  ;  {:color nord8}]]
+  ;[:.hljs-keyword
+  ; :.hljs-literal
+  ; {:color nord9}]
+  ;[:.hljs-symbol
+  ; {:color nord13}]
+  ;[:.hljs-number
+  ; {:color nord15}]
+  ;[:.hljs-regexp
+  ; {:color nord13}]
+
+  ;[:.hljs-params
+  ; {:color nord4}]
+  ;[:.hljs-comment
+  ; {:color nord3}]
+  ;[:.hljs-doctag
+  ; {:color nord7}]
+  ;[:.hljs-meta
+  ; :.hljs-meta-keyword
+  ; {:color nord10}]
+  ;[:.hljs-meta-string
+  ; {:color nord14}]
+  ;[:.hljs-attr
+  ; {:color nord7}]
+  ;[:.hljs-attribute
+  ; {:color nord4}]
+  ;[:.hljs-builtin-name
+  ; {:color nord9}]
+  ;[:.hljs-name
+  ; {:color nord8}]
+  ;[:.hljs-section
+  ; {:color nord8}]
+  ;[:.hljs-tag
+  ; {:color nord9}]
+  ;[:.hljs-variable
+  ; {:color nord4}]
+  ;[:.hljs-template-variable
+  ; {:color nord4}]
+  ;[:.hljs-template-tag
+  ; {:color nord10}])
 
 (defclass section-header
   [ambiance]
@@ -397,7 +462,8 @@
 (defclass section-data
   [ambiance]
   {:composes         (pod-border ambiance)
-   :background-color (if (= :bright ambiance) nord-ghost-white nord0)
+   #_#_:background-color (if (= :bright ambiance) nord-ghost-white nord0)
+   :background-color (syntax-color ambiance :cljs-devtools :signature-background)
    :padding-left     gs-12
    :overflow-x       :auto
    :overflow-y       :hidden})

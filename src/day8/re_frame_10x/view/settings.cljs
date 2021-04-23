@@ -228,6 +228,20 @@
                    :on-change #(rf/dispatch [::settings.events/set-ambiance %])]]])
 
               [rc/line]
+              (let [syntax-color-scheme @(rf/subscribe [::settings.subs/syntax-color-scheme])]
+                [settings-box
+                 [[rc/radio-button
+                   :model     syntax-color-scheme
+                   :label     "cljs-devtools"
+                   :value     :cljs-devtools
+                   :on-change #(rf/dispatch [::settings.events/set-syntax-color-scheme %])]
+                  [rc/radio-button
+                   :model     syntax-color-scheme
+                   :label     "nord"
+                   :value     :nord
+                   :on-change #(rf/dispatch [::settings.events/set-syntax-color-scheme %])]]])
+
+              [rc/line]
               (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
                 [settings-box
                  [[rc/button

@@ -105,3 +105,9 @@
   :<- [::root]
   (fn [{:keys [ambiance]} _]
     ambiance))
+
+(rf/reg-sub
+  ::syntax-color-scheme
+  :<- [::root]
+  (fn [{:keys [syntax-color-scheme]} _]
+    syntax-color-scheme))

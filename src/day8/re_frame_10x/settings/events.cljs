@@ -46,3 +46,9 @@
   [(rf/path [:settings :ambiance]) rf/trim-v (localstorage/after "ambiance")]
   (fn [_ [ambiance]]
     ambiance))
+
+(rf/reg-event-db
+  ::set-syntax-color-scheme
+  [(rf/path [:settings :syntax-color-scheme]) rf/trim-v (localstorage/after "syntax-color-scheme")]
+  (fn [_ [syntax-color-scheme]]
+    syntax-color-scheme))

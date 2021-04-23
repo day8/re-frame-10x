@@ -165,7 +165,7 @@
 
 (defclass event-expression-style
   [ambiance show-all-code?]
-  {:composes      (styles/hljs ambiance)
+  {:composes      (styles/hljs ambiance :cljs-devtools)
    :max-height    (when-not show-all-code? (px (* 10 17)))  ;; Add scrollbar after 10 lines
    :overflow      :auto
    :border        [[(px 1) :solid (if (= :bright ambiance) styles/nord4 styles/nord1)]]

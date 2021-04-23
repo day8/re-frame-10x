@@ -44,12 +44,13 @@
    (rf/inject-cofx ::localstorage/get {:key "app-db-paths" :or {}})
    (rf/inject-cofx ::localstorage/get {:key "app-db-follows-events?" :or true})
    (rf/inject-cofx ::localstorage/get {:key "ambiance" :or :bright})
+   (rf/inject-cofx ::localstorage/get {:key "syntax-color-scheme" :or :cljs-devtools})
    (rf/inject-cofx ::localstorage/get {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose}})
    rf/unwrap]
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
                ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
-               app-db-follow-events? ambiance categories] :as cofx}
+               app-db-follow-events? ambiance syntax-color-scheme categories] :as cofx}
        {:keys [debug?]}]
     (js/console.log cofx)
     {:fx [(when using-trace?
@@ -63,6 +64,7 @@
           [:dispatch [:settings/set-number-of-retained-epochs retained-epochs]]
           [:dispatch [:settings/app-db-follows-events? app-db-follow-events?]]
           [:dispatch [::settings.events/set-ambiance ambiance]]
+          [:dispatch [::settings.events/set-syntax-color-scheme syntax-color-scheme]]
           [:dispatch [:settings/debug? debug?]]
           ;; Important that window dimensions are set before we open an external window.
           [:dispatch [:settings/external-window-dimensions external-window-dimensions]]

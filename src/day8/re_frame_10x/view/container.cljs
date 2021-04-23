@@ -28,6 +28,7 @@
     [day8.re-frame-10x.settings.subs :as settings.subs]
     [day8.re-frame-10x.settings.events :as settings.events]
 
+    [day8.re-frame-10x.event.views :as event.views]
     [day8.re-frame-10x.timing.views :as timing.views]
     [day8.re-frame-10x.traces.views :as traces.views]))
 
@@ -127,15 +128,15 @@
                  ;:gap "7px"
                  :align :end
                  :height styles/gs-31s
-                 :children [[tab-button :event "Event"]
+                 :children [[tab-button :event "event"]
                             [tab-button :fx "fx"]
                             [tab-button :app-db "app-db"]
-                            [tab-button :subs "Subs"]
+                            [tab-button :subs "subs"]
                             ;[tab-button :views "Views"]
-                            [tab-button :traces "Trace"]
-                            [tab-button :timing "Timing"]
+                            [tab-button :traces "traces"]
+                            [tab-button :timing "timing"]
                             (when debug?
-                              [tab-button :debug "Debug"])]]
+                              [tab-button :debug "debug"])]]
                 [rc/h-box
                  :align    :center
                  :padding  (str "0 " styles/gs-19s " 0 0")  ; "0px 19px 0px 7px"
@@ -203,7 +204,11 @@
      :class    (tab-content-style ambiance selected-tab)   ;;"tab-wrapper"
      :size     "1"
      :children [(case selected-tab
-                  :event    [event/render]
+                  :event    [rc/v-box
+                             :size "1"
+                             :children
+                             [[event.views/panel]
+                              [event/render]]]
                   :fx       [fx/render]
                   :app-db   [app-db/render db/app-db]
                   :subs     [subs/render]
