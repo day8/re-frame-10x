@@ -81,10 +81,11 @@
 
 (defclass summary-style
   [ambiance]
-  {:background-color (if (= :bright ambiance) styles/nord5 styles/nord0)
-   :color            (if (= :bright ambiance) styles/nord0 styles/nord4)
-   :border           [[(px 1) :solid styles/nord4]]
-   :border-radius    styles/gs-2
+  {:composes (styles/frame-1 ambiance)
+   #_:background-color (if (= :bright ambiance) styles/nord5 styles/nord0)
+   #_:color            (if (= :bright ambiance) styles/nord0 styles/nord4)
+   #_:border           [[(px 1) :solid styles/nord4]]
+   #_:border-radius    styles/gs-2
    :padding          [[0 styles/gs-19]]})
 
 (defn panel-header []

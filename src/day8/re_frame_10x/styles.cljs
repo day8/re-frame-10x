@@ -69,6 +69,66 @@
 (defpseudoclass -moz-focusring)
 (defpseudoelement -moz-focus-inner)
 
+;; ===
+;; Base Classes
+;; ===
+
+(defclass colors-1
+  [ambiance]
+  {:background-color (if (= :bright ambiance) nord-ghost-white nord0)
+   :color            (if (= :bright ambiance) nord3            nord4)})
+
+(defclass frame-1
+  [ambiance]
+  {:composes      (colors-1 ambiance)
+   :border        [[(px 1) :solid (if (= :bright ambiance) nord4 nord3)]]
+   :border-radius gs-2})
+
+(defclass colors-2
+  [ambiance]
+  {:background-color (if (= :bright ambiance) nord6 nord1)
+   :color            (if (= :bright ambiance) nord2 nord4)}
+  [:svg :path
+   {:fill (if (= :bright ambiance) nord2 nord4)}])
+
+(defclass frame-2
+  [ambiance]
+  {:composes      (colors-2 ambiance)
+   :border        [[(px 1) :solid (if (= :bright ambiance) nord4 nord3)]]
+   :border-radius gs-2})
+
+(defclass control-2
+  [ambiance]
+  {:composes (frame-2 ambiance)
+   :cursor   :pointer}
+  [:&:hover
+   {:background-color (if (= :bright ambiance) nord5 nord2)
+    :color            (if (= :bright ambiance) nord1 nord5)}
+   [:svg :path
+    {:fill (if (= :bright ambiance) nord1 nord5)}]])
+
+(defclass hyperlink
+  [ambiance]
+  {:color nord7}
+  [:&:hover
+   {:color nord8
+    :text-decoration :underline}])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 (defclass unset
   []
   {:all :initial}
@@ -167,7 +227,7 @@
   {:composes      (navigation ambiance)
    #_#_:border-bottom [[gs-2 :solid nord1]]})
 
-(defclass hyperlink
+(defclass old-hyperlink
   [ambiance]
   {:color nord7}
   [:&:hover

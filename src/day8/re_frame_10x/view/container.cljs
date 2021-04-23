@@ -17,7 +17,6 @@
     [day8.re-frame-10x.view.traces :as traces]
     [day8.re-frame-10x.view.fx :as fx]
     [day8.re-frame-10x.view.parts :as parts]
-    [day8.re-frame-10x.view.timing :as timing]
     [day8.re-frame-10x.view.debug :as debug]
     [day8.re-frame-10x.view.settings :as settings]
     [day8.re-frame-10x.material :as material]
@@ -28,7 +27,10 @@
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.epochs.events :as epochs.events]
     [day8.re-frame-10x.settings.subs :as settings.subs]
-    [day8.re-frame-10x.settings.events :as settings.events]))
+    [day8.re-frame-10x.settings.events :as settings.events]
+
+    [day8.re-frame-10x.timing.views :as timing.views]
+    [day8.re-frame-10x.traces.views :as traces.views]))
 
 (def outer-margins {:margin (str "0px " styles/gs-19s)})
 
@@ -210,8 +212,10 @@
                   :subs     [subs/render]
                   :views    [views/render]
                   :parts    [parts/render]
-                  :timing   [timing/render]
-                  :traces   [traces/render]
+                  :timing   [timing.views/panel]
+                  :traces   [rc/v-box
+                             :children [[traces.views/panel]
+                                        [traces/render]]]
                   :debug    [debug/render]
                   :settings [settings/render]
 
