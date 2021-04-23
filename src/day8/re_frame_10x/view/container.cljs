@@ -16,7 +16,6 @@
     [day8.re-frame-10x.view.views :as views]
     [day8.re-frame-10x.view.traces :as traces]
     [day8.re-frame-10x.view.fx :as fx]
-    [day8.re-frame-10x.view.parts :as parts]
     [day8.re-frame-10x.view.debug :as debug]
     [day8.re-frame-10x.view.settings :as settings]
     [day8.re-frame-10x.material :as material]
@@ -132,8 +131,6 @@
                             [tab-button :fx "fx"]
                             [tab-button :app-db "app-db"]
                             [tab-button :subs "Subs"]
-                            (when debug?
-                              [tab-button :parts "Parts"])
                             ;[tab-button :views "Views"]
                             [tab-button :traces "Trace"]
                             [tab-button :timing "Timing"]
@@ -211,7 +208,6 @@
                   :app-db   [app-db/render db/app-db]
                   :subs     [subs/render]
                   :views    [views/render]
-                  :parts    [parts/render]
                   :timing   [timing.views/panel]
                   :traces   [rc/v-box
                              :children [[traces.views/panel]
