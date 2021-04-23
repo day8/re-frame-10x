@@ -23,51 +23,6 @@
 
 
 
-(defn category-filters
-  []
-  (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
-        categories @(rf/subscribe [::subs/categories])]
-    [:ul
-     {:class (styles/category-filters ambiance)}
-     "show: "
-     (let [active? (contains? categories :event)]
-       [:li
-        {:class    (when active? "active")
-         :on-click #(rf/dispatch [::events/toggle-categories #{:event}])}
-        (if active?
-          [material/check-box]
-          [material/check-box-outline-blank])
-        "events"])
-     (let [active? (contains? categories :sub/run)]
-       [:li {:class    (when active?  "active")
-             :on-click #(rf/dispatch [::events/toggle-categories #{:sub/run :sub/create :sub/dispose}])}
-        (if active?
-          [material/check-box]
-          [material/check-box-outline-blank])
-        "subscriptions"])
-     (let [active? (contains? categories :render)]
-       [:li {:class    (when active? "active")
-             :on-click #(rf/dispatch [::events/toggle-categories #{:render}])}
-        (if active?
-          [material/check-box]
-          [material/check-box-outline-blank])
-        "reagent"])
-     (let [active? (contains? categories :re-frame.router/fsm-trigger)]
-       [:li {:class    (when active? "active")
-             :on-click #(rf/dispatch [::events/toggle-categories #{:re-frame.router/fsm-trigger :componentWillUnmount}])}
-        (if active?
-          [material/check-box]
-          [material/check-box-outline-blank])
-        "internals"])]))
-
-(defn selected-epoch-filter
-  []
-  (let [filter-by-selected-epoch? (rf/subscribe [::subs/filter-by-selected-epoch?])]
-    [rc/checkbox
-     :model     filter-by-selected-epoch?
-     :on-change #(rf/dispatch [::events/set-filter-by-selected-epoch? %])
-     :label     "Only show traces for the selected epoch?"]))
-
 (defn manual-filter
   []
   (let [ambiance                (rf/subscribe [::settings.subs/ambiance])
@@ -113,9 +68,7 @@
   []
   [rc/v-box
    :children
-   [[category-filters]
-    [selected-epoch-filter]
-    [manual-filter]]])
+   [[manual-filter]]])
 
 (defn render-traces [visible-traces filter-items filter-input trace-detail-expansions]
   (let [debug? @(rf/subscribe [::settings.subs/debug?])]

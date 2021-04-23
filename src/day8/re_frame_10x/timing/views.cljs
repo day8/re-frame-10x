@@ -20,7 +20,7 @@
 
 (defclass tag-style
   [ambiance]
-  {:composes (styles/frame-2 ambiance)})
+  {:composes (styles/frame-uncommon ambiance)})
 
 (defn tag
   [{:keys [label time]}]
@@ -116,9 +116,7 @@
            [[rc/label
              :label "animation"]
             [rc/label
-             :label "frame"]
-            [rc/label
-             :label (str "#" i)]]]
+             :label  (str "frame #" i)]]]
           [tag
            {:label "total"
             :time  (:timing/animation-frame-total times)}]

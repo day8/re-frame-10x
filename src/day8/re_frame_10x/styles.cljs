@@ -3,7 +3,7 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core :as garden]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :refer [render-css]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :refer [rgb rgba as-hsla opacify transparentize]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color :refer [rgb rgba as-hsla opacify transparentize]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors :as s]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
@@ -97,22 +97,35 @@
    :border        [[(px 1) :solid (if (= :bright ambiance) nord4 nord3)]]
    :border-radius gs-2})
 
-(defclass control-2
+(defclass colors-uncommon
   [ambiance]
+  {:color            :#fff
+   :background-color nord15})
+
+(defclass frame-uncommon
+  [ambiance]
+  {:composes      (colors-uncommon ambiance)
+   :border        [[(px 1) :solid (color/darken nord15 10)]]
+   :border-radius gs-2})
+
+(defclass control-2
+  [ambiance active?]
   {:composes (frame-2 ambiance)
    :cursor   :pointer}
+  (when active?
+    [:svg :path
+     {:fill nord7}])
   [:&:hover
    {:background-color (if (= :bright ambiance) nord5 nord2)
     :color            (if (= :bright ambiance) nord1 nord5)}
    [:svg :path
-    {:fill (if (= :bright ambiance) nord1 nord5)}]])
+    {:fill nord7}]])
 
 (defclass hyperlink
   [ambiance]
-  {:color nord7}
+  {:color nord9}
   [:&:hover
-   {:color nord8
-    :text-decoration :underline}])
+   {:text-decoration :underline}])
 
 (defn syntax-color
   [ambiance syntax-color-scheme key]

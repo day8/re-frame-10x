@@ -15,7 +15,8 @@
     [clojure.data]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.settings.subs :as settings.subs])
+    [day8.re-frame-10x.settings.subs :as settings.subs]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color])
   (:require-macros
     [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
 
@@ -42,15 +43,20 @@
   (get-in tag-types [type :short] (str type)))
 
 
+(defn sub-color
+  [type]
+  (case type
+    :sub/create  styles/nord15
+    :sub/dispose styles/nord12
+    :sub/run     styles/nord14
+    :sub/not-run styles/nord9
+    styles/nord5))
+
 (defclass sub-tag-style
   [ambiance type]
-  {:color            styles/nord1
-   :background-color (case type
-                       :sub/create  styles/nord15
-                       :sub/dispose styles/nord12
-                       :sub/run     styles/nord14
-                       :sub/not-run styles/nord9
-                       styles/nord5)})
+  {:color            :#fff
+   :background-color (sub-color type)
+   :border           [[(px 1) :solid (color/darken (sub-color type) 10)]]})
 
 (defclass sub-tag-short-style
   [ambiance type]
