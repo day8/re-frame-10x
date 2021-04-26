@@ -2,13 +2,10 @@
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.metamorphic :as metam]
-    [day8.re-frame-10x.utils.utils :as utils]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
-    [day8.re-frame-10x.settings.subs :as settings.subs]
     [day8.re-frame-10x.traces.subs :as traces.subs]
     [clojure.string :as str]
-    [cljs.spec.alpha :as s]
-    [zprint.core :as zp]))
+    [cljs.spec.alpha :as s]))
 
 ;;
 
@@ -255,100 +252,6 @@
   :<- [:subs/root]
   (fn [subs _]
     (:pinned subs)))
-
-;;
-
-(rf/reg-sub
-  :code/root
-  (fn [db _]
-    (:code db)))
-
-(rf/reg-sub
-  :code/current-code
-  :<- [::traces.subs/filtered-by-epoch]
-  (fn [traces _]
-    (keep-indexed (fn [i trace]
-                    (when-some [code (get-in trace [:tags :code])]
-                      {:id       i
-                       :trace-id (:id trace)
-                       :title    (pr-str (:op-type trace))
-                       :code     (->> code (map-indexed (fn [i code] (assoc code :id i))) vec) ;; Add index
-                       :form     (get-in trace [:tags :form])}))
-                  traces)))
-
-(rf/reg-sub
-  :code/current-form
-  :<- [:code/current-code]
-  (fn [code _]
-    (:form (first code))))
-
-(rf/reg-sub
-  :code/current-zprint-form
-  :<- [:code/current-form]
-  (fn [form _]
-    (zp/zprint-str form)))
-
-(rf/reg-sub
- :code/execution-order?
- :<- [:code/root]
- (fn [code _]
-   (get code :execution-order? true)))
-
-(rf/reg-sub
-  :code/code-open?
-  :<- [:code/root]
-  (fn [code _]
-    (:code-open? code)))
-
-(rf/reg-sub
-  :code/highlighted-form
-  :<- [:code/root]
-  (fn [code _]
-    (:highlighted-form code)))
-
-(rf/reg-sub
-  :code/show-all-code?
-  :<- [:code/root]
-  (fn [code _]
-    (:show-all-code? code)))
-
-(rf/reg-sub
-  :code/repl-msg-state
-  :<- [:code/root]
-  (fn [code _]
-    (:repl-msg-state code)))
-
-(def canvas (js/document.createElement "canvas"))
-
-(rf/reg-sub
-  :code/single-character-width
-  (fn [_ _]
-    (let [context (.getContext canvas "2d")]
-      (set! (.-font context) "monospace 1em")
-      (.-width (.measureText context "T")))))
-
-(rf/reg-sub
-  :code/max-column-width
-  :<- [::settings.subs/window-width-rounded 100]
-  :<- [:code/single-character-width]
-  ;; It seems like it would be possible to do something smarter responding to panel sizing,
-  ;; but that introduces a lot of jank, so we just set to maximum possible window width.
-  (fn [[window-width char-width] _]
-    (Math/ceil (/ window-width
-                  char-width))))
-
-;;
-
-(rf/reg-sub
-  :component/root
-  (fn [db _]
-    (:component db)))
-
-(rf/reg-sub
-  :component/direction
-  :<- [:component/root]
-  (fn [component _]
-    (:direction component)))
 
 ;;
 

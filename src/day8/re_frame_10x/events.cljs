@@ -520,56 +520,6 @@
 ;;
 
 (rf/reg-event-db
-  :code/set-code-visibility
-  [(rf/path [:code :code-open?])]
-  (fn [code-open? [_ open?-path open?]]
-    (assoc-in code-open? open?-path open?)))
-
-(rf/reg-event-db
- :code/set-execution-order
- [(rf/path [:code :execution-order?])]
- (fn [_ [_ execution-order?]]
-   execution-order?))
-
-(rf/reg-event-db
-  :code/hover-form
-  [(rf/path [:code :highlighted-form])]
-  (fn [form [_ new-form]]
-    new-form))
-
-(rf/reg-event-db
-  :code/exit-hover-form
-  [(rf/path [:code :highlighted-form])]
-  (fn [form [_ new-form]]
-    (if (= form new-form)
-      nil
-      new-form)))
-
-(rf/reg-event-db
-  :code/set-show-all-code?
-  [(rf/path [:code :show-all-code?])]
-  (fn [_show-all-code? [_ new-show-all-code?]]
-    new-show-all-code?))
-
-(rf/reg-event-db
-  :code/repl-msg-state
-  [(rf/path [:code :repl-msg-state])]
-  (fn [current-state [_ new-state]]
-    (if (and (= current-state :running) (= new-state :start)) ;; Toggles between :running and :re-running to guarantee rerenderig when you continuously call this event
-      :re-running
-      (if (= new-state :start) :running :end))))
-
-;;
-
-(rf/reg-event-db
-  :component/set-direction
-  [(rf/path [:component])]
-  (fn [component [_ new-direction]]
-    (assoc component :direction new-direction)))
-
-;;
-
-(rf/reg-event-db
   :errors/dismiss-popup-failed
   [(rf/path [:errors])]
   (fn [errors _]

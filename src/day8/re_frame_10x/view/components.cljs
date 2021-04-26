@@ -12,7 +12,7 @@
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.settings.subs :as settings.subs]))
 
-
+;; TODO: delete me
 (defclass icon-button-class
   [ambiance disabled?]
   {:cursor           (if disabled? :default :pointer)
@@ -29,6 +29,7 @@
      [:svg :path
       {:fill styles/nord1}]]))
 
+;; TODO: delete me
 (defn icon-button
   [{:keys [icon label title on-click disabled? class]}]
   (let [ambiance  @(rf/subscribe [::settings.subs/ambiance])
@@ -54,6 +55,7 @@
       :title    "Pop out"
       :on-click #(rf/dispatch-sync [:global/launch-external])}]))
 
+;; TODO: delete me
 (defn hyperlink-info
   [url]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
@@ -118,6 +120,7 @@
    :child [:span #_{:style {:color  styles/nord4
                             :margin "auto"}} label]])
 
+;; TODO: delete me
 (defclass expansion-button-style
   [ambiance]
   {:cursor :pointer}

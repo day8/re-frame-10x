@@ -10,7 +10,6 @@
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.view.epochs :as epochs]
     [day8.re-frame-10x.view.components :as components]
-    [day8.re-frame-10x.view.event :as event]
     [day8.re-frame-10x.view.app-db :as app-db]
     [day8.re-frame-10x.view.subs :as subs]
     [day8.re-frame-10x.view.views :as views]
@@ -66,8 +65,7 @@
        {:icon     [material/refresh]
         :label    "Replay"
         :title    "Replay"
-        :on-click #(do (rf/dispatch [:component/set-direction :next])
-                       (rf/dispatch [::epochs.events/replay]))}])))
+        :on-click #(rf/dispatch [::epochs.events/replay])}])))
 
 (defn replay-help-button
   []
@@ -204,11 +202,7 @@
      :class    (tab-content-style ambiance selected-tab)   ;;"tab-wrapper"
      :size     "1"
      :children [(case selected-tab
-                  :event    [rc/v-box
-                             :size "1"
-                             :children
-                             [[event.views/panel]
-                              [event/render]]]
+                  :event    [event.views/panel]
                   :fx       [fx/render]
                   :app-db   [app-db/render db/app-db]
                   :subs     [subs/render]

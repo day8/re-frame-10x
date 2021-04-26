@@ -185,7 +185,23 @@
       :custom-printing-background (rgb 255 255 200) ;; custom-printing
       nil)))
 
+(defclass code
+  [ambiance syntax-color-scheme]
+  {:background-color (syntax-color ambiance syntax-color-scheme :signature-background)
+   :border           [[(px 1) :solid (color/darken (syntax-color ambiance syntax-color-scheme :signature-background) 50)]]})
 
+(defclass hljs
+  [ambiance syntax-color-scheme]
+  {:composes         (code ambiance syntax-color-scheme)
+   :border-radius    gs-2}
+  [:.hljs-type
+   {:color (syntax-color ambiance syntax-color-scheme :type)}]
+  [:.hljs-string
+   {:color (syntax-color ambiance syntax-color-scheme :string)}]
+  [:.hljs-name
+   {:color (syntax-color ambiance syntax-color-scheme :symbol)}]
+  [:.hljs-literal
+   {:color (syntax-color ambiance syntax-color-scheme :bool)}])
 
 
 
@@ -297,12 +313,6 @@
   {:composes      (navigation ambiance)
    #_#_:border-bottom [[gs-2 :solid nord1]]})
 
-(defclass old-hyperlink
-  [ambiance]
-  {:color nord7}
-  [:&:hover
-   {:color (if (= :bright ambiance) nord1 nord5)}])
-
 (defclass button
   [ambiance]
   {:cursor           :pointer
@@ -336,17 +346,7 @@
    [:svg :path
     {:fill nord5}]])
 
-(defclass hljs
-  [ambiance syntax-color-scheme]
-  {:background-color (syntax-color ambiance syntax-color-scheme :signature-background)}
-  [:.hljs-type
-   {:color (syntax-color ambiance syntax-color-scheme :type)}]
-  [:.hljs-string
-   {:color (syntax-color ambiance syntax-color-scheme :string)}]
-  [:.hljs-name
-   {:color (syntax-color ambiance syntax-color-scheme :symbol)}]
-  [:.hljs-literal
-   {:color (syntax-color ambiance syntax-color-scheme :bool)}])
+
 
 ;[:.hljs-built_in
 ; :.hljs-type
@@ -503,20 +503,10 @@
   [ambiance]
   {:color             (if (= :bright ambiance) nord0 nord4)
    :background-color  (if (= :bright ambiance) nord-ghost-white nord0)}
-  [:.re-frame-10x-code-fragment-code
-   {:margin-left gs-2
-    :white-space :nowrap}]
-  [:.re-frame-10x-code-fragment-result
-   {:color       nord10
-    :flex        "1"
-    :margin-left gs-7
-    :white-space :nowrap
-    :visibility  :hidden}]
+
+
   [:.re-frame-10x-code-fragment-content
-   {:height   gs-19
-    :border   [[(px 1) :solid nord4]]
-    :overflow :hidden
-    #_#_:padding  [[0 gs-5]]}]
+   {:border   [[(px 1) :solid nord4]]}]
   [:.re-frame-10x-code-fragment-button
    {:display      :none
     :padding-left gs-7
@@ -525,11 +515,7 @@
     :cursor       :pointer
     :color        nord7}
    [:&:hover
-    {:display :grid}]]
-  [:&:hover
-   {:background-color (if (= :bright ambiance) nord5 nord2)}
-   [:.re-frame-10x-code-fragment-result
-    {:visibility :visible}]])
+    {:display :grid}]])
 
 (defclass registrar
   [ambiance]

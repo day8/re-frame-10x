@@ -87,8 +87,7 @@
      {:icon      [material/arrow-left]
       :title     (if older-epochs-available? "Previous epoch" "There are no previous epochs")
       :disabled? (not older-epochs-available?)
-      :on-click  #(do (rf/dispatch [:component/set-direction :previous])
-                      (rf/dispatch [::epochs.events/previous]))}]))
+      :on-click  #(rf/dispatch [::epochs.events/previous])}]))
 
 (defn next-button
   []
@@ -97,8 +96,7 @@
      {:icon      [material/arrow-right]
       :title     (if newer-epochs-available? "Next epoch" "There are no later epochs")
       :disabled? (not newer-epochs-available?)
-      :on-click  #(do (rf/dispatch [:component/set-direction :next])
-                      (rf/dispatch [::epochs.events/next]))}]))
+      :on-click  #(rf/dispatch [::epochs.events/next])}]))
 
 (defn latest-button
   []
@@ -107,8 +105,7 @@
      {:icon      [material/skip-next]
       :title     (if newer-epochs-available? "Skip to latest epoch" "Already showig latest epoch")
       :disabled? (not newer-epochs-available?)
-      :on-click  #(do (rf/dispatch [:component/set-direction :next])
-                      (rf/dispatch [::epochs.events/most-recent]))}]))
+      :on-click  #(rf/dispatch [::epochs.events/most-recent])}]))
 
 (defn left-buttons
   []
