@@ -218,7 +218,7 @@
 
 (defclass devtools-inner-style
   [ambiance]
-  {:composes (styles/background ambiance)})
+  {:composes (styles/colors-0 ambiance)})
 
 (defn devtools-inner [{:keys [panel-type debug?]}]
   (let [ambiance          @(rf/subscribe [::settings.subs/ambiance])

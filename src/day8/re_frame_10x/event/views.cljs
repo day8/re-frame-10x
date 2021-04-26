@@ -102,6 +102,7 @@
   [ambiance syntax-color-scheme show-all-code?]
   {:composes      (styles/hljs ambiance syntax-color-scheme)
    :max-height    (when-not show-all-code? (px (* 10 17)))  ;; Add scrollbar after 10 lines
+   :padding       styles/gs-5
    :overflow      :auto
    :white-space   :pre}) ;; TODO: This is a quick fix for issue #270
 
@@ -171,9 +172,16 @@
         :on-animation-end #(rf/dispatch [::event.events/repl-msg-state :end])}
        "Clipboard now contains text for pasting into your REPL"])))
 
+(defclass copy-button-style
+  [ambiance]
+  {}
+  [:button
+   {:background-color (if (= :bright ambiance) styles/nord-ghost-white styles/nord1)}])
+
 (defn controls
   []
-  (let [execution-order? @(rf/subscribe [::event.subs/execution-order?])]
+  (let [ambiance         @(rf/subscribe [::settings.subs/ambiance])
+        execution-order? @(rf/subscribe [::event.subs/execution-order?])]
     [rc/h-box
      :children
      [[components/checkbox
@@ -188,7 +196,8 @@
        :size  "1"
        :child ""]
       [components/icon-button
-       {:icon     [material/content-copy]
+       {:class    (copy-button-style ambiance)
+        :icon     [material/content-copy]
         :label    "requires"
         :title    "Copy to the clipboard, the require form to set things up for the \"repl\" links below"
         ;; Doing this in a list would be nicer, but doesn't let us use ' as it will be expanded before we can create the string.
@@ -199,11 +208,9 @@
 
 (defclass indent-block-style
   [ambiance first?]
-  (merge
-    {:composes (styles/colors-1 ambiance)
-     :border-left [[(px 1) :solid (if (= :bright ambiance) styles/nord4 styles/nord3)]]}
-    (when first?
-      {:border-top [[(px 1) :solid (if (= :bright ambiance) styles/nord4 styles/nord3)]]})))
+  {:composes    (styles/colors-2 ambiance)
+   :border-left [[(px 1) :solid (if (= :bright ambiance) styles/nord4 styles/nord3)]]
+   :border-top  (when first? [[(px 1) :solid (if (= :bright ambiance) styles/nord4 styles/nord3)]])})
 
 (defn indent-block
   [indent-level first?]
@@ -293,7 +300,9 @@
      :size  "1"
      :class (fragment-body-style ambiance syntax-color-scheme)
      :child
-     [cljs-devtools/simple-render result [@(rf/subscribe [::epochs.subs/selected-epoch-id]) trace-id id]]]))
+     [cljs-devtools/simple-render
+      result
+      [@(rf/subscribe [::epochs.subs/selected-epoch-id]) trace-id id]]]))
 
 (defclass fragment-style
   [ambiance]

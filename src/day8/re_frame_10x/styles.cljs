@@ -73,6 +73,10 @@
 ;; Base Classes
 ;; ===
 
+(defclass colors-0
+  [ambiance]
+  {:background-color (if (= ambiance :bright) :#fff nord1)})
+
 (defclass colors-1
   [ambiance]
   {:background-color (if (= :bright ambiance) nord-ghost-white nord0)
@@ -193,15 +197,22 @@
 (defclass hljs
   [ambiance syntax-color-scheme]
   {:composes         (code ambiance syntax-color-scheme)
-   :border-radius    gs-2}
+   :border-radius    gs-2
+   :font-weight      400}
+  [:.code-listing--highlighted
+   {:background  (if (= :bright ambiance) nord13 nord2)}]
+  [:.hljs-symbol
+   {:color (syntax-color ambiance syntax-color-scheme :keyword)}]
   [:.hljs-type
    {:color (syntax-color ambiance syntax-color-scheme :type)}]
   [:.hljs-string
    {:color (syntax-color ambiance syntax-color-scheme :string)}]
   [:.hljs-name
-   {:color (syntax-color ambiance syntax-color-scheme :symbol)}]
+   {:color (syntax-color ambiance syntax-color-scheme :fn)}]
   [:.hljs-literal
-   {:color (syntax-color ambiance syntax-color-scheme :bool)}])
+   {:color (syntax-color ambiance syntax-color-scheme :bool)}]
+  [:.hljs-number
+   {:color (syntax-color ambiance syntax-color-scheme :float)}])
 
 
 
@@ -357,9 +368,7 @@
   ; {:display    :block
   ;  :overflow-x :auto
   ;  :padding    (em 0.5)}]
-  ;[:.code-listing--highlighted
-  ; {:background  (if (= :bright ambiance) nord13 nord2)
-  ;  :font-weight :bold}]
+  ;
   ;[:.hljs
   ; :.hljs-subst
   ; {:color (if (= :bright ambiance) nord0 nord4)}]

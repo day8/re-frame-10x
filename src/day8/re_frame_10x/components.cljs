@@ -21,6 +21,7 @@
         callback-fn #(when (and on-change (not disabled?))
                        (on-change (not model)))]
     [rc/h-box
+     :align    :center
      :class    (str (checkbox-style ambiance model disabled?) " " class)
      :attr     {:on-click callback-fn}
      :children
