@@ -131,7 +131,8 @@
     {:fill styles/nord1}]])
 
 (defn expansion-button
-  [{:keys [open? size]}]
+  [{:keys [open? size]
+    :or   {size styles/gs-19s}}]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/box
      :class (expansion-button-style ambiance)

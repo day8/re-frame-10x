@@ -89,14 +89,10 @@
                                  [components/expansion-button
                                   {:open? show-row?}]]
                                 [:td.trace--op
-                                 [:span.op-string {:on-click (fn [ev]
-                                                               (add-filter filter-items (name op-type) :contains)
-                                                               (.stopPropagation ev))}
+                                 [:span.op-string {}
                                   (str op-type)]]
                                 [:td.trace--op-string
-                                 [:span.op-string {:on-click (fn [ev]
-                                                               (add-filter filter-items (name op-name) :contains)
-                                                               (.stopPropagation ev))}
+                                 [:span.op-string
                                   (pp/truncate 20 :middle (pp/str->namespaced-sym op-name)) " "
                                   [:span
                                    {:style {:opacity 0.5
