@@ -104,7 +104,8 @@
    :max-height    (when-not show-all-code? (px (* 10 17)))  ;; Add scrollbar after 10 lines
    :padding       styles/gs-5
    :overflow      :auto
-   :white-space   :pre}) ;; TODO: This is a quick fix for issue #270
+   :white-space   :pre
+   :margin-right  styles/gs-5}) ;; TODO: This is a quick fix for issue #270
 
 (defn code
   []
@@ -178,11 +179,17 @@
   [:button
    {:background-color (if (= :bright ambiance) styles/nord-ghost-white styles/nord1)}])
 
+(defclass controls-style
+  [ambiance]
+  {:margin-right styles/gs-5})
+
 (defn controls
   []
   (let [ambiance         @(rf/subscribe [::settings.subs/ambiance])
         execution-order? @(rf/subscribe [::event.subs/execution-order?])]
     [rc/h-box
+     :class    (controls-style ambiance)
+     :align    :center
      :children
      [[components/checkbox
        {:model     execution-order?
@@ -329,9 +336,10 @@
          [[indent-block indent-level false]
           [fragment-body frag]]])]]))
 
-(defn fragments-style
+(defclass fragments-style
   [ambiance]
-  {:overflow-y :auto})
+  {:overflow-y :auto
+   :margin-right styles/gs-5})
 
 (defn fragments
   []

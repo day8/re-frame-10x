@@ -132,8 +132,7 @@
 (defclass table-style
   [ambiance]
   {:composes   (styles/frame-1 ambiance)
-   :width      (percent 100)
-   :margin-top styles/gs-19})
+   :width      (percent 100)})
 
 (defclass table-header-expansion-style
   [ambiance]
@@ -271,11 +270,17 @@
            :child [rc/label :label "meta"]]]]]
        (->> visible-traces (map (fn [trace] [table-row trace]))))]))
 
+(defclass panel-style
+  []
+  {:margin-right styles/gs-5})
+
 (defn panel
   []
   [rc/v-box
+   :class    (panel-style)
    :size     "1"
    :align    :start
+   :gap      styles/gs-19s
    :children
    [[filters]
     [queries]

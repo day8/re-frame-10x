@@ -133,16 +133,24 @@
            {:label "react, etc"
             :time  (:timing/animation-frame-misc times)}]]]))))
 
+(defclass panel-style
+  [ambiance]
+  {:margin-right styles/gs-5})
+
+
 (defn panel
   []
-  (let [available? @(rf/subscribe [::timing.subs/data-available?])]
+  (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
+        available? @(rf/subscribe [::timing.subs/data-available?])]
     (if available?
       [rc/v-box
+       :class    (panel-style ambiance)
        :children
        [[elapsed]
         [event-processing]
         [animation-frames]]]
       [rc/v-box
+       :class    (panel-style ambiance)
        :children
        [[rc/label
          :label "No timing data is currently available."]]])))

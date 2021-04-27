@@ -252,13 +252,17 @@
           [rc/gap-f :size styles/gs-12s]]))]))
 
 
-(defn render [app-db]
-  [rc/v-box
-   :size "1"
-   :style {:margin-right styles/gs-19s
-           :overflow "auto"}
-           ;:overflow     "hidden"
+(defclass panel-style
+  [ambiance]
+  {:margin-right styles/gs-5
+   :overflow :auto})
 
-   :children [[panel-header]
-              [pod-section]
-              [rc/gap-f :size styles/gs-19s]]])
+(defn panel [app-db]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+    [rc/v-box
+     :class    (panel-style ambiance)
+     :size     "1"
+     :children
+     [[panel-header]
+      [pod-section]
+      [rc/gap-f :size styles/gs-19s]]]))

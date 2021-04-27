@@ -411,13 +411,19 @@
        :on-change   #(rf/dispatch [:subs/set-filter
                                    (-> % .-target .-value)])}]]))
 
-(defn render []
+(defclass panel-style
+  [ambiance]
+  {:margin-right styles/gs-5
+   :width        (percent 100)})
+
+(defn panel []
   []
-  [rc/v-box
-   :size "1"
-   #_#_:style {:margin-right styles/gs-19s
-               :width "100%"}
-   :children [[panel-header]
-              [filter-section]
-              [pod-section]
-              [rc/gap-f :size styles/gs-19s]]])
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+    [rc/v-box
+     :class    (panel-style ambiance)
+     :size     "1"
+     :children
+     [[panel-header]
+      [filter-section]
+      [pod-section]
+      [rc/gap-f :size styles/gs-19s]]]))

@@ -142,7 +142,7 @@
   [external-window?]
   [rc/h-box
    :gap      styles/gs-12s
-   :style    {:margin-right styles/gs-19s}
+   :style    {:margin-right styles/gs-5s}
    :children [[ambiance-button]
               [settings-button]
               [components/popout-button external-window?]]])

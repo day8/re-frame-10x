@@ -63,8 +63,8 @@
     (when (some? current-event)
       [components/icon-button
        {:icon     [material/refresh]
-        :label    "Replay"
-        :title    "Replay"
+        :label    "replay"
+        :title    "replay"
         :on-click #(rf/dispatch [::epochs.events/replay])}])))
 
 (defn replay-help-button
@@ -116,33 +116,45 @@
   {:composes     (styles/navigation-border-top ambiance)
    :padding-left styles/gs-19})
 
+(defn tab-buttons-left
+  [debug?]
+  [rc/h-box
+   :align    :end
+   :height   styles/gs-31s
+   :children [[tab-button :event "event"]
+              [tab-button :fx "fx"]
+              [tab-button :app-db "app-db"]
+              [tab-button :subs "subs"]
+              ;[tab-button :views "Views"]
+              [tab-button :traces "traces"]
+              [tab-button :timing "timing"]
+              (when debug?
+                [tab-button :debug "debug"])]])
+
+(defclass tab-buttons-right-style
+  [ambiance]
+  {:padding [[0 styles/gs-5 0 0]]})
+
+(defn tab-buttons-right
+  []
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+    [rc/h-box
+     :class    (tab-buttons-right-style ambiance)
+     :align    :center
+     :gap      styles/gs-12s
+     :children [;; TODO: add 'Replay' text, and smaller icon.
+                [replay-button]
+                ;; TODO: help smaller than what is currently to indicate Reply button is more important/relationship. e.g. just question mark, no button.
+                [replay-help-button]]]))
+
 (defn tab-buttons
   [{:keys [debug?]}]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class    (tab-buttons-style ambiance)
      :justify  :between
-     :children [[rc/h-box
-                 ;:gap "7px"
-                 :align :end
-                 :height styles/gs-31s
-                 :children [[tab-button :event "event"]
-                            [tab-button :fx "fx"]
-                            [tab-button :app-db "app-db"]
-                            [tab-button :subs "subs"]
-                            ;[tab-button :views "Views"]
-                            [tab-button :traces "traces"]
-                            [tab-button :timing "timing"]
-                            (when debug?
-                              [tab-button :debug "debug"])]]
-                [rc/h-box
-                 :align    :center
-                 :padding  (str "0 " styles/gs-19s " 0 0")  ; "0px 19px 0px 7px"
-                 :gap      styles/gs-12s
-                 :children [;; TODO: add 'Replay' text, and smaller icon.
-                            [replay-button]
-                            ;; TODO: help smaller than what is currently to indicate Reply button is more important/relationship. e.g. just question mark, no button.
-                            [replay-help-button]]]]]))
+     :children [[tab-buttons-left debug?]
+                [tab-buttons-right]]]))
 
 (defclass warning-style
   [ambiance]
@@ -202,19 +214,19 @@
      :class    (tab-content-style ambiance selected-tab)   ;;"tab-wrapper"
      :size     "1"
      :children [(case selected-tab
-                  :event    [event.views/panel]
-                  :fx       [fx/render]
-                  :app-db   [app-db/render db/app-db]
-                  :subs     [subs/render]
-                  :views    [views/render]
-                  :timing   [timing.views/panel]
-                  :traces   [rc/v-box
-                             :children [[traces.views/panel]
-                                        [traces/render]]]
-                  :debug    [debug/render]
+                  :event [event.views/panel]
+                  :fx [fx/panel]
+                  :app-db [app-db/panel db/app-db]
+                  :subs [subs/panel]
+                  :views [views/render]
+                  :timing [timing.views/panel]
+                  :traces [rc/v-box
+                           :children [[traces.views/panel]
+                                      [traces/render]]]
+                  :debug [debug/render]
                   :settings [settings/render]
 
-                  [app-db/render db/app-db])]]))
+                  [app-db/panel db/app-db])]]))
 
 (defclass devtools-inner-style
   [ambiance]
