@@ -1,13 +1,16 @@
 (ns day8.re-frame-10x.components
   (:require
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass]]
+    [goog.fx.dom :as fx]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.utils.re-com :refer [deref-or-value]]
     [day8.re-frame-10x.settings.subs :as settings.subs]
     [day8.re-frame-10x.utils.re-com :as rc]
-    [day8.re-frame-10x.styles :as styles]))
+    [day8.re-frame-10x.styles :as styles]
+    [clojure.string :as string]))
 
 (defclass checkbox-style
   [ambiance checked? disabled?]
@@ -42,24 +45,31 @@
          :label label])]]))
 
 (defclass radio-button-style
-  [ambiance disabled?]
+  [ambiance checked? disabled?]
   {:cursor (when-not disabled? :pointer)}
   [:svg
-   {:margin-right styles/gs-5}])
+   {:margin-right styles/gs-5}
+   (when checked?
+     [:path
+      {:fill styles/nord13}])]
+  [:&:hover
+   [:svg :path
+    {:fill styles/nord13}]])
 
 (defn radio-button
   [{:keys [model value on-change label disabled? class]}]
   (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])
         model       (deref-or-value model)
+        checked?    (= model value)
         disabled?   (deref-or-value disabled?)
         on-click-fn #(when (and on-change (not disabled?))
                        (on-change value))]
     [rc/h-box
      :align    :center
-     :class    (str (radio-button-style ambiance disabled?) " " class)
+     :class    (str (radio-button-style ambiance checked? disabled?) " " class)
      :attr     {:on-click on-click-fn}
      :children
-     [(if (= model value)
+     [(if checked?
         [material/radio-button-checked]
         [material/radio-button-unchecked])
       [rc/label
@@ -112,6 +122,13 @@
                               label])]]
      :on-click #(when-not disabled? (on-click))]))
 
+(defn popout-button
+  [external-window?]
+  (when-not external-window?
+    [icon-button
+     {:icon     [material/open-in-new]
+      :title    "Pop out"
+      :on-click #(rf/dispatch-sync [:global/launch-external])}]))
 
 (defclass expansion-button-style
   [ambiance]
@@ -130,3 +147,70 @@
      :child (if open?
               [material/arrow-drop-down :size size]
               [material/arrow-right :size size])]))
+
+;; --- OLD ---
+
+(defclass search-style
+  [ambiance]
+  {:composes      (styles/colors-1 ambiance)
+   :border-bottom (styles/border-2 ambiance)}
+  [:input
+   {:border :none
+    :background-color (styles/background-color-1 ambiance)}
+   [:&:focus-visible
+    {:outline :none}]])
+
+(defn search [{:keys [title placeholder on-save on-change on-stop]}]
+  (let [ambiance (rf/subscribe [::settings.subs/ambiance])
+        val  (r/atom title)
+        save #(let [v (-> @val str string/trim)]
+                (when (pos? (count v))
+                  (on-save v)))]
+    (fn []
+      [rc/h-box
+       :class    (search-style @ambiance)
+       :align    :center
+       :children
+       [[material/search]
+        [:input {:type        "text"
+                 :value       @val
+                 :auto-focus  true
+                 :placeholder placeholder
+                 :size        (if (> 20 (count (str @val)))
+                                25
+                                (count (str @val)))
+                 :on-change   #(do (reset! val (-> % .-target .-value))
+                                   (on-change %))
+                 :on-key-down #(case (.-which %)
+                                 13 (do
+                                      (save)
+                                      (reset! val ""))
+                                 nil)}]]])))
+
+(defn scroll! [el start end time]
+  (.play (fx/Scroll. el (clj->js start) (clj->js end) time)))
+
+(defn scrolled-to-end? [el tolerance]
+  ;; at-end?: element.scrollHeight - element.scrollTop === element.clientHeight
+  (> tolerance (- (.-scrollHeight el) (.-scrollTop el) (.-clientHeight el))))
+
+
+(defn reset-wrapping [css-string]
+  (string/replace css-string #"white-space:nowrap;" ""))
+
+
+(defclass tag-style
+  []
+  {:width         styles/gs-50
+   :height        styles/gs-19
+   :font-size     (px 10)
+   :font-weight   :bold
+   :border-radius styles/gs-2}
+  [:span
+   {:margin :auto}])
+
+(defn tag [class label]
+  [rc/box
+   :class (str (tag-style) " " class)
+   :child [:span #_{:style {:color  styles/nord4
+                            :margin "auto"}} label]])

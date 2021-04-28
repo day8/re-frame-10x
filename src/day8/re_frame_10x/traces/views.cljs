@@ -17,30 +17,31 @@
 
 (defclass selected-epoch-style
   [ambiance active?]
-  {:composes (styles/control-2 ambiance active?)
-   :height   styles/gs-31
+  {;:composes (styles/control-2 ambiance active?)
+   ;:height   styles/gs-31
    :margin-left styles/gs-12
-   :padding  [[0 styles/gs-12]]})
+   #_#_:padding  [[0 styles/gs-12]]})
 
 (defn selected-epoch
   []
   (let [ambiance                  @(rf/subscribe [::settings.subs/ambiance])
-        filter-by-selected-epoch? @(rf/subscribe [::traces.subs/filter-by-selected-epoch?])]
+        filter-by-selected-epoch? @(rf/subscribe [::traces.subs/filter-by-selected-epoch?])
+        model                     (if filter-by-selected-epoch? :epoch :all)]
     [rc/h-box
-     ;:class    (category-style ambiance filter-by-selected-epoch?)
+     :class    (selected-epoch-style ambiance filter-by-selected-epoch?)
      :align    :center
-     :attr     {:on-click #(rf/dispatch [::traces.events/set-filter-by-selected-epoch? (not filter-by-selected-epoch?)])}
+     :gap      styles/gs-12s
      :children
      [[components/radio-button
        {:label     "only this epoch"
-        :model     :epoch
+        :model     model
         :value     :epoch
-        :on-change #()}]
+        :on-change #(rf/dispatch [::traces.events/set-filter-by-selected-epoch? (not filter-by-selected-epoch?)])}]
       [components/radio-button
        {:label     "all epochs"
-        :model     :epoch
+        :model     model
         :value     :all
-        :on-change #()}]]]))
+        :on-change #(rf/dispatch [::traces.events/set-filter-by-selected-epoch? (not filter-by-selected-epoch?)])}]]]))
 
 (defn op-type->color
   [op-type]
@@ -129,11 +130,10 @@
      [[:select
        [:option {:value "contains"} "contains"]
        [:option {:value "slower-than"} "slower than"]]
-      [material/search]
-      #_[components/search-input
-         {:on-save     #()
-          :on-change   #()
-          :placeholder "filter traces"}]]]))
+      [components/search
+       {:on-save     #()
+        :on-change   #()
+        :placeholder "filter traces"}]]]))
 
 
 (defclass table-style
@@ -291,7 +291,6 @@
   []
   [rc/v-box
    :class    (panel-style)
-   :size     "1"
    :align    :start
    :gap      styles/gs-19s
    :children

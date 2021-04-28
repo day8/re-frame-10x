@@ -7,7 +7,7 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.settings.subs :as settings.subs]
     [day8.re-frame-10x.timing.subs :as timing.subs]
-    [day8.re-frame-10x.view.components :as components]))
+    [day8.re-frame-10x.components :as components]))
 
 (defn ms->str
   [ms]

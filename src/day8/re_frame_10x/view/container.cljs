@@ -9,7 +9,7 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.view.epochs :as epochs]
-    [day8.re-frame-10x.view.components :as components]
+    [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.view.app-db :as app-db]
     [day8.re-frame-10x.view.subs :as subs]
     [day8.re-frame-10x.view.views :as views]
@@ -214,16 +214,14 @@
      :class    (tab-content-style ambiance selected-tab)   ;;"tab-wrapper"
      :size     "1"
      :children [(case selected-tab
-                  :event [event.views/panel]
-                  :fx [fx/panel]
-                  :app-db [app-db/panel db/app-db]
-                  :subs [subs/panel]
-                  :views [views/render]
-                  :timing [timing.views/panel]
-                  :traces [rc/v-box
-                           :children [[traces.views/panel]
-                                      [traces/render]]]
-                  :debug [debug/render]
+                  :event    [event.views/panel]
+                  :fx       [fx/panel]
+                  :app-db   [app-db/panel db/app-db]
+                  :subs     [subs/panel]
+                  :views    [views/render]
+                  :timing   [timing.views/panel]
+                  :traces   [traces.views/panel]
+                  :debug    [debug/render]
                   :settings [settings/render]
 
                   [app-db/panel db/app-db])]]))

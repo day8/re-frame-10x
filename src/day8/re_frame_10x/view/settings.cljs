@@ -6,7 +6,7 @@
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.traces.subs :as traces.subs]
     [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
-    [day8.re-frame-10x.view.components :as components]
+    [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]

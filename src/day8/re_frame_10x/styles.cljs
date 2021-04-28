@@ -73,14 +73,26 @@
 ;; Base Classes
 ;; ===
 
+(defn background-color-0
+  [ambiance]
+  (if (= ambiance :bright) :#fff nord1))
+
 (defclass colors-0
   [ambiance]
-  {:background-color (if (= ambiance :bright) :#fff nord1)})
+  {:background-color (background-color-0 ambiance)})
+
+(defn background-color-1
+  [ambiance]
+  (if (= :bright ambiance) nord-ghost-white nord0))
+
+(defn color-1
+  [ambiance]
+  (if (= :bright ambiance) nord3 nord4))
 
 (defclass colors-1
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord-ghost-white nord0)
-   :color            (if (= :bright ambiance) nord3            nord4)})
+  {:background-color (background-color-1 ambiance)
+   :color            (color-1 ambiance)})
 
 (defn border-1
   [ambiance]
@@ -92,12 +104,20 @@
    :border        (border-1 ambiance)
    :border-radius gs-2})
 
+(defn background-color-2
+  [ambiance]
+  (if (= :bright ambiance) nord6 nord1))
+
+(defn color-2
+  [ambiance]
+  (if (= :bright ambiance) nord2 nord4))
+
 (defclass colors-2
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord6 nord1)
-   :color            (if (= :bright ambiance) nord2 nord4)}
+  {:background-color (background-color-2 ambiance)
+   :color            (color-2 ambiance)}
   [:svg :path
-   {:fill (if (= :bright ambiance) nord2 nord4)}])
+   {:fill (color-2 ambiance)}])
 
 (defn border-2
   [ambiance]
@@ -465,7 +485,7 @@
 
 (defclass path-text-input-style
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord-ghost-white nord0)
+  {:background-color (background-color-1 ambiance)
    :height           (px 25)
    :width            "-webkit-fill-available" ;; This took a bit of finding!
    :padding          [[0 gs-7]]
@@ -485,7 +505,7 @@
 
 (defclass pod-data
   [ambiance]
-  {:background-color (if (= :bright ambiance) nord-ghost-white nord0)
+  {:background-color (background-color-1 ambiance)
    :padding          [[0 gs-2]]
    :min-width        (px 100)})
 
@@ -515,7 +535,7 @@
 (defclass code-fragment
   [ambiance]
   {:color             (if (= :bright ambiance) nord0 nord4)
-   :background-color  (if (= :bright ambiance) nord-ghost-white nord0)}
+   :background-color  (background-color-1 ambiance)}
 
 
   [:.re-frame-10x-code-fragment-content

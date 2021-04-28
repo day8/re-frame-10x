@@ -1,7 +1,7 @@
 (ns day8.re-frame-10x.view.traces
   (:require
     [clojure.string :as string]
-    [day8.re-frame-10x.view.components :as components]
+    [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
@@ -48,9 +48,9 @@
            [:option {:value "contains"} "contains"]
            [:option {:value "slower-than"} "slower than"]]
           [:div.search
-           [components/search-input {:on-save     save-query
-                                     :on-change   #(reset! filter-input (.. % -target -value))
-                                     :placeholder "Type to filter traces"}]
+           [components/search {:on-save           save-query
+                               :on-change   #(reset! filter-input (.. % -target -value))
+                               :placeholder "Type to filter traces"}]
            (if @input-error
              [:div.input-error {:style {:color "red" :margin-top 5}}
               "Please enter a valid number."])]]]
