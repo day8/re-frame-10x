@@ -15,20 +15,38 @@
 ;; Fragment: the combination of a form and result
 ;; Listing: a block of traced Clojure code, e.g. an event handler function
 
-(defn event-section [title data]
+(defclass section-header-style
+  [ambiance]
+  {:composes      (styles/colors-1 ambiance)
+   :padding-left  styles/gs-12
+   :height        styles/gs-31
+   :border-bottom (styles/border-1 ambiance)})
+
+(defn section-header
+  [title]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+    [rc/h-box
+     :class    (section-header-style ambiance)
+     :align    :center
+     :children [[rc/label :label title]]]))
+
+(defclass section-style
+  [ambiance]
+  {:composes (styles/frame-1 ambiance)})
+
+(defn section [title data]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/v-box
+     :class    (section-style ambiance)
+     :size     "1"
      :children
-     [[rc/h-box
-       :class    (styles/section-header ambiance)
-       :align    :center
-       :children [[rc/label :label title]]]
+     [[section-header title]
       [cljs-devtools/simple-render data [title] (styles/section-data ambiance)]]]))
 
 (defclass panel-style
   [ambiance]
   {:margin-right  styles/gs-5
-   :width (percent 100)})
+   :width         (percent 100)})
 
 (defn panel []
   (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])
@@ -36,7 +54,7 @@
     [rc/v-box
      :class    (panel-style ambiance)
      :gap      styles/gs-19s
-     :children [[event-section "Coeffects"    (get-in event-trace [:tags :coeffects])]
-                [event-section "Effects"      (get-in event-trace [:tags :effects])]
-                [event-section "Interceptors" (get-in event-trace [:tags :interceptors])]
+     :children [[section "Coeffects"    (get-in event-trace [:tags :coeffects])]
+                [section "Effects"      (get-in event-trace [:tags :effects])]
+                [section "Interceptors" (get-in event-trace [:tags :interceptors])]
                 [rc/gap-f :size "0px"]]]))

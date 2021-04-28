@@ -305,23 +305,32 @@
 
 (defn prn-str-render?
   [data]
-  false
-  #_(or (string? data)
-        (instance? js/RegExp data)
-        (number? data)
-        (boolean? data)
-        (nil? data)))
+  (or (string? data)
+      (instance? js/RegExp data)
+      (number? data)
+      (boolean? data)
+      (nil? data)))
+
+(defclass prn-str-render-style
+  [ambiance syntax-color-scheme]
+  {:padding          styles/gs-5
+   :background-color (styles/syntax-color ambiance syntax-color-scheme :signature-background)
+   :color            (styles/syntax-color ambiance syntax-color-scheme :bool)})
 
 (defn prn-str-render
   [data]
-  [:div {:style {:color styles/nord10
-                 :margin "10px 0"}} (prn-str data)])
+  (let [ambiance            @(rf/subscribe [::settings.subs/ambiance])
+        syntax-color-scheme @(rf/subscribe [::settings.subs/syntax-color-scheme])]
+    [:div {:class (prn-str-render-style ambiance syntax-color-scheme)}
+     (prn-str data)]))
 
 (defn simple-render [data path & [class]]
   (let [ambiance (rf/subscribe [::settings.subs/ambiance])]
     (fn [data]
-      [:div
-       {:class (str (jsonml-style @ambiance) " " class)}
+      [rc/box
+       :size  "1"
+       :class (str (jsonml-style @ambiance) " " class)
+       :child
        (if (prn-str-render? data)
          (prn-str-render data)
          (jsonml->hiccup (header @ambiance data) (conj path 0)))])))

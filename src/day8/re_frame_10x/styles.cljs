@@ -82,10 +82,14 @@
   {:background-color (if (= :bright ambiance) nord-ghost-white nord0)
    :color            (if (= :bright ambiance) nord3            nord4)})
 
+(defn border-1
+  [ambiance]
+  [[(px 1) :solid (if (= :bright ambiance) nord4 nord3)]])
+
 (defclass frame-1
   [ambiance]
   {:composes      (colors-1 ambiance)
-   :border        [[(px 1) :solid (if (= :bright ambiance) nord4 nord3)]]
+   :border        (border-1 ambiance)
    :border-radius gs-2})
 
 (defclass colors-2
@@ -95,10 +99,14 @@
   [:svg :path
    {:fill (if (= :bright ambiance) nord2 nord4)}])
 
+(defn border-2
+  [ambiance]
+  [[(px 1) :solid (if (= :bright ambiance) nord4 nord3)]])
+
 (defclass frame-2
   [ambiance]
   {:composes      (colors-2 ambiance)
-   :border        [[(px 1) :solid (if (= :bright ambiance) nord4 nord3)]]
+   :border        (border-2 ambiance)
    :border-radius gs-2})
 
 (defclass colors-uncommon
@@ -483,12 +491,8 @@
 
 (defclass section-data
   [ambiance]
-  {:composes         (pod-border ambiance)
-   #_#_:background-color (if (= :bright ambiance) nord-ghost-white nord0)
-   :background-color (syntax-color ambiance :cljs-devtools :signature-background)
-   :padding-left     gs-12
-   :overflow-x       :auto
-   :overflow-y       :hidden})
+  {:background-color (syntax-color ambiance :cljs-devtools :signature-background)
+   :padding     [[gs-5 gs-12]]})
 
 (defclass app-db-inspector-link
   [ambiance]

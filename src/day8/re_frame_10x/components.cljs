@@ -10,26 +10,61 @@
     [day8.re-frame-10x.styles :as styles]))
 
 (defclass checkbox-style
-  [ambiance active? disabled?]
-  {:composes (styles/control-2 ambiance active?)})
+  [ambiance checked? disabled?]
+  {:cursor :pointer}
+  [:svg
+   {:margin-right styles/gs-5}
+   (when checked?
+     [:path
+      {:fill styles/nord7}])]
+  [:&:hover
+   {:color (if (= :bright ambiance) styles/nord1 styles/nord5)}
+   [:svg :path
+    {:fill styles/nord7}]])
 
 (defn checkbox
   [{:keys [model on-change label disabled? class]}]
   (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])
-        model       (deref-or-value model)
+        checked?    (deref-or-value model)
         disabled?   (deref-or-value disabled?)
-        callback-fn #(when (and on-change (not disabled?))
-                       (on-change (not model)))]
+        on-click-fn #(when (and on-change (not disabled?))
+                       (on-change (not checked?)))]
     [rc/h-box
      :align    :center
-     :class    (str (checkbox-style ambiance model disabled?) " " class)
-     :attr     {:on-click callback-fn}
+     :class    (str (checkbox-style ambiance checked? disabled?) " " class)
+     :attr     {:on-click on-click-fn}
      :children
-     [(if model
+     [(if checked?
         [material/check-box]
         [material/check-box-outline-blank])
+      (when label
+        [rc/label
+         :label label])]]))
+
+(defclass radio-button-style
+  [ambiance disabled?]
+  {:cursor (when-not disabled? :pointer)}
+  [:svg
+   {:margin-right styles/gs-5}])
+
+(defn radio-button
+  [{:keys [model value on-change label disabled? class]}]
+  (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])
+        model       (deref-or-value model)
+        disabled?   (deref-or-value disabled?)
+        on-click-fn #(when (and on-change (not disabled?))
+                       (on-change value))]
+    [rc/h-box
+     :align    :center
+     :class    (str (radio-button-style ambiance disabled?) " " class)
+     :attr     {:on-click on-click-fn}
+     :children
+     [(if (= model value)
+        [material/radio-button-checked]
+        [material/radio-button-unchecked])
       [rc/label
        :label label]]]))
+
 
 (defn hyperlink-info
   [url]
@@ -61,7 +96,7 @@
       {:fill styles/nord1}]]))
 
 (defn icon-button
-  [{:keys [icon label title on-click disabled? class]}]
+  [{:keys [icon label title on-click disabled? class] :as args}]
   (let [ambiance  @(rf/subscribe [::settings.subs/ambiance])
         disabled? (rc/deref-or-value disabled?)]
     [rc/button

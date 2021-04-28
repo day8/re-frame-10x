@@ -175,9 +175,10 @@
 
 (defclass copy-button-style
   [ambiance]
-  {}
-  [:button
-   {:background-color (if (= :bright ambiance) styles/nord-ghost-white styles/nord1)}])
+  {:background-color (if (= :bright ambiance) styles/nord-ghost-white styles/nord1)
+   :border-top :none
+   :border-bottom :none
+   :border-right :none})
 
 (defclass controls-style
   [ambiance]
@@ -203,8 +204,7 @@
        :size  "1"
        :child ""]
       [components/icon-button
-       {:class    (copy-button-style ambiance)
-        :icon     [material/content-copy]
+       {:icon     [material/content-copy]
         :label    "requires"
         :title    "Copy to the clipboard, the require form to set things up for the \"repl\" links below"
         ;; Doing this in a list would be nicer, but doesn't let us use ' as it will be expanded before we can create the string.
@@ -285,11 +285,15 @@
          :child
          [:code =>str (when (pos? result-length)
                         (pp/pr-str-truncated result-length result))]]]]
-      [components/icon-button
-       {:icon     [material/content-copy {:size "14px"}]
-        :title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
-        :on-click (handler-fn (do (utils/copy-to-clipboard (pr-str (list 'day8.re-frame-10x/traced-result trace-id frag)))
-                                  (rf/dispatch [::event.events/repl-msg-state :start])))}]]]))
+      [rc/box
+       :width styles/gs-19s
+       :child
+       [components/icon-button
+        {:class    (copy-button-style ambiance)
+         :icon     [material/content-copy {:size "14px"}]
+         :title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
+         :on-click (handler-fn (do (utils/copy-to-clipboard (pr-str (list 'day8.re-frame-10x/traced-result trace-id frag)))
+                                   (rf/dispatch [::event.events/repl-msg-state :start])))}]]]]))
 
 (defclass fragment-body-style
   [ambiance syntax-color-scheme]

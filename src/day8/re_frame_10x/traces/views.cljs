@@ -9,7 +9,7 @@
     [day8.re-frame-10x.traces.subs :as traces.subs]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.view.components :as components]
+    [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
     [clojure.string :as string]
     [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
@@ -31,12 +31,16 @@
      :align    :center
      :attr     {:on-click #(rf/dispatch [::traces.events/set-filter-by-selected-epoch? (not filter-by-selected-epoch?)])}
      :children
-     [(if filter-by-selected-epoch?
-        [material/check-box]
-        [material/check-box-outline-blank])
-      ;; TODO: radio button, [ ] only this epoch [ ] all epochs
-      [rc/label
-       :label "only this epoch"]]]))
+     [[components/radio-button
+       {:label     "only this epoch"
+        :model     :epoch
+        :value     :epoch
+        :on-change #()}]
+      [components/radio-button
+       {:label     "all epochs"
+        :model     :epoch
+        :value     :all
+        :on-change #()}]]]))
 
 (defn op-type->color
   [op-type]
@@ -52,6 +56,7 @@
 (defclass category-style
   [ambiance op-type checked?]
   {;:composes        (styles/control-2 ambiance active?)
+   :font-size        (px 12)
    :background-color (op-type->color op-type)
    :border           [[(px 1) :solid (color/darken (op-type->color op-type) 15)]]
    :color            :#fff
@@ -60,7 +65,7 @@
    :display          :flex
    :align-items      :center
    :margin-left      styles/gs-12
-   :padding          [[(px 2) styles/gs-12]]}
+   :padding          [[(px 1) styles/gs-12]]}
   [:svg
    {:margin-right styles/gs-5}
    [:path
@@ -76,8 +81,10 @@
     [:li {:class    (category-style ambiance (first keys) checked?)
           :on-click #(rf/dispatch [::traces.events/toggle-categories keys])}
      (if checked?
-       [material/check-box]
-       [material/check-box-outline-blank])
+       [material/check-box
+        {:size styles/gs-19s}]
+       [material/check-box-outline-blank
+        {:size styles/gs-19s}])
      [rc/label
       :label label]]))
 
@@ -123,10 +130,10 @@
        [:option {:value "contains"} "contains"]
        [:option {:value "slower-than"} "slower than"]]
       [material/search]
-      [components/search-input
-       {:on-save     #()
-        :on-change   #()
-        :placeholder "filter traces"}]]]))
+      #_[components/search-input
+         {:on-save     #()
+          :on-change   #()
+          :placeholder "filter traces"}]]]))
 
 
 (defclass table-style
@@ -165,15 +172,20 @@
    [:svg :path
     {:fill styles/nord6}]])
 
+(defclass table-row-expanded-style
+  [ambiance syntax-color-scheme]
+  {:background-color (styles/syntax-color ambiance syntax-color-scheme :signature-background)})
+
 (defn table-row
   [{:keys [op-type id operation tags duration] :as trace}]
-  (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
-        debug?     @(rf/subscribe [::settings.subs/debug?])
-        expansions @(rf/subscribe [::traces.subs/expansions])
-        expanded?  (get-in expansions [:overrides id] (:show-all? expansions))
-        op-name    (if (vector? operation)
-                     (second operation)
-                     operation)]
+  (let [ambiance            @(rf/subscribe [::settings.subs/ambiance])
+        syntax-color-scheme @(rf/subscribe [::settings.subs/syntax-color-scheme])
+        debug?              @(rf/subscribe [::settings.subs/debug?])
+        expansions          @(rf/subscribe [::traces.subs/expansions])
+        expanded?           (get-in expansions [:overrides id] (:show-all? expansions))
+        op-name             (if (vector? operation)
+                              (second operation)
+                              operation)]
     [:<>
      [rc/h-box
       :class    (table-row-style ambiance op-type)
@@ -218,6 +230,7 @@
           [:span (.toFixed duration 1) " ms"])]]]
      (when expanded?
        [rc/h-box
+        :class    (table-row-expanded-style ambiance syntax-color-scheme)
         :children
         [[rc/box
           :width styles/gs-31s
