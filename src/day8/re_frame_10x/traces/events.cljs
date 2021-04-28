@@ -6,14 +6,42 @@
     [clojure.set :as set]))
 
 (rf/reg-event-db
+  ::set-draft-query-type
+  [(rf/path [:traces :draft-query-type]) rf/trim-v]
+  (fn [_ [draft-query-type]]
+    draft-query-type))
+
+(rf/reg-event-db
+  ::set-draft-query
+  [(rf/path [:traces :draft-query]) rf/trim-v]
+  (fn [_ [draft-query] _]
+    draft-query))
+
+(rf/reg-event-fx
+  ::save-draft-query
+  [(rf/path [:traces])]
+  (fn [{:keys [db]} _]
+    (let [{:keys [draft-query-type draft-query]
+           :or   {draft-query-type :contains}} db]
+      (if (and (= draft-query-type :slower-than)
+               (js/isNaN (js/parseFloat draft-query)))
+        {:db (assoc db :draft-query-error true)}
+        {:db (-> db
+                 (assoc :draft-query-error false)
+                 (assoc :draft-query ""))
+         :dispatch [::add-query
+                    {:type  draft-query-type
+                     :query draft-query}]}))))
+
+(rf/reg-event-db
   ::set-queries
-  [(rf/path [:traces :filters]) rf/trim-v (localstorage/after "filter-items")]
+  [(rf/path [:traces :queries]) rf/trim-v (localstorage/after "filter-items")]
   (fn [_ [filters]]
     filters))
 
 (rf/reg-event-db
   ::add-query
-  [(rf/path [:traces :filters]) rf/unwrap (localstorage/after "filter-items")]
+  [(rf/path [:traces :queries]) rf/unwrap (localstorage/after "filter-items")]
   (fn [filters {:keys [query type]}]
     (if (some #(= query (:query %)) filters)
       filters
@@ -29,13 +57,13 @@
 
 (rf/reg-event-db
   ::remove-query
-  [(rf/path [:traces :filters]) rf/unwrap (localstorage/after "filter-items")]
+  [(rf/path [:traces :queries]) rf/unwrap (localstorage/after "filter-items")]
   (fn [filters {:keys [id]}]
     (remove #(= (:id %) id) filters)))
 
 (rf/reg-event-db
   ::reset-queries
-  [(rf/path [:traces :filters]) (localstorage/after "filter-items")]
+  [(rf/path [:traces :queries]) (localstorage/after "filter-items")]
   (fn [_ _]
     []))
 

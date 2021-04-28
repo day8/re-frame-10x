@@ -146,9 +146,7 @@
              [:tbody (render-traces visible-traces filter-items filter-input trace-detail-expansions)]]]))
 
 (defn render []
-  (let [ambiance                (rf/subscribe [::settings.subs/ambiance])
-        beginning               (rf/subscribe [::epochs.subs/beginning-trace-id])
-        end                     (rf/subscribe [::epochs.subs/ending-trace-id])]
+  (let [ambiance                (rf/subscribe [::settings.subs/ambiance])]
     [rc/v-box
      :size     "1"
      :children

@@ -124,19 +124,63 @@
           [category m]))
       [selected-epoch]]]))
 
+(defclass draft-query-error-style
+  [ambiance]
+  {:color styles/nord11})
 
-(defn queries
+(defn draft-query
   []
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+  (let [ambiance           @(rf/subscribe [::settings.subs/ambiance])
+        draft-query-type   @(rf/subscribe [::traces.subs/draft-query-type])
+        draft-query        @(rf/subscribe [::traces.subs/draft-query])
+        draft-query-error? @(rf/subscribe [::traces.subs/draft-query-error])]
     [rc/h-box
      :children
-     [[:select
+     [[:select {:value     draft-query-type
+                :on-change #(rf/dispatch [::traces.events/set-draft-query-type
+                                          (keyword (.. % -target -value))])}
        [:option {:value "contains"} "contains"]
        [:option {:value "slower-than"} "slower than"]]
       [components/search
-       {:on-save     #()
-        :on-change   #()
-        :placeholder "filter traces"}]]]))
+       {:on-save     #(rf/dispatch [::traces.events/save-draft-query])
+        :on-change   #(rf/dispatch [::traces.events/set-draft-query
+                                    (.. % -target -value)])
+        :placeholder "filter traces"}]
+      (if draft-query-error?
+        [rc/label
+         :class (draft-query-error-style ambiance)
+         :label "Please enter a valid number."])]]))
+
+(defclass query-clear-button-style
+  [ambiance]
+  {:cursor :pointer})
+
+(defn queries
+  []
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
+        queries  @(rf/subscribe [::traces.subs/queries])]
+    [rc/v-box
+     :gap      styles/gs-19s
+     :children
+     [[draft-query]
+      (when (seq queries)
+        [rc/h-box
+         :gap      styles/gs-12s
+         :children
+         (into
+           []
+           (map
+             (fn [{:keys [query type id]}]
+               [rc/h-box
+                :align    :center
+                :children
+                [[:span type ": " query (when (= :slower-than type) " ms")]
+                 [rc/box
+                  :attr  {:on-click #(rf/dispatch [::traces.events/remove-query {:id id}])}
+                  :class (query-clear-button-style ambiance)
+                  :child
+                  [material/clear]]]])
+             queries))])]]))
 
 
 (defclass table-style
@@ -166,7 +210,7 @@
    {:fill styles/nord1}]
   [:&:hover
    [:svg :path
-    {:fill styles/nord6}]])
+    {:fill styles/nord3}]])
 
 (defclass table-row-expanded-style
   [ambiance syntax-color-scheme]
@@ -236,48 +280,54 @@
           :child
           [cljs-devtools/simple-render tags []]]]])]))
 
+(defn table-header
+  []
+  (let [ambiance            @(rf/subscribe [::settings.subs/ambiance])
+        traces              @(rf/subscribe [::traces.subs/sorted])
+        {:keys [show-all?]} #(rf/subscribe [::traces.subs/expansions])]
+    [rc/h-box
+     :size     "1"
+     :children
+     [[rc/box
+       :class   (table-header-expansion-style ambiance)
+       :align   :center
+       :justify :center
+       :width   styles/gs-31s
+       :attr    {:on-click #(rf/dispatch [::traces.events/toggle-expansions])}
+       :child   (if show-all?
+                  [material/unfold-less]
+                  [material/unfold-more])]
+      [rc/box
+       :class   (table-header-style ambiance)
+       :align   :center
+       :justify :center
+       :size   "1"
+       :height styles/gs-31s
+       :child  [rc/label :label "operations"]]
+      [rc/box
+       :class   (table-header-style ambiance)
+       :align   :center
+       :justify :center
+       :size  "1"
+       :child [rc/label :label (str (count traces) " traces")]]
+      [rc/box
+       :class   (table-header-style ambiance)
+       :align   :center
+       :justify :center
+       :size  "1"
+       :child [rc/label :label "meta"]]]]))
+
 (defn table
   []
-  (let [ambiance       @(rf/subscribe [::settings.subs/ambiance])
-        visible-traces @(rf/subscribe [::traces.subs/sorted])
-        expansions     @(rf/subscribe [::traces.subs/expansions])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
+        traces   @(rf/subscribe [::traces.subs/sorted])]
     [rc/v-box
      :size     "1"
      :class    (table-style ambiance)
      :children
      (into
-       [[rc/h-box
-         :size     "1"
-         :children
-         [[rc/box
-           :class   (table-header-expansion-style ambiance)
-           :align   :center
-           :justify :center
-           :width   styles/gs-31s
-           :attr    {:on-click #(rf/dispatch [::traces.events/toggle-expansions])}
-           :child   (if (:show-all? expansions)
-                      [material/unfold-less]
-                      [material/unfold-more])]
-          [rc/box
-           :class   (table-header-style ambiance)
-           :align   :center
-           :justify :center
-           :size   "1"
-           :height styles/gs-31s
-           :child  [rc/label :label "operations"]]
-          [rc/box
-           :class   (table-header-style ambiance)
-           :align   :center
-           :justify :center
-           :size  "1"
-           :child [rc/label :label (str (count visible-traces) " traces")]]
-          [rc/box
-           :class   (table-header-style ambiance)
-           :align   :center
-           :justify :center
-           :size  "1"
-           :child [rc/label :label "meta"]]]]]
-       (->> visible-traces (map (fn [trace] [table-row trace]))))]))
+       [[table-header]]
+       (->> traces (map (fn [trace] [table-row trace]))))]))
 
 (defclass panel-style
   []
