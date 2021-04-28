@@ -1,20 +1,20 @@
-(ns day8.re-frame-10x.view.epochs
+(ns day8.re-frame-10x.epochs.views
   (:require
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
-    [day8.re-frame-10x.utils.re-com :as rc]
-    [day8.re-frame-10x.components :as components]
-    [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
-    [day8.re-frame-10x.epochs.subs :as epochs.subs]
-    [day8.re-frame-10x.epochs.events :as epochs.events]
-    [day8.re-frame-10x.settings.subs :as settings.subs]
-    [day8.re-frame-10x.settings.events :as settings.events]))
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :as units :refer [em px percent]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass defglobal]]
+    [day8.re-frame-10x.utils.re-com                               :as rc]
+    [day8.re-frame-10x.components                                 :as components]
+    [day8.re-frame-10x.material                                   :as material]
+    [day8.re-frame-10x.styles                                     :as styles]
+    [day8.re-frame-10x.styles                                     :as styles]
+    [day8.re-frame-10x.view.cljs-devtools                         :as cljs-devtools]
+    [day8.re-frame-10x.epochs.subs                                :as epochs.subs]
+    [day8.re-frame-10x.epochs.events                              :as epochs.events]
+    [day8.re-frame-10x.settings.subs                              :as settings.subs]
+    [day8.re-frame-10x.settings.events                            :as settings.events]))
 
 (defclass epoch-style
   [ambiance active?]
