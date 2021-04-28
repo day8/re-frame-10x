@@ -20,6 +20,8 @@
   {;:composes (styles/control-2 ambiance active?)
    ;:height   styles/gs-31
    :margin-left styles/gs-12
+   :padding          [[(px 1) styles/gs-5]]
+   :composes (styles/frame-2 ambiance)
    #_#_:padding  [[0 styles/gs-12]]})
 
 (defn selected-epoch
@@ -45,14 +47,15 @@
 
 (defn op-type->color
   [op-type]
-  (case op-type
-    :sub/create                  styles/nord14
-    :sub/run                     styles/nord15
-    :sub/dispose                 styles/nord11
-    :event                       styles/nord12
-    :render                      styles/nord8
-    :re-frame.router/fsm-trigger styles/nord10
-    nil))
+  (let [lighten-amount 30]
+    (case op-type
+      :sub/create                  (color/lighten styles/nord14 lighten-amount)
+      :sub/run                     (color/lighten  styles/nord15 lighten-amount)
+      :sub/dispose                 (color/lighten styles/nord11 lighten-amount)
+      :event                       (color/lighten styles/nord12 lighten-amount)
+      :render                      (color/lighten styles/nord8 lighten-amount)
+      :re-frame.router/fsm-trigger (color/lighten styles/nord10 lighten-amount)
+      nil)))
 
 (defclass category-style
   [ambiance op-type checked?]
@@ -60,17 +63,17 @@
    :font-size        (px 12)
    :background-color (op-type->color op-type)
    :border           [[(px 1) :solid (color/darken (op-type->color op-type) 15)]]
-   :color            :#fff
+   :color            styles/nord1
    :cursor           :pointer
    :border-radius    styles/gs-2
    :display          :flex
    :align-items      :center
    :margin-left      styles/gs-12
-   :padding          [[(px 1) styles/gs-12]]}
+   :padding          [[(px 1) styles/gs-5]]}
   [:svg
    {:margin-right styles/gs-5}
    [:path
-    {:fill :#fff}]]
+    {:fill (color/darken (op-type->color op-type) 20)}]]
   [:&:hover
    {:background-color (color/lighten (op-type->color op-type) 5)}])
 
@@ -153,21 +156,14 @@
 
 (defclass table-row-style
   [ambiance op-type]
-  {:color            :#fff
-   :background-color (case op-type
-                       :sub/create                  styles/nord14
-                       :sub/run                     styles/nord15
-                       :sub/dispose                 styles/nord11
-                       :event                       styles/nord12
-                       :render                      styles/nord8
-                       :re-frame.router/fsm-trigger styles/nord10
-                       nil)})
+  {:color            styles/nord1
+   :background-color (op-type->color op-type)})
 
 (defclass table-row-expansion-style
   [ambiance]
   {:cursor :pointer}
   [:svg :path
-   {:fill :#fff}]
+   {:fill styles/nord1}]
   [:&:hover
    [:svg :path
     {:fill styles/nord6}]])

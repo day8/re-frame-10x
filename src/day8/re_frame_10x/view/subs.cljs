@@ -339,7 +339,14 @@
    :align :center
    :style {:margin-right "1px"}
    :children [[rc/box
-               :size "1"
+               :width styles/gs-31s
+               :child ""]
+              [rc/box
+               :size  "1"
+               :justify :center
+               :child [rc/label :style {:font-size "9px"} :label "ID"]]
+              [rc/box
+               :width styles/gs-50s
                :child ""]
               [rc/box
                :width "132px"                               ;; styles/gs-131s + 1 border

@@ -170,7 +170,7 @@
       :base-text-color      (if (= :cljs-devtools syntax-color-scheme)
                               (rgb 0 0 0)
                               (if (= :bright ambiance) nord0 nord6))
-      :signature-background (transparentize signature 0.92)
+      :signature-background  (transparentize signature 0.92)
       :type                 (if (= :cljs-devtools syntax-color-scheme)
                               (rgb 0 160 220)
                               nord7)

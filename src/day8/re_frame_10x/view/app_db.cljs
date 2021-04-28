@@ -47,7 +47,7 @@
 (defclass pod-header-section-style
   [ambiance last?]
   {:border-right (when-not last? [[(px 1) :solid styles/nord4]])
-   :padding-left (px 3)})
+   #_#_:padding-left (px 3)})
 
 (defn pod-header-section
   [& {:keys [size justify align gap width min-width background-color children attr last?]

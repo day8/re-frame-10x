@@ -1,16 +1,17 @@
 (ns day8.re-frame-10x.components
   (:require
     [goog.fx.dom :as fx]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.utils.re-com :refer [deref-or-value]]
     [day8.re-frame-10x.settings.subs :as settings.subs]
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.styles :as styles]
-    [clojure.string :as string]))
+    [clojure.string :as string]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]))
 
 (defclass checkbox-style
   [ambiance checked? disabled?]
@@ -51,10 +52,10 @@
    {:margin-right styles/gs-5}
    (when checked?
      [:path
-      {:fill styles/nord13}])]
+      {:fill (color/lighten styles/nord3 20)}])]
   [:&:hover
    [:svg :path
-    {:fill styles/nord13}]])
+    {:fill (color/lighten styles/nord3 20)}]])
 
 (defn radio-button
   [{:keys [model value on-change label disabled? class]}]
