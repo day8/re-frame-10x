@@ -45,8 +45,7 @@
 
 (defclass panel-style
   [ambiance]
-  {:margin-right  styles/gs-5
-   :width         (percent 100)})
+  {:width         (percent 100)})
 
 (defn panel []
   (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])

@@ -1,6 +1,7 @@
 (ns day8.re-frame-10x.view.epochs
   (:require
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units :refer [em px percent]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
@@ -30,33 +31,44 @@
 
 (defn epoch
   []
-  (let [hover?     (r/atom false)]
-    (fn [event id]
-      (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
-            current-id @(rf/subscribe [::epochs.subs/selected-epoch-id])
-            active?    (= id current-id)]
-        [rc/h-box
-         :class    (epoch-style ambiance active?)
-         :align    :center
-         :height   styles/gs-19s
-         :attr     {:on-click       #(when-not active? (rf/dispatch [::epochs.events/load id]))
-                    :on-mouse-enter #(reset! hover? true)
-                    :on-mouse-leave #(reset! hover? false)}
-         :children [(if (or active? @hover?)
-                      [rc/box
-                       :height styles/gs-19s
-                       :align :center
-                       :style {:background-color styles/nord13}
-                       :child [material/chevron-right
-                               {:size "17px"}]]
-                      [material/chevron-right
-                       {:size "17px"}])
-                    [rc/gap-f :size styles/gs-2s]
-                    [rc/box
-                     :class  (epoch-data-style ambiance)
-                     :height styles/gs-19s
-                     :size  "1"
-                     :child [cljs-devtools/simple-render event []]]]]))))
+  (let [hover?     (r/atom false)
+        active?    (r/atom false)]
+    (r/create-class
+      {:component-did-mount
+       (fn [this]
+         (when @active?
+           (components/scroll! (.-parentNode (rdom/dom-node this))
+                               [0 0]
+                               [0 (.-scrollHeight (.-parentNode (rdom/dom-node this)))]
+                               500)))
+
+       :reagent-render
+       (fn [event id]
+         (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
+               current-id @(rf/subscribe [::epochs.subs/selected-epoch-id])]
+           (reset! active? (= id current-id))
+           [rc/h-box
+            :class    (epoch-style ambiance @active?)
+            :align    :center
+            :height   styles/gs-19s
+            :attr     {:on-click       #(when-not @active? (rf/dispatch [::epochs.events/load id]))
+                       :on-mouse-enter #(reset! hover? true)
+                       :on-mouse-leave #(reset! hover? false)}
+            :children [(if (or @active? @hover?)
+                         [rc/box
+                          :height styles/gs-19s
+                          :align :center
+                          :style {:background-color styles/nord13}
+                          :child [material/chevron-right
+                                  {:size "17px"}]]
+                         [material/chevron-right
+                          {:size "17px"}])
+                       [rc/gap-f :size styles/gs-2s]
+                       [rc/box
+                        :class  (epoch-data-style ambiance)
+                        :height styles/gs-19s
+                        :size  "1"
+                        :child [cljs-devtools/simple-render event []]]]]))})))
 
 (defclass epochs-style
   [ambiance]

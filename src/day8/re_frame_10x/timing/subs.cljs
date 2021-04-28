@@ -8,7 +8,7 @@
 
 (rf/reg-sub
   ::total-epoch-time
-  :<- [::traces.subs/filtered-by-epoch]
+  :<- [::traces.subs/filtered-by-epoch-always]
   (fn [traces]
     (let [start-of-epoch (nth traces 0)
           end-of-epoch   (utils/last-in-vec traces)]
@@ -16,7 +16,7 @@
 
 (rf/reg-sub
   ::animation-frame-traces
-  :<- [::traces.subs/filtered-by-epoch]
+  :<- [::traces.subs/filtered-by-epoch-always]
   (fn [traces]
     (filter #(or (metam/request-animation-frame? %)
                  (metam/request-animation-frame-end? %))
@@ -39,7 +39,7 @@
 (rf/reg-sub
   ::animation-frame-time
   :<- [::animation-frame-traces]
-  :<- [::traces.subs/filtered-by-epoch]
+  :<- [::traces.subs/filtered-by-epoch-always]
   (fn [[af-start-end epoch-traces] [_ frame-number]]
     (let [frame-pairs (partition 2 af-start-end)
           [start end] (nth frame-pairs (dec frame-number))
@@ -85,7 +85,7 @@
 
 (rf/reg-sub
   ::render-time
-  :<- [::traces.subs/filtered-by-epoch]
+  :<- [::traces.subs/filtered-by-epoch-always]
   (fn [traces]
     (let [start-of-render (first (filter metam/request-animation-frame? traces))
           end-of-epoch    (utils/last-in-vec traces)]
@@ -93,7 +93,7 @@
 
 (rf/reg-sub
   ::data-available?
-  :<- [::traces.subs/filtered-by-epoch]
+  :<- [::traces.subs/filtered-by-epoch-always]
   (fn [traces]
     (not (empty? traces))))
 

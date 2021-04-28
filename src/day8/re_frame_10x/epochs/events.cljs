@@ -100,7 +100,7 @@
                                              :sub-state new-sub-state
                                              :subscription-info subscription-info
                                              ;; Reset selected epoch to the head of the list if we got a new event in.
-                                             :selected-epoch-id (if (seq new-matches) nil selected-id)
+                                             :selected-epoch-id (if (seq new-matches) (first-match-id (last retained-matches)) selected-id)
                                              :selected-epoch-index (if (seq new-matches) nil selected-index))))))
          :dispatch (when quiescent? [::quiescent])})
       ;; Else

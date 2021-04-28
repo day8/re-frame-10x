@@ -49,15 +49,22 @@
     filter-by-selected-epoch?))
 
 (rf/reg-sub
-  ::filtered-by-epoch
+  ::filtered-by-epoch-always
   :<- [::all]
-  :<- [::filter-by-selected-epoch?]
   :<- [::epochs.subs/beginning-trace-id]
   :<- [::epochs.subs/ending-trace-id]
-  (fn [[traces filter-by-selected-epoch? beginning ending] _]
+  (fn [[traces beginning ending] _]
+    (into [] (utils/id-between-xf beginning ending) traces)))
+
+(rf/reg-sub
+  ::filtered-by-epoch
+  :<- [::filter-by-selected-epoch?]
+  :<- [::all]
+  :<- [::filtered-by-epoch-always]
+  (fn [[filter-by-selected-epoch? all filtered] _]
     (if-not filter-by-selected-epoch?
-      traces
-      (into [] (utils/id-between-xf beginning ending) traces))))
+      all
+      filtered)))
 
 (rf/reg-sub
   ::filtered-by-namespace

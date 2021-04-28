@@ -402,14 +402,19 @@
 (defn filter-section []
   (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
         filter-str (rf/subscribe [:subs/filter-str])]
-    [:div
-     {:class (styles/filter-style ambiance)}
-     [:input
-      {:type        "text"
-       :value       @filter-str
-       :placeholder "filter" ;; TODO italtic same as app-db
-       :on-change   #(rf/dispatch [:subs/set-filter
-                                   (-> % .-target .-value)])}]]))
+    [components/search
+     {:placeholder "filter subs"
+      :on-change   #(rf/dispatch [:subs/set-filter
+                                  (-> % .-target .-value)])}]
+
+    #_[:div
+       {:class (styles/filter-style ambiance)}
+       [:input
+        {:type        "text"
+         :value       @filter-str
+         :placeholder "filter" ;; TODO italtic same as app-db
+         :on-change   #(rf/dispatch [:subs/set-filter
+                                     (-> % .-target .-value)])}]]))
 
 (defclass panel-style
   [ambiance]
