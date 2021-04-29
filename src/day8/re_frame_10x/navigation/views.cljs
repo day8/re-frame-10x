@@ -1,32 +1,37 @@
 (ns day8.re-frame-10x.navigation.views
   (:require
+    [goog.object                                                  :as gobj]
     [re-frame.db :as db]
     [re-frame.trace]
+    [reagent.impl.batching                                        :as batching]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core :refer [css style]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
-    [day8.re-frame-10x.navigation.epochs.views :as epochs]
-    [day8.re-frame-10x.panels.app-db.views :as app-db]
-    [day8.re-frame-10x.panels.subs.views :as subs]
-    [day8.re-frame-10x.panels.fx.views :as fx]
-    [day8.re-frame-10x.panels.debug.views :as debug]
-    [day8.re-frame-10x.panels.settings.views :as settings]
-    [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.svgs :as svgs]
-    [day8.re-frame-10x.components.re-com :as rc]
-    [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.tools.pretty-print-condensed :as pp]
-    [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.components.buttons :as buttons]
+    [day8.re-frame-10x.components.hyperlinks :as hyperlinks]
+    [day8.re-frame-10x.components.re-com :as rc]
+    [day8.re-frame-10x.navigation.events :as navigation.events]
     [day8.re-frame-10x.navigation.subs :as navigation.subs]
     [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
-    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.panels.settings.events :as settings.events]
-    [day8.re-frame-10x.components.hyperlinks :as hyperlinks]
+    [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.navigation.epochs.views :as epochs.views]
+    [day8.re-frame-10x.panels.app-db.views :as app-db.views]
+    [day8.re-frame-10x.panels.debug.views :as debug.views]
     [day8.re-frame-10x.panels.event.views :as event.views]
+    [day8.re-frame-10x.panels.fx.views :as fx.views]
+    [day8.re-frame-10x.panels.settings.events :as settings.events]
+    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
+    [day8.re-frame-10x.panels.settings.views :as settings.views]
+    [day8.re-frame-10x.panels.subs.views :as subs.views]
     [day8.re-frame-10x.panels.timing.views :as timing.views]
     [day8.re-frame-10x.panels.traces.views :as traces.views]
-    [day8.re-frame-10x.components.buttons :as buttons]))
+    [day8.re-frame-10x.material :as material]
+    [day8.re-frame-10x.svgs :as svgs]
+    [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]))
 
 (def outer-margins {:margin (str "0px " styles/gs-19s)})
 
@@ -191,7 +196,7 @@
        "Couldn't open external window. Check if popups are allowed?"
        [rc/hyperlink
         :label    "Dismiss"
-        :on-click #(rf/dispatch [:errors/dismiss-popup-failed])]])))
+        :on-click #(rf/dispatch [::navigation.events/dismiss-popup-failed])]])))
 
 (defclass tab-content-style
   [ambiance selected-tab]
@@ -210,16 +215,16 @@
      :class    (tab-content-style ambiance selected-tab)   ;;"tab-wrapper"
      :size     "1"
      :children [(case selected-tab
-                  :event    [event.views/panel]
-                  :fx       [fx/panel]
-                  :app-db   [app-db/panel db/app-db]
-                  :subs     [subs/panel]
-                  :timing   [timing.views/panel]
-                  :traces   [traces.views/panel]
-                  :debug    [debug/render]
-                  :settings [settings/render]
+                  :event [event.views/panel]
+                  :fx [fx.views/panel]
+                  :app-db [app-db.views/panel db/app-db]
+                  :subs [subs.views/panel]
+                  :timing [timing.views/panel]
+                  :traces [traces.views/panel]
+                  :debug [debug.views/render]
+                  :settings [settings.views/render]
 
-                  [app-db/panel db/app-db])]]))
+                  [app-db.views/panel db/app-db])]]))
 
 (defclass devtools-inner-style
   [ambiance]
@@ -235,10 +240,59 @@
      :width    "100%"
      :children [(if-not showing-settings?
                   [:<>
-                   [epochs/navigation external-window?]
+                   [epochs.views/navigation external-window?]
                    [tab-buttons {:debug? debug?}]]
-                  [settings/navigation external-window?])
+                  [settings.views/navigation external-window?])
                 [warnings external-window?]
                 [errors external-window?]
                 [tab-content]]]))
 
+
+
+(defn mount [popup-window popup-document]
+  ;; When programming here, we need to be careful about which document and window
+  ;; we are operating on, and keep in mind that the window can close without going
+  ;; through standard react lifecycle, so we hook the beforeunload event.
+  (let [app                      (.getElementById popup-document "--re-frame-10x--")
+        resize-update-scheduled? (atom false)
+        handle-window-resize     (fn [e]
+                                   (when-not @resize-update-scheduled?
+                                     (batching/next-tick
+                                       (fn []
+                                         (let [width  (.-innerWidth popup-window)
+                                               height (.-innerHeight popup-window)]
+                                           (rf/dispatch [::settings.events/external-window-resize {:width width :height height}]))
+                                         (reset! resize-update-scheduled? false)))
+                                     (reset! resize-update-scheduled? true)))
+        handle-window-position   (let [pos (atom {})]
+                                   (fn []
+                                     ;; Only update re-frame if the windows position has changed.
+                                     (let [{:keys [left top]} @pos
+                                           screen-left (.-screenX popup-window)
+                                           screen-top  (.-screenY popup-window)]
+                                       (when (or (not= left screen-left)
+                                                 (not= top screen-top))
+                                         (rf/dispatch [::settings.events/external-window-position {:left screen-left :top screen-top}])
+                                         (reset! pos {:left screen-left :top screen-top})))))
+        window-position-interval (atom nil)
+        unmount                  (fn [_]
+                                   (.removeEventListener popup-window "resize" handle-window-resize)
+                                   (some-> @window-position-interval js/clearInterval)
+                                   nil)]
+
+    (styles/inject-popup-styles! popup-document)
+    (gobj/set popup-window "onunload" #(rf/dispatch [::navigation.events/external-closed]))
+    (rdom/render
+      [(r/create-class
+         {:display-name           "devtools outer external"
+          :component-did-mount    (fn []
+                                    (.addEventListener popup-window "resize" handle-window-resize)
+                                    (.addEventListener popup-window "beforeunload" unmount)
+                                    ;; Check the window position every 10 seconds
+                                    (reset! window-position-interval
+                                            (js/setInterval
+                                              handle-window-position
+                                              2000)))
+          :component-will-unmount unmount
+          :reagent-render         (fn [] [devtools-inner {:panel-type :popup}])})]
+      app)))

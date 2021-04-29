@@ -5,6 +5,7 @@
     [day8.re-frame-10x.components.re-com :as rc]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.navigation.events :as navigation.events]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.material :as material]))
 
@@ -42,15 +43,13 @@
                               label])]]
      :on-click #(when-not disabled? (on-click))]))
 
-
 (defn popout
-  [external-window?]
+  [external-window? view-fn] ;; TODO: passing view-fn here to avoid circular dependency is a nasty hack
   (when-not external-window?
     [icon
      {:icon     [material/open-in-new]
       :title    "Pop out"
-      :on-click #(rf/dispatch-sync [:global/launch-external])}]))
-
+      :on-click #(rf/dispatch-sync [::navigation.events/launch-external view-fn])}]))
 
 (defclass expansion-style
   [ambiance]

@@ -1,17 +1,16 @@
 (ns day8.re-frame-10x
   (:require
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.components.re-com :as rc]
-    [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.navigation.views :as container]
-    [day8.re-frame-10x.subs]
-    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.panels.settings.events :as settings.events]
-    [day8.re-frame-10x.events :as events]
-    [day8.reagent.impl.component :refer [patch-wrap-funs patch-custom-wrapper]]
-    [day8.reagent.impl.batching :refer [patch-next-tick]]))
+    [day8.reagent.impl.batching                                   :refer [patch-next-tick]]
+    [day8.reagent.impl.component                                  :refer [patch-wrap-funs patch-custom-wrapper]]
+    [day8.re-frame-10x.events                                     :as events]
+    [day8.re-frame-10x.components.re-com                          :as rc]
+    [day8.re-frame-10x.navigation.views                           :as container]
+    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+    [day8.re-frame-10x.panels.settings.events                     :as settings.events]
+    [day8.re-frame-10x.styles                                     :as styles]))
 
 (goog-define debug? false)
 

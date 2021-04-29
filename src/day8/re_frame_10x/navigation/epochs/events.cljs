@@ -116,11 +116,11 @@
             match-array-index (tools.coll/find-index-in-vec (fn [x] (= selected-id x)) match-ids)
             new-id            (nth match-ids (dec match-array-index))]
         {:db       (assoc db :selected-epoch-id new-id)
-         :dispatch [:snapshot/reset-current-epoch-app-db new-id]})
+         :dispatch [::reset-current-epoch-app-db new-id]})
       (let [new-id (nth (:match-ids db)
                         (- (count (:match-ids db)) 2))]
         {:db       (assoc db :selected-epoch-id new-id)
-         :dispatch [:snapshot/reset-current-epoch-app-db new-id]}))))
+         :dispatch [::reset-current-epoch-app-db new-id]}))))
 
 
 (rf/reg-event-fx
@@ -132,10 +132,10 @@
             match-array-index (tools.coll/find-index-in-vec (fn [x] (= selected-id x)) match-ids)
             new-id            (nth match-ids (inc match-array-index))]
         {:db       (assoc db :selected-epoch-id new-id)
-         :dispatch [:snapshot/reset-current-epoch-app-db new-id]})
+         :dispatch [::reset-current-epoch-app-db new-id]})
       (let [new-id (tools.coll/last-in-vec (:match-ids db))]
         {:db       (assoc db :selected-epoch-id new-id)
-         :dispatch [:snapshot/reset-current-epoch-app-db new-id]}))))
+         :dispatch [::reset-current-epoch-app-db new-id]}))))
 
 (rf/reg-event-fx
   ::most-recent
@@ -143,14 +143,14 @@
   (fn [{:keys [db]} _]
     {:db       (assoc db :selected-epoch-index nil
                          :selected-epoch-id nil)
-     :dispatch [:snapshot/reset-current-epoch-app-db (tools.coll/last-in-vec (:match-ids db))]}))
+     :dispatch [::reset-current-epoch-app-db (tools.coll/last-in-vec (:match-ids db))]}))
 
 (rf/reg-event-fx
   ::load
   [(rf/path [:epochs]) rf/trim-v]
   (fn [{:keys [db]} [new-id]]
     {:db       (assoc db :selected-epoch-id new-id)
-     :dispatch [:snapshot/reset-current-epoch-app-db new-id]}))
+     :dispatch [::reset-current-epoch-app-db new-id]}))
 
 (rf/reg-event-db
   ::replay
@@ -180,3 +180,19 @@
   (fn [db]
     (re-frame.trace/reset-tracing!)
     (dissoc db :epochs :traces)))
+
+(rf/reg-event-db
+  ::reset-current-epoch-app-db
+  [rf/trim-v]
+  (fn [db [new-id]]
+    (when (get-in db [:settings :app-db-follows-events?])
+      (let [epochs   (:epochs db)
+            match-id (or new-id
+                         ;; new-id may be nil when we call this event from :settings/play
+                         (tools.coll/last-in-vec (get epochs :match-ids)))
+            match    (get-in epochs [:matches-by-id match-id])
+            event    (metam/matched-event (:match-info match))]
+        ;; Don't mess up the users app if there is a problem getting app-db-after.
+        (when-some [new-db (metam/app-db-after event)]
+          (reset! re-frame.db/app-db new-db))))
+    db))

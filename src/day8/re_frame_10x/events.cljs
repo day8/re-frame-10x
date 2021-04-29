@@ -1,26 +1,16 @@
 (ns day8.re-frame-10x.events
   (:require
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
-    [day8.re-frame-10x.tools.reader.edn :as reader.edn]
-    [day8.re-frame-10x.fx.local-storage :as local-storage]
-    [day8.re-frame-10x.panels.traces.events :as traces.events]
-    [reagent.impl.batching :as batching]
-    [clojure.string :as str]
-    [goog.object]
-    [goog.string]
-    [re-frame.db]
-    [re-frame.interop]
     [re-frame.core]
+    [re-frame.db]
     [re-frame.trace]
-    [day8.re-frame-10x.navigation.views :as container]
-    [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.tools.metamorphic :as metam]
-    [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
-    [day8.re-frame-10x.panels.settings.events :as settings.events]
-    [day8.re-frame-10x.panels.app-db.events :as app-db.events]
-    [day8.re-frame-10x.tools.coll :as tools.coll]))
+    [re-frame.interop]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.fx.local-storage                           :as local-storage]
+    [day8.re-frame-10x.navigation.events                          :as navigation.events]
+    [day8.re-frame-10x.navigation.views                           :as navigation.views]
+    [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
+    [day8.re-frame-10x.panels.settings.events                     :as settings.events]
+    [day8.re-frame-10x.panels.traces.events                       :as traces.events]))
 
 (rf/reg-event-fx
   ::init
@@ -67,134 +57,16 @@
           ;; Important that window dimensions are set before we open an external window.
           [:dispatch [::settings.events/external-window-dimensions external-window-dimensions]]
           (when external-window?
-            [:dispatch [:global/launch-external]])
+            [:dispatch [::navigation.events/launch-external navigation.views/mount]])
           [:dispatch [::traces.events/set-queries filter-items]]
           [:dispatch [::traces.events/set-categories categories]]
           [:dispatch [::traces.events/set-filter-by-selected-epoch? show-epoch-traces?]]
-          [:dispatch [:app-db/paths (into (sorted-map) app-db-paths)]]
+          [:dispatch [::app-db.events/paths (into (sorted-map) app-db-paths)]]
           [:dispatch [::app-db.events/set-json-ml-paths app-db-json-ml-expansions]]
           [:dispatch [:global/add-unload-hook]]
           [:dispatch [::app-db.events/reagent-id]]]}))
 
-
-
-;; --- OLD ----
-
-(defn dissoc-in
-  "Dissociates an entry from a nested associative structure returning a new
-  nested structure. keys is a sequence of keys. Any empty maps that result
-  will not be present in the new structure."
-  [m [k & ks :as keys]]
-  (if ks
-    (if-let [nextmap (clojure.core/get m k)]
-      (let [newmap (dissoc-in nextmap ks)]
-        (if (seq newmap)
-          (assoc m k newmap)
-          (dissoc m k)))
-      m)
-    (dissoc m k)))
-
-
 ;; Global
-
-(defn mount [popup-window popup-document]
-  ;; When programming here, we need to be careful about which document and window
-  ;; we are operating on, and keep in mind that the window can close without going
-  ;; through standard react lifecycle, so we hook the beforeunload event.
-  (let [app                      (.getElementById popup-document "--re-frame-10x--")
-        resize-update-scheduled? (atom false)
-        handle-window-resize     (fn [e]
-                                   (when-not @resize-update-scheduled?
-                                     (batching/next-tick
-                                       (fn []
-                                         (let [width  (.-innerWidth popup-window)
-                                               height (.-innerHeight popup-window)]
-                                           (rf/dispatch [::settings.events/external-window-resize {:width width :height height}]))
-                                         (reset! resize-update-scheduled? false)))
-                                     (reset! resize-update-scheduled? true)))
-        handle-window-position   (let [pos (atom {})]
-                                   (fn []
-                                     ;; Only update re-frame if the windows position has changed.
-                                     (let [{:keys [left top]} @pos
-                                           screen-left (.-screenX popup-window)
-                                           screen-top  (.-screenY popup-window)]
-                                       (when (or (not= left screen-left)
-                                                 (not= top screen-top))
-                                         (rf/dispatch [::settings.events/external-window-position {:left screen-left :top screen-top}])
-                                         (reset! pos {:left screen-left :top screen-top})))))
-        window-position-interval (atom nil)
-        unmount                  (fn [_]
-                                   (.removeEventListener popup-window "resize" handle-window-resize)
-                                   (some-> @window-position-interval js/clearInterval)
-                                   nil)]
-
-    (styles/inject-popup-styles! popup-document)
-    (goog.object/set popup-window "onunload" #(rf/dispatch [:global/external-closed]))
-    (rdom/render
-      [(r/create-class
-         {:display-name           "devtools outer external"
-          :component-did-mount    (fn []
-                                    (.addEventListener popup-window "resize" handle-window-resize)
-                                    (.addEventListener popup-window "beforeunload" unmount)
-                                    ;; Check the window position every 10 seconds
-                                    (reset! window-position-interval
-                                            (js/setInterval
-                                              handle-window-position
-                                              2000)))
-          :component-will-unmount unmount
-          :reagent-render         (fn [] [container/devtools-inner {:panel-type :popup}])})]
-      app)))
-
-(defn open-debugger-window
-  "Originally copied from re-frisk.devtool/open-debugger-window"
-  [{:keys [width height top left] :as dimensions}]
-  (let [doc-title        js/document.title
-        new-window-title (goog.string/escapeString (str "re-frame-10x | " doc-title))
-        new-window-html  (str "<head><title>"
-                              new-window-title
-                              "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")]
-    ;; We would like to set the windows left and top positions to match the monitor that it was on previously, but Chrome doesn't give us
-    ;; control over this, it will only position it within the same display that it was popped out on.
-    (if-let [w (js/window.open "about:blank" "re-frame-10x-popout"
-                               (str "width=" width ",height=" height ",left=" left ",top=" top
-                                    ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))]
-      (let [d (.-document w)]
-        ;; We had to comment out the following unmountComponentAtNode as it causes a React exception we assume
-        ;; because React says el is not a root container that it knows about.
-        ;; In theory by not freeing up the resources associated with this container (e.g. event handlers) we may be
-        ;; creating memory leaks. However with observation of the heap in developer tools we cannot see any significant
-        ;; unbounded growth in memory usage.
-        ;(when-let [el (.getElementById d "--re-frame-10x--")]
-        ;  (r/unmount-component-at-node el)))
-        (.open d)
-        (.write d new-window-html)
-        (goog.object/set w "onload" #(mount w d))
-        (.close d)
-        true)
-      false)))
-
-(rf/reg-event-fx
-  :global/launch-external
-  (fn [ctx _]
-    (if (open-debugger-window (get-in ctx [:db :settings :external-window-dimensions]))
-      (do
-        (local-storage/save! "external-window?" true)
-        {:db             (-> (:db ctx)
-                             (assoc-in [:settings :external-window?] true)
-                             (dissoc-in [:errors :popup-failed?]))
-         :dispatch-later [{:ms 200 :dispatch [::settings.events/show-panel? false]}]})
-      {:db       (assoc-in (:db ctx) [:errors :popup-failed?] true)
-       :dispatch [:global/external-closed]})))
-
-(rf/reg-event-fx
-  :global/external-closed
-  (fn [ctx _]
-    (local-storage/save! "external-window?" false)
-    {:db             (assoc-in (:db ctx) [:settings :external-window?] false)
-     :dispatch-later [{:ms 400 :dispatch [::settings.events/show-panel? true]}]}))
-
-
-
 
 (rf/reg-event-fx
   :global/add-unload-hook
@@ -206,27 +78,3 @@
   :global/unloading?
   (fn [db [_ unloading?]]
     (assoc-in db [:global :unloading?] unloading?)))
-
-
-(rf/reg-event-db
-  :snapshot/reset-current-epoch-app-db
-  (fn [db [_ new-id]]
-    (when (get-in db [:settings :app-db-follows-events?])
-      (let [epochs   (:epochs db)
-            match-id (or new-id
-                         ;; new-id may be nil when we call this event from :settings/play
-                         (tools.coll/last-in-vec (get epochs :match-ids)))
-            match    (get-in epochs [:matches-by-id match-id])
-            event    (metam/matched-event (:match-info match))]
-        ;; Don't mess up the users app if there is a problem getting app-db-after.
-        (when-some [new-db (metam/app-db-after event)]
-          (reset! re-frame.db/app-db new-db))))
-    db))
-
-;;
-
-(rf/reg-event-db
-  :errors/dismiss-popup-failed
-  [(rf/path [:errors])]
-  (fn [errors _]
-    (dissoc errors :popup-failed?)))
