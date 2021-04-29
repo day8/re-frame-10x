@@ -1,7 +1,7 @@
 (ns day8.re-frame-10x.panels.timing.subs
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.metamorphic :as metam]
+    [day8.re-frame-10x.tools.metamorphic :as metam]
     [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.panels.traces.subs :as traces.subs]
     [day8.re-frame-10x.tools.coll :as tools.coll]))

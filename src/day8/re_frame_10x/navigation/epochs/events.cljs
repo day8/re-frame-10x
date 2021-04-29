@@ -5,7 +5,7 @@
     [re-frame.db]
     [re-frame.trace]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.metamorphic :as metam]
+    [day8.re-frame-10x.tools.metamorphic :as metam]
     [day8.re-frame-10x.tools.coll :as tools.coll]))
 
 (defn log-trace? [trace]

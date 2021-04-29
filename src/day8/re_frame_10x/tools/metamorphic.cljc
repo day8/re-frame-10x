@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.metamorphic)
+(ns day8.re-frame-10x.tools.metamorphic)
 
 (defn id-between-xf
   ;; Copied here because I got undeclared Var warnings from figwheel when requiring a CLJC utils ns.
