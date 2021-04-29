@@ -158,8 +158,8 @@
                                      :margin "auto"
                                      :child [:span.arrow
                                              (if open?
-                                               [material/arrow-drop-down :fill "#6EC0E6"]
-                                               [material/arrow-right :fill "#6EC0E6"])]]]]]
+                                               [material/arrow-drop-down]
+                                               [material/arrow-right])]]]]]
 
                 #_[rc/box
                    ;:width "64px"                                ;; (100-36)px from box above

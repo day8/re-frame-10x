@@ -370,23 +370,6 @@
    [:svg :path
     {:fill (if (= :bright ambiance) nord2 nord6)}]])
 
-(defclass hyperlink-info
-  [ambiance]
-  {#_#_:background-color nord0
-   :border-radius "50%"}
-  [:svg ;; TODO: no border; fill the question.
-   {:background-color nord0
-    :width "18px"
-    :height "18px"
-    :border-radius "50%"}]
-  [:svg :path
-   {:fill nord4}]
-  [:&:hover
-   [:svg :path
-    {:fill nord5}]])
-
-
-
 ;[:.hljs-built_in
 ; :.hljs-type
 ; {:color nord7}]

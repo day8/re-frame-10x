@@ -1,13 +1,13 @@
 (ns day8.re-frame-10x.components.buttons
   (:require
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
-    [day8.re-frame-10x.components.re-com :as rc]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.navigation.events :as navigation.events]
-    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.material :as material]))
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
+    [day8.re-frame-10x.components.re-com                          :as rc]
+    [day8.re-frame-10x.navigation.events                          :as navigation.events]
+    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+    [day8.re-frame-10x.material                                   :as material]
+    [day8.re-frame-10x.styles                                     :as styles]))
 
 
 (defclass icon-style
@@ -66,5 +66,5 @@
     [rc/box
      :class (expansion-style ambiance)
      :child (if open?
-              [material/arrow-drop-down :size size]
-              [material/arrow-right :size size])]))
+              [material/arrow-drop-down {:size size}]
+              [material/arrow-right {:size size}])]))

@@ -9,30 +9,25 @@
     [day8.re-frame-10x.material :as material]))
 
 
-(defclass hyperlink-info
+(defclass info-style
   [ambiance]
-  {#_#_:background-color nord0
+  {:composes      (styles/colors-2 ambiance)
    :border-radius (percent 50)}
-  [:svg ;; TODO: no border; fill the question.
-   {:background-color styles/nord0
-    :width (px 18)
-    :height (px 18)
-    :border-radius (percent 50)}]
   [:svg :path
-   {:fill styles/nord4}]
+    {:fill styles/nord0}]
   [:&:hover
-   [:svg :path
-    {:fill styles/nord5}]])
+    [:svg :path
+     {:fill styles/nord3}]])
 
 (defn info
   [url]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/hyperlink-href
-     :class (styles/hyperlink-info ambiance)
+     :class (info-style ambiance)
      :label [rc/box
              :justify :center
              :align   :center
-             :child   [material/help]]
+             :child   [material/help-outline]]
      :attr   {:rel "noopener noreferrer"}
      :target "_blank"
      :href   url]))
