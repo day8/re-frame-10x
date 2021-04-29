@@ -5,7 +5,7 @@
   [com.yahoo.platform.yui/yuicompressor "2.4.8"
    :exclusions [rhino/js]]
   [zprint                               "1.0.1"]
-  [superstructor/re-highlight           "0.0.1"]
+  [superstructor/re-highlight           "0.0.2"]
   [secretary                            "1.2.3"]
   [binaryage/devtools                   "1.0.3"]]
 
