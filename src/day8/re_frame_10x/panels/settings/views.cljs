@@ -136,7 +136,7 @@
                  [[rc/checkbox
                    :model follows-events?
                    :label "sync app-db with epoch navigation"
-                   :on-change #(rf/dispatch [:settings/app-db-follows-events? %])]]
+                   :on-change #(rf/dispatch [::settings.events/app-db-follows-events? %])]]
                  [[:p "When you navigate to an epoch, update app-db to match. Causes UI to \"time travel\"."]]
                  settings-box-81])
 

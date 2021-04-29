@@ -52,3 +52,32 @@
   [(rf/path [:settings :syntax-color-scheme]) rf/trim-v (local-storage/after "syntax-color-scheme")]
   (fn [_ [syntax-color-scheme]]
     syntax-color-scheme))
+
+(def low-level-trace-interceptors
+  [(rf/path [:settings :low-level-trace])
+   rf/trim-v
+   (local-storage/after "low-level-trace")])
+
+(rf/reg-event-db
+  :settings/set-low-level-trace
+  low-level-trace-interceptors
+  (fn [_ [low-level]]
+    low-level))
+
+(rf/reg-event-db
+  ::low-level-trace
+  low-level-trace-interceptors
+  (fn [low-level [trace-type capture?]]
+    (assoc low-level trace-type capture?)))
+
+(rf/reg-event-db
+  ::debug?
+  [(rf/path [:settings :debug?]) rf/trim-v]
+  (fn [_ [debug?]]
+    debug?))
+
+(rf/reg-event-db
+  ::app-db-follows-events?
+  [(rf/path [:settings :app-db-follows-events?]) rf/trim-v (local-storage/after "app-db-follows-events?")]
+  (fn [_ [follows-events?]]
+    follows-events?))

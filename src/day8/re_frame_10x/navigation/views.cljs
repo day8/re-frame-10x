@@ -18,6 +18,7 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.tools.pretty-print-condensed :as pp]
     [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.navigation.subs :as navigation.subs]
     [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.panels.settings.events :as settings.events]
@@ -161,7 +162,7 @@
 (defn warnings
   [external-window?]
   (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
-        unloading? @(rf/subscribe [:global/unloading?])]
+        unloading? @(rf/subscribe [::navigation.subs/unloading?])]
     [:<>
      (when (and external-window? unloading?)
        [:h1
@@ -183,7 +184,7 @@
 (defn errors
   [external-window?]
   (let [ambiance      @(rf/subscribe [::settings.subs/ambiance])
-        popup-failed? @(rf/subscribe [:errors/popup-failed?])]
+        popup-failed? @(rf/subscribe [::navigation.subs/popup-failed?])]
     (when (and (not external-window?) popup-failed?)
       [:h1
        {:class (error-style ambiance)}

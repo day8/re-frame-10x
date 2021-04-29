@@ -51,7 +51,6 @@
                ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
                app-db-follow-events? ambiance syntax-color-scheme categories] :as cofx}
        {:keys [debug?]}]
-    (js/console.log cofx)
     {:fx [(when using-trace?
             [:dispatch [:global/enable-tracing]])
           [:dispatch [::settings.events/panel-width% panel-width-ratio]]
@@ -59,12 +58,12 @@
           [:dispatch [::settings.events/selected-tab selected-tab]]
           [:dispatch [:settings/set-ignored-events ignored-events]]
           [:dispatch [:settings/set-filtered-view-trace filtered-view-trace]]
-          [:dispatch [:settings/set-low-level-trace low-level-trace]]
+          [:dispatch [::settings.events/set-low-level-trace low-level-trace]]
           [:dispatch [:settings/set-number-of-retained-epochs retained-epochs]]
-          [:dispatch [:settings/app-db-follows-events? app-db-follow-events?]]
+          [:dispatch [::settings.events/app-db-follows-events? app-db-follow-events?]]
           [:dispatch [::settings.events/set-ambiance ambiance]]
           [:dispatch [::settings.events/set-syntax-color-scheme syntax-color-scheme]]
-          [:dispatch [:settings/debug? debug?]]
+          [:dispatch [::settings.events/debug? debug?]]
           ;; Important that window dimensions are set before we open an external window.
           [:dispatch [:settings/external-window-dimensions external-window-dimensions]]
           (when external-window?
@@ -210,30 +209,9 @@
   (fn [_ [_ ignored-events]]
     ignored-events))
 
-(def low-level-trace-mw [(rf/path [:settings :low-level-trace]) (fixed-after #(local-storage/save! "low-level-trace" %))])
 
-(rf/reg-event-db
-  :settings/set-low-level-trace
-  low-level-trace-mw
-  (fn [_ [_ low-level]]
-    low-level))
 
-(rf/reg-event-db
-  :settings/low-level-trace
-  low-level-trace-mw
-  (fn [low-level [_ trace-type capture?]]
-    (assoc low-level trace-type capture?)))
 
-(rf/reg-event-db
-  :settings/debug?
-  (fn [db [_ debug?]]
-    (assoc-in db [:settings :debug?] debug?)))
-
-(rf/reg-event-db
-  :settings/app-db-follows-events?
-  [(rf/path [:settings :app-db-follows-events?]) (fixed-after #(local-storage/save! "app-db-follows-events?" %))]
-  (fn [db [_ follows-events?]]
-    follows-events?))
 
 ;; Global
 
