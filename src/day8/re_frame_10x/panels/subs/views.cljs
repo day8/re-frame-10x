@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.subs.views
+(ns day8.re-frame-10x.panels.subs.views
   (:require
     [day8.re-frame-10x.app-db.views :refer [pod-gap pod-padding border-radius pod-border-edge
                                             pod-header-section]]
@@ -15,8 +15,8 @@
     [clojure.data]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.settings.subs :as settings.subs]
-    [day8.re-frame-10x.subs.subs :as subs.subs]
+    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
+    [day8.re-frame-10x.panels.subs.subs :as subs.subs]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color])
   (:require-macros
     [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))

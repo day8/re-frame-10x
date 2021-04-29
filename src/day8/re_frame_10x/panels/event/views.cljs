@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.event.views
+(ns day8.re-frame-10x.panels.event.views
   (:require-macros
     [day8.re-frame-10x.utils.re-com :refer [handler-fn]])
   (:require
@@ -12,13 +12,13 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.settings.subs :as settings.subs]
+    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.utils.utils :as utils]
-    [day8.re-frame-10x.event.subs :as event.subs]
-    [day8.re-frame-10x.event.events :as event.events]
+    [day8.re-frame-10x.panels.event.subs :as event.subs]
+    [day8.re-frame-10x.panels.event.events :as event.events]
     [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
 

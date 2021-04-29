@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.traces.events
+(ns day8.re-frame-10x.panels.traces.events
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.utils.localstorage :as localstorage]

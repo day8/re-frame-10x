@@ -1,9 +1,9 @@
-(ns day8.re-frame-10x.event.subs
+(ns day8.re-frame-10x.panels.event.subs
   (:require
     [zprint.core                                                  :as zp]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.settings.subs                              :as settings.subs]
-    [day8.re-frame-10x.traces.subs                                :as traces.subs]))
+    [day8.re-frame-10x.panels.settings.subs                              :as settings.subs]
+    [day8.re-frame-10x.panels.traces.subs                                :as traces.subs]))
 
 (rf/reg-sub
   ::root

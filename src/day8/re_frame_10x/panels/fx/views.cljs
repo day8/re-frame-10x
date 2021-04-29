@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.fx.views
+(ns day8.re-frame-10x.panels.fx.views
   (:require
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [percent]]
@@ -7,7 +7,7 @@
     [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
-    [day8.re-frame-10x.settings.subs :as settings.subs]))
+    [day8.re-frame-10x.panels.settings.subs :as settings.subs]))
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)

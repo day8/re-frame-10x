@@ -13,8 +13,8 @@
     [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
     [day8.re-frame-10x.epochs.subs                                :as epochs.subs]
     [day8.re-frame-10x.epochs.events                              :as epochs.events]
-    [day8.re-frame-10x.settings.subs                              :as settings.subs]
-    [day8.re-frame-10x.settings.events                            :as settings.events]))
+    [day8.re-frame-10x.panels.settings.subs                              :as settings.subs]
+    [day8.re-frame-10x.panels.settings.events                            :as settings.events]))
 
 (defclass epoch-style
   [ambiance active?]

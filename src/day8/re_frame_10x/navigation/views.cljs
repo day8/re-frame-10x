@@ -10,11 +10,11 @@
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.epochs.views :as epochs]
     [day8.re-frame-10x.components :as components]
-    [day8.re-frame-10x.app-db.views :as app-db]
-    [day8.re-frame-10x.subs.views :as subs]
-    [day8.re-frame-10x.fx.views :as fx]
-    [day8.re-frame-10x.debug.views :as debug]
-    [day8.re-frame-10x.settings.views :as settings]
+    [day8.re-frame-10x.panels.app-db.views :as app-db]
+    [day8.re-frame-10x.panels.subs.views :as subs]
+    [day8.re-frame-10x.panels.fx.views :as fx]
+    [day8.re-frame-10x.panels.debug.views :as debug]
+    [day8.re-frame-10x.panels.settings.views :as settings]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.svgs :as svgs]
     [day8.re-frame-10x.utils.re-com :as rc]
@@ -22,12 +22,12 @@
     [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.epochs.events :as epochs.events]
-    [day8.re-frame-10x.settings.subs :as settings.subs]
-    [day8.re-frame-10x.settings.events :as settings.events]
+    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
+    [day8.re-frame-10x.panels.settings.events :as settings.events]
 
-    [day8.re-frame-10x.event.views :as event.views]
-    [day8.re-frame-10x.timing.views :as timing.views]
-    [day8.re-frame-10x.traces.views :as traces.views]))
+    [day8.re-frame-10x.panels.event.views :as event.views]
+    [day8.re-frame-10x.panels.timing.views :as timing.views]
+    [day8.re-frame-10x.panels.traces.views :as traces.views]))
 
 (def outer-margins {:margin (str "0px " styles/gs-19s)})
 

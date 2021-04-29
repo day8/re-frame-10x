@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.subs.subs
+(ns day8.re-frame-10x.panels.subs.subs
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
