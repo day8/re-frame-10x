@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.components.cljs-devtools
   (:require-macros
-    [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]])
+    [day8.re-frame-10x.components.cljs-devtools :refer [with-cljs-devtools-prefs]])
   (:require
     [clojure.string :as string]
     [devtools.prefs]

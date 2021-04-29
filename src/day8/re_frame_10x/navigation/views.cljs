@@ -1,6 +1,4 @@
 (ns day8.re-frame-10x.navigation.views
-  (:require-macros
-    [day8.re-frame-10x.utils.macros :as macros])
   (:require
     [re-frame.db :as db]
     [re-frame.trace]
