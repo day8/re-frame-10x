@@ -80,20 +80,6 @@
 
 ;; --- OLD ----
 
-(defn fixed-after
-  ;; Waiting on https://github.com/day8/re-frame/issues/447
-  [f]
-  (rf/->interceptor
-    :id :after
-    :after (fn after-after
-             [context]
-             (let [db    (if (contains? (:effects context) :db)
-                           (get-in context [:effects :db])
-                           (get-in context [:coeffects :db]))
-                   event (get-in context [:coeffects :event])]
-               (f db event)                                 ;; call f for side effects
-               context))))                                  ;; context is unchanged
-
 (defn dissoc-in
   "Dissociates an entry from a nested associative structure returning a new
   nested structure. keys is a sequence of keys. Any empty maps that result
@@ -220,94 +206,6 @@
   :global/unloading?
   (fn [db [_ unloading?]]
     (assoc-in db [:global :unloading?] unloading?)))
-
-;; App DB
-
-(def app-db-path-mw
-  [(rf/path [:app-db :paths]) (fixed-after #(local-storage/save! "app-db-paths" %))])
-
-
-
-
-
-(rf/reg-event-db
-  :app-db/update-path
-  app-db-path-mw
-  (fn [paths [_ path-id path-str]]
-    (let [path  (reader.edn/read-string-maybe path-str)
-          paths (assoc-in paths [path-id :path-str] path-str)]
-      (if (or (and (some? path)
-                   (sequential? path))
-              (str/blank? path-str))
-        (-> paths
-            (assoc-in [path-id :path] path)
-            (assoc-in [path-id :valid-path?] true))
-        (assoc-in paths [path-id :valid-path?] false)))))
-
-(rf/reg-event-db
-  :app-db/update-path-blur
-  app-db-path-mw
-  (fn [paths [_ path-id]]
-    (let [{:keys [valid-path? path]} (get paths path-id)]
-      (if valid-path?
-        paths
-        (-> (assoc-in paths [path-id :path-str] (pr-str path))
-            (assoc-in [path-id :valid-path?] true))))))
-
-(rf/reg-event-db
-  :app-db/set-path-visibility
-  app-db-path-mw
-  (fn [paths [_ path-id open?]]
-    (assoc-in paths [path-id :open?] open?)))
-
-(rf/reg-event-db
-  :app-db/set-diff-visibility
-  app-db-path-mw
-  (fn [paths [_ path-id diff?]]
-    (let [open? (if diff?
-                  true
-                  (get-in paths [path-id :open?]))]
-      (-> paths
-          (assoc-in [path-id :diff?] diff?)
-          ;; If we turn on diffing then we want to also expand the path
-          (assoc-in [path-id :open?] open?)))))
-
-(rf/reg-event-db
-  :app-db/remove-path
-  app-db-path-mw
-  (fn [paths [_ path-id]]
-    (dissoc paths path-id)))
-
-(rf/reg-event-db
-  :app-db/paths
-  app-db-path-mw
-  (fn [db [_ paths]]
-    paths))
-
-#_(rf/reg-event-db
-    :app-db/remove-path
-    (fn [db [_ path]]
-      (let [new-db (update-in db [:app-db :paths] #(remove (fn [p] (= p path)) %))]
-        (local-storage/save! "app-db-paths" (get-in new-db [:app-db :paths]))
-        ;; TODO: remove from json-ml expansions too.
-        new-db)))
-
-#_(rf/reg-event-db
-    :app-db/add-path
-    (fn [db _]
-      (let [search-string (get-in db [:app-db :search-string])
-            path          (try
-                            (when-not (str/blank? search-string)
-                              (cljs.reader/read-string (str "[" search-string "]")))
-                            (catch :default e
-                              nil))]
-        (if (some? path)
-          (do (local-storage/save! "app-db-paths" (cons path (get-in db [:app-db :paths])))
-              (rf/dispatch [::app-db.events/toggle-expansion [path]])
-              (-> db
-                  (update-in [:app-db :paths] #(cons path %))
-                  (assoc-in [:app-db :search-string] "")))
-          db))))
 
 
 (rf/reg-event-db

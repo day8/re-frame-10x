@@ -79,7 +79,7 @@
                              :class  (styles/no-select ambiance)
                              :style  {:cursor "pointer"}
                              :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                                      :on-click (handler-fn (rf/dispatch [:app-db/set-path-visibility id (not open?)]))}
+                                      :on-click (handler-fn (rf/dispatch [::app-db.events/set-path-visibility id (not open?)]))}
                              :child  [buttons/expansion {:open? open?
                                                          :size styles/gs-31s}]]]]
 
@@ -91,24 +91,24 @@
                  :align :center
                  :children [[rc/input-text
                              :class           (styles/path-text-input-style ambiance)
-                             :attr            {:on-blur (fn [e] (rf/dispatch [:app-db/update-path-blur id]))}
+                             :attr            {:on-blur (fn [e] (rf/dispatch [::app-db.events/update-path-blur id]))}
                              :width           "100%"
                              :model           path-str
-                             :on-change       #(rf/dispatch [:app-db/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
-                             :on-submit       #()                   ;; #(rf/dispatch [:app-db/add-path %])
+                             :on-change       #(rf/dispatch [::app-db.events/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+                             :on-submit       #()                   ;; #(rf/dispatch [::app-db.events/add-path %])
                              :change-on-blur? false
                              :placeholder     "enter an app-db path like [:todos 1]"]]]
                 [pod-header-section
                  :width    "49px"
                  :justify  :center
                  :align    :center
-                 :attr     {:on-click (handler-fn (rf/dispatch [:app-db/set-diff-visibility id (not diff?)]))}
+                 :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)]))}
                  :children [[rc/checkbox
                              :model diff?
                              :label ""
                              #_#_:style {:margin-left "6px"
                                          :margin-top  "1px"}
-                             :on-change #(rf/dispatch [:app-db/set-diff-visibility id (not diff?)])]]]
+                             :on-change #(rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)])]]]
                 [pod-header-section
                  :width    styles/gs-50s
                  :justify  :center
@@ -116,7 +116,7 @@
                  :children [[buttons/icon
                              {:icon     [material/close]
                               :title    "Remove this inspector"
-                              :on-click #(rf/dispatch [:app-db/remove-path id])}]]]]]))
+                              :on-click #(rf/dispatch [::app-db.events/remove-path id])}]]]]]))
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
@@ -151,7 +151,7 @@
                                                           {:src      (str "data:image/svg+xml;utf8," delete)
                                                            :style    {:cursor "pointer"
                                                                       :height "10px"}
-                                                           :on-click #(rf/dispatch [:app-db/remove-path path])}]]]
+                                                           :on-click #(rf/dispatch [::app-db.events/remove-path path])}]]]
                                            #_[path]]
 
                                           #_"---main-section---"]])

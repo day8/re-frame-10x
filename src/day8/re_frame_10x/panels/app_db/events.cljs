@@ -6,7 +6,9 @@
     [day8.re-frame-10x.tools.reader.edn :as reader.edn]))
 
 (def paths-interceptors
-  [(rf/path [:app-db :paths]) rf/trim-v (local-storage/after "app-db-paths")])
+  [(rf/path [:app-db :paths])
+   rf/trim-v
+   (local-storage/after "app-db-paths")])
 
 ;; The core idea with :app-db/update-path and :app-db/update-path-blur
 ;; is that we need to separate the users text input (`path-str`) with the
@@ -17,7 +19,6 @@
 ;;
 ;; On blur of the input, we reset path-str to the last valid path, if
 ;; the pod isn't currently valid.
-
 
 (rf/reg-event-db
   ::create-path
@@ -32,7 +33,7 @@
        :valid-path? true})))
 
 (rf/reg-event-db
-  :app-db/update-path
+  ::update-path
   paths-interceptors
   (fn [paths [path-id path-str]]
     (let [path  (reader.edn/read-string-maybe path-str)
@@ -44,6 +45,47 @@
             (assoc-in [path-id :path] path)
             (assoc-in [path-id :valid-path?] true))
         (assoc-in paths [path-id :valid-path?] false)))))
+
+
+(rf/reg-event-db
+  ::update-path-blur
+  paths-interceptors
+  (fn [paths [path-id]]
+    (let [{:keys [valid-path? path]} (get paths path-id)]
+      (if valid-path?
+        paths
+        (-> (assoc-in paths [path-id :path-str] (pr-str path))
+            (assoc-in [path-id :valid-path?] true))))))
+
+(rf/reg-event-db
+  ::set-path-visibility
+  paths-interceptors
+  (fn [paths [path-id open?]]
+    (assoc-in paths [path-id :open?] open?)))
+
+(rf/reg-event-db
+  ::set-diff-visibility
+  paths-interceptors
+  (fn [paths [path-id diff?]]
+    (let [open? (if diff?
+                  true
+                  (get-in paths [path-id :open?]))]
+      (-> paths
+          (assoc-in [path-id :diff?] diff?)
+          ;; If we turn on diffing then we want to also expand the path
+          (assoc-in [path-id :open?] open?)))))
+
+(rf/reg-event-db
+  ::remove-path
+  paths-interceptors
+  (fn [paths [path-id]]
+    (dissoc paths path-id)))
+
+(rf/reg-event-db
+  ::paths
+  paths-interceptors
+  (fn [_ [paths]]
+    paths))
 
 ;; [IJ] TODO: This doesn't appear to be used anywhere:
 (rf/reg-event-db
@@ -71,3 +113,4 @@
   [(rf/path [:app-db :reagent-id])]
   (fn [_ _]
     (re-frame.interop/reagent-id re-frame.db/app-db)))
+
