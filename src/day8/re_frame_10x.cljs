@@ -7,8 +7,8 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.navigation.views :as container]
     [day8.re-frame-10x.subs]
-    [day8.re-frame-10x.settings.subs :as settings.subs]
-    [day8.re-frame-10x.settings.events :as settings.events]
+    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
+    [day8.re-frame-10x.panels.settings.events :as settings.events]
     [day8.re-frame-10x.events :as events]
     [day8.reagent.impl.component :refer [patch-wrap-funs patch-custom-wrapper]]
     [day8.reagent.impl.batching :refer [patch-next-tick]]))

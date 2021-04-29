@@ -1,7 +1,7 @@
 (ns day8.re-frame-10x.panels.subs.views
   (:require
-    [day8.re-frame-10x.app-db.views :refer [pod-gap pod-padding border-radius pod-border-edge
-                                            pod-header-section]]
+    [day8.re-frame-10x.panels.app-db.views :refer [pod-gap pod-padding border-radius pod-border-edge
+                                                   pod-header-section]]
     [day8.re-frame-10x.utils.utils :as utils]
     [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]

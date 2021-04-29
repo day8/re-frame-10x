@@ -6,7 +6,7 @@
     [day8.re-frame-10x.tools.edn :as tools.edn]
     [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
     [day8.re-frame-10x.utils.localstorage :as localstorage]
-    [day8.re-frame-10x.traces.events :as traces.events]
+    [day8.re-frame-10x.panels.traces.events :as traces.events]
     [reagent.impl.batching :as batching]
     [clojure.string :as str]
     [goog.object]
@@ -19,9 +19,9 @@
     [day8.re-frame-10x.styles :as styles]
     [clojure.set :as set]
     [day8.re-frame-10x.metamorphic :as metam]
-    [day8.re-frame-10x.epochs.events :as epochs.events]
-    [day8.re-frame-10x.settings.events :as settings.events]
-    [day8.re-frame-10x.app-db.events :as app-db.events]))
+    [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
+    [day8.re-frame-10x.panels.settings.events :as settings.events]
+    [day8.re-frame-10x.panels.app-db.events :as app-db.events]))
 
 (rf/reg-event-fx
   ::init
