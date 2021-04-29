@@ -17,6 +17,7 @@
     [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.utils.utils :as utils]
+    [day8.re-frame-10x.fx.clipboard :as clipboard]
     [day8.re-frame-10x.panels.event.subs :as event.subs]
     [day8.re-frame-10x.panels.event.events :as event.events]
     [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
@@ -208,7 +209,7 @@
         :label    "requires"
         :title    "Copy to the clipboard, the require form to set things up for the \"repl\" links below"
         ;; Doing this in a list would be nicer, but doesn't let us use ' as it will be expanded before we can create the string.
-        :on-click #(do (utils/copy-to-clipboard "(require '[day8.re-frame-10x])")
+        :on-click #(do (clipboard/copy! "(require '[day8.re-frame-10x])")
                        (rf/dispatch [::event.events/repl-msg-state :start]))}]
       [rc/gap-f :size styles/gs-7s]
       [components/hyperlink-info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]]))
@@ -292,7 +293,7 @@
         {:class    (copy-button-style ambiance)
          :icon     [material/content-copy {:size "14px"}]
          :title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
-         :on-click (handler-fn (do (utils/copy-to-clipboard (pr-str (list 'day8.re-frame-10x/traced-result trace-id frag)))
+         :on-click (handler-fn (do (clipboard/copy! (pr-str (list 'day8.re-frame-10x/traced-result trace-id frag)))
                                    (rf/dispatch [::event.events/repl-msg-state :start])))}]]]]))
 
 (defclass fragment-body-style
