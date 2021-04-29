@@ -12,8 +12,8 @@
     [day8.re-frame-10x.svgs                                       :as svgs]
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.view.cljs-devtools                         :as cljs-devtools]
-    [day8.re-frame-10x.components                            :as components]
+    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+    [day8.re-frame-10x.components                                 :as components]
     [day8.re-frame-10x.settings.subs :as settings.subs]
     [day8.re-frame-10x.app-db.subs :as app-db.subs]
     [day8.re-frame-10x.app-db.events :as app-db.events])

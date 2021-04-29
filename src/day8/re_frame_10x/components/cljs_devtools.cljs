@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.view.cljs-devtools
+(ns day8.re-frame-10x.components.cljs-devtools
   (:require-macros
     [day8.re-frame-10x.utils.macros :refer [with-cljs-devtools-prefs]])
   (:require

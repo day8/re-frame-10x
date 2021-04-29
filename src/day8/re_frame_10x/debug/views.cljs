@@ -1,7 +1,7 @@
 (ns day8.re-frame-10x.debug.views
   (:require
     [day8.re-frame-10x.utils.re-com :as rc]
-    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
+    [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.metamorphic :as metam]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]

@@ -4,7 +4,7 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [percent]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
+    [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.settings.subs :as settings.subs]))

@@ -10,7 +10,7 @@
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.view.cljs-devtools                         :as cljs-devtools]
+    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
     [day8.re-frame-10x.epochs.subs                                :as epochs.subs]
     [day8.re-frame-10x.epochs.events                              :as epochs.events]
     [day8.re-frame-10x.settings.subs                              :as settings.subs]

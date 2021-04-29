@@ -19,7 +19,7 @@
     [day8.re-frame-10x.utils.utils :as utils]
     [day8.re-frame-10x.event.subs :as event.subs]
     [day8.re-frame-10x.event.events :as event.events]
-    [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
+    [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
 
 ;; Terminology:
