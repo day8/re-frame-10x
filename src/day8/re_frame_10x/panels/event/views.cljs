@@ -13,7 +13,7 @@
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.utils.utils :as utils]

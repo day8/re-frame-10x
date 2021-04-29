@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.epochs.views
+(ns day8.re-frame-10x.navigation.epochs.views
   (:require
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
@@ -11,8 +11,8 @@
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
-    [day8.re-frame-10x.epochs.subs                                :as epochs.subs]
-    [day8.re-frame-10x.epochs.events                              :as epochs.events]
+    [day8.re-frame-10x.navigation.epochs.subs                                :as epochs.subs]
+    [day8.re-frame-10x.navigation.epochs.events                              :as epochs.events]
     [day8.re-frame-10x.panels.settings.subs                              :as settings.subs]
     [day8.re-frame-10x.panels.settings.events                            :as settings.events]))
 

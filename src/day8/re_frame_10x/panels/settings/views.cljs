@@ -9,9 +9,9 @@
     [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.epochs.events :as epochs.events]
+    [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
     [day8.re-frame-10x.panels.settings.events :as settings.events]))
 
 (def comp-section-width "400px")

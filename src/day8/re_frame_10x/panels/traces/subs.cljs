@@ -4,7 +4,7 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.utils.utils :as utils]
     [day8.re-frame-10x.metamorphic :as metam]
-    [day8.re-frame-10x.epochs.subs :as epochs.subs]
+    [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]))
 
 (rf/reg-sub

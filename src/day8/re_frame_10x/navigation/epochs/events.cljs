@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.epochs.events
+(ns day8.re-frame-10x.navigation.epochs.events
   (:require
     [clojure.string :as string]
     [re-frame.core]
