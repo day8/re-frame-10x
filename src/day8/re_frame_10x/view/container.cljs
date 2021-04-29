@@ -13,7 +13,7 @@
     [day8.re-frame-10x.app-db.views :as app-db]
     [day8.re-frame-10x.subs.views :as subs]
     [day8.re-frame-10x.view.fx :as fx]
-    [day8.re-frame-10x.view.debug :as debug]
+    [day8.re-frame-10x.debug.views :as debug]
     [day8.re-frame-10x.settings.views :as settings]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.svgs :as svgs]

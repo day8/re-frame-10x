@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.view.debug
+(ns day8.re-frame-10x.debug.views
   (:require
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.view.cljs-devtools :as cljs-devtools]
