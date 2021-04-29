@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.view.fx
+(ns day8.re-frame-10x.fx.views
   (:require
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [percent]]
