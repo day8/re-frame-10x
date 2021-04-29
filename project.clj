@@ -7,7 +7,7 @@
 
   :dependencies [[org.clojure/clojure                  "1.10.3"   :scope "provided"]
                  [org.clojure/clojurescript "1.10.773"]
-                 [binaryage/devtools                   "1.0.2"]
+                 [binaryage/devtools                   "1.0.3"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8"
                   :exclusions [rhino/js]]
                  [zprint                               "1.0.1"]
