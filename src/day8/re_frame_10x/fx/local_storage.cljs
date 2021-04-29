@@ -42,11 +42,14 @@
    (rf/after
      (fn [x]
        (save! key x))))
-  ([key ks]
+  ([key & ks]
    (rf/after
      (fn [x]
-       (let [v (if (vector? ks) (get-in x ks) (get x ks))]
-         (save! key v))))))
+       (run!
+         (fn [k]
+           (let [v (if (vector? k) (get-in x k) (get x k))]
+             (save! key v)))
+         ks)))))
 
 (rf/reg-cofx
   ::get

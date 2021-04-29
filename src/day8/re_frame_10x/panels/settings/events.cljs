@@ -1,8 +1,9 @@
 (ns day8.re-frame-10x.panels.settings.events
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.fx.local-storage :as local-storage]
-    [day8.re-frame-10x.tools.reader.edn :as reader.edn]))
+    [day8.re-frame-10x.fx.local-storage                           :as local-storage]
+    [day8.re-frame-10x.fx.trace                                   :as trace]
+    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]))
 
 (rf/reg-event-db
   ::panel-width%
@@ -183,3 +184,31 @@
   [(rf/path [:settings :external-window-dimensions]) rf/unwrap (local-storage/after "external-window-dimensions")]
   (fn [external-window-dimensions {:keys [left top]}]
     (assoc external-window-dimensions :left left :top top)))
+
+(rf/reg-event-fx
+  ::user-toggle-panel
+  [(rf/path [:settings])
+   (local-storage/after "using-trace?" :using-trace?)
+   (local-storage/after "show-panel" :show-panel?)]
+  (fn [settings _]
+    (let [now-showing?    (not (get settings :show-panel?))
+          external-panel? (get settings :external-window?)
+          using-trace?    (or external-panel? now-showing?)]
+      (merge
+        {:db (-> settings
+                 (assoc :using-trace? using-trace?)
+                 (assoc :show-panel? now-showing?))}
+        (if now-showing?
+          {::trace/enable {:key ::cb}}
+          (when-not external-panel?
+            {::trace/disable {:key ::cb}}))))))
+
+(rf/reg-event-fx
+  ::enable-tracing
+  (fn [_ _]
+    {::trace/enable {:key ::cb}}))
+
+(rf/reg-event-fx
+  ::disable-tracing
+  (fn [_ _]
+    {::trace/disable {:key ::cb}}))

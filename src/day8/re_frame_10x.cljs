@@ -49,7 +49,7 @@
                                  (when (and (not entering-input?)
                                             (= (.-key e) "h")
                                             (.-ctrlKey e))
-                                   (rf/dispatch [:settings/user-toggle-panel])
+                                   (rf/dispatch [::settings.events/user-toggle-panel])
                                    (.preventDefault e))))
         handle-mousemove     (fn [e]
                                (when @dragging?

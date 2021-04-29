@@ -52,7 +52,7 @@
                app-db-follow-events? ambiance syntax-color-scheme categories] :as cofx}
        {:keys [debug?]}]
     {:fx [(when using-trace?
-            [:dispatch [:global/enable-tracing]])
+            [:dispatch [::settings.events/enable-tracing]])
           [:dispatch [::settings.events/panel-width% panel-width-ratio]]
           [:dispatch [::settings.events/show-panel? show-panel]]
           [:dispatch [::settings.events/selected-tab selected-tab]]
@@ -94,12 +94,6 @@
                (f db event)                                 ;; call f for side effects
                context))))                                  ;; context is unchanged
 
-(defn disable-tracing! []
-  (re-frame.trace/remove-trace-cb ::cb))
-
-(defn enable-tracing! []
-  (re-frame.trace/register-trace-cb ::cb #(rf/dispatch [::epochs.events/receive-new-traces %])))
-
 (defn dissoc-in
   "Dissociates an entry from a nested associative structure returning a new
   nested structure. keys is a sequence of keys. Any empty maps that result
@@ -113,24 +107,6 @@
           (dissoc m k)))
       m)
     (dissoc m k)))
-
-(rf/reg-event-db
-  :settings/user-toggle-panel
-  (fn [db _]
-    (let [now-showing?    (not (get-in db [:settings :show-panel?]))
-          external-panel? (get-in db [:settings :external-window?])
-          using-trace?    (or external-panel? now-showing?)]
-      (if now-showing?
-        (enable-tracing!)
-        (when-not external-panel?
-          (disable-tracing!)))
-      (local-storage/save! "using-trace?" using-trace?)
-      (local-storage/save! "show-panel" now-showing?)
-      (-> db
-          (assoc-in [:settings :using-trace?] using-trace?)
-          (assoc-in [:settings :show-panel?] now-showing?)))))
-
-
 
 
 ;; Global
@@ -231,17 +207,8 @@
     {:db             (assoc-in (:db ctx) [:settings :external-window?] false)
      :dispatch-later [{:ms 400 :dispatch [::settings.events/show-panel? true]}]}))
 
-(rf/reg-event-fx
-  :global/enable-tracing
-  (fn [ctx _]
-    (enable-tracing!)
-    nil))
 
-(rf/reg-event-fx
-  :global/disable-tracing
-  (fn [ctx _]
-    (disable-tracing!)
-    nil))
+
 
 (rf/reg-event-fx
   :global/add-unload-hook
