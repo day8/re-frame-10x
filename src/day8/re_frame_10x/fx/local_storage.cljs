@@ -1,8 +1,8 @@
-(ns day8.re-frame-10x.utils.localstorage
+(ns day8.re-frame-10x.fx.local-storage
   (:require
     [goog.storage.Storage]
     [goog.storage.mechanism.HTML5LocalStorage]
-    [cljs.reader :as reader]
+    [cljs.reader    :as reader]
     [clojure.string :as string]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf])
   (:refer-clojure :exclude [get]))

@@ -1,12 +1,12 @@
 (ns day8.re-frame-10x.panels.app-db.events
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.utils.localstorage :as localstorage]
+    [day8.re-frame-10x.fx.local-storage :as local-storage]
     [clojure.string :as string]
     [day8.re-frame-10x.tools.edn :as tools.edn]))
 
 (def paths-interceptors
-  [(rf/path [:app-db :paths]) rf/trim-v (localstorage/after "app-db-paths")])
+  [(rf/path [:app-db :paths]) rf/trim-v (local-storage/after "app-db-paths")])
 
 ;; The core idea with :app-db/update-path and :app-db/update-path-blur
 ;; is that we need to separate the users text input (`path-str`) with the
@@ -54,13 +54,13 @@
 
 (rf/reg-event-db
   ::set-json-ml-paths
-  [(rf/path [:app-db :json-ml-expansions]) rf/trim-v (localstorage/after "app-db-json-ml-expansions")]
+  [(rf/path [:app-db :json-ml-expansions]) rf/trim-v (local-storage/after "app-db-json-ml-expansions")]
   (fn [_ [paths]]
     paths))
 
 (rf/reg-event-db
   ::toggle-expansion
-  [(rf/path [:app-db :json-ml-expansions]) rf/trim-v (localstorage/after "app-db-json-ml-expansions")]
+  [(rf/path [:app-db :json-ml-expansions]) rf/trim-v (local-storage/after "app-db-json-ml-expansions")]
   (fn [paths [path]]
     (if (contains? paths path)
       (disj paths path)

@@ -5,7 +5,7 @@
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
     [day8.re-frame-10x.tools.edn :as tools.edn]
     [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
-    [day8.re-frame-10x.utils.localstorage :as localstorage]
+    [day8.re-frame-10x.fx.local-storage :as local-storage]
     [day8.re-frame-10x.panels.traces.events :as traces.events]
     [reagent.impl.batching :as batching]
     [clojure.string :as str]
@@ -25,27 +25,27 @@
 
 (rf/reg-event-fx
   ::init
-  [(rf/inject-cofx ::localstorage/get {:key "panel-width-ratio" :or 0.35})
-   (rf/inject-cofx ::localstorage/get {:key "show-panel" :or true})
-   (rf/inject-cofx ::localstorage/get {:key "selected-tab" :or :event})
-   (rf/inject-cofx ::localstorage/get {:key "filter-items" :or []})
-   (rf/inject-cofx ::localstorage/get {:key "app-db-json-ml-expansions" :or #{}})
-   (rf/inject-cofx ::localstorage/get {:key "external-window?" :or false})
-   (rf/inject-cofx ::localstorage/get {:key "external-window-dimensions" :or {:width 800 :height 800 :top 0 :left 0}})
-   (rf/inject-cofx ::localstorage/get {:key "show-epoch-traces?" :or true})
-   (rf/inject-cofx ::localstorage/get {:key "using-trace?" :or true})
-   (rf/inject-cofx ::localstorage/get {:key "ignored-events" :or {}})
-   (rf/inject-cofx ::localstorage/get {:key "low-level-trace" :or {:reagent true :re-frame true}})
-   (rf/inject-cofx ::localstorage/get {:key "filtered-view-trace" :or (let [id1 (random-uuid)
-                                                                            id2 (random-uuid)]
-                                                                        {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
-                                                                         id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}})})
-   (rf/inject-cofx ::localstorage/get {:key "retained-epochs" :or 25})
-   (rf/inject-cofx ::localstorage/get {:key "app-db-paths" :or {}})
-   (rf/inject-cofx ::localstorage/get {:key "app-db-follows-events?" :or true})
-   (rf/inject-cofx ::localstorage/get {:key "ambiance" :or :bright})
-   (rf/inject-cofx ::localstorage/get {:key "syntax-color-scheme" :or :cljs-devtools})
-   (rf/inject-cofx ::localstorage/get {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose}})
+  [(rf/inject-cofx ::local-storage/get {:key "panel-width-ratio" :or 0.35})
+   (rf/inject-cofx ::local-storage/get {:key "show-panel" :or true})
+   (rf/inject-cofx ::local-storage/get {:key "selected-tab" :or :event})
+   (rf/inject-cofx ::local-storage/get {:key "filter-items" :or []})
+   (rf/inject-cofx ::local-storage/get {:key "app-db-json-ml-expansions" :or #{}})
+   (rf/inject-cofx ::local-storage/get {:key "external-window?" :or false})
+   (rf/inject-cofx ::local-storage/get {:key "external-window-dimensions" :or {:width 800 :height 800 :top 0 :left 0}})
+   (rf/inject-cofx ::local-storage/get {:key "show-epoch-traces?" :or true})
+   (rf/inject-cofx ::local-storage/get {:key "using-trace?" :or true})
+   (rf/inject-cofx ::local-storage/get {:key "ignored-events" :or {}})
+   (rf/inject-cofx ::local-storage/get {:key "low-level-trace" :or {:reagent true :re-frame true}})
+   (rf/inject-cofx ::local-storage/get {:key "filtered-view-trace" :or (let [id1 (random-uuid)
+                                                                             id2  (random-uuid)]
+                                                                         {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
+                                                                          id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}})})
+   (rf/inject-cofx ::local-storage/get {:key "retained-epochs" :or 25})
+   (rf/inject-cofx ::local-storage/get {:key "app-db-paths" :or {}})
+   (rf/inject-cofx ::local-storage/get {:key "app-db-follows-events?" :or true})
+   (rf/inject-cofx ::local-storage/get {:key "ambiance" :or :bright})
+   (rf/inject-cofx ::local-storage/get {:key "syntax-color-scheme" :or :cljs-devtools})
+   (rf/inject-cofx ::local-storage/get {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose}})
    rf/unwrap]
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
@@ -126,8 +126,8 @@
         (enable-tracing!)
         (when-not external-panel?
           (disable-tracing!)))
-      (localstorage/save! "using-trace?" using-trace?)
-      (localstorage/save! "show-panel" now-showing?)
+      (local-storage/save! "using-trace?" using-trace?)
+      (local-storage/save! "show-panel" now-showing?)
       (-> db
           (assoc-in [:settings :using-trace?] using-trace?)
           (assoc-in [:settings :show-panel?] now-showing?)))))
@@ -144,11 +144,11 @@
           num (if (and (not (js/isNaN num)) (pos-int? num))
                 num
                 5)]
-      (localstorage/save! "retained-epochs" num)
+      (local-storage/save! "retained-epochs" num)
       (assoc-in db [:settings :number-of-epochs] num))))
 
 (def ignored-event-mw
-  [(rf/path [:settings :ignored-events]) (fixed-after #(localstorage/save! "ignored-events" %))])
+  [(rf/path [:settings :ignored-events]) (fixed-after #(local-storage/save! "ignored-events" %))])
 
 (rf/reg-event-db
   :settings/add-ignored-event
@@ -180,7 +180,7 @@
     ignored-events))
 
 (def filtered-view-trace-mw
-  [(rf/path [:settings :filtered-view-trace]) (fixed-after #(localstorage/save! "filtered-view-trace" %))])
+  [(rf/path [:settings :filtered-view-trace]) (fixed-after #(local-storage/save! "filtered-view-trace" %))])
 
 (rf/reg-event-db
   :settings/add-filtered-view-trace
@@ -211,7 +211,7 @@
   (fn [_ [_ ignored-events]]
     ignored-events))
 
-(def low-level-trace-mw [(rf/path [:settings :low-level-trace]) (fixed-after #(localstorage/save! "low-level-trace" %))])
+(def low-level-trace-mw [(rf/path [:settings :low-level-trace]) (fixed-after #(local-storage/save! "low-level-trace" %))])
 
 (rf/reg-event-db
   :settings/set-low-level-trace
@@ -232,7 +232,7 @@
 
 (rf/reg-event-db
   :settings/app-db-follows-events?
-  [(rf/path [:settings :app-db-follows-events?]) (fixed-after #(localstorage/save! "app-db-follows-events?" %))]
+  [(rf/path [:settings :app-db-follows-events?]) (fixed-after #(local-storage/save! "app-db-follows-events?" %))]
   (fn [db [_ follows-events?]]
     follows-events?))
 
@@ -319,7 +319,7 @@
   (fn [ctx _]
     (if (open-debugger-window (get-in ctx [:db :settings :external-window-dimensions]))
       (do
-        (localstorage/save! "external-window?" true)
+        (local-storage/save! "external-window?" true)
         {:db             (-> (:db ctx)
                              (assoc-in [:settings :external-window?] true)
                              (dissoc-in [:errors :popup-failed?]))
@@ -330,25 +330,25 @@
 (rf/reg-event-fx
   :global/external-closed
   (fn [ctx _]
-    (localstorage/save! "external-window?" false)
+    (local-storage/save! "external-window?" false)
     {:db             (assoc-in (:db ctx) [:settings :external-window?] false)
      :dispatch-later [{:ms 400 :dispatch [::settings.events/show-panel? true]}]}))
 
 (rf/reg-event-db
   :settings/external-window-dimensions
-  [(rf/path [:settings :external-window-dimensions]) (rf/after #(localstorage/save! "external-window-dimensions" %))]
+  [(rf/path [:settings :external-window-dimensions]) (rf/after #(local-storage/save! "external-window-dimensions" %))]
   (fn [dim [_ new-dim]]
     new-dim))
 
 (rf/reg-event-db
   :settings/external-window-resize
-  [(rf/path [:settings :external-window-dimensions]) (rf/after #(localstorage/save! "external-window-dimensions" %))]
+  [(rf/path [:settings :external-window-dimensions]) (rf/after #(local-storage/save! "external-window-dimensions" %))]
   (fn [dim [_ {width :width height :height}]]
     (assoc dim :width width :height height)))
 
 (rf/reg-event-db
   :settings/external-window-position
-  [(rf/path [:settings :external-window-dimensions]) (rf/after #(localstorage/save! "external-window-dimensions" %))]
+  [(rf/path [:settings :external-window-dimensions]) (rf/after #(local-storage/save! "external-window-dimensions" %))]
   (fn [dim [_ {left :left top :top}]]
     (assoc dim :left left :top top)))
 
@@ -378,7 +378,7 @@
 ;; App DB
 
 (def app-db-path-mw
-  [(rf/path [:app-db :paths]) (fixed-after #(localstorage/save! "app-db-paths" %))])
+  [(rf/path [:app-db :paths]) (fixed-after #(local-storage/save! "app-db-paths" %))])
 
 
 
@@ -442,7 +442,7 @@
     :app-db/remove-path
     (fn [db [_ path]]
       (let [new-db (update-in db [:app-db :paths] #(remove (fn [p] (= p path)) %))]
-        (localstorage/save! "app-db-paths" (get-in new-db [:app-db :paths]))
+        (local-storage/save! "app-db-paths" (get-in new-db [:app-db :paths]))
         ;; TODO: remove from json-ml expansions too.
         new-db)))
 
@@ -456,7 +456,7 @@
                             (catch :default e
                               nil))]
         (if (some? path)
-          (do (localstorage/save! "app-db-paths" (cons path (get-in db [:app-db :paths])))
+          (do (local-storage/save! "app-db-paths" (cons path (get-in db [:app-db :paths])))
               (rf/dispatch [::app-db.events/toggle-expansion [path]])
               (-> db
                   (update-in [:app-db :paths] #(cons path %))
