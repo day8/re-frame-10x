@@ -1,18 +1,18 @@
 (ns day8.re-frame-10x.panels.settings.views
   (:require
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units :refer [px]]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core  :as rf]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units    :refer [px px* px-]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :refer [render-css]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
-    [day8.re-frame-10x.panels.traces.subs :as traces.subs]
-    [day8.re-frame-10x.components.re-com :as rc :refer [css-join]]
-    [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
-    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
-    [day8.re-frame-10x.panels.settings.events :as settings.events]
-    [day8.re-frame-10x.components.buttons :as buttons]))
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core        :refer [defclass defglobal]]
+    [day8.re-frame-10x.components.buttons                          :as buttons]
+    [day8.re-frame-10x.components.re-com                           :as rc :refer [css-join]]
+    [day8.re-frame-10x.navigation.epochs.events                    :as epochs.events]
+    [day8.re-frame-10x.navigation.epochs.subs                      :as epochs.subs]
+    [day8.re-frame-10x.panels.settings.events                      :as settings.events]
+    [day8.re-frame-10x.panels.settings.subs                        :as settings.subs]
+    [day8.re-frame-10x.panels.traces.subs                          :as traces.subs]
+    [day8.re-frame-10x.material                                    :as material]
+    [day8.re-frame-10x.styles                                      :as styles]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")
@@ -20,8 +20,8 @@
 (def vertical-gap styles/gs-12s)
 (def settings-box-vertical-padding styles/gs-7)
 (def settings-box-padding (css-join "7px" "0"))
-(def settings-box-81 (render-css (units/px- styles/gs-81 (units/px* 2 settings-box-vertical-padding))))
-(def settings-box-131 (render-css (units/px- styles/gs-131 (units/px* 2 settings-box-vertical-padding))))
+(def settings-box-81 (render-css (px- styles/gs-81 (px* 2 settings-box-vertical-padding))))
+(def settings-box-131 (render-css (px- styles/gs-131 (px* 2 settings-box-vertical-padding))))
 
 (defn done-button
   []
@@ -213,33 +213,33 @@
                  [[:p "Most of the time, low level trace is noisy and you want it filtered out."]]
                  settings-box-131])
 
-              [rc/line]
-              (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-                [settings-box
-                 [[rc/radio-button
-                   :model     ambiance
-                   :label     "dark"
-                   :value     :dark
-                   :on-change #(rf/dispatch [::settings.events/set-ambiance %])]
-                  [rc/radio-button
-                   :model     ambiance
-                   :label     "bright"
-                   :value     :bright
-                   :on-change #(rf/dispatch [::settings.events/set-ambiance %])]]])
+              #_[rc/line] ;; [IJ] TODO: :dark ambiance theme is unfinished, so disabled for now.
+              #_(let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+                  [settings-box
+                   [[rc/radio-button
+                     :model     ambiance
+                     :label     "dark"
+                     :value     :dark
+                     :on-change #(rf/dispatch [::settings.events/set-ambiance %])]
+                    [rc/radio-button
+                     :model     ambiance
+                     :label     "bright"
+                     :value     :bright
+                     :on-change #(rf/dispatch [::settings.events/set-ambiance %])]]])
 
-              [rc/line]
-              (let [syntax-color-scheme @(rf/subscribe [::settings.subs/syntax-color-scheme])]
-                [settings-box
-                 [[rc/radio-button
-                   :model     syntax-color-scheme
-                   :label     "cljs-devtools"
-                   :value     :cljs-devtools
-                   :on-change #(rf/dispatch [::settings.events/set-syntax-color-scheme %])]
-                  [rc/radio-button
-                   :model     syntax-color-scheme
-                   :label     "nord"
-                   :value     :nord
-                   :on-change #(rf/dispatch [::settings.events/set-syntax-color-scheme %])]]])
+              #_[rc/line] ;; [IJ] TODO: :nord syntax color theme is unfinished, so disabled for now.
+              #_(let [syntax-color-scheme @(rf/subscribe [::settings.subs/syntax-color-scheme])]
+                  [settings-box
+                   [[rc/radio-button
+                     :model     syntax-color-scheme
+                     :label     "cljs-devtools"
+                     :value     :cljs-devtools
+                     :on-change #(rf/dispatch [::settings.events/set-syntax-color-scheme %])]
+                    [rc/radio-button
+                     :model     syntax-color-scheme
+                     :label     "nord"
+                     :value     :nord
+                     :on-change #(rf/dispatch [::settings.events/set-syntax-color-scheme %])]]])
 
               [rc/line]
               (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
