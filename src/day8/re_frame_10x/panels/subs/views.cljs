@@ -20,6 +20,7 @@
     [day8.re-frame-10x.components.data :as data]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]
     [day8.re-frame-10x.components.inputs :as inputs]
+    [day8.re-frame-10x.panels.subs.events :as subs.events]
     [day8.re-frame-10x.components.hyperlinks :as hyperlinks])
   (:require-macros
     [day8.re-frame-10x.components.re-com :refer [handler-fn]]))
@@ -134,7 +135,7 @@
                                      [rc/link {:label (str "layer 2 " (tools.string/pluralize- @ignore-unchanged-l2-count "sub"))
                                                :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
                              :style {:margin-top "6px"}
-                             :on-change #(rf/dispatch [:subs/ignore-unchanged-l2-subs? %])]]]]]))
+                             :on-change #(rf/dispatch [::subs.events/ignore-unchanged-l2-subs? %])]]]]]))
 
 
 (defn pod-header [{:keys [id layer path open? diff? pin? run-times order]}]
@@ -152,7 +153,7 @@
                              :class "noselect"
                              :style {:cursor "pointer"}
                              :attr {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                                    :on-click (handler-fn (rf/dispatch [:subs/open-pod? id (not open?)]))}
+                                    :on-click (handler-fn (rf/dispatch [::subs.events/open-pod? id (not open?)]))}
                              :child [rc/box
                                      :margin "auto"
                                      :child [:span.arrow
@@ -212,7 +213,7 @@
 
                 [pod-header-section
                  :width styles/gs-50s
-                 :attr {:on-click (handler-fn (rf/dispatch [:subs/set-pinned id (not pin?)]))}
+                 :attr {:on-click (handler-fn (rf/dispatch [::subs.events/set-pinned id (not pin?)]))}
                  :children [[rc/box
                              :style {:margin "auto"}
                              :child [rc/checkbox
@@ -220,11 +221,11 @@
                                      :label ""
                                      :style {:margin-left "6px"
                                              :margin-top  "1px"}
-                                     :on-change #(rf/dispatch [:subs/set-pinned id (not pin?)])]]]]
+                                     :on-change #(rf/dispatch [::subs.events/set-pinned id (not pin?)])]]]]
 
                 [pod-header-section
                  :width styles/gs-50s
-                 :attr {:on-click (handler-fn (rf/dispatch [:subs/set-diff-visibility id (not diff?)]))}
+                 :attr {:on-click (handler-fn (rf/dispatch [::subs.events/set-diff-visibility id (not diff?)]))}
                  :last? true
                  :children [[rc/box
                              :style {:margin "auto"}
@@ -233,7 +234,7 @@
                                      :label ""
                                      :style {:margin-left "6px"
                                              :margin-top  "1px"}
-                                     :on-change #(rf/dispatch [:subs/set-diff-visibility id (not diff?)])]]]]]]))
+                                     :on-change #(rf/dispatch [::subs.events/set-diff-visibility id (not diff?)])]]]]]]))
 
 
 (def no-prev-value-msg [:p {:style {:font-style "italic"}} "No previous value exists to diff"])
@@ -415,7 +416,7 @@
         filter-str (rf/subscribe [::subs.subs/filter-str])]
     [inputs/search
      {:placeholder "filter subs"
-      :on-change   #(rf/dispatch [:subs/set-filter
+      :on-change   #(rf/dispatch [::subs.events/set-filter
                                   (-> % .-target .-value)])}]
 
     #_[:div
@@ -424,7 +425,7 @@
         {:type        "text"
          :value       @filter-str
          :placeholder "filter" ;; TODO italtic same as app-db
-         :on-change   #(rf/dispatch [:subs/set-filter
+         :on-change   #(rf/dispatch [::subs.events/set-filter
                                      (-> % .-target .-value)])}]]))
 
 (defclass panel-style

@@ -328,44 +328,6 @@
 ;;
 
 (rf/reg-event-db
-  :subs/ignore-unchanged-l2-subs?
-  [(rf/path [:subs :ignore-unchanged-subs?])]
-  (fn [_ [_ ignore?]]
-    ignore?))
-
-(rf/reg-event-db
-  :subs/open-pod?
-  [(rf/path [:subs :expansions])]
-  (fn [expansions [_ id open?]]
-    (assoc-in expansions [id :open?] open?)))
-
-(rf/reg-event-db
-  :subs/set-diff-visibility
-  [(rf/path [:subs :expansions])]
-  (fn [expansions [_ id diff?]]
-    (let [open? (if diff?
-                  true
-                  (get-in expansions [id :open?]))]
-      (-> expansions
-          (assoc-in [id :diff?] diff?)
-          ;; If we turn on diffing then we want to also expand the path
-          (assoc-in [id :open?] open?)))))
-
-(rf/reg-event-db
-  :subs/set-pinned
-  [(rf/path [:subs :pinned])]
-  (fn [pinned [_ id pinned?]]
-    (assoc-in pinned [id :pin?] pinned?)))
-
-(rf/reg-event-db
-  :subs/set-filter
-  [(rf/path [:subs :filter-str])]
-  (fn [_ [_ filter-value]]
-    filter-value))
-
-;;
-
-(rf/reg-event-db
   :errors/dismiss-popup-failed
   [(rf/path [:errors])]
   (fn [errors _]
