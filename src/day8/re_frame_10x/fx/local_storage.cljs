@@ -38,10 +38,15 @@
       (.remove storage k))))
 
 (defn after
-  [key]
-  (rf/after
-    (fn [x]
-      (save! key x))))
+  ([key]
+   (rf/after
+     (fn [x]
+       (save! key x))))
+  ([key ks]
+   (rf/after
+     (fn [x]
+       (let [v (if (vector? ks) (get-in x ks) (get x ks))]
+         (save! key v))))))
 
 (rf/reg-cofx
   ::get
