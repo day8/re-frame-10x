@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.utils.re-com)
+(ns day8.re-frame-10x.components.re-com)
 
 ;; There is a trap when writing DOM event handlers.  This looks innocent enough:
 ;;

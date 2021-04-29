@@ -8,7 +8,7 @@
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [em px percent]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
-    [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
+    [day8.re-frame-10x.components.re-com :as rc :refer [css-join]]
     [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units]
     [day8.re-frame-10x.svgs :as svgs]
@@ -19,7 +19,7 @@
     [day8.re-frame-10x.panels.subs.subs :as subs.subs]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color])
   (:require-macros
-    [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
+    [day8.re-frame-10x.components.re-com :refer [handler-fn]]))
 
 ;(s/def ::query-v any?)
 ;(s/def ::dyn-v any?)

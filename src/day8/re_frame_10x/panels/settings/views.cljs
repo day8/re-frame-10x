@@ -5,7 +5,7 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :refer [render-css]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.panels.traces.subs :as traces.subs]
-    [day8.re-frame-10x.utils.re-com :as rc :refer [css-join]]
+    [day8.re-frame-10x.components.re-com :as rc :refer [css-join]]
     [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]

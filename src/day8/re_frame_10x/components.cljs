@@ -6,9 +6,9 @@
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.utils.re-com :refer [deref-or-value]]
+    [day8.re-frame-10x.components.re-com :refer [deref-or-value]]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.utils.re-com :as rc]
+    [day8.re-frame-10x.components.re-com :as rc]
     [day8.re-frame-10x.styles :as styles]
     [clojure.string :as string]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]))

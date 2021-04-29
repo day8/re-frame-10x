@@ -1,10 +1,10 @@
-(ns day8.re-frame-10x.utils.re-com
+(ns day8.re-frame-10x.components.re-com
   "Shameless pilfered from re-com."
-  (:require-macros [day8.re-frame-10x.utils.re-com :refer [handler-fn]])
+  (:require-macros [day8.re-frame-10x.components.re-com :refer [handler-fn]])
   (:require
+    [clojure.string :as string]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
-    [clojure.string :as string]
     [day8.re-frame-10x.material :as material]))
 
 (defn px

@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.panels.event.views
   (:require-macros
-    [day8.re-frame-10x.utils.re-com :refer [handler-fn]])
+    [day8.re-frame-10x.components.re-com :refer [handler-fn]])
   (:require
     [clojure.string :as string]
     [re-highlight.core :as re-highlight]
@@ -10,7 +10,7 @@
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.utils.re-com :as rc]
+    [day8.re-frame-10x.components.re-com :as rc]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
