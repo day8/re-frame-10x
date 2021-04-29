@@ -5,7 +5,7 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.utils.re-com :as rc]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.view.container :as container]
+    [day8.re-frame-10x.navigation.views :as container]
     [day8.re-frame-10x.subs]
     [day8.re-frame-10x.settings.subs :as settings.subs]
     [day8.re-frame-10x.settings.events :as settings.events]

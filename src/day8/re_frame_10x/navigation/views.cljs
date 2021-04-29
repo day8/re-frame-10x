@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.view.container
+(ns day8.re-frame-10x.navigation.views
   (:require-macros
     [day8.re-frame-10x.utils.macros :as macros])
   (:require

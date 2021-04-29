@@ -15,7 +15,7 @@
     [re-frame.interop]
     [re-frame.core]
     [re-frame.trace]
-    [day8.re-frame-10x.view.container :as container]
+    [day8.re-frame-10x.navigation.views :as container]
     [day8.re-frame-10x.styles :as styles]
     [clojure.set :as set]
     [day8.re-frame-10x.metamorphic :as metam]
