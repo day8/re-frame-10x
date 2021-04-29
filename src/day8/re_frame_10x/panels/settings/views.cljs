@@ -118,7 +118,7 @@
                                        :padding (css-join "0px" styles/gs-5s)}
                                :model epochs-to-retain
                                :change-on-blur? true
-                               :on-change #(rf/dispatch [:settings/set-number-of-retained-epochs %])]
+                               :on-change #(rf/dispatch [::settings.events/set-number-of-retained-epochs %])]
                               [rc/label :label "epochs"]
                               [rc/gap-f :size styles/gs-31s]
                               [rc/button
@@ -153,7 +153,7 @@
                                :label [rc/v-box
                                        :align :center
                                        :children ["+ event-id"]]
-                               :on-click #(rf/dispatch [:settings/add-ignored-event])]]]
+                               :on-click #(rf/dispatch [::settings.events/add-ignored-event])]]]
                   [rc/v-box
                    :width comp-section-width
                    :gap vertical-gap
@@ -163,8 +163,8 @@
                                [closeable-text-box
                                 :model (:event-str item)
                                 :width "212px"
-                                :on-close #(rf/dispatch [:settings/remove-ignored-event id])
-                                :on-change #(rf/dispatch [:settings/update-ignored-event id %])])]]
+                                :on-close #(rf/dispatch [::settings.events/remove-ignored-event id])
+                                :on-change #(rf/dispatch [::settings.events/update-ignored-event id %])])]]
                  [[:p "All trace associated with these events will be ignored."]
                   [:p "Useful if you want to ignore a periodic background polling event."]]
                  settings-box-131])

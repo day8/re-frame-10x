@@ -56,10 +56,10 @@
           [:dispatch [::settings.events/panel-width% panel-width-ratio]]
           [:dispatch [::settings.events/show-panel? show-panel]]
           [:dispatch [::settings.events/selected-tab selected-tab]]
-          [:dispatch [:settings/set-ignored-events ignored-events]]
+          [:dispatch [::settings.events/set-ignored-events ignored-events]]
           [:dispatch [::settings.events/set-filtered-view-trace filtered-view-trace]]
           [:dispatch [::settings.events/set-low-level-trace low-level-trace]]
-          [:dispatch [:settings/set-number-of-retained-epochs retained-epochs]]
+          [:dispatch [::settings.events/set-number-of-retained-epochs retained-epochs]]
           [:dispatch [::settings.events/app-db-follows-events? app-db-follow-events?]]
           [:dispatch [::settings.events/set-ambiance ambiance]]
           [:dispatch [::settings.events/set-syntax-color-scheme syntax-color-scheme]]
@@ -129,54 +129,6 @@
       (-> db
           (assoc-in [:settings :using-trace?] using-trace?)
           (assoc-in [:settings :show-panel?] now-showing?)))))
-
-(rf/reg-event-db
-  :settings/set-number-of-retained-epochs
-  (fn [db [_ num-str]]
-    ;; TODO: this is not perfect, there is an issue in re-com
-    ;; where it won't update its model if it never receives another
-    ;; changes after it's on-change is fired.
-    ;; TODO: you could reset the stored epochs on change here
-    ;; once the way they are processed is refactored.
-    (let [num (js/parseInt num-str)
-          num (if (and (not (js/isNaN num)) (pos-int? num))
-                num
-                5)]
-      (local-storage/save! "retained-epochs" num)
-      (assoc-in db [:settings :number-of-epochs] num))))
-
-(def ignored-event-mw
-  [(rf/path [:settings :ignored-events]) (fixed-after #(local-storage/save! "ignored-events" %))])
-
-(rf/reg-event-db
-  :settings/add-ignored-event
-  ignored-event-mw
-  (fn [ignored-events _]
-    (let [id (random-uuid)]
-      (assoc ignored-events id {:id id :event-str "" :event-id nil :sort (js/Date.now)}))))
-
-(rf/reg-event-db
-  :settings/remove-ignored-event
-  ignored-event-mw
-  (fn [ignored-events [_ id]]
-    (dissoc ignored-events id)))
-
-(rf/reg-event-db
-  :settings/update-ignored-event
-  ignored-event-mw
-  (fn [ignored-events [_ id event-str]]
-    ;; TODO: this won't inform users if they type bad strings in.
-    (let [event (reader.edn/read-string-maybe event-str)]
-      (-> ignored-events
-          (assoc-in [id :event-str] event-str)
-          (update-in [id :event-id] (fn [old-event] (if event event old-event)))))))
-
-(rf/reg-event-db
-  :settings/set-ignored-events
-  ignored-event-mw
-  (fn [_ [_ ignored-events]]
-    ignored-events))
-
 
 
 

@@ -54,6 +54,55 @@
   (fn [_ [syntax-color-scheme]]
     syntax-color-scheme))
 
+(rf/reg-event-db
+  ::set-number-of-retained-epochs
+  [(rf/path [:settings :number-of-epochs]) rf/trim-v (local-storage/after "retained-epochs")]
+  (fn [_ [num-str]]
+    ;; TODO: this is not perfect, there is an issue in re-com
+    ;; where it won't update its model if it never receives another
+    ;; changes after it's on-change is fired.
+    ;; TODO: you could reset the stored epochs on change here
+    ;; once the way they are processed is refactored.
+    (let [num (js/parseInt num-str)
+          num (if (and (not (js/isNaN num)) (pos-int? num))
+                num
+                5)]
+      num)))
+
+(def ignored-event-interceptors
+  [(rf/path [:settings :ignored-events])
+   rf/trim-v
+   (local-storage/after "ignored-events")])
+
+(rf/reg-event-db
+  ::add-ignored-event
+  ignored-event-interceptors
+  (fn [ignored-events _]
+    (let [id (random-uuid)]
+      (assoc ignored-events id {:id id :event-str "" :event-id nil :sort (js/Date.now)}))))
+
+(rf/reg-event-db
+  ::remove-ignored-event
+  ignored-event-interceptors
+  (fn [ignored-events [id]]
+    (dissoc ignored-events id)))
+
+(rf/reg-event-db
+  ::update-ignored-event
+  ignored-event-interceptors
+  (fn [ignored-events [id event-str]]
+    ;; TODO: this won't inform users if they type bad strings in.
+    (let [event (reader.edn/read-string-maybe event-str)]
+      (-> ignored-events
+          (assoc-in [id :event-str] event-str)
+          (update-in [id :event-id] (fn [old-event] (if event event old-event)))))))
+
+(rf/reg-event-db
+  ::set-ignored-events
+  ignored-event-interceptors
+  (fn [_ [ignored-events]]
+    ignored-events))
+
 (def filtered-view-trace-interceptors
   [(rf/path [:settings :filtered-view-trace])
    rf/trim-v
