@@ -165,3 +165,21 @@
   [(rf/path [:settings :app-db-follows-events?]) rf/trim-v (local-storage/after "app-db-follows-events?")]
   (fn [_ [follows-events?]]
     follows-events?))
+
+(rf/reg-event-db
+  ::external-window-dimensions
+  [(rf/path [:settings :external-window-dimensions]) rf/trim-v (local-storage/after "external-window-dimensions")]
+  (fn [_ [external-window-dimensions]]
+    external-window-dimensions))
+
+(rf/reg-event-db
+  ::external-window-resize
+  [(rf/path [:settings :external-window-dimensions]) rf/unwrap (local-storage/after "external-window-dimensions")]
+  (fn [external-window-dimensions {:keys [width height]}]
+    (assoc external-window-dimensions :width width :height height)))
+
+(rf/reg-event-db
+  ::external-window-position
+  [(rf/path [:settings :external-window-dimensions]) rf/unwrap (local-storage/after "external-window-dimensions")]
+  (fn [external-window-dimensions {:keys [left top]}]
+    (assoc external-window-dimensions :left left :top top)))

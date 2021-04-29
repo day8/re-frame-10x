@@ -65,7 +65,7 @@
           [:dispatch [::settings.events/set-syntax-color-scheme syntax-color-scheme]]
           [:dispatch [::settings.events/debug? debug?]]
           ;; Important that window dimensions are set before we open an external window.
-          [:dispatch [:settings/external-window-dimensions external-window-dimensions]]
+          [:dispatch [::settings.events/external-window-dimensions external-window-dimensions]]
           (when external-window?
             [:dispatch [:global/launch-external]])
           [:dispatch [::traces.events/set-queries filter-items]]
@@ -147,7 +147,7 @@
                                        (fn []
                                          (let [width  (.-innerWidth popup-window)
                                                height (.-innerHeight popup-window)]
-                                           (rf/dispatch [:settings/external-window-resize {:width width :height height}]))
+                                           (rf/dispatch [::settings.events/external-window-resize {:width width :height height}]))
                                          (reset! resize-update-scheduled? false)))
                                      (reset! resize-update-scheduled? true)))
         handle-window-position   (let [pos (atom {})]
@@ -158,7 +158,7 @@
                                            screen-top  (.-screenY popup-window)]
                                        (when (or (not= left screen-left)
                                                  (not= top screen-top))
-                                         (rf/dispatch [:settings/external-window-position {:left screen-left :top screen-top}])
+                                         (rf/dispatch [::settings.events/external-window-position {:left screen-left :top screen-top}])
                                          (reset! pos {:left screen-left :top screen-top})))))
         window-position-interval (atom nil)
         unmount                  (fn [_]
@@ -230,24 +230,6 @@
     (local-storage/save! "external-window?" false)
     {:db             (assoc-in (:db ctx) [:settings :external-window?] false)
      :dispatch-later [{:ms 400 :dispatch [::settings.events/show-panel? true]}]}))
-
-(rf/reg-event-db
-  :settings/external-window-dimensions
-  [(rf/path [:settings :external-window-dimensions]) (rf/after #(local-storage/save! "external-window-dimensions" %))]
-  (fn [dim [_ new-dim]]
-    new-dim))
-
-(rf/reg-event-db
-  :settings/external-window-resize
-  [(rf/path [:settings :external-window-dimensions]) (rf/after #(local-storage/save! "external-window-dimensions" %))]
-  (fn [dim [_ {width :width height :height}]]
-    (assoc dim :width width :height height)))
-
-(rf/reg-event-db
-  :settings/external-window-position
-  [(rf/path [:settings :external-window-dimensions]) (rf/after #(local-storage/save! "external-window-dimensions" %))]
-  (fn [dim [_ {left :left top :top}]]
-    (assoc dim :left left :top top)))
 
 (rf/reg-event-fx
   :global/enable-tracing
