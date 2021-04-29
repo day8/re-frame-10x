@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.view.settings
+(ns day8.re-frame-10x.settings.views
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units :refer [px]]
