@@ -9,11 +9,11 @@
     [day8.re-frame-10x.panels.traces.subs :as traces.subs]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.tools.pretty-print-condensed :as pp]
     [clojure.string :as string]
     [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]))
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]
+    [day8.re-frame-10x.components.inputs :as inputs]))
 
 (defclass selected-epoch-style
   [ambiance active?]
@@ -34,12 +34,12 @@
      :align    :center
      :gap      styles/gs-12s
      :children
-     [[components/radio-button
+     [[inputs/radio-button
        {:label     "only this epoch"
         :model     model
         :value     :epoch
         :on-change #(rf/dispatch [::traces.events/set-filter-by-selected-epoch? (not filter-by-selected-epoch?)])}]
-      [components/radio-button
+      [inputs/radio-button
        {:label     "all epochs"
         :model     model
         :value     :all
@@ -141,7 +141,7 @@
                                           (keyword (.. % -target -value))])}
        [:option {:value "contains"} "contains"]
        [:option {:value "slower-than"} "slower than"]]
-      [components/search
+      [inputs/search
        {:on-save     #(rf/dispatch [::traces.events/save-draft-query])
         :on-change   #(rf/dispatch [::traces.events/set-draft-query
                                     (.. % -target -value)])

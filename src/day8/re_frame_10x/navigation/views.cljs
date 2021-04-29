@@ -7,7 +7,6 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.navigation.epochs.views :as epochs]
-    [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.panels.app-db.views :as app-db]
     [day8.re-frame-10x.panels.subs.views :as subs]
     [day8.re-frame-10x.panels.fx.views :as fx]
@@ -22,10 +21,11 @@
     [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.panels.settings.events :as settings.events]
-
+    [day8.re-frame-10x.components.hyperlinks :as hyperlinks]
     [day8.re-frame-10x.panels.event.views :as event.views]
     [day8.re-frame-10x.panels.timing.views :as timing.views]
-    [day8.re-frame-10x.panels.traces.views :as traces.views]))
+    [day8.re-frame-10x.panels.traces.views :as traces.views]
+    [day8.re-frame-10x.components.buttons :as buttons]))
 
 (def outer-margins {:margin (str "0px " styles/gs-19s)})
 
@@ -57,7 +57,7 @@
   []
   (let [current-event @(rf/subscribe [::epochs.subs/selected-event])]
     (when (some? current-event)
-      [components/icon-button
+      [buttons/icon
        {:icon     [material/refresh]
         :label    "replay"
         :title    "replay"
@@ -67,7 +67,7 @@
   []
   (let [current-event @(rf/subscribe [::epochs.subs/selected-event])]
     (when (some? current-event)
-      [components/hyperlink-info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"])))
+      [hyperlinks/info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/ReplayButton.md"])))
 
 (defclass tab-button-style
   [ambiance active?]

@@ -7,7 +7,7 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.panels.timing.subs :as timing.subs]
-    [day8.re-frame-10x.components :as components]))
+    [day8.re-frame-10x.components.data :as data]))
 
 (defn ms->str
   [ms]
@@ -30,7 +30,7 @@
      :gap      styles/gs-5s
      :children
      [[rc/label :label label]
-      [components/tag (tag-style ambiance) (ms->str time)]]]))
+      [data/tag (tag-style ambiance) (ms->str time)]]]))
 
 (defclass section-style
   [ambiance]

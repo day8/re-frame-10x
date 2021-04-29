@@ -3,19 +3,19 @@
     [clojure.data]
     [devtools.prefs]
     [devtools.formatters.core]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass defglobal]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [em px percent]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
-    [day8.re-frame-10x.components.re-com                               :as rc  :refer [close-button css-join]]
-    [day8.re-frame-10x.svgs                                       :as svgs]
-    [day8.re-frame-10x.material                                   :as material]
-    [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
-    [day8.re-frame-10x.components                                 :as components]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+    [day8.re-frame-10x.components.re-com :as rc :refer [close-button css-join]]
+    [day8.re-frame-10x.svgs :as svgs]
+    [day8.re-frame-10x.material :as material]
+    [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.panels.app-db.subs :as app-db.subs]
-    [day8.re-frame-10x.panels.app-db.events :as app-db.events])
+    [day8.re-frame-10x.panels.app-db.events :as app-db.events]
+    [day8.re-frame-10x.components.buttons :as buttons])
   (:require-macros
     [day8.re-frame-10x.components.re-com :refer [handler-fn]]))
 
@@ -80,8 +80,8 @@
                              :style  {:cursor "pointer"}
                              :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
                                       :on-click (handler-fn (rf/dispatch [:app-db/set-path-visibility id (not open?)]))}
-                             :child  [components/expansion-button {:open? open?
-                                                                   :size styles/gs-31s}]]]]
+                             :child  [buttons/expansion {:open? open?
+                                                         :size styles/gs-31s}]]]]
 
                 [rc/h-box
                  :class (styles/path-header-style ambiance)
@@ -113,7 +113,7 @@
                  :width    styles/gs-50s
                  :justify  :center
                  :last?    true
-                 :children [[components/icon-button
+                 :children [[buttons/icon
                              {:icon     [material/close]
                               :title    "Remove this inspector"
                               :on-click #(rf/dispatch [:app-db/remove-path id])}]]]]]))

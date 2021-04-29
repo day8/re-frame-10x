@@ -14,13 +14,15 @@
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
-    [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.fx.clipboard :as clipboard]
     [day8.re-frame-10x.panels.event.subs :as event.subs]
     [day8.re-frame-10x.panels.event.events :as event.events]
     [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
-    [day8.re-frame-10x.tools.pretty-print-condensed :as pp]))
+    [day8.re-frame-10x.tools.pretty-print-condensed :as pp]
+    [day8.re-frame-10x.components.inputs :as inputs]
+    [day8.re-frame-10x.components.buttons :as buttons]
+    [day8.re-frame-10x.components.hyperlinks :as hyperlinks]))
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
@@ -192,7 +194,7 @@
      :class    (controls-style ambiance)
      :align    :center
      :children
-     [[components/checkbox
+     [[inputs/checkbox
        {:model     execution-order?
         :on-change (handler-fn (rf/dispatch [::event.events/set-execution-order (not execution-order?)]))
         :label     "show trace in execution order"}]
@@ -203,7 +205,7 @@
       [rc/box
        :size  "1"
        :child ""]
-      [components/icon-button
+      [buttons/icon
        {:icon     [material/content-copy]
         :label    "requires"
         :title    "Copy to the clipboard, the require form to set things up for the \"repl\" links below"
@@ -211,7 +213,7 @@
         :on-click #(do (clipboard/copy! "(require '[day8.re-frame-10x])")
                        (rf/dispatch [::event.events/repl-msg-state :start]))}]
       [rc/gap-f :size styles/gs-7s]
-      [components/hyperlink-info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]]))
+      [hyperlinks/info "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UsingTheRepl.md"]]]))
 
 (defclass indent-block-style
   [ambiance first?]
@@ -270,7 +272,7 @@
      [[rc/box
        :attr  {:on-click (handler-fn (rf/dispatch [::event.events/set-code-visibility open?-path (not open?)]))}
        :child
-       [components/expansion-button
+       [buttons/expansion
         {:open? open?
          :size  styles/gs-19s}]]
       [rc/h-box
@@ -288,7 +290,7 @@
       [rc/box
        :width styles/gs-19s
        :child
-       [components/icon-button
+       [buttons/icon
         {:class    (copy-button-style ambiance)
          :icon     [material/content-copy {:size "14px"}]
          :title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"

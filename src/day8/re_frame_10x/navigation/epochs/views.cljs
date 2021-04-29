@@ -6,7 +6,7 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :as units :refer [em px percent]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass defglobal]]
     [day8.re-frame-10x.components.re-com                               :as rc]
-    [day8.re-frame-10x.components                                 :as components]
+    [day8.re-frame-10x.components.buttons :as buttons]
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.styles                                     :as styles]
@@ -14,7 +14,8 @@
     [day8.re-frame-10x.navigation.epochs.subs                                :as epochs.subs]
     [day8.re-frame-10x.navigation.epochs.events                              :as epochs.events]
     [day8.re-frame-10x.panels.settings.subs                              :as settings.subs]
-    [day8.re-frame-10x.panels.settings.events                            :as settings.events]))
+    [day8.re-frame-10x.panels.settings.events                            :as settings.events]
+    [day8.re-frame-10x.fx.scroll :as scroll]))
 
 (defclass epoch-style
   [ambiance active?]
@@ -37,10 +38,10 @@
       {:component-did-mount
        (fn [this]
          (when @active?
-           (components/scroll! (.-parentNode (rdom/dom-node this))
-                               [0 0]
-                               [0 (.-scrollHeight (.-parentNode (rdom/dom-node this)))]
-                               500)))
+           (scroll/scroll! (.-parentNode (rdom/dom-node this))
+                           [0 0]
+                           [0 (.-scrollHeight (.-parentNode (rdom/dom-node this)))]
+                           500)))
 
        :reagent-render
        (fn [event id]
@@ -95,7 +96,7 @@
 (defn prev-button
   []
   (let [older-epochs-available? @(rf/subscribe [::epochs.subs/older-epochs-available?])]
-    [components/icon-button
+    [buttons/icon
      {:icon      [material/arrow-left]
       :title     (if older-epochs-available? "Previous epoch" "There are no previous epochs")
       :disabled? (not older-epochs-available?)
@@ -104,7 +105,7 @@
 (defn next-button
   []
   (let [newer-epochs-available? @(rf/subscribe [::epochs.subs/newer-epochs-available?])]
-    [components/icon-button
+    [buttons/icon
      {:icon      [material/arrow-right]
       :title     (if newer-epochs-available? "Next epoch" "There are no later epochs")
       :disabled? (not newer-epochs-available?)
@@ -113,7 +114,7 @@
 (defn latest-button
   []
   (let [newer-epochs-available? @(rf/subscribe [::epochs.subs/newer-epochs-available?])]
-    [components/icon-button
+    [buttons/icon
      {:icon      [material/skip-next]
       :title     (if newer-epochs-available? "Skip to latest epoch" "Already showig latest epoch")
       :disabled? (not newer-epochs-available?)
@@ -131,7 +132,7 @@
 
 (defn settings-button
   []
-  [components/icon-button
+  [buttons/icon
    {:icon     [material/settings]
     :title    "Settings"
     :on-click #(rf/dispatch [::settings.events/toggle])}])
@@ -141,7 +142,7 @@
 (defn ambiance-button
   []
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-    [components/icon-button
+    [buttons/icon
      {:icon (if (= ambiance :bright)
               [material/light-mode]
               [material/dark-mode])
@@ -157,7 +158,7 @@
    :style    {:margin-right styles/gs-5s}
    :children [[ambiance-button]
               [settings-button]
-              [components/popout-button external-window?]]])
+              [buttons/popout external-window?]]])
 
 (defclass navigation-style
   [ambiance]

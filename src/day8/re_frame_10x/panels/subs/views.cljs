@@ -8,7 +8,6 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [em px percent]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.components.re-com :as rc :refer [css-join]]
-    [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units]
     [day8.re-frame-10x.svgs :as svgs]
     [clojure.data]
@@ -18,7 +17,10 @@
     [day8.re-frame-10x.panels.app-db.views :as app-db.views]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.panels.subs.subs :as subs.subs]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color])
+    [day8.re-frame-10x.components.data :as data]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]
+    [day8.re-frame-10x.components.inputs :as inputs]
+    [day8.re-frame-10x.components.hyperlinks :as hyperlinks])
   (:require-macros
     [day8.re-frame-10x.components.re-com :refer [handler-fn]]))
 
@@ -67,11 +69,11 @@
 
 (defn sub-tag [type label]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-    [components/tag (sub-tag-style ambiance type) label]))
+    [data/tag (sub-tag-style ambiance type) label]))
 
 (defn short-sub-tag [type label]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-    [components/tag (sub-tag-short-style ambiance type) label]))
+    [data/tag (sub-tag-short-style ambiance type) label]))
 
 (defn title-tag [type title label]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
@@ -80,7 +82,7 @@
      :align    :center
      :gap      styles/gs-2s
      :children [[:span {:style {:font-size "9px"}} title]
-                [components/tag (sub-tag-style ambiance type) label]]]))
+                [data/tag (sub-tag-style ambiance type) label]]]))
 
 (defclass panel-header-style
   [ambiance]
@@ -205,7 +207,7 @@
                                      :background-color "white"}
                              :child (if (some? layer)
                                       [:div {:style {:margin "auto"}} layer]
-                                      [components/hyperlink-info
+                                      [hyperlinks/info
                                        "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"])]]]
 
                 [pod-header-section
@@ -411,7 +413,7 @@
 (defn filter-section []
   (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
         filter-str (rf/subscribe [::subs.subs/filter-str])]
-    [components/search
+    [inputs/search
      {:placeholder "filter subs"
       :on-change   #(rf/dispatch [:subs/set-filter
                                   (-> % .-target .-value)])}]

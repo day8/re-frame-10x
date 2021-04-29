@@ -6,13 +6,13 @@
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.panels.traces.subs :as traces.subs]
     [day8.re-frame-10x.components.re-com :as rc :refer [css-join]]
-    [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
-    [day8.re-frame-10x.panels.settings.events :as settings.events]))
+    [day8.re-frame-10x.panels.settings.events :as settings.events]
+    [day8.re-frame-10x.components.buttons :as buttons]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")
@@ -26,7 +26,7 @@
 (defn done-button
   []
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-    [components/icon-button
+    [buttons/icon
      {:class    (styles/done-button ambiance)
       :icon     [material/check-circle-outline]
       :label    "Done"
@@ -38,7 +38,7 @@
    :gap      styles/gs-12s
    :style    {:margin-right styles/gs-19s}
    :children [[done-button]
-              [components/popout-button external-window?]]])
+              [buttons/popout external-window?]]])
 
 (defclass navigation-style
   [ambiance]
