@@ -3,7 +3,7 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.fx.local-storage :as local-storage]
     [clojure.string :as string]
-    [day8.re-frame-10x.tools.edn :as tools.edn]))
+    [day8.re-frame-10x.tools.reader.edn :as reader.edn]))
 
 (def paths-interceptors
   [(rf/path [:app-db :paths]) rf/trim-v (local-storage/after "app-db-paths")])
@@ -35,7 +35,7 @@
   :app-db/update-path
   paths-interceptors
   (fn [paths [path-id path-str]]
-    (let [path  (tools.edn/read-string-maybe path-str)
+    (let [path  (reader.edn/read-string-maybe path-str)
           paths (assoc-in paths [path-id :path-str] path-str)]
       (if (or (and (some? path)
                    (sequential? path))

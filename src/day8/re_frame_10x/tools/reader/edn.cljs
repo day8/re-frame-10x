@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.tools.edn
+(ns day8.re-frame-10x.tools.reader.edn
   (:require
     [cljs.tools.reader.edn]))
 

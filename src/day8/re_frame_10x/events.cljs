@@ -3,7 +3,7 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
-    [day8.re-frame-10x.tools.edn :as tools.edn]
+    [day8.re-frame-10x.tools.reader.edn :as reader.edn]
     [day8.re-frame-10x.fx.local-storage :as local-storage]
     [day8.re-frame-10x.panels.traces.events :as traces.events]
     [reagent.impl.batching :as batching]
@@ -168,7 +168,7 @@
   ignored-event-mw
   (fn [ignored-events [_ id event-str]]
     ;; TODO: this won't inform users if they type bad strings in.
-    (let [event (tools.edn/read-string-maybe event-str)]
+    (let [event (reader.edn/read-string-maybe event-str)]
       (-> ignored-events
           (assoc-in [id :event-str] event-str)
           (update-in [id :event-id] (fn [old-event] (if event event old-event)))))))
@@ -200,7 +200,7 @@
   filtered-view-trace-mw
   (fn [filtered-view-trace [_ id ns-str]]
     ;; TODO: this won't inform users if they type bad strings in.
-    (let [event (tools.edn/read-string-maybe ns-str)]
+    (let [event (reader.edn/read-string-maybe ns-str)]
       (-> filtered-view-trace
           (assoc-in [id :ns-str] ns-str)
           (update-in [id :ns] (fn [old-event] (if event event old-event)))))))
@@ -388,7 +388,7 @@
   :app-db/update-path
   app-db-path-mw
   (fn [paths [_ path-id path-str]]
-    (let [path  (tools.edn/read-string-maybe path-str)
+    (let [path  (reader.edn/read-string-maybe path-str)
           paths (assoc-in paths [path-id :path-str] path-str)]
       (if (or (and (some? path)
                    (sequential? path))
