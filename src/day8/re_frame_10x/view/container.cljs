@@ -11,7 +11,7 @@
     [day8.re-frame-10x.epochs.views :as epochs]
     [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.view.app-db :as app-db]
-    [day8.re-frame-10x.view.subs :as subs]
+    [day8.re-frame-10x.subs.views :as subs]
     [day8.re-frame-10x.view.fx :as fx]
     [day8.re-frame-10x.view.debug :as debug]
     [day8.re-frame-10x.view.settings :as settings]

@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.view.subs
+(ns day8.re-frame-10x.subs.views
   (:require
     [day8.re-frame-10x.view.app-db :refer [pod-gap pod-padding border-radius pod-border-edge
                                            pod-header-section]]
@@ -16,6 +16,7 @@
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.settings.subs :as settings.subs]
+    [day8.re-frame-10x.subs.subs :as subs.subs]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color])
   (:require-macros
     [day8.re-frame-10x.utils.re-com :refer [handler-fn]]))
@@ -96,12 +97,12 @@
 
 (defn panel-header []
   (let [ambiance                  @(rf/subscribe [::settings.subs/ambiance])
-        created-count             (rf/subscribe [:subs/created-count])
-        re-run-count              (rf/subscribe [:subs/re-run-count])
-        destroyed-count           (rf/subscribe [:subs/destroyed-count])
-        not-run-count             (rf/subscribe [:subs/not-run-count])
-        ignore-unchanged-l2-subs? (rf/subscribe [:subs/ignore-unchanged-l2-subs?])
-        ignore-unchanged-l2-count (rf/subscribe [:subs/unchanged-l2-subs-count])]
+        created-count             (rf/subscribe [::subs.subs/created-count])
+        re-run-count              (rf/subscribe [::subs.subs/re-run-count])
+        destroyed-count           (rf/subscribe [::subs.subs/destroyed-count])
+        not-run-count             (rf/subscribe [::subs.subs/not-run-count])
+        ignore-unchanged-l2-subs? (rf/subscribe [::subs.subs/ignore-unchanged-l2-subs?])
+        ignore-unchanged-l2-count (rf/subscribe [::subs.subs/unchanged-l2-subs-count])]
     [rc/h-box
      :class    (panel-header-style ambiance)
      :justify  :between
@@ -368,12 +369,12 @@
 
 
 (defn pod-section []
-  (let [visible-subs     @(rf/subscribe [:subs/visible-subs])
-        intra-epoch-subs @(rf/subscribe [:subs/intra-epoch-subs])
-        sub-expansions   @(rf/subscribe [:subs/sub-expansions])
-        sub-pins         @(rf/subscribe [:subs/sub-pins])
+  (let [visible-subs     @(rf/subscribe [::subs.subs/visible-subs])
+        intra-epoch-subs @(rf/subscribe [::subs.subs/intra-epoch-subs])
+        sub-expansions   @(rf/subscribe [::subs.subs/sub-expansions])
+        sub-pins         @(rf/subscribe [::subs.subs/sub-pins])
         all-subs         (if @(rf/subscribe [::settings.subs/debug?])
-                           (cons {:path [:subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [:subs/current-epoch-sub-state])} visible-subs)
+                           (cons {:path [::subs.subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [::subs.subs/current-epoch-sub-state])} visible-subs)
                            visible-subs)]
     [rc/v-box
      :size "1"
@@ -408,7 +409,7 @@
 
 (defn filter-section []
   (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
-        filter-str (rf/subscribe [:subs/filter-str])]
+        filter-str (rf/subscribe [::subs.subs/filter-str])]
     [components/search
      {:placeholder "filter subs"
       :on-change   #(rf/dispatch [:subs/set-filter
