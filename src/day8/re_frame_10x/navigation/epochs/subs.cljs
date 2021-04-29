@@ -2,7 +2,7 @@
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.metamorphic :as metam]
-    [day8.re-frame-10x.utils.utils :as utils]))
+    [day8.re-frame-10x.tools.coll :as tools.coll]))
 
 (rf/reg-sub
   ::root
@@ -120,5 +120,5 @@
   (fn [[selected-epoch-id match-ids] _]
     (and (< 1 (count match-ids))
          (some? selected-epoch-id)
-         (< selected-epoch-id (utils/last-in-vec match-ids)))))
+         (< selected-epoch-id (tools.coll/last-in-vec match-ids)))))
 

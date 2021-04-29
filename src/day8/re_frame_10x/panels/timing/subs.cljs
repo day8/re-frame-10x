@@ -1,17 +1,17 @@
 (ns day8.re-frame-10x.panels.timing.subs
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.utils.utils :as utils]
     [day8.re-frame-10x.metamorphic :as metam]
     [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
-    [day8.re-frame-10x.panels.traces.subs :as traces.subs]))
+    [day8.re-frame-10x.panels.traces.subs :as traces.subs]
+    [day8.re-frame-10x.tools.coll :as tools.coll]))
 
 (rf/reg-sub
   ::total-epoch-time
   :<- [::traces.subs/filtered-by-epoch-always]
   (fn [traces]
     (let [start-of-epoch (nth traces 0)
-          end-of-epoch   (utils/last-in-vec traces)]
+          end-of-epoch   (tools.coll/last-in-vec traces)]
       (metam/elapsed-time start-of-epoch end-of-epoch))))
 
 (rf/reg-sub
@@ -88,7 +88,7 @@
   :<- [::traces.subs/filtered-by-epoch-always]
   (fn [traces]
     (let [start-of-render (first (filter metam/request-animation-frame? traces))
-          end-of-epoch    (utils/last-in-vec traces)]
+          end-of-epoch    (tools.coll/last-in-vec traces)]
       (metam/elapsed-time start-of-render end-of-epoch))))
 
 (rf/reg-sub

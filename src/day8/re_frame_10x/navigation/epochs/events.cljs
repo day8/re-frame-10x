@@ -6,7 +6,7 @@
     [re-frame.trace]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.metamorphic :as metam]
-    [day8.re-frame-10x.utils.utils :as utils]))
+    [day8.re-frame-10x.tools.coll :as tools.coll]))
 
 (defn log-trace? [trace]
   (let [render-operation? (or (= (:op-type trace) :render)
@@ -55,7 +55,7 @@
             timing                     (mapv (fn [match]
                                                (let [epoch-traces        (into []
                                                                                (comp
-                                                                                 (utils/id-between-xf (:id (first match)) (:id (last match))))
+                                                                                 (tools.coll/id-between-xf (:id (first match)) (:id (last match))))
                                                                                all-traces)
                                                      ;; TODO: handle case when there are no epoch-traces
                                                      start-of-epoch      (nth epoch-traces 0)
@@ -64,7 +64,7 @@
                                                      dofx-trace          (first (filter metam/event-dofx? epoch-traces))
                                                      event-trace         (first (filter metam/event-run? epoch-traces))
                                                      finish-run          (or (first (filter metam/finish-run? epoch-traces))
-                                                                             (utils/last-in-vec epoch-traces))]
+                                                                             (tools.coll/last-in-vec epoch-traces))]
                                                  {:re-frame/event-run-time     (metam/elapsed-time start-of-epoch finish-run)
                                                   :re-frame/event-time         (:duration event-trace)
                                                   :re-frame/event-handler-time (:duration event-handler-trace)
@@ -113,7 +113,7 @@
   (fn [{:keys [db]} _]
     (if-some [selected-id (:selected-epoch-id db)]
       (let [match-ids         (:match-ids db)
-            match-array-index (utils/find-index-in-vec (fn [x] (= selected-id x)) match-ids)
+            match-array-index (tools.coll/find-index-in-vec (fn [x] (= selected-id x)) match-ids)
             new-id            (nth match-ids (dec match-array-index))]
         {:db       (assoc db :selected-epoch-id new-id)
          :dispatch [:snapshot/reset-current-epoch-app-db new-id]})
@@ -129,11 +129,11 @@
   (fn [{:keys [db]} _]
     (if-some [selected-id (:selected-epoch-id db)]
       (let [match-ids         (:match-ids db)
-            match-array-index (utils/find-index-in-vec (fn [x] (= selected-id x)) match-ids)
+            match-array-index (tools.coll/find-index-in-vec (fn [x] (= selected-id x)) match-ids)
             new-id            (nth match-ids (inc match-array-index))]
         {:db       (assoc db :selected-epoch-id new-id)
          :dispatch [:snapshot/reset-current-epoch-app-db new-id]})
-      (let [new-id (utils/last-in-vec (:match-ids db))]
+      (let [new-id (tools.coll/last-in-vec (:match-ids db))]
         {:db       (assoc db :selected-epoch-id new-id)
          :dispatch [:snapshot/reset-current-epoch-app-db new-id]}))))
 
@@ -143,7 +143,7 @@
   (fn [{:keys [db]} _]
     {:db       (assoc db :selected-epoch-index nil
                          :selected-epoch-id nil)
-     :dispatch [:snapshot/reset-current-epoch-app-db (utils/last-in-vec (:match-ids db))]}))
+     :dispatch [:snapshot/reset-current-epoch-app-db (tools.coll/last-in-vec (:match-ids db))]}))
 
 (rf/reg-event-fx
   ::load
@@ -157,7 +157,7 @@
   [(rf/path [:epochs])]
   (fn [epochs _]
     (let [selected-epoch-id (or (get epochs :selected-epoch-id)
-                                (utils/last-in-vec (get epochs :match-ids)))
+                                (tools.coll/last-in-vec (get epochs :match-ids)))
           event-trace      (-> (get-in epochs [:matches-by-id selected-epoch-id :match-info])
                                (metam/matched-event))
           app-db-before    (metam/app-db-before event-trace)

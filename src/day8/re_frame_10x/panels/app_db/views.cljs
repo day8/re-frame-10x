@@ -3,7 +3,6 @@
     [clojure.data]
     [devtools.prefs]
     [devtools.formatters.core]
-    [day8.re-frame-10x.utils.utils                                :as utils]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [em px percent]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass defglobal]]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
@@ -119,6 +118,7 @@
                               :title    "Remove this inspector"
                               :on-click #(rf/dispatch [:app-db/remove-path id])}]]]]]))
 
+(def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
 (defn pod [{:keys [id path open? diff?] :as pod-info}]
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
@@ -170,7 +170,7 @@
                                                          :style {:margin-left styles/gs-7s}
                                                          :attr {:rel "noopener noreferrer"}
                                                          :target "_blank"
-                                                         :href utils/diff-link]]]
+                                                         :href diff-url]]]
                                             [rc/v-box
                                              ;:class "data-viewer data-viewer--top-rule"
                                              :style {:overflow-x "auto"
@@ -187,7 +187,7 @@
                                                          :style {:margin-left styles/gs-7s}
                                                          :attr {:rel "noopener noreferrer"}
                                                          :target "_blank"
-                                                         :href utils/diff-link]]]
+                                                         :href diff-url]]]
                                             [rc/v-box
                                              :class "data-viewer data-viewer--top-rule"
                                              :style {:overflow-x "auto"

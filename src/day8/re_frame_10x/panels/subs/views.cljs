@@ -2,7 +2,6 @@
   (:require
     [day8.re-frame-10x.panels.app-db.views :refer [pod-gap pod-padding border-radius pod-border-edge
                                                    pod-header-section]]
-    [day8.re-frame-10x.utils.utils :as utils]
     [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
@@ -15,6 +14,8 @@
     [clojure.data]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
+    [day8.re-frame-10x.tools.string :as tools.string]
+    [day8.re-frame-10x.panels.app-db.views :as app-db.views]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
     [day8.re-frame-10x.panels.subs.subs :as subs.subs]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color])
@@ -128,7 +129,7 @@
                              :model ignore-unchanged-l2-subs?
                              :label [:span
                                      "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br]
-                                     [rc/link {:label (str "layer 2 " (utils/pluralize- @ignore-unchanged-l2-count "sub"))
+                                     [rc/link {:label (str "layer 2 " (tools.string/pluralize- @ignore-unchanged-l2-count "sub"))
                                                :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
                              :style {:margin-top "6px"}
                              :on-change #(rf/dispatch [:subs/ignore-unchanged-l2-subs? %])]]]]]))
@@ -284,7 +285,7 @@
                                                            :style {:margin-left styles/gs-7s}
                                                            :attr {:rel "noopener noreferrer"}
                                                            :target "_blank"
-                                                           :href utils/diff-link]]]
+                                                           :href app-db.views/diff-url]]]
                                               [rc/v-box
                                                :class  (styles/pod-data ambiance)
                                                ;:class "data-viewer data-viewer--top-rule"
@@ -308,7 +309,7 @@
                                                                    :background-color styles/nord0}
                                                            :attr {:rel "noopener noreferrer"}
                                                            :target "_blank"
-                                                           :href utils/diff-link]]]
+                                                           :href app-db.views/diff-url]]]
                                               [rc/v-box
                                                :class "data-viewer data-viewer--top-rule"
                                                :style {:overflow-x "auto"

@@ -16,7 +16,6 @@
     [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.components :as components]
     [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.utils.utils :as utils]
     [day8.re-frame-10x.fx.clipboard :as clipboard]
     [day8.re-frame-10x.panels.event.subs :as event.subs]
     [day8.re-frame-10x.panels.event.events :as event.events]

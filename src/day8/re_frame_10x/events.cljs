@@ -4,7 +4,6 @@
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
     [day8.re-frame-10x.tools.edn :as tools.edn]
-    [day8.re-frame-10x.utils.utils :as utils :refer [spy]]
     [day8.re-frame-10x.fx.local-storage :as local-storage]
     [day8.re-frame-10x.panels.traces.events :as traces.events]
     [reagent.impl.batching :as batching]
@@ -21,7 +20,8 @@
     [day8.re-frame-10x.metamorphic :as metam]
     [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
     [day8.re-frame-10x.panels.settings.events :as settings.events]
-    [day8.re-frame-10x.panels.app-db.events :as app-db.events]))
+    [day8.re-frame-10x.panels.app-db.events :as app-db.events]
+    [day8.re-frame-10x.tools.coll :as tools.coll]))
 
 (rf/reg-event-fx
   ::init
@@ -471,7 +471,7 @@
       (let [epochs   (:epochs db)
             match-id (or new-id
                          ;; new-id may be nil when we call this event from :settings/play
-                         (utils/last-in-vec (get epochs :match-ids)))
+                         (tools.coll/last-in-vec (get epochs :match-ids)))
             match    (get-in epochs [:matches-by-id match-id])
             event    (metam/matched-event (:match-info match))]
         ;; Don't mess up the users app if there is a problem getting app-db-after.
