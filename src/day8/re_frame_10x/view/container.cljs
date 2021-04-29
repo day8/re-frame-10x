@@ -10,7 +10,7 @@
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
     [day8.re-frame-10x.epochs.views :as epochs]
     [day8.re-frame-10x.components :as components]
-    [day8.re-frame-10x.view.app-db :as app-db]
+    [day8.re-frame-10x.app-db.views :as app-db]
     [day8.re-frame-10x.subs.views :as subs]
     [day8.re-frame-10x.view.fx :as fx]
     [day8.re-frame-10x.view.debug :as debug]

@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.view.app-db
+(ns day8.re-frame-10x.app-db.views
   (:require
     [clojure.data]
     [devtools.prefs]
