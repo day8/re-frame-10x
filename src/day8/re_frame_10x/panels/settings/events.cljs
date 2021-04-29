@@ -1,7 +1,8 @@
 (ns day8.re-frame-10x.panels.settings.events
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.fx.local-storage :as local-storage]))
+    [day8.re-frame-10x.fx.local-storage :as local-storage]
+    [day8.re-frame-10x.tools.reader.edn :as reader.edn]))
 
 (rf/reg-event-db
   ::panel-width%
@@ -52,6 +53,40 @@
   [(rf/path [:settings :syntax-color-scheme]) rf/trim-v (local-storage/after "syntax-color-scheme")]
   (fn [_ [syntax-color-scheme]]
     syntax-color-scheme))
+
+(def filtered-view-trace-interceptors
+  [(rf/path [:settings :filtered-view-trace])
+   rf/trim-v
+   (local-storage/after "filtered-view-trace")])
+
+(rf/reg-event-db
+  ::add-filtered-view-trace
+  filtered-view-trace-interceptors
+  (fn [filtered-view-trace _]
+    (let [id (random-uuid)]
+      (assoc filtered-view-trace id {:id id :ns-str "" :ns nil :sort (js/Date.now)}))))
+
+(rf/reg-event-db
+  ::remove-filtered-view-trace
+  filtered-view-trace-interceptors
+  (fn [filtered-view-trace [id]]
+    (dissoc filtered-view-trace id)))
+
+(rf/reg-event-db
+  ::update-filtered-view-trace
+  filtered-view-trace-interceptors
+  (fn [filtered-view-trace [id ns-str]]
+    ;; TODO: this won't inform users if they type bad strings in.
+    (let [event (reader.edn/read-string-maybe ns-str)]
+      (-> filtered-view-trace
+          (assoc-in [id :ns-str] ns-str)
+          (update-in [id :ns] (fn [old-event] (if event event old-event)))))))
+
+(rf/reg-event-db
+  ::set-filtered-view-trace
+  filtered-view-trace-interceptors
+  (fn [_ [ignored-events]]
+    ignored-events))
 
 (def low-level-trace-interceptors
   [(rf/path [:settings :low-level-trace])

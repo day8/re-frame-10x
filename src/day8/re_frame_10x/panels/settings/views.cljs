@@ -182,7 +182,7 @@
                                :label [rc/v-box
                                        :align :center
                                        :children ["+ namespace"]]
-                               :on-click #(rf/dispatch [:settings/add-filtered-view-trace])]]]
+                               :on-click #(rf/dispatch [::settings.events/add-filtered-view-trace])]]]
                   [rc/v-box
                    :width comp-section-width
                    :gap vertical-gap
@@ -192,8 +192,8 @@
                                [closeable-text-box
                                 :model (:ns-str item)
                                 :width "343px"
-                                :on-close #(rf/dispatch [:settings/remove-filtered-view-trace id])
-                                :on-change #(rf/dispatch [:settings/update-filtered-view-trace id %])])]]
+                                :on-close #(rf/dispatch [::settings.events/remove-filtered-view-trace id])
+                                :on-change #(rf/dispatch [::settings.events/update-filtered-view-trace id %])])]]
                  [[:p "Sometimes you want to focus on your own views, and the trace associated with library views is just noise."]
                   [:p "Nominate one or more namespaces."]]
                  settings-box-131])
