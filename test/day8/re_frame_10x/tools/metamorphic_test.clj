@@ -1,6 +1,6 @@
-(ns day8.re-frame-10x.metamorphic-test
+(ns day8.re-frame-10x.tools.metamorphic-test
   (:require [clojure.test :refer :all])
-  (:require [day8.re-frame-10x.metamorphic :as m]))
+  (:require [day8.re-frame-10x.tools.metamorphic :as m]))
 
 (defn trace-events [file]
   (->> (slurp (str "test-resources/" file))

@@ -20,7 +20,7 @@
     [day8.re-frame-10x.panels.event.subs :as event.subs]
     [day8.re-frame-10x.panels.event.events :as event.events]
     [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
-    [day8.re-frame-10x.utils.pretty-print-condensed :as pp]))
+    [day8.re-frame-10x.tools.pretty-print-condensed :as pp]))
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)

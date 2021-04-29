@@ -1,6 +1,6 @@
 (ns ^{:doc    "Utilities for pretty-printing abbreviated Clojure forms"
       :author "Matthew Huebert"}
-  day8.re-frame-10x.utils.pretty-print-condensed
+  day8.re-frame-10x.tools.pretty-print-condensed
   (:refer-clojure :exclude [pr-seq-writer string-print pr-str-with-opts pr-opts pr])
   (:require [clojure.string :as str]
             [goog.string :as gstring])
@@ -274,5 +274,5 @@
 (comment (defn testit []
            (dotimes [i 5]
              (time
-               (pr-str-truncated 200 @day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.db/app-db)))
-           (pr-str-truncated 200 "=>" @day8.re-frame-10x.inlined-deps.re-frame.v0v10v9.re-frame.db/app-db)))
+               (pr-str-truncated 200 @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db)))
+           (pr-str-truncated 200 "=>" @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db)))

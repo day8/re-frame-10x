@@ -17,7 +17,7 @@
     [day8.re-frame-10x.svgs :as svgs]
     [day8.re-frame-10x.components.re-com :as rc]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
+    [day8.re-frame-10x.tools.pretty-print-condensed :as pp]
     [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
     [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]

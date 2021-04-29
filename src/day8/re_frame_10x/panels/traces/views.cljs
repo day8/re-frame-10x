@@ -10,7 +10,7 @@
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
     [day8.re-frame-10x.components :as components]
-    [day8.re-frame-10x.utils.pretty-print-condensed :as pp]
+    [day8.re-frame-10x.tools.pretty-print-condensed :as pp]
     [clojure.string :as string]
     [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]))
