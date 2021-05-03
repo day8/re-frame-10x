@@ -14,7 +14,10 @@
         component-name    (get-in trace [:tags :component-name] "")]
     (if-not render-operation?
       true
-      (not (string/includes? component-name "devtools outer")))))
+      (not
+        (and
+          (string? component-name)
+          (string/includes? component-name "devtools outer"))))))
 
 (defn first-match-id
   [m]
