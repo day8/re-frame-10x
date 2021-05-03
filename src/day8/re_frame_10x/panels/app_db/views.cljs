@@ -5,17 +5,18 @@
     [devtools.formatters.core]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [em px percent]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.components.buttons :as buttons]
+    [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.components.re-com :as rc :refer [close-button css-join]]
     [day8.re-frame-10x.svgs :as svgs]
     [day8.re-frame-10x.material :as material]
     [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
     [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.panels.app-db.subs :as app-db.subs]
     [day8.re-frame-10x.panels.app-db.events :as app-db.events]
-    [day8.re-frame-10x.components.buttons :as buttons])
+    [day8.re-frame-10x.panels.app-db.subs :as app-db.subs]
+    [day8.re-frame-10x.tools.coll :as tools.coll])
   (:require-macros
     [day8.re-frame-10x.components.re-com :refer [handler-fn]]))
 
@@ -125,8 +126,6 @@
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])]
     [rc/v-box
-     #_#_:style {:margin-bottom pod-gap
-                 :margin-right  "1px"}
      :children [[pod-header pod-info]
                 [rc/v-box
                  :class (when open? (styles/pod-border ambiance))
@@ -137,24 +136,8 @@
                                        :overflow-x "auto"
                                        :overflow-y "hidden"}
                                :children [[cljs-devtools/simple-render
-                                           (get-in @app-db-after path)
-                                           ["app-db-path" path]
-
-                                           #_{:todos [1 2 3]}
-                                           #_(get-in @app-db path)
-                                           #_[rc/h-box
-                                              :align :center
-                                              :children [[:button.subtree-button
-                                                          [:span.subtree-button-string
-                                                           (str path)]]
-                                                         [:img
-                                                          {:src      (str "data:image/svg+xml;utf8," delete)
-                                                           :style    {:cursor "pointer"
-                                                                      :height "10px"}
-                                                           :on-click #(rf/dispatch [::app-db.events/remove-path path])}]]]
-                                           #_[path]]
-
-                                          #_"---main-section---"]])
+                                           (tools.coll/get-in-with-lists @app-db-after path)
+                                           ["app-db-path" path]]]])
                             (when render-diff?
                               (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
                                     [diff-before diff-after _] (when render-diff?
@@ -165,14 +148,12 @@
                                              :class    (styles/app-db-inspector-link ambiance)
                                              :justify  :end
                                              :children [[rc/hyperlink-href
-                                                         ;:class  "app-db-path--label"
                                                          :label "ONLY BEFORE"
                                                          :style {:margin-left styles/gs-7s}
                                                          :attr {:rel "noopener noreferrer"}
                                                          :target "_blank"
                                                          :href diff-url]]]
                                             [rc/v-box
-                                             ;:class "data-viewer data-viewer--top-rule"
                                              :style {:overflow-x "auto"
                                                      :overflow-y "hidden"}
                                              :children [[cljs-devtools/simple-render
@@ -189,7 +170,6 @@
                                                          :target "_blank"
                                                          :href diff-url]]]
                                             [rc/v-box
-                                             :class "data-viewer data-viewer--top-rule"
                                              :style {:overflow-x "auto"
                                                      :overflow-y "hidden"}
                                              :children [[cljs-devtools/simple-render

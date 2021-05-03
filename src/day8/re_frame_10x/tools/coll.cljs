@@ -36,3 +36,14 @@
           (dissoc m k)))
       m)
     (dissoc m k)))
+
+(defn get-in-with-lists
+  "cljs.core/get-in with support for index access of lists."
+  [m ks]
+  (reduce
+    (fn [ret k]
+      (if (list? ret)
+        (nth ret k)
+        (get ret k)))
+    m
+    ks))
