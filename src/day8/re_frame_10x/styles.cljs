@@ -53,6 +53,7 @@
 (def gs-50 (px 50))
 (def gs-81 (px 81))
 (def gs-131 (px 131))
+(def gs-212 (px 212))
 
 (def gs-2s (render-css gs-2))
 (def gs-5s (render-css gs-5))
@@ -63,6 +64,7 @@
 (def gs-50s (render-css gs-50))
 (def gs-81s (render-css gs-81))
 (def gs-131s (render-css gs-131))
+(def gs-212s (render-css gs-212))
 
 (def font-stack ["\"Segoe UI\"" "Roboto" "Helvetica" "sans-serif"])
 

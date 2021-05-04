@@ -186,7 +186,8 @@
 (defclass table-style
   [ambiance]
   {:composes   (styles/frame-1 ambiance)
-   :width      (percent 100)})
+   :width      (percent 100)
+   :overflow   :hidden})
 
 (defclass table-header-expansion-style
   [ambiance]
@@ -241,7 +242,8 @@
           [material/arrow-drop-down]
           [material/arrow-right])]
        [rc/box
-        :size  "1"
+        :size  "2"
+        :min-width styles/gs-212s
         :attr  {:on-click
                 (fn [ev]
                   (rf/dispatch [::traces.events/add-query (name op-type) :contains])
@@ -249,7 +251,8 @@
         :child
         [:span (str op-type)]]
        [rc/h-box
-        :size "1"
+        :size "2"
+        :min-width styles/gs-212s
         :attr {:on-click
                (fn [ev]
                  (rf/dispatch [::traces.events/add-query (name op-name) :contains])
@@ -264,6 +267,7 @@
                  (pp/truncate-string :middle 40))])]]
        [rc/box
         :size "1"
+        :min-width styles/gs-81s
         :child
         (if debug?
           [:span (:reaction (:tags trace)) "/" id]
@@ -286,7 +290,7 @@
         traces              @(rf/subscribe [::traces.subs/sorted])
         {:keys [show-all?]} #(rf/subscribe [::traces.subs/expansions])]
     [rc/h-box
-     :size     "1"
+     :height   styles/gs-31s
      :children
      [[rc/box
        :class   (table-header-expansion-style ambiance)
@@ -298,24 +302,36 @@
                   [material/unfold-less]
                   [material/unfold-more])]
       [rc/box
-       :class   (table-header-style ambiance)
-       :align   :center
-       :justify :center
-       :size   "1"
-       :height styles/gs-31s
-       :child  [rc/label :label "operations"]]
+       :class     (table-header-style ambiance)
+       :align     :center
+       :justify   :center
+       :size      "2"
+       :min-width styles/gs-212s
+       :height    styles/gs-31s
+       :child     [rc/label :label "operations"]]
       [rc/box
-       :class   (table-header-style ambiance)
-       :align   :center
-       :justify :center
-       :size  "1"
-       :child [rc/label :label (str (count traces) " traces")]]
+       :class     (table-header-style ambiance)
+       :align     :center
+       :justify   :center
+       :size      "2"
+       :min-width styles/gs-212s
+       :child     [rc/label :label (str (count traces) " traces")]]
       [rc/box
-       :class   (table-header-style ambiance)
-       :align   :center
-       :justify :center
-       :size  "1"
-       :child [rc/label :label "meta"]]]]))
+       :class     (table-header-style ambiance)
+       :align     :center
+       :justify   :center
+       :size      "1"
+       :min-width styles/gs-81s
+       :child     [rc/label :label "meta"]]
+      [rc/box
+       :class (table-header-style ambiance)
+       :width "17px" ;; y scrollbar width
+       :child ""]]]))
+
+(defclass table-body-style
+  [ambiance]
+  {:overflow-x :auto
+   :overflow-y :scroll})
 
 (defn table
   []
@@ -325,17 +341,22 @@
      :size     "1"
      :class    (table-style ambiance)
      :children
-     (into
-       [[table-header]]
-       (->> traces (map (fn [trace] [table-row trace]))))]))
+     [[table-header]
+      [rc/v-box
+       :size     "1"
+       :class    (table-body-style ambiance)
+       :children
+       (into [] (->> traces (map (fn [trace] [table-row trace]))))]]]))
 
 (defclass panel-style
   []
-  {:margin-right styles/gs-5})
+  {:margin-right styles/gs-5
+   :overflow     :hidden})
 
 (defn panel
   []
   [rc/v-box
+   :size     "1"
    :class    (panel-style)
    :align    :start
    :gap      styles/gs-19s
