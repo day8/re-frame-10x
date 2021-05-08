@@ -1,12 +1,12 @@
 (ns day8.re-frame-10x.navigation.epochs.events
   (:require
-    [clojure.string :as string]
+    [clojure.string                                               :as string]
     [re-frame.core]
     [re-frame.db]
     [re-frame.trace]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.tools.metamorphic :as metam]
-    [day8.re-frame-10x.tools.coll :as tools.coll]))
+    [day8.re-frame-10x.tools.metamorphic                          :as metam]
+    [day8.re-frame-10x.tools.coll                                 :as tools.coll]))
 
 (defn log-trace? [trace]
   (let [render-operation? (or (= (:op-type trace) :render)

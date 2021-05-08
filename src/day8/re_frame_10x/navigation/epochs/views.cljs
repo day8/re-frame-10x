@@ -142,8 +142,6 @@
     :title    "Settings"
     :on-click #(rf/dispatch [::settings.events/toggle])}])
 
-
-
 (defn ambiance-button
   []
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
@@ -155,32 +153,3 @@
                "Dark ambiance"
                "Bright ambiance")
       :on-click #(rf/dispatch [::settings.events/set-ambiance (if (= ambiance :bright) :dark :bright)])}]))
-
-(defn right-buttons
-  [external-window?]
-  [rc/h-box
-   :gap      styles/gs-12s
-   :style    {:margin-right styles/gs-5s}
-   :children [#_[ambiance-button] ;; [IJ] TODO: :dark ambiance theme is unfinished, so disabled for now.
-              [settings-button]
-              [buttons/popout external-window?]]])
-
-(defclass navigation-style
-  [ambiance]
-  {:composes (styles/navigation-border-bottom ambiance)}
-  [:.rc-label
-   {:padding-left styles/gs-19s}])
-
-(defn navigation
-  [external-window?]
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-    [rc/v-box
-     :children [[rc/h-box
-                 :class    (navigation-style ambiance)
-                 :align    :center
-                 :height   styles/gs-31s
-                 :gap      styles/gs-19s
-                 :children [[rc/label :label "Event History"]
-                            [left-buttons]
-                            [right-buttons external-window?]]]
-                [epochs]]]))

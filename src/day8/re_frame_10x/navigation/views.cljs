@@ -215,16 +215,38 @@
      :class    (tab-content-style ambiance selected-tab)   ;;"tab-wrapper"
      :size     "1"
      :children [(case selected-tab
-                  :event [event.views/panel]
-                  :fx [fx.views/panel]
-                  :app-db [app-db.views/panel db/app-db]
-                  :subs [subs.views/panel]
-                  :timing [timing.views/panel]
-                  :traces [traces.views/panel]
-                  :debug [debug.views/render]
+                  :event    [event.views/panel]
+                  :fx       [fx.views/panel]
+                  :app-db   [app-db.views/panel db/app-db]
+                  :subs     [subs.views/panel]
+                  :timing   [timing.views/panel]
+                  :traces   [traces.views/panel]
+                  :debug    [debug.views/render]
                   :settings [settings.views/render]
+                            [app-db.views/panel db/app-db])]]))
 
-                  [app-db.views/panel db/app-db])]]))
+(defn settings-button
+  []
+  [buttons/icon
+   {:icon     [material/settings]
+    :title    "Settings"
+    :on-click #(rf/dispatch [::settings.events/toggle])}])
+
+(declare mount)
+
+(defn popout-button
+  [external-window?]
+  (when-not external-window?
+    [buttons/icon
+     {:icon     [material/open-in-new]
+      :title    "Pop out"
+      :on-click #(rf/dispatch-sync [::navigation.events/launch-external mount])}]))
+
+(defclass navigation-style
+  [ambiance]
+  {:composes (styles/navigation-border-bottom ambiance)}
+  [:.rc-label
+   {:padding-left styles/gs-19s}])
 
 (defclass devtools-inner-style
   [ambiance]
@@ -238,14 +260,43 @@
     [rc/v-box
      :class    (devtools-inner-style ambiance)
      :width    "100%"
-     :children [(if-not showing-settings?
-                  [:<>
-                   [epochs.views/navigation external-window?]
-                   [tab-buttons {:debug? debug?}]]
-                  [settings.views/navigation external-window?])
-                [warnings external-window?]
-                [errors external-window?]
-                [tab-content]]]))
+     :children
+     [(if-not showing-settings?
+        [:<>
+         [rc/v-box
+          :children
+          [[rc/h-box
+            :class   (navigation-style ambiance)
+            :align   :center
+            :height  styles/gs-31s
+            :gap     styles/gs-19s
+            :children
+            [[rc/label :label "Event History"]
+             [epochs.views/left-buttons]
+             [rc/h-box
+              :gap      styles/gs-12s
+              :style    {:margin-right styles/gs-5s}
+              :children [[settings-button]
+                         [popout-button external-window?]]]]]
+           [epochs.views/epochs]]]
+         [tab-buttons {:debug? debug?}]]
+        [rc/h-box
+         :class   (navigation-style ambiance)
+         :align   :center
+         :justify :between
+         :height  styles/gs-31s
+         :gap     styles/gs-19s
+         :children
+         [[rc/label :label "Settings"]
+          [rc/h-box
+           :gap   styles/gs-12s
+           :style {:margin-right styles/gs-19s}
+           :children
+           [[settings.views/done-button]
+            [popout-button external-window?]]]]])
+      [warnings external-window?]
+      [errors external-window?]
+      [tab-content]]]))
 
 
 

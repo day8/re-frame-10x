@@ -32,33 +32,6 @@
       :label    "Done"
       :on-click #(rf/dispatch [::settings.events/toggle])}]))
 
-(defn right-buttons
-  [external-window?]
-  [rc/h-box
-   :gap      styles/gs-12s
-   :style    {:margin-right styles/gs-19s}
-   :children [[done-button]
-              [buttons/popout external-window?]]])
-
-(defclass navigation-style
-  [ambiance]
-  {:composes (styles/navigation-border-bottom ambiance)}
-  [:.rc-label
-   {:padding-left styles/gs-19s}])
-
-(defn navigation
-  [external-window?]
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-    [rc/h-box
-     :class    (navigation-style ambiance)
-     :align    :center
-     :justify  :between
-     :height   styles/gs-31s
-     :gap      styles/gs-19s
-     :children [[rc/label :label "Settings"]
-                [right-buttons external-window?]]]))
-
-
 (defn closeable-text-box
   [& {:keys [model width on-close on-change]}]
   [rc/h-box

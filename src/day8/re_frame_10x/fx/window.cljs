@@ -1,13 +1,14 @@
 (ns day8.re-frame-10x.fx.window
   (:require
     [goog.object                                                  :as gobj]
+    [goog.string                                                  :as gstring]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
 
 (defn open-debugger-window
   "Originally copied from re-frisk.devtool/open-debugger-window"
-  [{:keys [width height top left on-load on-success on-failure] :as dimensions}]
+  [{:keys [width height top left on-load on-success on-failure]}]
   (let [doc-title        js/document.title
-        new-window-title (goog.string/escapeString (str "re-frame-10x | " doc-title))
+        new-window-title (gstring/escapeString (str "re-frame-10x | " doc-title))
         new-window-html  (str "<head><title>"
                               new-window-title
                               "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")]
