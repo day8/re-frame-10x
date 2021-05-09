@@ -2,21 +2,42 @@
   (:require
     [goog.object                                                  :as gobj]
     [goog.string                                                  :as gstring]
+    [clojure.string                                               :as string]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
+
+(defn m->str
+  [m]
+  (->> m
+       (reduce (fn [ret [k v]]
+                 (let [k (if (keyword? k) (name k) k)
+                       v (if (keyword? v) (name v) v)]
+                   (conj ret (str k "=" v))))
+               [])
+       (string/join ",")))
 
 (defn open-debugger-window
   "Originally copied from re-frisk.devtool/open-debugger-window"
   [{:keys [width height top left on-load on-success on-failure]}]
-  (let [doc-title        js/document.title
-        new-window-title (gstring/escapeString (str "re-frame-10x | " doc-title))
-        new-window-html  (str "<head><title>"
-                              new-window-title
-                              "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")]
+  (let [document-title  js/document.title
+        window-title    (gstring/escapeString (str "re-frame-10x | " document-title))
+        window-html     (str "<head><title>"
+                             window-title
+                             "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
+        window-features (m->str
+                          {:width       width
+                           :height      height
+                           :left        left
+                           :top         top
+                           :resizable   :yes
+                           :scrollbars  :yes
+                           :status      :no
+                           :directories :no
+                           :toolbar     :no
+                           :menubar     :no})]
     ;; We would like to set the windows left and top positions to match the monitor that it was on previously, but Chrome doesn't give us
     ;; control over this, it will only position it within the same display that it was popped out on.
-    (if-let [w (js/window.open "about:blank" "re-frame-10x-popout"
-                               (str "width=" width ",height=" height ",left=" left ",top=" top
-                                    ",resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no"))]
+    (if-let [w (js/window.open "about:blank" "re-frame-10x-popout" window-features)]
+
       (let [d (.-document w)]
         ;; We had to comment out the following unmountComponentAtNode as it causes a React exception we assume
         ;; because React says el is not a root container that it knows about.
@@ -26,7 +47,7 @@
         ;(when-let [el (.getElementById d "--re-frame-10x--")]
         ;  (r/unmount-component-at-node el)))
         (.open d)
-        (.write d new-window-html)
+        (.write d window-html)
         (gobj/set w "onload" (partial on-load w d))
         (.close d)
         (rf/dispatch on-success))

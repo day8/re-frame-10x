@@ -10,7 +10,7 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db   :as db]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core    :refer [style]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass defglobal]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
     [day8.re-frame-10x.components.re-com                               :as rc]
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.styles                                     :as styles]

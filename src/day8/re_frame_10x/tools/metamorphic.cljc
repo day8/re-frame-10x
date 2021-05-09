@@ -259,7 +259,7 @@
 
 (defn matched-event [match]
   (->> match
-       (filter event-run?)
+       (filter event-run? #_start-of-epoch?)
        (first)))
 
 (defn app-db-after [event-trace]

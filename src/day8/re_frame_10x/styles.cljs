@@ -6,7 +6,7 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color      :as color :refer [rgb rgba as-hsla opacify transparentize]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :as s]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core          :refer [defclass defglobal]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core          :refer [defclass]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.runtime       :as spade.runtime])
   (:require-macros
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :refer [defpseudoclass
@@ -244,34 +244,6 @@
   [:.hljs-number
    {:color (syntax-color ambiance syntax-color-scheme :float)}])
 
-
-
-
-
-
-
-
-
-
-
-
-
-(defclass unset
-  []
-  {:all :initial}
-  [:h1 :h2 :h3 :h4 :h5 :h6
-   :div :p
-   :pre :code
-   :a :b :i :span
-   :li :ol :ul
-   :br
-   :img
-   :table :tbody :td :tfoot :th :thead :tr
-   :button :input :option :select
-   {:all :unset}
-   [:&:before :&:after
-    {:all :unset}]])
-
 ;; /*! abridged from normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 (defclass normalize
   []
@@ -506,46 +478,6 @@
    {:font-size (px 11)
     :color nord7}])
 
-(defclass filter-style
-  [ambiance]
-  {:box-shadow [[(px -7) (px 15) (px 6) (px -15) (rgba 0 0 0 0.3)]]
-   :z-index 1001}
-  [:input
-   [(s/& ":before")
-    {:display   :inline-block
-     :color     nord0
-     :content   "\"⚲\""
-     :transform "rotate(-45deg)"}]])
-
-(defclass code-fragment
-  [ambiance]
-  {:color             (if (= :bright ambiance) nord0 nord4)
-   :background-color  (background-color-1 ambiance)}
-
-
-  [:.re-frame-10x-code-fragment-content
-   {:border   [[(px 1) :solid nord4]]}]
-  [:.re-frame-10x-code-fragment-button
-   {:display      :none
-    :padding-left gs-7
-    :margin-left  gs-7
-    :border-left  [[(px 1) :solid nord4]]
-    :cursor       :pointer
-    :color        nord7}
-   [:&:hover
-    {:display :grid}]])
-
-(defclass registrar
-  [ambiance]
-  {:background-color (if (= :bright ambiance) nord5 nord0)
-   :color            nord7
-   :list-style      :none
-   :border          [[(px 1) :solid nord4]]
-   :padding         0}
-  [:pre
-   {:padding      gs-12
-    :margin-right gs-12}])
-
 (defclass no-select
   [ambiance]
   {:-webkit-touch-callout :none
@@ -555,62 +487,11 @@
    :-ms-user-select       :none
    :user-select           :none})
 
-(defclass category-filters
-  [ambiance]
-  {:list-style :none
-   :display    :flex
-   :align-items :center
-   :padding    0
-   :color      (if (= :bright ambiance) nord0 nord4)}
-  [:li
-   {:display          :flex
-    :align-items      :center
-    :margin-left      gs-12
-    :cursor           :pointer
-    :background-color (if (= :bright ambiance) nord5 nord1)
-    :border-radius    gs-2
-    :border           [[(px 1) :solid nord4]]
-    :padding          [[gs-5 gs-12]]}
-   [:svg
-    {:margin-right gs-5}]
-   [:&.active
-    :&:hover
-    {:background-color (if (= :bright ambiance) nord6 nord2)
-     :color            (if (= :bright ambiance) nord1 nord5)}
-    [:svg :path
-     {:fill nord7}]]])
-
-(defclass trace-filter-fields
-  [ambiance]
-  {}
-  [:select
-   :input
-   {:border :none
-    :background-color (if (= :bright ambiance) nord6 nord1)
-    :color            (if (= :bright ambiance) nord0 nord6)}]
-  [:.search
-   [:input
-    {:margin-left gs-12}]
-   [:&::before
-    {:content "\"⚲\""
-     :transform "rotate(-45deg)"}]])
-
 (defclass done-button
   [ambiance]
   {:background-color nord13}
   [:&:hover
    {:background-color nord13}])
-
-(defclass trace-item
-  [ambiance op-type]
-  {:color (case op-type
-            :sub/create  nord14
-            :sub/run     nord15
-            :sub/dispose nord11
-            :event       nord12
-            :render      nord8
-            :re-frame.router/fsm-trigger nord10
-            nil)})
 
 (defclass trace-table
   [ambiance]
@@ -619,7 +500,9 @@
   [:thead
    {:background-color nord5}])
 
-(defglobal at-keyframes-styles
+;; [IJ] TODO: fix post shadow-dom
+(defclass at-keyframes-styles
+  []
   (let [slide? false]
     [(at-keyframes :pulse-previous-re-frame-10x
                    [:from (merge {:color "white"}
@@ -645,12 +528,15 @@
 
 (defn inject-popup-styles!
   [document]
-  ;; [IJ] TODO: run! might be more appropriate for side effects...
-  (reduce-kv
-    (fn [_ _ {:keys [id source] :as f}]
+  (run!
+    (fn [[_ {:keys [id source]}]]
       (inject-popup-style! document id source))
-    nil
     @spade.runtime/*injected*)
-  ;; [IJ] TODO: injected new/state update styles for popups:
+
   (add-watch spade.runtime/*injected* :injected
-             (fn [k a old-state new-state])))
+             (fn [k a old-state new-state]
+               (run!
+                 (fn [[k {:keys [id source]}]]
+                   (when-not (contains? old-state k)
+                     (inject-popup-style! document id source)))
+                 new-state))))

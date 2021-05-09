@@ -27,17 +27,19 @@
              (perform-update! obj css))
            (assoc obj :source css))))
 
+(defonce ^:dynamic *dom* (atom nil))
+
 (defn inject! [id css]
-  (let [head (.-head js/document)
+  (let [dom     @*dom*
         element (doto (js/document.createElement "style")
                   (.setAttribute "spade-id" (str id)))
-        obj {:element element
-             :source css
-             :id id}]
-    (assert (some? head)
-            "An head element is required in the dom to inject the style.")
+        obj     {:element element
+                 :source  css
+                 :id      id}]
+    (assert (some? dom)
+            "An element is required in the dom to inject the style.")
 
-    (.appendChild head element)
+    (.appendChild dom element)
 
     (swap! *injected* assoc id obj)
     (perform-update! obj css)))

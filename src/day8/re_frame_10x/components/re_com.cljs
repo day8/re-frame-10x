@@ -4,7 +4,7 @@
   (:require
     [clojure.string :as string]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass]]
     [day8.re-frame-10x.material :as material]))
 
 (defn px
@@ -50,6 +50,14 @@
   (if (every? map? vals)
     (apply merge-with deep-merge vals)
     (last vals)))
+
+(defclass flex-style
+  []
+  {:display :flex})
+
+(defclass inline-flex-style
+  []
+  {:display :flex})
 
 (defn flex-flow-style
   "A cross-browser helper function to output flex-flow with all it's potential browser prefixes"
@@ -180,7 +188,7 @@
                    children)]
     (into [:div
            (merge
-             {:class (str "rc-h-box display-flex " class) :style s}
+             {:class (str "rc-h-box " (flex-style) " " class) :style s}
              attr)]
           children)))
 
@@ -214,7 +222,7 @@
                    children)]
     (into [:div
            (merge
-             {:class (str "rc-v-box display-flex " class) :style s}
+             {:class (str "rc-v-box " (flex-style) " " class) :style s}
              attr)]
           children)))
 
@@ -262,7 +270,7 @@
             style)]
     [:div
      (merge
-       {:class (str class-name "display-flex " class) :style s}
+       {:class (str class-name " " (flex-style) " " class) :style s}
        attr)
      child]))
 
@@ -393,7 +401,7 @@
   [& {:keys [label on-click width class style attr]
       :as   args}]
   [box
-   :class "rc-label-wrapper display-inline-flex"
+   :class (str "rc-label-wrapper " (inline-flex-style))
    :width width
    :align :start
    :child [:span
@@ -454,7 +462,7 @@
         (when disabled?
           (reset! showing? false))
         [box ;; Wrapper box is unnecessary but keeps the same structure as the re-com button
-         :class "rc-button-wrapper display-inline-flex"
+         :class (str "rc-button-wrapper " (inline-flex-style))
          :align :start
          :child the-button]))))
 
@@ -484,7 +492,7 @@
                                   attr)
                                 label]]]
         [box
-         :class "rc-hyperlink-wrapper display-inline-flex"
+         :class (str "rc-hyperlink-wrapper " (inline-flex-style))
          :align :start
          :child the-button]))))
 
@@ -513,7 +521,7 @@
                         label]]
 
         [box
-         :class "rc-hyperlink-href-wrapper display-inline-flex"
+         :class (str "rc-hyperlink-href-wrapper " (inline-flex-style))
          :align :start
          :child the-button]))))
 
@@ -634,7 +642,4 @@
   e.g. {:padding (css-join common/gs-12s (px 25))}"
   (clojure.string/join " " args))
 
-(defglobal re-com-css
-  [:#--re-frame-10x--
-   [:.display-flex {:display "flex"}]
-   [:.display-inline-flex {:display "flex"}]])
+

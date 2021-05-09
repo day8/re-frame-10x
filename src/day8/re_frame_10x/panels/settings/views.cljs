@@ -3,7 +3,7 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core  :as rf]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units    :refer [px px* px-]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :refer [render-css]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core        :refer [defclass defglobal]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core        :refer [defclass]]
     [day8.re-frame-10x.components.buttons                          :as buttons]
     [day8.re-frame-10x.components.re-com                           :as rc :refer [css-join]]
     [day8.re-frame-10x.navigation.epochs.events                    :as epochs.events]

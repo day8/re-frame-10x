@@ -7,7 +7,7 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core :refer [css style]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass defglobal]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass]]
     [day8.re-frame-10x.tools.pretty-print-condensed :as pp]
     [day8.re-frame-10x.components.buttons :as buttons]
     [day8.re-frame-10x.components.hyperlinks :as hyperlinks]

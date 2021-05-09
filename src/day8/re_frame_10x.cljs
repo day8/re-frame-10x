@@ -3,6 +3,7 @@
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.runtime    :as spade.runtime]
     [day8.reagent.impl.batching                                   :refer [patch-next-tick]]
     [day8.reagent.impl.component                                  :refer [patch-wrap-funs patch-custom-wrapper]]
     [day8.re-frame-10x.events                                     :as events]
@@ -81,13 +82,13 @@
                                                         ""
                                                         ease-transition)]
                                    [rc/box
-                                    :class "panel-wrapper"
-                                    :width "0px"
+                                    :class  (styles/normalize)
+                                    :width  "0px"
                                     :height "0px"
-                                    :style {:position "fixed"
-                                            :top      "0px"
-                                            :left     "0px"
-                                            :z-index  99999999}
+                                    :style  {:position "fixed"
+                                             :top      "0px"
+                                             :left     "0px"
+                                             :z-index  99999999}
                                     :child [rc/h-box
                                             :class "panel"
                                             :width (str (* 100 @panel-width%) "%")
@@ -104,19 +105,7 @@
                                                        [container/devtools-inner opts]]]]))})))
 
 
-(defn panel-div []
-  (let [id    "--re-frame-10x--"
-        panel (.getElementById js/document id)]
-    (if panel
-      panel
-      (let [new-panel (.createElement js/document "div")]
-        (.setAttribute new-panel "id" id)
-        (.setAttribute new-panel "class" (str
-                                           #_(styles/unset) " "
-                                           (styles/normalize)))
-        (.appendChild (.-body js/document) new-panel)
-        (js/window.focus new-panel)
-        new-panel))))
+
 
 
 
@@ -133,20 +122,36 @@
 
 ;; --- NEW ---
 
+(defn panel-div []
+  (let [id        "--re-frame-10x--"
+        container (.getElementById js/document id)]
+    (if container
+      (.-shadowRoot container)
+      (let [body        (.-body js/document)
+            container   (.createElement js/document "div")
+            shadow-root (.attachShadow container #js {:mode "open"})]
+        (reset! spade.runtime/*dom* shadow-root)
+        (.setAttribute container "id" id)
+        #_(.setAttribute new-panel "class" (styles/normalize))
+        (.appendChild body container)
+        (js/window.focus container)
+        shadow-root))))
+
+(defn inject!
+  []
+  (rf/clear-subscription-cache!)
+  (let [container (panel-div)]
+    (rdom/render
+      [devtools-outer
+       {:panel-type :inline
+        :debug?     debug?}] container)))
+
 (defn patch!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
   []
   (patch-custom-wrapper)
   (patch-wrap-funs)
   (patch-next-tick))
-
-(defn inject!
-  []
-  (rf/clear-subscription-cache!)
-  (rdom/render
-    [devtools-outer
-     {:panel-type :inline
-      :debug?     debug?}] (panel-div)))
 
 (defn init!
   []
