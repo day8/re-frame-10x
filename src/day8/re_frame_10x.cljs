@@ -6,6 +6,7 @@
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.runtime    :as spade.runtime]
     [day8.reagent.impl.batching                                   :refer [patch-next-tick]]
     [day8.reagent.impl.component                                  :refer [patch-wrap-funs patch-custom-wrapper]]
+    [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]
     [day8.re-frame-10x.events                                     :as events]
     [day8.re-frame-10x.components.re-com                          :as rc]
     [day8.re-frame-10x.navigation.views                           :as container]
@@ -82,7 +83,6 @@
                                                         ""
                                                         ease-transition)]
                                    [rc/box
-                                    :class  (styles/normalize)
                                     :width  "0px"
                                     :height "0px"
                                     :style  {:position "fixed"
@@ -90,7 +90,6 @@
                                              :left     "0px"
                                              :z-index  99999999}
                                     :child [rc/h-box
-                                            :class "panel"
                                             :width (str (* 100 @panel-width%) "%")
                                             :height "100%"
                                             :style {:position   "fixed"
@@ -122,25 +121,12 @@
 
 ;; --- NEW ---
 
-(defn panel-div []
-  (let [id        "--re-frame-10x--"
-        container (.getElementById js/document id)]
-    (if container
-      (.-shadowRoot container)
-      (let [body        (.-body js/document)
-            container   (.createElement js/document "div")
-            shadow-root (.attachShadow container #js {:mode "open"})]
-        (reset! spade.runtime/*dom* shadow-root)
-        (.setAttribute container "id" id)
-        #_(.setAttribute new-panel "class" (styles/normalize))
-        (.appendChild body container)
-        (js/window.focus container)
-        shadow-root))))
+
 
 (defn inject!
   []
   (rf/clear-subscription-cache!)
-  (let [container (panel-div)]
+  (let [container (tools.shadow-dom/shadow-root js/document "--re-frame-10x--")]
     (rdom/render
       [devtools-outer
        {:panel-type :inline

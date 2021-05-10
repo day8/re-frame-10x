@@ -22,7 +22,7 @@
         window-title    (gstring/escapeString (str "re-frame-10x | " document-title))
         window-html     (str "<head><title>"
                              window-title
-                             "</title></head><body style=\"margin: 0px;\"><div id=\"--re-frame-10x--\" class=\"external-window\"></div></body>")
+                             "</title></head><body style=\"margin: 0px;\"></body>")
         window-features (m->str
                           {:width       width
                            :height      height

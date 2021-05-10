@@ -182,41 +182,41 @@
                               :pink)
       :field                (syntax-color ambiance syntax-color-scheme :type)
       :basis                (syntax-color ambiance syntax-color-scheme :type)
-      :meta (rgb 255 102 0)
-      :meta-text (rgb 238 238 238)
-      :protocol (rgb 41 59 163)
-      :method (rgb 41 59 163) ;; protocol
-      :ns (rgb 150 150 150)
-      :native (rgb 255 0 255)
-      :fn (rgb 30 130 30)
-      :lambda (rgb 30 130 30) ;; fn
-      :fn-args (rgb 170 130 20)
-      :custom-printing (rgb 255 255 200)
-      :circular-ref (rgb 255 0 0)
-      :nil (rgb 128 128 128)
-      :keyword (rgb  136 19 145)
-      :integer (rgb 28 0 207)
-      :float (rgb 28 136 207)
-      :float-nan (rgb 213 60 27)
-      :float-infinity (rgb 28 80 207)
-      :string (if (= :cljs-devtools syntax-color-scheme)
-                (rgb 196 26 22) nord14)
-      :expanded-string (rgb 255 100 100)
-      :symbol (if (= :cljs-devtools syntax-color-scheme)
-                (rgb 0 0 0) nord8)
-      :bool (rgb 0 153 153)
-      :fast-protocol (rgb 255 255 170)
-      :slow-protocol (rgb 238 238 238)
-      :more (rgb 255 255 255)
-      :more-background (rgb 153 153 153)
-      :index (rgb 0 0 0)
-      :index-background (rgb 221 221 221)
-      :field-spacer (rgb 204 204 204)
+      :meta                 (rgb 255 102 0)
+      :meta-text            (rgb 238 238 238)
+      :protocol             (rgb 41 59 163)
+      :method               (rgb 41 59 163) ;; protocol
+      :ns                   (rgb 150 150 150)
+      :native               (rgb 255 0 255)
+      :fn                   (rgb 30 130 30)
+      :lambda               (rgb 30 130 30) ;; fn
+      :fn-args              (rgb 170 130 20)
+      :custom-printing      (rgb 255 255 200)
+      :circular-ref         (rgb 255 0 0)
+      :nil                  (rgb 128 128 128)
+      :keyword              (rgb  136 19 145)
+      :integer              (rgb 28 0 207)
+      :float                (rgb 28 136 207)
+      :float-nan            (rgb 213 60 27)
+      :float-infinity       (rgb 28 80 207)
+      :string               (if (= :cljs-devtools syntax-color-scheme)
+                              (rgb 196 26 22) nord14)
+      :expanded-string      (rgb 255 100 100)
+      :symbol               (if (= :cljs-devtools syntax-color-scheme)
+                              (rgb 0 0 0) nord8)
+      :bool                 (rgb 0 153 153)
+      :fast-protocol        (rgb 255 255 170)
+      :slow-protocol        (rgb 238 238 238)
+      :more                 (rgb 255 255 255)
+      :more-background      (rgb 153 153 153)
+      :index                (rgb 0 0 0)
+      :index-background     (rgb 221 221 221)
+      :field-spacer         (rgb 204 204 204)
       :native-reference-background (rgb 255 255 255)
-      :body-border (rgba 60 90 60 0.1)
-      :expanded-string-background (rgba 255 100 100 0.98) ;;expanded-string 0.4
-      :expanded-string-border (rgba 255 100 100 0.6) ;; expanded-string 0.4
-      :custom-printing-background (rgb 255 255 200) ;; custom-printing
+      :body-border                 (rgba 60 90 60 0.1)
+      :expanded-string-background  (rgba 255 100 100 0.98) ;;expanded-string 0.4
+      :expanded-string-border      (rgba 255 100 100 0.6) ;; expanded-string 0.4
+      :custom-printing-background  (rgb 255 255 200) ;; custom-printing
       nil)))
 
 (defclass code
@@ -248,7 +248,8 @@
 (defclass normalize
   []
   {:line-height              (em 1.15)
-   :-webkit-text-size-adjust (percent 100)}
+   :-webkit-text-size-adjust (percent 100)
+   :font-family              font-stack}
 
   [:h1
    {:font-size (em 2)
@@ -517,26 +518,3 @@
                    [:5% {:margin-left "0px"
                          :opacity     "1"}]
                    [:90% {:opacity "1"}])]))
-
-(defn inject-popup-style!
-  [document id css]
-  (let [head (.-head document)
-        element (doto (js/document.createElement "style")
-                  (.setAttribute "spade-id" (str id)))]
-    (.appendChild head element)
-    (set! (.-innerHTML element) css)))
-
-(defn inject-popup-styles!
-  [document]
-  (run!
-    (fn [[_ {:keys [id source]}]]
-      (inject-popup-style! document id source))
-    @spade.runtime/*injected*)
-
-  (add-watch spade.runtime/*injected* :injected
-             (fn [k a old-state new-state]
-               (run!
-                 (fn [[k {:keys [id source]}]]
-                   (when-not (contains? old-state k)
-                     (inject-popup-style! document id source)))
-                 new-state))))
