@@ -4,36 +4,35 @@
     [re-frame.db :as db]
     [re-frame.trace]
     [reagent.impl.batching                                        :as batching]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core :refer [css style]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass]]
-    [day8.re-frame-10x.tools.pretty-print-condensed :as pp]
-    [day8.re-frame-10x.components.buttons :as buttons]
-    [day8.re-frame-10x.components.hyperlinks :as hyperlinks]
-    [day8.re-frame-10x.components.re-com :as rc]
-    [day8.re-frame-10x.navigation.events :as navigation.events]
-    [day8.re-frame-10x.navigation.subs :as navigation.subs]
-    [day8.re-frame-10x.navigation.epochs.events :as epochs.events]
-    [day8.re-frame-10x.navigation.epochs.subs :as epochs.subs]
-    [day8.re-frame-10x.navigation.epochs.views :as epochs.views]
-    [day8.re-frame-10x.panels.app-db.views :as app-db.views]
-    [day8.re-frame-10x.panels.debug.views :as debug.views]
-    [day8.re-frame-10x.panels.event.views :as event.views]
-    [day8.re-frame-10x.panels.fx.views :as fx.views]
-    [day8.re-frame-10x.panels.settings.events :as settings.events]
-    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.panels.settings.views :as settings.views]
-    [day8.re-frame-10x.panels.subs.views :as subs.views]
-    [day8.re-frame-10x.panels.timing.views :as timing.views]
-    [day8.re-frame-10x.panels.traces.views :as traces.views]
-    [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.svgs :as svgs]
-    [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]))
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core    :refer [css style]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
+    [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]
+    [day8.re-frame-10x.components.buttons                         :as buttons]
+    [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
+    [day8.re-frame-10x.components.re-com                          :as rc]
+    [day8.re-frame-10x.navigation.events                          :as navigation.events]
+    [day8.re-frame-10x.navigation.subs                            :as navigation.subs]
+    [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]
+    [day8.re-frame-10x.navigation.epochs.subs                     :as epochs.subs]
+    [day8.re-frame-10x.navigation.epochs.views                    :as epochs.views]
+    [day8.re-frame-10x.panels.app-db.views                        :as app-db.views]
+    [day8.re-frame-10x.panels.debug.views                         :as debug.views]
+    [day8.re-frame-10x.panels.event.views                         :as event.views]
+    [day8.re-frame-10x.panels.fx.views                            :as fx.views]
+    [day8.re-frame-10x.panels.settings.events                     :as settings.events]
+    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+    [day8.re-frame-10x.panels.settings.views                      :as settings.views]
+    [day8.re-frame-10x.panels.subs.views                          :as subs.views]
+    [day8.re-frame-10x.panels.timing.views                        :as timing.views]
+    [day8.re-frame-10x.panels.traces.views                        :as traces.views]
+    [day8.re-frame-10x.material                                   :as material]
+    [day8.re-frame-10x.svgs                                       :as svgs]
+    [day8.re-frame-10x.styles                                     :as styles]))
 
-(def outer-margins {:margin (str "0px " styles/gs-19s)})
 
 #_(defglobal container-styles
     [:#--re-frame-10x--
@@ -52,12 +51,6 @@
      [:.pulse-next
       {:animation-duration "1000ms"
        :animation-name     "pulse-next-re-frame-10x"}]])
-
-
-
-
-
-
 
 (defn replay-button
   []
@@ -91,6 +84,7 @@
     :border-top     [[(px 1) :solid styles/nord3]]
     :border-left    [[(px 1) :solid styles/nord3]]
     :border-right   [[(px 1) :solid styles/nord3]]
+    :border-bottom  :none
     :border-radius  [[(px 3) (px 3) 0 0]]
     :font-size      (px 14)
     :font-family    styles/font-stack
