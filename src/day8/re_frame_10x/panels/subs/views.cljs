@@ -48,7 +48,7 @@
   (get-in tag-types [type :short] (str type)))
 
 
-(defn sub-color
+(defn sub-type->color
   [type]
   (case type
     :sub/create  styles/nord15
@@ -60,8 +60,8 @@
 (defclass sub-tag-style
   [ambiance type]
   {:color            :#fff
-   :background-color (sub-color type)
-   :border           [[(px 1) :solid (color/darken (sub-color type) 10)]]})
+   :background-color (sub-type->color type)
+   :border           [[(px 1) :solid (color/darken (sub-type->color type) 10)]]})
 
 (defclass sub-tag-short-style
   [ambiance type]
@@ -176,12 +176,7 @@
                             :border-right pod-border-edge}
                  :align    :center
                  :children [[rc/label
-                             :label path]
-                            #_[rc/input-text
-                               :class     (styles/path-text-input-style ambiance)
-                               :width     "100%"
-                               :model     path
-                               :disabled? true]]]
+                             :label path]]]
 
                 [pod-header-section
                  :min-width styles/gs-50s
@@ -236,12 +231,45 @@
                                              :margin-top  "1px"}
                                      :on-change #(rf/dispatch [::subs.events/set-diff-visibility id (not diff?)])]]]]]]))
 
+(defclass sub-message-style
+  []
+  {:font-style :italic
+   :padding    styles/gs-5})
 
-(def no-prev-value-msg [:p {:style {:font-style "italic"}} "No previous value exists to diff"])
-(def unchanged-value-msg [:p {:style {:font-style "italic"}} "Subscription value is unchanged"])
-(def sub-not-run-msg [:p {:style {:font-style "italic"}} "Subscription not run, so no diff is available"])
-(def not-run-yet-msg [rc/label :style {:font-style "italic"} :label "Subscription not run yet, so no value is available"])
+(defn no-previous-value-message []
+  [rc/label :class (sub-message-style) :label "No previous value exists to diff"])
 
+(defn unchanged-value-message
+  []
+  [rc/label :class (sub-message-style) :label "Subscription value is unchanged"])
+
+(defn sub-not-run-message
+  []
+  [rc/label :class (sub-message-style) :label "Subscription not run, so no diff is available"])
+
+(defn not-run-yet-message
+  []
+  [rc/label :class (sub-message-style) :label "Subscription not run yet, so no value is available"])
+
+(defclass sub-data-style
+  [ambiance]
+  {:overflow-x   :auto
+   :overflow-y   :hidden
+   :border-left  (styles/border-2 ambiance)
+   :border-right (styles/border-2 ambiance)})
+
+(defclass diff-header-style
+  [ambiance]
+  {:composes     (styles/colors-2 ambiance)
+   :border-left  (styles/border-2 ambiance)
+   :border-right (styles/border-2 ambiance)})
+
+(defclass diff-data-style
+  [ambiance]
+  {:overflow-x   :auto
+   :overflow-y   :hidden
+   :border-left  (styles/border-2 ambiance)
+   :border-right (styles/border-2 ambiance)})
 
 (defn pod [{:keys [id layer path open? diff?] :as pod-info}]
   (let [render-diff?    (and open? diff?)
@@ -253,22 +281,18 @@
                :margin-right  "1px"}
        :children [[pod-header pod-info]
                   [rc/v-box
-                   :class (when open? "app-db-path--pod-border")
                    :children [(when open?
                                 (let [main-value (:value pod-info)
                                       #_(cond value? (:value pod-info)
                                               previous-value? (:previous-value pod-info)
                                               :else nil)]
                                   [rc/v-box
-                                   :class "data-viewer"
-                                   :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
-                                           :overflow-x "auto"
-                                           :overflow-y "hidden"}
+                                   :class    (sub-data-style ambiance)
                                    :children [(if (or value? #_previous-value?)
                                                 [cljs-devtools/simple-render
                                                  main-value
                                                  ["sub-path" path]]
-                                                not-run-yet-msg)]]))
+                                                [not-run-yet-message])]]))
 
                               (when render-diff?
                                 (let [diffable?        (and value? previous-value?)
@@ -279,51 +303,43 @@
                                       [diff-before diff-after _] (clojure.data/diff previous-value value)]
                                   [rc/v-box
                                    :children [[rc/v-box
-                                               :class "app-db-path--link"
-                                               :style {:background-color styles/nord0}
-                                               :justify :end
-                                               :children [[rc/hyperlink-href
-                                                           ;:class  "app-db-path--label"
-                                                           :label "ONLY BEFORE"
-                                                           :style {:margin-left styles/gs-7s}
-                                                           :attr {:rel "noopener noreferrer"}
+                                               :class    (diff-header-style ambiance)
+                                               :justify  :end
+                                               :children [[rc/hyperlink
+                                                           :class  (styles/hyperlink ambiance)
+                                                           :label  "ONLY BEFORE"
+                                                           :style  {:margin-left styles/gs-7s}
+                                                           :attr   {:rel "noopener noreferrer"}
                                                            :target "_blank"
-                                                           :href app-db.views/diff-url]]]
+                                                           :href   app-db.views/diff-url]]]
                                               [rc/v-box
-                                               :class  (styles/pod-data ambiance)
-                                               ;:class "data-viewer data-viewer--top-rule"
-                                               :style {:overflow-x "auto"
-                                                       :overflow-y "hidden"}
+                                               :class    (diff-data-style ambiance)
                                                :children [(cond
-                                                            not-run? sub-not-run-msg
-                                                            unchanged-value? unchanged-value-msg
+                                                            not-run? [sub-not-run-message]
+                                                            unchanged-value? [unchanged-value-message]
                                                             diffable? [cljs-devtools/simple-render
                                                                        diff-before
                                                                        ["app-db-diff" path]]
-                                                            :else no-prev-value-msg)]]
+                                                            :else [no-previous-value-message])]]
                                               [rc/v-box
-                                               :class "app-db-path--link"
-                                               :style {:background-color styles/nord0}
-                                               :justify :end
-                                               :children [[rc/hyperlink-href
-                                                           ;:class  "app-db-path--label"
-                                                           :label "ONLY AFTER"
-                                                           :style {:margin-left      styles/gs-7s
-                                                                   :background-color styles/nord0}
-                                                           :attr {:rel "noopener noreferrer"}
+                                               :class    (diff-header-style ambiance)
+                                               :justify  :end
+                                               :children [[rc/hyperlink
+                                                           :class  (styles/hyperlink ambiance)
+                                                           :label  "ONLY AFTER"
+                                                           :style  {:margin-left      styles/gs-7s}
+                                                           :attr   {:rel "noopener noreferrer"}
                                                            :target "_blank"
-                                                           :href app-db.views/diff-url]]]
+                                                           :href   app-db.views/diff-url]]]
                                               [rc/v-box
-                                               :class "data-viewer data-viewer--top-rule"
-                                               :style {:overflow-x "auto"
-                                                       :overflow-y "hidden"}
+                                               :class    (diff-data-style ambiance)
                                                :children [(cond
-                                                            not-run? sub-not-run-msg
-                                                            unchanged-value? unchanged-value-msg
+                                                            not-run? [sub-not-run-message]
+                                                            unchanged-value? [unchanged-value-message]
                                                             diffable? [cljs-devtools/simple-render
                                                                        diff-after
                                                                        ["app-db-diff" path]]
-                                                            :else no-prev-value-msg)]]]]))
+                                                            :else [no-previous-value-message])]]]]))
                               (when open?
                                 [rc/gap-f :size pod-padding])]]]])))
 

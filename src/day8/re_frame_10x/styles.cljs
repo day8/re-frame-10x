@@ -79,10 +79,6 @@
   [ambiance]
   (if (= ambiance :bright) :#fff nord1))
 
-(defclass colors-0
-  [ambiance]
-  {:background-color (background-color-0 ambiance)})
-
 (defn background-color-1
   [ambiance]
   (if (= :bright ambiance) nord-ghost-white nord0))
@@ -90,6 +86,26 @@
 (defn color-1
   [ambiance]
   (if (= :bright ambiance) nord3 nord4))
+
+(defn background-color-2
+  [ambiance]
+  (if (= :bright ambiance) nord6 nord1))
+
+(defn color-2
+  [ambiance]
+  (if (= :bright ambiance) nord2 nord4))
+
+#_(defn background-color-3
+    [ambiance]
+    (if (= :bright ambiance) nord5 nord2))
+
+#_(defn color-3
+    [ambiance]
+    (if (= :bright ambiance) nord3 nord5))
+
+(defclass colors-0
+  [ambiance]
+  {:background-color (background-color-0 ambiance)})
 
 (defclass colors-1
   [ambiance]
@@ -106,13 +122,7 @@
    :border        (border-1 ambiance)
    :border-radius gs-2})
 
-(defn background-color-2
-  [ambiance]
-  (if (= :bright ambiance) nord6 nord1))
 
-(defn color-2
-  [ambiance]
-  (if (= :bright ambiance) nord2 nord4))
 
 (defclass colors-2
   [ambiance]
@@ -425,8 +435,8 @@
   (let [[foreground background border] (if (= :bright ambiance)
                                          [nord0 nord5 nord4]
                                          [nord6 nord1 nord3])]
-    {:background-color background
-     :color            foreground
+    {:background-color (background-color-2 ambiance)
+     :color            (color-2 ambiance)
      #_#_:padding-left     gs-12s ;; TODO: this conflicts between fx and subs; need padding for fx but no padding for subs.
      :border           [[(px 1) :solid border]]
      :height           gs-31

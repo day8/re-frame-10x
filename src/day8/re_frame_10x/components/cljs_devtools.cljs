@@ -226,9 +226,11 @@
 (declare jsonml->hiccup)
 
 (defclass jsonml-style
-  [ambiance]
-  {:display        :flex
-   :flex-direction :row}
+  [ambiance syntax-color-scheme]
+  {:display          :flex
+   :flex-direction   :row
+   :background-color (styles/syntax-color ambiance syntax-color-scheme :signature-background)
+   :padding          styles/gs-5}
   #_["> span"
      {:vertical-align :text-top}]
   [:li
@@ -248,11 +250,12 @@
    {:fill (if (= ambiance :bright) styles/nord0 styles/nord5)}])
 
 (defn data-structure [jsonml path]
-  (let [ambiance  (rf/subscribe [::settings.subs/ambiance])
-        expanded? (rf/subscribe [::app-db.subs/node-expanded? path])]
+  (let [ambiance            (rf/subscribe [::settings.subs/ambiance])
+        syntax-color-scheme (rf/subscribe [::settings.subs/syntax-color-scheme])
+        expanded?           (rf/subscribe [::app-db.subs/node-expanded? path])]
     (fn [jsonml path]
       [:span
-       {:class (jsonml-style @ambiance)}
+       {:class (jsonml-style @ambiance @syntax-color-scheme)}
        [:span {:class    (toggle-style @ambiance)
                :on-click #(rf/dispatch [::app-db.events/toggle-expansion path])}
         [:button
@@ -316,8 +319,7 @@
 
 (defclass prn-str-render-style
   [ambiance syntax-color-scheme]
-  {:padding          styles/gs-5
-   :background-color (styles/syntax-color ambiance syntax-color-scheme :signature-background)
+  {:background-color (styles/syntax-color ambiance syntax-color-scheme :signature-background)
    :color            (styles/syntax-color ambiance syntax-color-scheme :bool)})
 
 (defn prn-str-render
@@ -328,11 +330,12 @@
      (prn-str data)]))
 
 (defn simple-render [data path & [class]]
-  (let [ambiance (rf/subscribe [::settings.subs/ambiance])]
+  (let [ambiance            (rf/subscribe [::settings.subs/ambiance])
+        syntax-color-scheme (rf/subscribe [::settings.subs/syntax-color-scheme])]
     (fn [data]
       [rc/box
        :size  "1"
-       :class (str (jsonml-style @ambiance) " " class)
+       :class (str (jsonml-style @ambiance @syntax-color-scheme) " " class)
        :child
        (if (prn-str-render? data)
          (prn-str-render data)
