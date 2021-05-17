@@ -1,8 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+### Added
+
+- Add support for app-db paths reaching into lists. Fixes [#169](https://github.com/day8/re-frame-10x/issues/169)
+
+### Changed
+
+- Change to a new Nord-based theme and new epoch navigation design.
+- Change root container to use shadow-dom. Fixes long standing issues with unsetting styles so that styling from the
+  host page (i.e. application) does not override 10x styling.
+
 ### Fixed
 
+- Fix unsafe assumption that reagent component-name is always a string. Fixes
+  [#236](https://github.com/day8/re-frame-10x/issues/236).
 - Remove `deps.cljs` dependency on `react` and `react-dom` as `reagent` provides these dependencies transitively. Fixes issue reported
 in [#188](https://github.com/day8/re-frame-10x/issues/188#issuecomment-487717223).
 
