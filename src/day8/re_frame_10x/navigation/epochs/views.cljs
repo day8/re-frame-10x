@@ -7,7 +7,6 @@
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
     [day8.re-frame-10x.components.buttons                         :as buttons]
     [day8.re-frame-10x.components.re-com                          :as rc]
-    [day8.re-frame-10x.fx.scroll                                  :as scroll]
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
     [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]
@@ -37,16 +36,12 @@
       {:component-did-mount
        (fn [this]
          (when @active?
-           (scroll/scroll-y-parent-to! (rdom/dom-node this) 200)
-           #_(scroll/scroll! (.-parentNode (rdom/dom-node this))
-                             [0 0]
-                             [0 (.-scrollHeight (.-parentNode (rdom/dom-node this)))]
-                             500)))
+           (.scrollIntoView (rdom/dom-node this))))
 
        :component-did-update
        (fn [this]
          (when @active?
-           (scroll/scroll-y-parent-to! (rdom/dom-node this) 200)))
+           (.scrollIntoView (rdom/dom-node this))))
 
        :reagent-render
        (fn [event id]
