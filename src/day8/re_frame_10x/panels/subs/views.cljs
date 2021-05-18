@@ -93,10 +93,6 @@
 (defclass summary-style
   [ambiance]
   {:composes (styles/frame-1 ambiance)
-   #_:background-color (if (= :bright ambiance) styles/nord5 styles/nord0)
-   #_:color            (if (= :bright ambiance) styles/nord0 styles/nord4)
-   #_:border           [[(px 1) :solid styles/nord4]]
-   #_:border-radius    styles/gs-2
    :padding          [[0 styles/gs-19]]})
 
 (defn panel-header []
@@ -346,50 +342,58 @@
 
 (defn no-pods []
   [rc/h-box
-   :margin (css-join "0px 0px 0px" styles/gs-19s)
-   :gap styles/gs-7s
-   :align :start
+   :margin     (css-join "0px 0px 0px" styles/gs-19s)
+   :gap        styles/gs-7s
+   :align      :start
    :align-self :start
-   :children [[rc/label :label "There are no subscriptions to show"]]])
+   :children   [[rc/label :label "There are no subscriptions to show"]]])
 
+
+(defclass column-title-label-style
+  []
+  {:font-size (px 9)})
 
 (defn pod-header-column-titles
   []
   [rc/h-box
-   :height styles/gs-19s
-   :align :center
-   :style {:margin-right "1px"}
+   :height   styles/gs-19s
+   :align    :center
+   :style    {:margin-right "1px"}
    :children [[rc/box
                :width styles/gs-31s
                :child ""]
               [rc/box
                :size  "1"
                :justify :center
-               :child [rc/label :style {:font-size "9px"} :label "ID"]]
+               :child [rc/label :class (column-title-label-style) :label "ID"]]
               [rc/box
                :width styles/gs-50s
                :child ""]
               [rc/box
                :width "132px"                               ;; styles/gs-131s + 1 border
                :justify :center
-               :child [rc/label :style {:font-size "9px"} :label "ACTIVITY"]]
+               :child [rc/label :class (column-title-label-style) :label "ACTIVITY"]]
               [rc/box
                :width "32px"                                ;; styles/gs-31s + 1 border
                :justify :center
-               :child [rc/label :style {:font-size "9px"} :label "LAYER"]]
+               :child [rc/label :class (column-title-label-style) :label "LAYER"]]
               [rc/box
                :width "51px"                                ;;  50px + 1 border
                :justify :center
-               :child [rc/label :style {:font-size "9px"} :label "PINNED"]]
+               :child [rc/label :class (column-title-label-style) :label "PINNED"]]
               [rc/box
                :width "51px"                                ;;  50px + 1 border
                :justify :center
-               :child [rc/label :style {:font-size "9px"} :label "DIFFS"]]
+               :child [rc/label :class (column-title-label-style) :label "DIFFS"]]
               [rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
+(defclass pod-section-style
+  [ambiance]
+  {:overflow-y :auto})
 
 (defn pod-section []
-  (let [visible-subs     @(rf/subscribe [::subs.subs/visible-subs])
+  (let [ambiance         @(rf/subscribe [::settings.subs/ambiance])
+        visible-subs     @(rf/subscribe [::subs.subs/visible-subs])
         intra-epoch-subs @(rf/subscribe [::subs.subs/intra-epoch-subs])
         sub-expansions   @(rf/subscribe [::subs.subs/sub-expansions])
         sub-pins         @(rf/subscribe [::subs.subs/sub-pins])
@@ -397,8 +401,8 @@
                            (cons {:path [::subs.subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [::subs.subs/current-epoch-sub-state])} visible-subs)
                            visible-subs)]
     [rc/v-box
-     :size "1"
-     :style {:overflow-y "auto"}
+     :size     "1"
+     :class    (pod-section-style ambiance)
      :children [(if (empty? all-subs)
                   [no-pods]
                   [pod-header-column-titles])
@@ -414,14 +418,15 @@
                             (when (seq intra-epoch-subs)
                               (list
                                 ^{:key "intra-epoch-line"}
-                                [rc/line :size "5px"
+                                [rc/line :size styles/gs-2s
                                  :style {:margin "19px 0px"}]
                                 ^{:key "intra-epoch-title"}
                                 [:h2 {:class "bm-heading-text"
                                       :style {:margin "19px 0px"}}
-                                 [rc/link
-                                  {:href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
-                                   :label "Intra-Epoch Subscriptions"}]]
+                                 [rc/hyperlink
+                                  :class (styles/hyperlink ambiance)
+                                  :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
+                                  :label "Intra-Epoch Subscriptions"]]
                                 (for [p intra-epoch-subs]
                                   ^{:key (:id p)}
                                   [pod (merge p (get sub-expansions (:id p)))])))]]]]))
