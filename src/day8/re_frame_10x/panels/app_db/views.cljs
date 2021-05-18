@@ -71,53 +71,58 @@
      :class    (styles/section-header ambiance)
      :align    :center
      :height   styles/gs-31s
-     :children [[pod-header-section
-                 :children [[rc/box
-                             :width  "30px"
-                             :height styles/gs-31s
-                             :justify :center
-                             :align :center
-                             :class  (styles/no-select ambiance)
-                             :style  {:cursor "pointer"}
-                             :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                                      :on-click (handler-fn (rf/dispatch [::app-db.events/set-path-visibility id (not open?)]))}
-                             :child  [buttons/expansion {:open? open?
-                                                         :size styles/gs-31s}]]]]
+     :children
+     [[pod-header-section
+       :children
+       [[rc/box
+         :width  "30px"
+         :height styles/gs-31s
+         :justify :center
+         :align :center
+         :class  (styles/no-select ambiance)
+         :style  {:cursor "pointer"}
+         :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
+                  :on-click (handler-fn (rf/dispatch [::app-db.events/set-path-visibility id (not open?)]))}
+         :child  [buttons/expansion {:open? open?
+                                     :size styles/gs-31s}]]]]
 
-                [rc/h-box
-                 :class (styles/path-header-style ambiance)
-                 :size  "auto"
-                 :style {:height       styles/gs-31s
-                         :border-right pod-border-edge}
-                 :align :center
-                 :children [[rc/input-text
-                             :class           (styles/path-text-input-style ambiance)
-                             :attr            {:on-blur (fn [e] (rf/dispatch [::app-db.events/update-path-blur id]))}
-                             :width           "100%"
-                             :model           path-str
-                             :on-change       #(rf/dispatch [::app-db.events/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
-                             :on-submit       #()                   ;; #(rf/dispatch [::app-db.events/add-path %])
-                             :change-on-blur? false
-                             :placeholder     "enter an app-db path like [:todos 1]"]]]
-                [pod-header-section
-                 :width    "49px"
-                 :justify  :center
-                 :align    :center
-                 :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)]))}
-                 :children [[rc/checkbox
-                             :model diff?
-                             :label ""
-                             #_#_:style {:margin-left "6px"
-                                         :margin-top  "1px"}
-                             :on-change #(rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)])]]]
-                [pod-header-section
-                 :width    styles/gs-50s
-                 :justify  :center
-                 :last?    true
-                 :children [[buttons/icon
-                             {:icon     [material/close]
-                              :title    "Remove this inspector"
-                              :on-click #(rf/dispatch [::app-db.events/remove-path id])}]]]]]))
+      [rc/h-box
+       :class (styles/path-header-style ambiance)
+       :size  "auto"
+       :style {:height       styles/gs-31s
+               :border-right pod-border-edge}
+       :align :center
+       :children
+       [[rc/input-text
+         :class           (styles/path-text-input-style ambiance)
+         :attr            {:on-blur (fn [e] (rf/dispatch [::app-db.events/update-path-blur id]))}
+         :width           "100%"
+         :model           path-str
+         :on-change       #(rf/dispatch [::app-db.events/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+         :on-submit       #()                   ;; #(rf/dispatch [::app-db.events/add-path %])
+         :change-on-blur? false
+         :placeholder     "enter an app-db path like [:todos 1]"]]]
+      [pod-header-section
+       :width    "49px"
+       :justify  :center
+       :align    :center
+       :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)]))}
+       :children
+       [[rc/checkbox
+         :model diff?
+         :label ""
+         #_#_:style {:margin-left "6px"
+                     :margin-top  "1px"}
+         :on-change #(rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)])]]]
+      [pod-header-section
+       :width    styles/gs-50s
+       :justify  :center
+       :last?    true
+       :children
+       [[buttons/icon
+         {:icon     [material/close]
+          :title    "Remove this inspector"
+          :on-click #(rf/dispatch [::app-db.events/remove-path id])}]]]]]))
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
@@ -126,58 +131,65 @@
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])]
     [rc/v-box
-     :children [[pod-header pod-info]
-                [rc/v-box
-                 :class (when open? (styles/pod-border ambiance))
-                 :children [(when open?
-                              [rc/v-box
-                               :class (styles/pod-data ambiance)
-                               :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
-                                       :overflow-x "auto"
-                                       :overflow-y "hidden"}
-                               :children [[cljs-devtools/simple-render
-                                           (tools.coll/get-in-with-lists @app-db-after path)
-                                           ["app-db-path" path]]]])
-                            (when render-diff?
-                              (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
-                                    [diff-before diff-after _] (when render-diff?
-                                                                 (clojure.data/diff (get-in @app-db-before path)
-                                                                                    (get-in @app-db-after path)))]
-                                [rc/v-box
-                                 :children [[rc/v-box
-                                             :class    (styles/app-db-inspector-link ambiance)
-                                             :justify  :end
-                                             :children [[rc/hyperlink-href
-                                                         :label "ONLY BEFORE"
-                                                         :style {:margin-left styles/gs-7s}
-                                                         :attr {:rel "noopener noreferrer"}
-                                                         :target "_blank"
-                                                         :href diff-url]]]
-                                            [rc/v-box
-                                             :style {:overflow-x "auto"
-                                                     :overflow-y "hidden"}
-                                             :children [[cljs-devtools/simple-render
-                                                         diff-before
-                                                         ["app-db-diff" path]]]]
-                                            [rc/v-box
-                                             :class    (styles/app-db-inspector-link ambiance)
-                                             :justify  :end
-                                             :children [[rc/hyperlink-href
-                                                         ;:class  "app-db-path--label"
-                                                         :label "ONLY AFTER"
-                                                         :style {:margin-left styles/gs-7s}
-                                                         :attr {:rel "noopener noreferrer"}
-                                                         :target "_blank"
-                                                         :href diff-url]]]
-                                            [rc/v-box
-                                             :style {:overflow-x "auto"
-                                                     :overflow-y "hidden"}
-                                             :children [[cljs-devtools/simple-render
-                                                         diff-after
-                                                         ["app-db-diff" path]]]]]]))
-                            (when open?
-                              [rc/gap-f :size pod-padding])]]]]))
-
+     :children
+     [[pod-header pod-info]
+      [rc/v-box
+       :class (when open? (styles/pod-border ambiance))
+       :children
+       [(when open?
+          [rc/v-box
+           :class (styles/pod-data ambiance)
+           :style {:margin     (css-join pod-padding pod-padding "0px" pod-padding)
+                   :overflow-x "auto"
+                   :overflow-y "hidden"}
+           :children
+           [[cljs-devtools/simple-render
+             (tools.coll/get-in-with-lists @app-db-after path)
+             ["app-db-path" path]]]])
+        (when render-diff?
+          (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
+                [diff-before diff-after _] (when render-diff?
+                                             (clojure.data/diff (get-in @app-db-before path)
+                                                                (get-in @app-db-after path)))]
+            [rc/v-box
+             :children
+             [[rc/v-box
+               :class    (styles/app-db-inspector-link ambiance)
+               :justify  :end
+               :children
+               [[rc/hyperlink-href
+                 :label "ONLY BEFORE"
+                 :style {:margin-left styles/gs-7s}
+                 :attr {:rel "noopener noreferrer"}
+                 :target "_blank"
+                 :href diff-url]]]
+              [rc/v-box
+               :style {:overflow-x "auto"
+                       :overflow-y "hidden"}
+               :children
+               [[cljs-devtools/simple-render
+                 diff-before
+                 ["app-db-diff" path]]]]
+              [rc/v-box
+               :class    (styles/app-db-inspector-link ambiance)
+               :justify  :end
+               :children
+               [[rc/hyperlink-href
+                 ;:class  "app-db-path--label"
+                 :label "ONLY AFTER"
+                 :style {:margin-left styles/gs-7s}
+                 :attr {:rel "noopener noreferrer"}
+                 :target "_blank"
+                 :href diff-url]]]
+              [rc/v-box
+               :style {:overflow-x "auto"
+                       :overflow-y "hidden"}
+               :children
+               [[cljs-devtools/simple-render
+                 diff-after
+                 ["app-db-diff" path]]]]]]))
+        (when open?
+          [rc/gap-f :size pod-padding])]]]]))
 
 (defn no-pods []
   [rc/h-box
@@ -185,11 +197,12 @@
    :gap        styles/gs-12s
    :align      :start
    :align-self :start
-   :children   [[svgs/round-arrow]
-                [rc/label
-                 :style {:width      "160px"
-                         :margin-top "22px"}
-                 :label "see the values in app-db by adding one or more inspectors"]]])
+   :children
+   [[svgs/round-arrow]
+    [rc/label
+     :style {:width      "160px"
+             :margin-top "22px"}
+     :label "see the values in app-db by adding one or more inspectors"]]])
 
 
 (defn pod-header-column-titles
@@ -197,25 +210,22 @@
   [rc/h-box
    :height   styles/gs-19s
    :align    :center
-   :children [[rc/gap-f :size styles/gs-31s]
-              [rc/box
-               :size  "1"
-               :height "31px"
-               #_#_:style   {:background-color "blue"}
-               :child ""]
-              [rc/box
-               :width   styles/gs-50s                                ;;  50px + 1 border
-               :justify :center
-               #_#_:style   {:background-color "pink"}
-               :child   [rc/label :style {:font-size "9px"} :label "DIFFS"]]
-              [rc/box
-               :width   styles/gs-50s                                ;;  50px + 1 border
-               :justify :center
-               #_#_:style   {:background-color "red"}
-               :child   [rc/label :style {:font-size "9px"} :label "DELETE"]]
-              [rc/gap-f :size styles/gs-2s]
-              #_[rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
-
+   :children
+   [[rc/gap-f :size styles/gs-31s]
+    [rc/box
+     :size  "1"
+     :height "31px"
+     :child ""]
+    [rc/box
+     :width   styles/gs-50s                                ;;  50px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label "DIFFS"]]
+    [rc/box
+     :width   styles/gs-50s                                ;;  50px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label "DELETE"]]
+    [rc/gap-f :size styles/gs-2s]
+    #_[rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
 (defn pod-section []
   (let [pods @(rf/subscribe [::app-db.subs/paths])]
@@ -231,11 +241,10 @@
           [pod p]
           [rc/gap-f :size styles/gs-12s]]))]))
 
-
 (defclass panel-style
   [ambiance]
   {:margin-right styles/gs-5
-   :overflow :auto})
+   :overflow     :auto})
 
 (defn panel [app-db]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]

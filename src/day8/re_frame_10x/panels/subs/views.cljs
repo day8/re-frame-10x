@@ -67,7 +67,6 @@
 (defn title-tag [type title label]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/v-box
-     ;:class    "noselect"
      :align    :center
      :gap      styles/gs-2s
      :children
@@ -126,29 +125,47 @@
                    :style {:margin-top "6px"}
                    :on-change #(rf/dispatch [::subs.events/ignore-unchanged-l2-subs? %])]]]]]))
 
+(defclass path-header-style
+  [ambiance]
+  {:background-color (styles/background-color-2 ambiance)
+   :color            (styles/color-2 ambiance)
+   :margin           styles/gs-2
+   :height           styles/gs-31
+   :border-right     [[(px 1) :solid styles/nord4]]})
+
+(defclass layer-circle-style
+  [ambiance]
+  {:width            styles/gs-19s
+   :height           styles/gs-19s
+   :border           pod-border-edge
+   :border-radius    (percent 50)
+   :margin           :auto
+   :background-color :#fff})
 
 (defn pod-header [{:keys [id layer path open? diff? pin? run-times order]}]
+  ;; TODO: highlight when pin? is true
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
-     :class (styles/section-header ambiance)
-     #_#_:class (str "app-db-path--header"
-                     (when pin? " subscription-pinned"))
-     :align :center
-     :height styles/gs-31s
+     :class    (styles/section-header ambiance)
+     :align    :center
+     :height   styles/gs-31s
      :children [[pod-header-section
-                 :children [[rc/box
-                             :width styles/gs-31s
-                             :height styles/gs-31s
-                             :class "noselect"
-                             :style {:cursor "pointer"}
-                             :attr {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                                    :on-click (handler-fn (rf/dispatch [::subs.events/open-pod? id (not open?)]))}
-                             :child [rc/box
-                                     :margin "auto"
-                                     :child [:span.arrow
-                                             (if open?
-                                               [material/arrow-drop-down]
-                                               [material/arrow-right])]]]]]
+                 :children
+                 [[rc/box
+                   :width  styles/gs-31s
+                   :height styles/gs-31s
+                   :class  "noselect"
+                   :style  {:cursor "pointer"}
+                   :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
+                            :on-click (handler-fn (rf/dispatch [::subs.events/open-pod? id (not open?)]))}
+                   :child
+                   [rc/box
+                    :margin "auto"
+                    :child
+                    [:span.arrow
+                     (if open?
+                       [material/arrow-drop-down]
+                       [material/arrow-right])]]]]]
 
                 #_[rc/box
                    ;:width "64px"                                ;; (100-36)px from box above
@@ -157,68 +174,69 @@
                 ;; TODO: report if a sub was run multiple times
                 #_(when run-times
                     [:span "Warning: run " run-times " times"])
-                ;; TODO: label
                 [rc/h-box
-                 :class    (styles/path-header-style ambiance)
+                 :class    (path-header-style ambiance)
                  :size     "auto"
-                 :style    {:height       styles/gs-31s
-                            :border-right pod-border-edge}
                  :align    :center
-                 :children [[rc/label
-                             :label path]]]
+                 :children
+                 [[rc/label
+                   :label path]]]
 
                 [pod-header-section
                  :min-width styles/gs-50s
-                 :children  [[rc/label :label (str id)]]]
+                 :children
+                 [[rc/label :label (str id)]]]
 
                 [pod-header-section
                  :min-width "106px"                           ;; styles/gs-131s - (2 * 12px padding) - (1px border)
                  :gap       styles/gs-12s
                  :style     {:padding "0px 12px"}
-                 :children  (into []
-                                  (comp
-                                    (take 3)
-                                    (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
-                                  order)]
+                 :children
+                 (into []
+                       (comp
+                         (take 3)
+                         (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
+                       order)]
 
                 [pod-header-section
                  :width    styles/gs-31s
-                 :children [[rc/box
-                             :style {:width            styles/gs-19s
-                                     :height           styles/gs-19s
-                                     :border           pod-border-edge
-                                     :border-radius    "50%"
-                                     :margin           "auto"
-                                     :background-color "white"}
-                             :child (if (some? layer)
-                                      [:div {:style {:margin "auto"}} layer]
-                                      [hyperlinks/info
-                                       "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"])]]]
+                 :children
+                 [[rc/box
+                   :class (layer-circle-style ambiance)
+                   :child
+                   (if (some? layer)
+                     [:div {:style {:margin "auto"}} layer]
+                     [hyperlinks/info
+                      "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"])]]]
 
                 [pod-header-section
                  :width styles/gs-50s
                  :attr {:on-click (handler-fn (rf/dispatch [::subs.events/set-pinned id (not pin?)]))}
-                 :children [[rc/box
-                             :style {:margin "auto"}
-                             :child [rc/checkbox
-                                     :model pin?
-                                     :label ""
-                                     :style {:margin-left "6px"
-                                             :margin-top  "1px"}
-                                     :on-change #(rf/dispatch [::subs.events/set-pinned id (not pin?)])]]]]
+                 :children
+                 [[rc/box
+                   :style {:margin "auto"}
+                   :child
+                   [rc/checkbox
+                    :model pin?
+                    :label ""
+                    :style {:margin-left "6px"
+                            :margin-top  "1px"}
+                    :on-change #(rf/dispatch [::subs.events/set-pinned id (not pin?)])]]]]
 
                 [pod-header-section
-                 :width styles/gs-50s
-                 :attr {:on-click (handler-fn (rf/dispatch [::subs.events/set-diff-visibility id (not diff?)]))}
-                 :last? true
-                 :children [[rc/box
-                             :style {:margin "auto"}
-                             :child [rc/checkbox
-                                     :model diff?
-                                     :label ""
-                                     :style {:margin-left "6px"
-                                             :margin-top  "1px"}
-                                     :on-change #(rf/dispatch [::subs.events/set-diff-visibility id (not diff?)])]]]]]]))
+                 :width    styles/gs-50s
+                 :attr     {:on-click (handler-fn (rf/dispatch [::subs.events/set-diff-visibility id (not diff?)]))}
+                 :last?    true
+                 :children
+                 [[rc/box
+                   :style {:margin "auto"}
+                   :child
+                   [rc/checkbox
+                    :model diff?
+                    :label ""
+                    :style {:margin-left "6px"
+                            :margin-top  "1px"}
+                    :on-change #(rf/dispatch [::subs.events/set-diff-visibility id (not diff?)])]]]]]]))
 
 (defclass sub-message-style
   []
