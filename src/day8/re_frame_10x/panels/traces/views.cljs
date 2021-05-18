@@ -288,7 +288,7 @@
   []
   (let [ambiance            @(rf/subscribe [::settings.subs/ambiance])
         traces              @(rf/subscribe [::traces.subs/sorted])
-        {:keys [show-all?]} #(rf/subscribe [::traces.subs/expansions])]
+        {:keys [show-all?]} @(rf/subscribe [::traces.subs/expansions])]
     [rc/h-box
      :height   styles/gs-31s
      :children
