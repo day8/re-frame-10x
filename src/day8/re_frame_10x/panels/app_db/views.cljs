@@ -3,22 +3,22 @@
     [clojure.data]
     [devtools.prefs]
     [devtools.formatters.core]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [em px percent]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.components.buttons :as buttons]
-    [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
-    [day8.re-frame-10x.components.re-com :as rc :refer [close-button css-join]]
-    [day8.re-frame-10x.svgs :as svgs]
-    [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.panels.app-db.events :as app-db.events]
-    [day8.re-frame-10x.panels.app-db.subs :as app-db.subs]
-    [day8.re-frame-10x.tools.coll :as tools.coll])
+    [day8.re-frame-10x.components.buttons                         :as buttons]
+    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+    [day8.re-frame-10x.components.re-com                          :as rc :refer [close-button css-join]]
+    [day8.re-frame-10x.svgs                                       :as svgs]
+    [day8.re-frame-10x.material                                   :as material]
+    [day8.re-frame-10x.styles                                     :as styles]
+    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+    [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
+    [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
+    [day8.re-frame-10x.tools.coll                                 :as tools.coll])
   (:require-macros
-    [day8.re-frame-10x.components.re-com :refer [handler-fn]]))
+    [day8.re-frame-10x.components.re-com                          :refer [handler-fn]]))
 
 (def pod-gap "-1px") ;; Overlap pods by 1px to avoid adjoining borders causing 2px borders
 (def pod-padding "0px")

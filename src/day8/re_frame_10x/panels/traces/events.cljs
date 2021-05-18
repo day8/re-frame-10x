@@ -1,9 +1,9 @@
 (ns day8.re-frame-10x.panels.traces.events
   (:require
+    [clojure.set                                                  :as set]
+    [clojure.string                                               :as string]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.fx.local-storage :as local-storage]
-    [clojure.string :as string]
-    [clojure.set :as set]))
+    [day8.re-frame-10x.fx.local-storage                           :as local-storage]))
 
 (rf/reg-event-db
   ::set-draft-query-type

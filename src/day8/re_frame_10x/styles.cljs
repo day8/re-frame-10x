@@ -1,4 +1,7 @@
 (ns day8.re-frame-10x.styles
+  (:require-macros
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :refer [defpseudoclass
+                                                                             defpseudoelement]])
   (:require
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core       :as garden]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler   :refer [render-css]]
@@ -7,10 +10,7 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :as s]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core          :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.runtime       :as spade.runtime])
-  (:require-macros
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :refer [defpseudoclass
-                                                                             defpseudoelement]]))
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.runtime       :as spade.runtime]))
 
 ;; ====
 ;; https://www.nordtheme.com/docs/colors-and-palettes
