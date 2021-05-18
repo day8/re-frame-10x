@@ -167,7 +167,8 @@
 
 (defclass hyperlink
   [ambiance]
-  {:color nord9}
+  {:color  nord9
+   :cursor :pointer}
   [:&:hover
    {:text-decoration :underline}])
 

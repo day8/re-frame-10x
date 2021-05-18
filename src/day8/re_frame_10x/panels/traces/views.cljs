@@ -1,28 +1,27 @@
 (ns day8.re-frame-10x.panels.traces.views
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px percent]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass]]
-    [day8.re-frame-10x.components.re-com :as rc]
-    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.panels.traces.events :as traces.events]
-    [day8.re-frame-10x.panels.traces.subs :as traces.subs]
-    [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.tools.pretty-print-condensed :as pp]
-    [clojure.string :as string]
-    [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]
-    [day8.re-frame-10x.components.inputs :as inputs]))
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px percent]]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
+    [day8.re-frame-10x.components.re-com                          :as rc]
+    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+    [day8.re-frame-10x.panels.traces.events                       :as traces.events]
+    [day8.re-frame-10x.panels.traces.subs                         :as traces.subs]
+    [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]
+    [day8.re-frame-10x.material                                   :as material]
+    [day8.re-frame-10x.styles                                     :as styles]
+    [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]
+    [clojure.string                                               :as string]
+    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]
+    [day8.re-frame-10x.components.inputs                          :as inputs]))
 
 (defclass selected-epoch-style
   [ambiance active?]
-  {;:composes (styles/control-2 ambiance active?)
-   ;:height   styles/gs-31
+  {:composes    (styles/frame-2 ambiance)
+   :height      styles/gs-31
    :margin-left styles/gs-12
-   :padding          [[(px 1) styles/gs-5]]
-   :composes (styles/frame-2 ambiance)
-   #_#_:padding  [[0 styles/gs-12]]})
+   :padding     [[(px 1) styles/gs-5]]})
 
 (defn selected-epoch
   []
@@ -309,13 +308,19 @@
        :min-width styles/gs-212s
        :height    styles/gs-31s
        :child     [rc/label :label "operations"]]
-      [rc/box
+      [rc/h-box
        :class     (table-header-style ambiance)
        :align     :center
        :justify   :center
        :size      "2"
        :min-width styles/gs-212s
-       :child     [rc/label :label (str (count traces) " traces")]]
+       :children
+       [[rc/label :label (str (count traces) " traces")]
+        [rc/gap-f :size styles/gs-5s]
+        [rc/label
+         :class    (styles/hyperlink ambiance)
+         :on-click #(rf/dispatch [::epochs.events/reset])
+         :label    "clear"]]]
       [rc/box
        :class     (table-header-style ambiance)
        :align     :center

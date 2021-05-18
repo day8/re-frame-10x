@@ -183,7 +183,9 @@
   ::reset
   (fn [db]
     (re-frame.trace/reset-tracing!)
-    (dissoc db :epochs :traces)))
+    (-> db
+      (dissoc :epochs)
+      (tools.coll/dissoc-in [:traces :all]))))
 
 (rf/reg-event-db
   ::reset-current-epoch-app-db

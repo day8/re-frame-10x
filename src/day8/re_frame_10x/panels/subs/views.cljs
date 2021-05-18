@@ -1,52 +1,40 @@
 (ns day8.re-frame-10x.panels.subs.views
-  (:require
-    [day8.re-frame-10x.panels.app-db.views :refer [pod-gap pod-padding border-radius pod-border-edge
-                                                   pod-header-section]]
-    [day8.re-frame-10x.components.cljs-devtools :as cljs-devtools]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core :refer [defclass]]
-    [day8.re-frame-10x.components.re-com :as rc :refer [css-join]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :as units]
-    [day8.re-frame-10x.svgs :as svgs]
-    [clojure.data]
-    [day8.re-frame-10x.material :as material]
-    [day8.re-frame-10x.styles :as styles]
-    [day8.re-frame-10x.tools.string :as tools.string]
-    [day8.re-frame-10x.panels.app-db.views :as app-db.views]
-    [day8.re-frame-10x.panels.settings.subs :as settings.subs]
-    [day8.re-frame-10x.panels.subs.subs :as subs.subs]
-    [day8.re-frame-10x.components.data :as data]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :as color]
-    [day8.re-frame-10x.components.inputs :as inputs]
-    [day8.re-frame-10x.panels.subs.events :as subs.events]
-    [day8.re-frame-10x.components.hyperlinks :as hyperlinks])
   (:require-macros
-    [day8.re-frame-10x.components.re-com :refer [handler-fn]]))
+    [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
+  (:require
+    [clojure.data]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
+    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [em px percent]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]
+    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+    [day8.re-frame-10x.components.data                            :as data]
+    [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
+    [day8.re-frame-10x.components.inputs                          :as inputs]
+    [day8.re-frame-10x.components.re-com                          :as rc :refer [css-join]]
+    [day8.re-frame-10x.svgs                                       :as svgs]
+    [day8.re-frame-10x.material                                   :as material]
+    [day8.re-frame-10x.styles                                     :as styles]
+    [day8.re-frame-10x.panels.app-db.views                        :as app-db.views :refer [pod-gap pod-padding border-radius pod-border-edge
+                                                                                           pod-header-section]]
+    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+    [day8.re-frame-10x.panels.subs.events                         :as subs.events]
+    [day8.re-frame-10x.panels.subs.subs                           :as subs.subs]
+    [day8.re-frame-10x.tools.string                               :as tools.string]))
 
-;(s/def ::query-v any?)
-;(s/def ::dyn-v any?)
-;(s/def ::query-cache-params (s/tuple ::query-v ::dyn-v))
-;(s/def ::deref #(satisfies? IDeref %))
-;(s/def ::query-cache (s/map-of ::query-cache-params ::deref))
-;(assert (s/valid? ::query-cache (rc/deref-or-value-peek subs/query->reaction)))
-
-
-
-
-(def tag-types {:sub/create  {:long "CREATED" :short "C"}
-                :sub/dispose {:long "DISPOSED" :short "D"}
-                :sub/run     {:long "RUN" :short "R"}
-                :sub/not-run {:long "NOT-RUN" :short "N"}
-                nil          {:long "NIL" :short "NIL"}})
+(def tag-types
+  {:sub/create  {:long "CREATED"  :short "C"}
+   :sub/dispose {:long "DISPOSED" :short "D"}
+   :sub/run     {:long "RUN"      :short "R"}
+   :sub/not-run {:long "NOT-RUN"  :short "N"}
+   nil          {:long "NIL"      :short "NIL"}})
 
 (defn long-tag-desc [type]
   (get-in tag-types [type :long] (str type)))
 
 (defn short-tag-desc [type]
   (get-in tag-types [type :short] (str type)))
-
 
 (defn sub-type->color
   [type]
@@ -82,18 +70,19 @@
      ;:class    "noselect"
      :align    :center
      :gap      styles/gs-2s
-     :children [[:span {:style {:font-size "9px"}} title]
-                [data/tag (sub-tag-style ambiance type) label]]]))
+     :children
+     [[:span {:style {:font-size "9px"}} title]
+      [data/tag (sub-tag-style ambiance type) label]]]))
 
 (defclass panel-header-style
   [ambiance]
   {:margin-bottom styles/gs-19
-   :flex-flow [[:row :wrap]]})
+   :flex-flow     [[:row :wrap]]})
 
 (defclass summary-style
   [ambiance]
   {:composes (styles/frame-1 ambiance)
-   :padding          [[0 styles/gs-19]]})
+   :padding  [[0 styles/gs-19]]})
 
 (defn panel-header []
   (let [ambiance                  @(rf/subscribe [::settings.subs/ambiance])
@@ -112,26 +101,30 @@
                  :gap     styles/gs-19s
                  :height  styles/gs-50s
                  :class   (summary-style ambiance)
-                 :children [[:span {:style {:font-size   "18px"
-                                            :font-weight "lighter"}}
-                             "Summary:"]
-                            [title-tag :sub/create (long-tag-desc :sub/create) @created-count]
-                            [title-tag :sub/run (long-tag-desc :sub/run) @re-run-count]
-                            [title-tag :sub/dispose (long-tag-desc :sub/dispose) @destroyed-count]
-                            [title-tag :sub/not-run (long-tag-desc :sub/not-run) @not-run-count]]]
+                 :children
+                 [[:span {:style {:font-size   "18px"
+                                  :font-weight "lighter"}}
+                   "Summary:"]
+                  [title-tag :sub/create (long-tag-desc :sub/create) @created-count]
+                  [title-tag :sub/run (long-tag-desc :sub/run) @re-run-count]
+                  [title-tag :sub/dispose (long-tag-desc :sub/dispose) @destroyed-count]
+                  [title-tag :sub/not-run (long-tag-desc :sub/not-run) @not-run-count]]]
                 [rc/h-box
-                 :align   :center
-                 :gap     styles/gs-19s
-                 :height  styles/gs-50s
-                 :class   (summary-style ambiance)
-                 :children [[rc/checkbox
-                             :model ignore-unchanged-l2-subs?
-                             :label [:span
-                                     "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br]
-                                     [rc/link {:label (str "layer 2 " (tools.string/pluralize- @ignore-unchanged-l2-count "sub"))
-                                               :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"}]]
-                             :style {:margin-top "6px"}
-                             :on-change #(rf/dispatch [::subs.events/ignore-unchanged-l2-subs? %])]]]]]))
+                 :align    :center
+                 :gap      styles/gs-19s
+                 :height   styles/gs-50s
+                 :class    (summary-style ambiance)
+                 :children
+                 [[rc/checkbox
+                   :model ignore-unchanged-l2-subs?
+                   :label [:span
+                           "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br]
+                           [rc/hyperlink
+                            :class (styles/hyperlink ambiance)
+                            :label (str "layer 2 " (tools.string/pluralize- @ignore-unchanged-l2-count "sub"))
+                            :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"]]
+                   :style {:margin-top "6px"}
+                   :on-change #(rf/dispatch [::subs.events/ignore-unchanged-l2-subs? %])]]]]]))
 
 
 (defn pod-header [{:keys [id layer path open? diff? pin? run-times order]}]
