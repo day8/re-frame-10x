@@ -34,7 +34,13 @@
   ::draft-query-type
   :<- [::root]
   (fn [{:keys [draft-query-type]} _]
-    draft-query-type))
+    (or draft-query-type :contains)))
+
+(rf/reg-sub
+  ::draft-query-error
+  :<- [::root]
+  (fn [{:keys [draft-query-error]} _]
+    draft-query-error))
 
 (rf/reg-sub
   ::expansions
@@ -138,21 +144,3 @@
   :<- [::filtered-by-queries]
   (fn [traces _]
     (sort-by :id traces)))
-
-(rf/reg-sub
-  ::draft-query-type
-  :<- [::root]
-  (fn [{:keys [draft-query-type]} _]
-    (or draft-query-type :contains)))
-
-(rf/reg-sub
-  ::draft-query
-  :<- [::root]
-  (fn [{:keys [draft-query]} _]
-    draft-query))
-
-(rf/reg-sub
-  ::draft-query-error
-  :<- [::root]
-  (fn [{:keys [draft-query-error]} _]
-    draft-query-error))
