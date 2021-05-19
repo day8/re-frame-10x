@@ -49,10 +49,10 @@
   (let [lighten-amount 30]
     (case op-type
       :sub/create                  (color/lighten styles/nord14 lighten-amount)
-      :sub/run                     (color/lighten  styles/nord15 lighten-amount)
+      :sub/run                     (color/lighten styles/nord15 lighten-amount)
       :sub/dispose                 (color/lighten styles/nord11 lighten-amount)
       :event                       (color/lighten styles/nord12 lighten-amount)
-      :render                      (color/lighten styles/nord8 lighten-amount)
+      :render                      (color/lighten styles/nord8  lighten-amount)
       :re-frame.router/fsm-trigger (color/lighten styles/nord10 lighten-amount)
       nil)))
 
@@ -203,6 +203,12 @@
   {:color            styles/nord1
    :background-color (op-type->color op-type)})
 
+(defclass clickable-table-cell-style
+  [ambiance op-type]
+  {:cursor :pointer}
+  [:&:hover
+   {:background-color (color/lighten (op-type->color op-type) 2)}])
+
 (defclass table-row-expansion-style
   [ambiance]
   {:cursor :pointer}
@@ -241,21 +247,23 @@
           [material/arrow-drop-down]
           [material/arrow-right])]
        [rc/box
-        :size  "2"
+        :size      "2"
+        :class     (clickable-table-cell-style ambiance op-type)
         :min-width styles/gs-212s
-        :attr  {:on-click
-                (fn [ev]
-                  (rf/dispatch [::traces.events/add-query (name op-type) :contains])
-                  (.stopPropagation ev))}
+        :attr      {:on-click
+                    (fn [ev]
+                      (rf/dispatch [::traces.events/add-query {:query (name op-type) :type :contains}])
+                      (.stopPropagation ev))}
         :child
         [:span (str op-type)]]
        [rc/h-box
-        :size "2"
+        :size      "2"
+        :class     (clickable-table-cell-style ambiance op-type)
         :min-width styles/gs-212s
-        :attr {:on-click
-               (fn [ev]
-                 (rf/dispatch [::traces.events/add-query (name op-name) :contains])
-                 (.stopPropagation ev))}
+        :attr      {:on-click
+                    (fn [ev]
+                      (rf/dispatch [::traces.events/add-query {:query (name op-name) :type :contains}])
+                      (.stopPropagation ev))}
         :children
         [[:span (pp/truncate 20 :middle (pp/str->namespaced-sym op-name))]
          (when-let [[_ & params] (or (get tags :query-v)
@@ -265,7 +273,7 @@
                  (string/join ", ")
                  (pp/truncate-string :middle 40))])]]
        [rc/box
-        :size "1"
+        :size      "1"
         :min-width styles/gs-81s
         :child
         (if debug?
