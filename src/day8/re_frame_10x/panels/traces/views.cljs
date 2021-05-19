@@ -265,7 +265,7 @@
                       (rf/dispatch [::traces.events/add-query {:query (name op-name) :type :contains}])
                       (.stopPropagation ev))}
         :children
-        [[:span (pp/truncate 20 :middle (pp/str->namespaced-sym op-name))]
+        [[:span (pp/truncate 80 :middle (pp/str->namespaced-sym op-name))]
          (when-let [[_ & params] (or (get tags :query-v)
                                      (get tags :event))]
            [:span
