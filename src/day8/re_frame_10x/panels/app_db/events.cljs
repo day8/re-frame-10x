@@ -1,9 +1,9 @@
 (ns day8.re-frame-10x.panels.app-db.events
   (:require
+    [clojure.string                                               :as string]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.fx.local-storage :as local-storage]
-    [clojure.string :as string]
-    [day8.re-frame-10x.tools.reader.edn :as reader.edn]))
+    [day8.re-frame-10x.fx.local-storage                           :as local-storage]
+    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]))
 
 (def paths-interceptors
   [(rf/path [:app-db :paths])

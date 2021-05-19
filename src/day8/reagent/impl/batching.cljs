@@ -1,7 +1,7 @@
 (ns day8.reagent.impl.batching
   (:require
     [reagent.impl.batching :as batching]
-    [re-frame.trace :as trace :include-macros true]))
+    [re-frame.trace        :as trace :include-macros true]))
 
 (defonce original-next-tick reagent.impl.batching/next-tick)
 

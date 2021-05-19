@@ -3,7 +3,7 @@
   day8.re-frame-10x.tools.pretty-print-condensed
   (:refer-clojure :exclude [pr-seq-writer string-print pr-str-with-opts pr-opts pr])
   (:require [clojure.string :as str]
-            [goog.string :as gstring])
+            [goog.string    :as gstring])
   (:import [goog.string StringBuffer]))
 
 (defprotocol ILimited

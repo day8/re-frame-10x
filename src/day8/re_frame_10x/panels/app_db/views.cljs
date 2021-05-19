@@ -1,4 +1,6 @@
 (ns day8.re-frame-10x.panels.app-db.views
+  (:require-macros
+    [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
   (:require
     [clojure.data]
     [devtools.prefs]
@@ -16,9 +18,7 @@
     [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
     [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
     [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
-    [day8.re-frame-10x.tools.coll                                 :as tools.coll])
-  (:require-macros
-    [day8.re-frame-10x.components.re-com                          :refer [handler-fn]]))
+    [day8.re-frame-10x.tools.coll                                 :as tools.coll]))
 
 (def pod-gap "-1px") ;; Overlap pods by 1px to avoid adjoining borders causing 2px borders
 (def pod-padding "0px")
