@@ -3,6 +3,8 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px percent]]
     [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
+    [day8.re-frame-10x.components.buttons                         :as buttons]
+    [day8.re-frame-10x.components.inputs                          :as inputs]
     [day8.re-frame-10x.components.re-com                          :as rc]
     [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
     [day8.re-frame-10x.panels.traces.events                       :as traces.events]
@@ -13,8 +15,7 @@
     [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]
     [clojure.string                                               :as string]
     [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]
-    [day8.re-frame-10x.components.inputs                          :as inputs]))
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]))
 
 (defclass selected-epoch-style
   [ambiance active?]
@@ -278,7 +279,13 @@
         :child
         (if debug?
           [:span (:reaction (:tags trace)) "/" id]
-          [:span (.toFixed duration 1) " ms"])]]]
+          [:span (.toFixed duration 1) " ms"])]
+       [rc/box
+        :align   :center
+        :justify :center
+        :size    styles/gs-31s
+        :child   [buttons/icon {:icon [material/print]
+                                :on-click #(js/console.log tags)}]]]]
      (when expanded?
        [rc/h-box
         :class    (table-row-expanded-style ambiance syntax-color-scheme)
@@ -336,6 +343,9 @@
        :size      "1"
        :min-width styles/gs-81s
        :child     [rc/label :label "meta"]]
+      [rc/box
+       :width styles/gs-31s
+       :class (table-header-style ambiance)]
       [rc/box
        :class (table-header-style ambiance)
        :width "17px" ;; y scrollbar width

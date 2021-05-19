@@ -1,6 +1,7 @@
 (ns day8.re-frame-10x.material
   (:require
-    [day8.re-frame-10x.styles :as styles]))
+    [day8.re-frame-10x.styles :as styles])
+  (:refer-clojure :exclude [print]))
 
 ;; Icons from https://material.io/resources/icons/ 'Sharp' theme.
 ;; Names have been kept the same for ease of reference.
@@ -111,35 +112,35 @@
 (defn check-box
   [{:keys [size]
     :or   {size styles/gs-19s}}]
-  [:svg {:height size
+  [:svg {:height  size
          :viewBox "0 0 24 24"
-         :width size}
+         :width   size}
    [:path {:d "M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"}]])
 
 (defn check-box-outline-blank
   [{:keys [size]
     :or   {size styles/gs-19s}}]
-  [:svg {:height size
+  [:svg {:height  size
          :viewBox "0 0 24 24"
-         :width size}
+         :width   size}
    [:path {:d "M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"}]])
 
 (defn light-mode
   [{:keys [size]
     :or   {size styles/gs-19s}}]
   [:svg {:enable-background "new 0 0 24 24"
-         :height size
-         :viewBox "0 0 24 24"
-         :width size}
+         :height            size
+         :viewBox           "0 0 24 24"
+         :width             size}
    [:path {:d "M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0 c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2 c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1 C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06 c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41 l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41 c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36 c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"}]])
 
 (defn dark-mode
   [{:keys [size]
     :or   {size styles/gs-19s}}]
   [:svg {:enable-background "new 0 0 24 24"
-         :height size
-         :viewBox "0 0 24 24"
-         :width size}
+         :height            size
+         :viewBox           "0 0 24 24"
+         :width             size}
    [:path {:d "M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36c-0.98,1.37-2.58,2.26-4.4,2.26 c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"}]])
 
 (defn check-circle-outline
@@ -153,9 +154,9 @@
 (defn close
   [{:keys [size]
     :or   {size styles/gs-19s}}]
-  [:svg {:height size
+  [:svg {:height  size
          :viewBox "0 0 24 24"
-         :width size}
+         :width   size}
    [:path {:d "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"}]])
 
 (defn content-copy
@@ -169,17 +170,17 @@
 (defn unfold-more
   [{:keys [size]
     :or   {size styles/gs-19s}}]
-  [:svg {:height size
+  [:svg {:height  size
          :viewBox "0 0 24 24"
-         :width size}
+         :width   size}
    [:path {:d "M12 5.83L15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"}]])
 
 (defn unfold-less
   [{:keys [size]
     :or   {size styles/gs-19s}}]
-  [:svg {:height size
+  [:svg {:height  size
          :viewBox "0 0 24 24"
-         :width size}
+         :width   size}
    [:path {:d "M7.41 18.59L8.83 20 12 16.83 15.17 20l1.41-1.41L12 14l-4.59 4.59zm9.18-13.18L15.17 4 12 7.17 8.83 4 7.41 5.41 12 10l4.59-4.59z"}]])
 
 (defn search
@@ -188,12 +189,20 @@
   [:svg {:height  size
          :viewBox "0 0 24 24"
          :width   size}
-    [:path {:d "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"}]])
+   [:path {:d "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"}]])
 
 (defn clear
   [{:keys [size]
     :or   {size styles/gs-19s}}]
-  [:svg {:height size
+  [:svg {:height  size
          :viewBox "0 0 24 24"
-         :width size}
+         :width   size}
    [:path {:d "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"}]])
+
+(defn print
+  [{:keys [size]
+    :or   {size styles/gs-19s}}]
+  [:svg {:height  size
+         :viewBox "0 0 24 24"
+         :width   size}
+   [:path {:d "M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"}]])
