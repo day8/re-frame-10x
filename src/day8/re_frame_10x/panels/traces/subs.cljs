@@ -25,6 +25,18 @@
     queries))
 
 (rf/reg-sub
+  ::draft-query
+  :<- [::root]
+  (fn [{:keys [draft-query]} _]
+    draft-query))
+
+(rf/reg-sub
+  ::draft-query-type
+  :<- [::root]
+  (fn [{:keys [draft-query-type]} _]
+    draft-query-type))
+
+(rf/reg-sub
   ::expansions
   :<- [::root]
   (fn [{:keys [expansions]} _]
@@ -101,7 +113,7 @@
       (filter (fn [trace] (when (contains? categories (:op-type trace)) trace)) traces))))
 
 (defn query->fn [query]
-  (if (= :contains (:filter-type query))
+  (if (= :contains (:type query))
     (fn [trace]
       (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
                         (:query query)))
@@ -112,10 +124,14 @@
   ::filtered-by-queries
   :<- [::filtered-by-categories]
   :<- [::queries]
-  (fn [[traces queries] _]
-    (if-not (seq queries)
-      traces
-      (filter (apply every-pred (map query->fn queries)) traces))))
+  :<- [::draft-query]
+  :<- [::draft-query-type]
+  (fn [[traces queries draft-query draft-query-type] _]
+    (let [queries (if-not (empty? draft-query) (conj queries {:type draft-query-type :query draft-query})
+                                               queries)]
+      (if-not (seq queries)
+        traces
+        (filter (apply every-pred (map query->fn queries)) traces)))))
 
 (rf/reg-sub
   ::sorted
