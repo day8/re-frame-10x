@@ -130,13 +130,6 @@
               [next-button]
               [latest-button]]])
 
-(defn settings-button
-  []
-  [buttons/icon
-   {:icon     [material/settings]
-    :title    "Settings"
-    :on-click #(rf/dispatch [::settings.events/toggle])}])
-
 (defn ambiance-button
   []
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]

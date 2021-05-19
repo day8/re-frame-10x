@@ -72,14 +72,6 @@
   (compare (accumulate-sub-value-memoized order-y)
            (accumulate-sub-value-memoized order-x)))
 
-(defn sub-op-type->type [t]
-  (case (:op-type t)
-    :sub/create :created
-    :sub/run :re-run
-    :sub/dispose :destroyed
-
-    :not-run))
-
 (defn prepare-pod-info
   "Returns sub info prepared for rendering in pods"
   [[sub-info sub-state] [subscription]]

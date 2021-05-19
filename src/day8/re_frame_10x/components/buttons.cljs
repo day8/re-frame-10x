@@ -43,14 +43,6 @@
                               label])]]
      :on-click #(when-not disabled? (on-click))]))
 
-(defn popout
-  [external-window? view-fn] ;; TODO: passing view-fn here to avoid circular dependency is a nasty hack
-  (when-not external-window?
-    [icon
-     {:icon     [material/open-in-new]
-      :title    "Pop out"
-      :on-click #(rf/dispatch-sync [::navigation.events/launch-external view-fn])}]))
-
 (defclass expansion-style
   [ambiance]
   {:cursor :pointer}

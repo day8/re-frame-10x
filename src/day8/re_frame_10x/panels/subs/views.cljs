@@ -16,7 +16,7 @@
     [day8.re-frame-10x.svgs                                       :as svgs]
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.panels.app-db.views                        :as app-db.views :refer [pod-gap pod-padding border-radius pod-border-edge
+    [day8.re-frame-10x.panels.app-db.views                        :as app-db.views :refer [pod-gap pod-padding pod-border-edge
                                                                                            pod-header-section]]
     [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
     [day8.re-frame-10x.panels.subs.events                         :as subs.events]
@@ -55,10 +55,6 @@
   [ambiance type]
   {:composes (sub-tag-style ambiance type)
    :width    styles/gs-19})
-
-(defn sub-tag [type label]
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-    [data/tag (sub-tag-style ambiance type) label]))
 
 (defn short-sub-tag [type label]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
