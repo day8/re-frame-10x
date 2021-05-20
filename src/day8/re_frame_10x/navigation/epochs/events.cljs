@@ -22,7 +22,7 @@
             previous-traces            (get-in db [:traces :all] [])
             parse-state                (get-in db [:epochs :parse-state] metam/initial-parse-state)
             {drop-re-frame :re-frame drop-reagent :reagent} (get-in db [:settings :low-level-trace])
-            all-traces                 (reduce conj previous-traces sorted-traces)
+            all-traces                 (into previous-traces sorted-traces)
             parse-state                (metam/parse-traces parse-state sorted-traces)
             new-matches                (:partitions parse-state)
             previous-matches           (get-in db [:epochs :matches] [])
