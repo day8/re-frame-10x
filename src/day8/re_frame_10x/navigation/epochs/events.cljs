@@ -8,17 +8,6 @@
     [day8.re-frame-10x.tools.metamorphic                          :as metam]
     [day8.re-frame-10x.tools.coll                                 :as tools.coll]))
 
-(defn log-trace? [trace]
-  (let [render-operation? (or (= (:op-type trace) :render)
-                              (= (:op-type trace) :componentWillUnmount))
-        component-name    (get-in trace [:tags :component-name] "")]
-    (if-not render-operation?
-      true
-      (not
-        (and
-          (string? component-name)
-          (string/includes? component-name "devtools outer"))))))
-
 (defn first-match-id
   [m]
   (-> m :match-info first :id))
@@ -27,17 +16,14 @@
   ::receive-new-traces
   [rf/trim-v]
   (fn [{:keys [db]} [new-traces]]
-    (if-let [filtered-traces (->> (filter log-trace? new-traces)
-                                  (sort-by :id))]
+    (if-let [sorted-traces (sort-by :id new-traces)]
       (let [number-of-epochs-to-retain (get-in db [:settings :number-of-epochs])
             events-to-ignore           (->> (get-in db [:settings :ignored-events]) vals (map :event-id) set)
             previous-traces            (get-in db [:traces :all] [])
             parse-state                (get-in db [:epochs :parse-state] metam/initial-parse-state)
             {drop-re-frame :re-frame drop-reagent :reagent} (get-in db [:settings :low-level-trace])
-            all-traces                 (reduce conj previous-traces filtered-traces)
-            parse-state                (metam/parse-traces parse-state filtered-traces)
-            ;; TODO:!!!!!!!!!!!!! We should be parsing everything else with the traces that span the newly matched
-            ;; epochs, not the filtered-traces, as these are only partial.
+            all-traces                 (reduce conj previous-traces sorted-traces)
+            parse-state                (metam/parse-traces parse-state sorted-traces)
             new-matches                (:partitions parse-state)
             previous-matches           (get-in db [:epochs :matches] [])
             parse-state                (assoc parse-state :partitions []) ;; Remove matches we know about
@@ -49,7 +35,7 @@
             ;;   things that are defined as part of the reg-sub.
             ;; - subscription-match-state collects all the data that we know about the state of specific instances of subscriptions
             ;;   like its reagent id, when it was created, run, disposed, what values it returned, e.t.c.
-            subscription-info          (metam/subscription-info (get-in db [:epochs :subscription-info] {}) filtered-traces (get-in db [:app-db :reagent-id]))
+            subscription-info          (metam/subscription-info (get-in db [:epochs :subscription-info] {}) sorted-traces (get-in db [:app-db :reagent-id]))
             sub-state                  (get-in db [:epochs :sub-state] metam/initial-sub-state)
             subscription-match-state   (metam/subscription-match-state sub-state all-traces new-matches)
             subscription-matches       (rest subscription-match-state)
@@ -82,7 +68,7 @@
             ;; However in cases where we reset the db in a replay, we won't get an event match.
             ;; We short circuit here to avoid iterating over the traces when it's unnecessary.
             quiescent?                 (or (seq new-matches)
-                                           (filter metam/quiescent? filtered-traces))
+                                           (filter metam/quiescent? sorted-traces))
             all-matches                (reduce conj previous-matches new-matches)
             retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
             first-id-to-retain         (first-match-id (first retained-matches))
