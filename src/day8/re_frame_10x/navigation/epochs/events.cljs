@@ -69,7 +69,7 @@
             ;; We short circuit here to avoid iterating over the traces when it's unnecessary.
             quiescent?                 (or (seq new-matches)
                                            (filter metam/quiescent? sorted-traces))
-            all-matches                (reduce conj previous-matches new-matches)
+            all-matches                (into previous-matches new-matches)
             retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
             first-id-to-retain         (first-match-id (first retained-matches))
             retained-traces            (into [] (comp (drop-while #(< (:id %) first-id-to-retain))
