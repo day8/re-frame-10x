@@ -21,7 +21,8 @@
 
 (def default-config @devtools.prefs/default-config)
 
-(def base-config
+(defn base-config
+  [ambiance syntax-color-scheme]
   {:index-tag                              [:span :none-style]
    :min-expandable-sequable-count-for-well-known-types
                                            3
@@ -38,20 +39,20 @@
    :expandable-inner-style                 (style {:margin-left (px -2)})
    :item-style                             (style {:display     :inline-block
                                                    :white-space :nowrap
-                                                   :border-left [[(px 2) :solid :pink]]
+                                                   :border-left [[(px 2) :solid :#000]]
                                                    :padding     [[0 styles/gs-5 0 styles/gs-5]]
                                                    :margin      [[(px 1 0 0 0)]]})
    :fn-header-style                        ""
    :fn-prefix-style                        ""
-   :nil-style                              (style {:color styles/nord9})
-   :keyword-style                          (style {:color styles/nord7})
-   :integer-style                          (style {:color styles/nord15})
-   :float-style                            (style {:color styles/nord15})
-   :float-nan-style                        (style {:color styles/nord15})
-   :float-infinity-style                   (style {:color styles/nord15})
-   :string-style                           (style {:color styles/nord14})
-   :symbol-style                           (style {:color styles/nord8})
-   :bool-style                             (style {:color styles/nord10})
+   :nil-style                              (style {:color (styles/syntax-color ambiance syntax-color-scheme :nil)})
+   :keyword-style                          (style {:color (styles/syntax-color ambiance syntax-color-scheme :keyword)})
+   :integer-style                          (style {:color (styles/syntax-color ambiance syntax-color-scheme :integer)})
+   :float-style                            (style {:color (styles/syntax-color ambiance syntax-color-scheme :float)})
+   :float-nan-style                        (style {:color (styles/syntax-color ambiance syntax-color-scheme :float-nan)})
+   :float-infinity-style                   (style {:color (styles/syntax-color ambiance syntax-color-scheme :float-infinity)})
+   :string-style                           (style {:color (styles/syntax-color ambiance syntax-color-scheme :string)})
+   :symbol-style                           (style {:color (styles/syntax-color ambiance syntax-color-scheme :symbol)})
+   :bool-style                             (style {:color (styles/syntax-color ambiance syntax-color-scheme :bool)})
    :native-reference-wrapper-style         (style {:position :relative
                                                    :display  :inline-block})
    :native-reference-style                 (style {:padding  [[0 (px 3)]]
@@ -62,30 +63,30 @@
                                                    :padding-left  (px 1)
                                                    :border-radius (px 2)})
    :type-ref-style                         (style {:position :relative})
-   :type-header-style                      (style {:color               :red
+   :type-header-style                      (style {:color               (styles/syntax-color ambiance syntax-color-scheme :type-text)
                                                    :padding             [[0 (px 2) 0 (px 2)]]
                                                    :-webkit-user-select :none
                                                    :border-radius       (px 2)})
    :type-name-style                        (style {:padding-right (px 4)})
    :type-basis-style                       (style {:margin-right (px 3)})
    :protocol-name-style                    (style {:position :relative})
-   :fast-protocol-style                    (style {:color               :red
+   :fast-protocol-style                    (style {:color               (styles/syntax-color ambiance syntax-color-scheme :fast-protocol)
                                                    :position            :relative
                                                    :padding             [[0 (px 4)]]
                                                    :border-radius       (px 2)
                                                    :-webkit-user-select :none})
-   :slow-protocol-style                    (style {:color               :red
+   :slow-protocol-style                    (style {:color               (styles/syntax-color ambiance syntax-color-scheme :slow-protocol)
                                                    :position            :relative
                                                    :padding             [[0 (px 4)]]
                                                    :border-radius       (px 2)
                                                    :-webkit-user-select :none})
    :protocol-more-style                    (style {:font-size (px 8)
                                                    :position  :relative})
-   :protocol-ns-name-style                 (style {:color :red})
+   :protocol-ns-name-style                 (style {:color (styles/syntax-color ambiance syntax-color-scheme :ns)})
    :list-style                             ""
-   :body-field-name-style                  (style {:color :red})
+   :body-field-name-style                  (style {:color (styles/syntax-color ambiance syntax-color-scheme :field)})
    :body-field-value-style                 (style {:margin-left (px 6)})
-   :header-field-name-style                (style {:color :red})
+   :header-field-name-style                (style {:color (styles/syntax-color ambiance syntax-color-scheme :field)})
    :body-field-td1-style                   (style {:vertical-align :top
                                                    :padding        0
                                                    :padding-right  (px 4)})
@@ -96,14 +97,14 @@
    ;type-outline-style (css (str "box-shadow: 0px 0px 0px 1px " (named-color :type 0.5) " inset;")
    ;     "margin-top: 1px;"
    ;     "border-radius: 2px;")
-   :instance-header-style                  (style {#_#_:position :relative}) ;; type-outline-style
-   :expandable-wrapper-style               ""
-   :standalone-type-style                  ""               ;; type-outline-style
-   :instance-custom-printing-style         (style {;:position :relative
+   ;:instance-header-style                  (style {#_#_:position :relative}) ;; type-outline-style
+   ;:expandable-wrapper-style               ""
+   ;:standalone-type-style                  ""               ;; type-outline-style
+   :instance-custom-printing-style         (style {:position :relative
                                                    :padding  [[0 (px 2) 0 (px 4)]]})
    :instance-custom-printing-wrapper-style (style {:position      :relative
                                                    :border-radius (px 2)})
-   :instance-type-header-style             (style {:color               :red
+   :instance-type-header-style             (style {:color               (styles/syntax-color ambiance syntax-color-scheme :type-text)
                                                    :padding             [[0 (px 2) 0 (px 2)]]
                                                    :-webkit-user-select :none
                                                    :border-radius       [[(px 2) 0 0 (px 2)]]})
@@ -113,25 +114,25 @@
                                                    :display         :inline-block})
    :fields-header-style                    (style {:padding [[0 styles/gs-2]]})
    :protocol-method-name-style             (style {:margin-right (px 6)
-                                                   :color        :red})
-   :meta-wrapper-style                     (style {:box-shadow    [[0 0 0 (px 1) :red :inset]]
+                                                   :color        (styles/syntax-color ambiance syntax-color-scheme :protocol)})
+   :meta-wrapper-style                     (style {:box-shadow    [[0 0 0 (px 1) (styles/syntax-color ambiance syntax-color-scheme :meta) :inset]]
                                                    :margin-top    (px 1)
                                                    :border-radius (px 2)})
-   :meta-reference-style                   (style {:background-color :pink
+   :meta-reference-style                   (style {:background-color (styles/syntax-color ambiance syntax-color-scheme :meta)
                                                    :border-radius    [[0 (px 2) (px 2) 0]]})
-   :meta-style                             (style {:color               :red
+   :meta-style                             (style {:color               (styles/syntax-color ambiance syntax-color-scheme :meta-text)
                                                    :padding             [[0 (px 3)]]
                                                    :-webkit-user-select :none})
-   :meta-body-style                        (style {:background-color           :red
-                                                   :box-shadow                 [[0 0 0 (px 1) :red :inset]]
-                                                   ;:position                   :relative
+   :meta-body-style                        (style {:background-color           (styles/syntax-color ambiance syntax-color-scheme :meta)
+                                                   :box-shadow                 [[0 0 0 (px 1) (styles/syntax-color ambiance syntax-color-scheme :meta) :inset]]
+                                                   :position                   :relative
                                                    :top                        (px -1)
                                                    :padding                    [[(px 3) (px 12)]]
                                                    :border-bottom-right-radius (px 2)})
-   :fn-ns-name-style                       (style {:color styles/nord7})
-   :fn-name-style                          (style {:color        styles/nord8
+   :fn-ns-name-style                       (style {:color (styles/syntax-color ambiance syntax-color-scheme :ns)})
+   :fn-name-style                          (style {:color        (styles/syntax-color ambiance syntax-color-scheme :fn)
                                                    :margin-right (px 2)})
-   :fn-args-style                          (style {:color styles/nord9})
+   :fn-args-style                          (style {:color (styles/syntax-color ambiance syntax-color-scheme :fn-args)})
    :fn-multi-arity-args-indent-style       (style {:visiblity :hidden})
    :standard-ol-style                      (style {:list-style-type :none
                                                    :padding-left    0
@@ -148,10 +149,10 @@
                                                    :min-height  (px 14)})
    :aligned-li-style                       (style {:margin-left 0
                                                    :min-height  (px 14)})
-   :body-items-more-style                  (style {:background-color    :red
+   :body-items-more-style                  (style {:background-color    (styles/syntax-color ambiance syntax-color-scheme :more-background)
                                                    :min-width           styles/gs-50
                                                    :display             :inline-block
-                                                   :color               :pink
+                                                   :color               (styles/syntax-color ambiance syntax-color-scheme :more)
                                                    :cursor              :pointer
                                                    :line-height         (px 14)
                                                    :font-size           (px 10)
@@ -161,21 +162,22 @@
                                                    :-webkit-user-select :none})
    :index-style                            (style {:min-width           styles/gs-50
                                                    :display             :inline-block
-                                                   ;:text-align          :right
-                                                   ;:vertical-align      :top
-                                                   :background-color    styles/nord2
-                                                   :color               styles/nord7
+                                                   :text-align          :right
+                                                   :vertical-align      :top
+                                                   :background-color    (styles/syntax-color ambiance syntax-color-scheme :index-background)
+                                                   :color               (styles/syntax-color ambiance syntax-color-scheme :index)
                                                    :opacity             0.5
                                                    :margin-right        styles/gs-2
                                                    :padding             [[0 styles/gs-2 0 styles/gs-2]]
                                                    :margin              [[(px 1) 0 0 0]]
                                                    :-webkit-user-select :none})
    :expanded-string-style                  (style {:padding       [[0 styles/gs-12 0 styles/gs-12]]
-                                                   :color         styles/nord14
+                                                   :color         (styles/syntax-color ambiance syntax-color-scheme :string)
                                                    :white-space   :pre
-                                                   :border        [[(px 1) :solid styles/nord3]]
+                                                   :border        [[(px 1) :solid (styles/syntax-color ambiance syntax-color-scheme :expanded-string-border)]]
                                                    :border-radius (px 1)
-                                                   :margin        [[0 0 (px 2) 0]]})
+                                                   :margin        [[0 0 (px 2) 0]]
+                                                   :background-color (styles/syntax-color ambiance syntax-color-scheme :expanded-string-background)})
    :default-envelope-style                 ""})
 
 
@@ -200,22 +202,22 @@
                             :color            styles/nord0})
    :body-style      (style body-style-base {:background-color styles/nord6})})
 
-(defn api-call [api-fn ambiance & args]
+(defn api-call [api-fn ambiance syntax-color-scheme & args]
   (let [config   (merge default-config
-                        #_base-config
+                        (base-config ambiance syntax-color-scheme)
                         #_(if (= ambiance :bright)
                             bright-ambiance-config
                             dark-ambiance-config))]
     (with-cljs-devtools-prefs config (apply api-fn args))))
 
-(defn header [ambiance & args]
-  (apply api-call devtools.formatters.core/header-api-call ambiance args))
+(defn header [ambiance syntax-color-scheme & args]
+  (apply api-call devtools.formatters.core/header-api-call ambiance syntax-color-scheme args))
 
-(defn body [ambiance & args]
-  (apply api-call devtools.formatters.core/body-api-call ambiance args))
+(defn body [ambiance syntax-color-scheme & args]
+  (apply api-call devtools.formatters.core/body-api-call ambiance syntax-color-scheme args))
 
-(defn has-body [ambiance & args]
-  (apply api-call devtools.formatters.core/has-body-api-call ambiance args))
+(defn has-body [ambiance syntax-color-scheme & args]
+  (apply api-call devtools.formatters.core/has-body-api-call ambiance syntax-color-scheme args))
 
 (defn get-object [jsonml]
   (.-object (get jsonml 1)))
@@ -262,16 +264,18 @@
          (if @expanded?
            [material/arrow-drop-down]
            [material/arrow-right])]]
-       (if (and @expanded? (has-body @ambiance (get-object jsonml) (get-config jsonml)))
+       (if (and @expanded? (has-body @ambiance @syntax-color-scheme (get-object jsonml) (get-config jsonml)))
          (jsonml->hiccup
            (body
              @ambiance
+             @syntax-color-scheme
              (get-object jsonml)
              (get-config jsonml))
            (conj path :body))
          (jsonml->hiccup
            (header
              @ambiance
+             @syntax-color-scheme
              (get-object jsonml)
              (get-config jsonml))
            (conj path :header)))])))
@@ -339,4 +343,4 @@
        :child
        (if (prn-str-render? data)
          (prn-str-render data)
-         (jsonml->hiccup (header @ambiance data) (conj path 0)))])))
+         (jsonml->hiccup (header @ambiance @syntax-color-scheme data) (conj path 0)))])))
