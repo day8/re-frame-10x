@@ -67,7 +67,6 @@
    :cursor           :pointer
    :border-radius    styles/gs-2
    :display          :flex
-   :align-items      :center
    :margin-left      styles/gs-12
    :padding          [[(px 1) styles/gs-5]]}
   [:svg
@@ -284,8 +283,9 @@
         :align   :center
         :justify :center
         :size    styles/gs-31s
-        :child   [buttons/icon {:icon [material/print]
-                                :on-click #(js/console.log tags)}]]]]
+        :child
+        [buttons/icon {:icon [material/print]
+                       :on-click #(js/console.log tags)}]]]]
      (when expanded?
        [rc/h-box
         :class    (table-row-expanded-style ambiance syntax-color-scheme)
@@ -312,9 +312,10 @@
        :justify :center
        :width   styles/gs-31s
        :attr    {:on-click #(rf/dispatch [::traces.events/toggle-expansions])}
-       :child   (if show-all?
-                  [material/unfold-less]
-                  [material/unfold-more])]
+       :child
+       (if show-all?
+         [material/unfold-less]
+         [material/unfold-more])]
       [rc/box
        :class     (table-header-style ambiance)
        :align     :center
@@ -322,7 +323,8 @@
        :size      "2"
        :min-width styles/gs-212s
        :height    styles/gs-31s
-       :child     [rc/label :label "operations"]]
+       :child
+       [rc/label :label "operations"]]
       [rc/h-box
        :class     (table-header-style ambiance)
        :align     :center
@@ -342,7 +344,8 @@
        :justify   :center
        :size      "1"
        :min-width styles/gs-81s
-       :child     [rc/label :label "meta"]]
+       :child
+       [rc/label :label "meta"]]
       [rc/box
        :width styles/gs-31s
        :class (table-header-style ambiance)]

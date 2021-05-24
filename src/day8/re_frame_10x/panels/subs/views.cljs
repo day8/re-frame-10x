@@ -91,35 +91,36 @@
      :class    (panel-header-style ambiance)
      :justify  :between
      :align    :center
-     :children [[rc/h-box
-                 :align :center
-                 :gap     styles/gs-19s
-                 :height  styles/gs-50s
-                 :class   (summary-style ambiance)
-                 :children
-                 [[:span {:style {:font-size   "18px"
-                                  :font-weight "lighter"}}
-                   "Summary:"]
-                  [title-tag :sub/create (long-tag-desc :sub/create) @created-count]
-                  [title-tag :sub/run (long-tag-desc :sub/run) @re-run-count]
-                  [title-tag :sub/dispose (long-tag-desc :sub/dispose) @destroyed-count]
-                  [title-tag :sub/not-run (long-tag-desc :sub/not-run) @not-run-count]]]
-                [rc/h-box
-                 :align    :center
-                 :gap      styles/gs-19s
-                 :height   styles/gs-50s
-                 :class    (summary-style ambiance)
-                 :children
-                 [[rc/checkbox
-                   :model ignore-unchanged-l2-subs?
-                   :label [:span
-                           "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br]
-                           [rc/hyperlink
-                            :class (styles/hyperlink ambiance)
-                            :label (str "layer 2 " (tools.string/pluralize- @ignore-unchanged-l2-count "sub"))
-                            :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"]]
-                   :style {:margin-top "6px"}
-                   :on-change #(rf/dispatch [::subs.events/ignore-unchanged-l2-subs? %])]]]]]))
+     :children
+     [[rc/h-box
+       :align   :center
+       :gap     styles/gs-19s
+       :height  styles/gs-50s
+       :class   (summary-style ambiance)
+       :children
+       [[:span {:style {:font-size   "18px"
+                        :font-weight "lighter"}}
+         "Summary:"]
+        [title-tag :sub/create  (long-tag-desc :sub/create)  @created-count]
+        [title-tag :sub/run     (long-tag-desc :sub/run)     @re-run-count]
+        [title-tag :sub/dispose (long-tag-desc :sub/dispose) @destroyed-count]
+        [title-tag :sub/not-run (long-tag-desc :sub/not-run) @not-run-count]]]
+      [rc/h-box
+       :align    :center
+       :gap      styles/gs-19s
+       :height   styles/gs-50s
+       :class    (summary-style ambiance)
+       :children
+       [[rc/checkbox
+         :model ignore-unchanged-l2-subs?
+         :label [:span
+                 "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br]
+                 [rc/hyperlink
+                  :class (styles/hyperlink ambiance)
+                  :label (str "layer 2 " (tools.string/pluralize- @ignore-unchanged-l2-count "sub"))
+                  :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"]]
+         :style {:margin-top "6px"}
+         :on-change #(rf/dispatch [::subs.events/ignore-unchanged-l2-subs? %])]]]]]))
 
 (defclass path-header-style
   [ambiance]
@@ -145,94 +146,95 @@
      :class    (styles/section-header ambiance)
      :align    :center
      :height   styles/gs-31s
-     :children [[pod-header-section
-                 :children
-                 [[rc/box
-                   :width  styles/gs-31s
-                   :height styles/gs-31s
-                   :class  "noselect"
-                   :style  {:cursor "pointer"}
-                   :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                            :on-click (handler-fn (rf/dispatch [::subs.events/open-pod? id (not open?)]))}
-                   :child
-                   [rc/box
-                    :margin "auto"
-                    :child
-                    [:span.arrow
-                     (if open?
-                       [material/arrow-drop-down]
-                       [material/arrow-right])]]]]]
+     :children
+     [[pod-header-section
+       :children
+       [[rc/box
+         :width  styles/gs-31s
+         :height styles/gs-31s
+         :class  "noselect"
+         :style  {:cursor "pointer"}
+         :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
+                  :on-click (handler-fn (rf/dispatch [::subs.events/open-pod? id (not open?)]))}
+         :child
+         [rc/box
+          :margin "auto"
+          :child
+          [:span.arrow
+           (if open?
+             [material/arrow-drop-down]
+             [material/arrow-right])]]]]]
 
-                #_[rc/box
-                   ;:width "64px"                                ;; (100-36)px from box above
-                   :child [sub-tag (first order) (short-tag-desc (first order))]]
+      #_[rc/box
+         ;:width "64px"                                ;; (100-36)px from box above
+         :child [sub-tag (first order) (short-tag-desc (first order))]]
 
-                ;; TODO: report if a sub was run multiple times
-                #_(when run-times
-                    [:span "Warning: run " run-times " times"])
-                [rc/h-box
-                 :class    (path-header-style ambiance)
-                 :size     "auto"
-                 :align    :center
-                 :children
-                 [[rc/label
-                   :label path]]]
+      ;; TODO: report if a sub was run multiple times
+      #_(when run-times
+          [:span "Warning: run " run-times " times"])
+      [rc/h-box
+       :class    (path-header-style ambiance)
+       :size     "auto"
+       :align    :center
+       :children
+       [[rc/label
+         :label path]]]
 
-                [pod-header-section
-                 :min-width styles/gs-50s
-                 :children
-                 [[rc/label :label (str id)]]]
+      [pod-header-section
+       :min-width styles/gs-50s
+       :children
+       [[rc/label :label (str id)]]]
 
-                [pod-header-section
-                 :min-width "106px"                           ;; styles/gs-131s - (2 * 12px padding) - (1px border)
-                 :gap       styles/gs-12s
-                 :style     {:padding "0px 12px"}
-                 :children
-                 (into []
-                       (comp
-                         (take 3)
-                         (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
-                       order)]
+      [pod-header-section
+       :min-width "106px"                           ;; styles/gs-131s - (2 * 12px padding) - (1px border)
+       :gap       styles/gs-12s
+       :style     {:padding "0px 12px"}
+       :children
+       (into []
+             (comp
+               (take 3)
+               (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
+             order)]
 
-                [pod-header-section
-                 :width    styles/gs-31s
-                 :children
-                 [[rc/box
-                   :class (layer-circle-style ambiance)
-                   :child
-                   (if (some? layer)
-                     [:div {:style {:margin "auto"}} layer]
-                     [hyperlinks/info
-                      "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"])]]]
+      [pod-header-section
+       :width    styles/gs-31s
+       :children
+       [[rc/box
+         :class (layer-circle-style ambiance)
+         :child
+         (if (some? layer)
+           [:div {:style {:margin "auto"}} layer]
+           [hyperlinks/info
+            "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"])]]]
 
-                [pod-header-section
-                 :width styles/gs-50s
-                 :attr {:on-click (handler-fn (rf/dispatch [::subs.events/set-pinned id (not pin?)]))}
-                 :children
-                 [[rc/box
-                   :style {:margin "auto"}
-                   :child
-                   [rc/checkbox
-                    :model pin?
-                    :label ""
-                    :style {:margin-left "6px"
-                            :margin-top  "1px"}
-                    :on-change #(rf/dispatch [::subs.events/set-pinned id (not pin?)])]]]]
+      [pod-header-section
+       :width styles/gs-50s
+       :attr  {:on-click (handler-fn (rf/dispatch [::subs.events/set-pinned id (not pin?)]))}
+       :children
+       [[rc/box
+         :style {:margin "auto"}
+         :child
+         [rc/checkbox
+          :model pin?
+          :label ""
+          :style {:margin-left "6px"
+                  :margin-top  "1px"}
+          :on-change #(rf/dispatch [::subs.events/set-pinned id (not pin?)])]]]]
 
-                [pod-header-section
-                 :width    styles/gs-50s
-                 :attr     {:on-click (handler-fn (rf/dispatch [::subs.events/set-diff-visibility id (not diff?)]))}
-                 :last?    true
-                 :children
-                 [[rc/box
-                   :style {:margin "auto"}
-                   :child
-                   [rc/checkbox
-                    :model diff?
-                    :label ""
-                    :style {:margin-left "6px"
-                            :margin-top  "1px"}
-                    :on-change #(rf/dispatch [::subs.events/set-diff-visibility id (not diff?)])]]]]]]))
+      [pod-header-section
+       :width    styles/gs-50s
+       :attr     {:on-click (handler-fn (rf/dispatch [::subs.events/set-diff-visibility id (not diff?)]))}
+       :last?    true
+       :children
+       [[rc/box
+         :style {:margin "auto"}
+         :child
+         [rc/checkbox
+          :model     diff?
+          :label     ""
+          :style     {:margin-left "6px"
+                      :margin-top  "1px"}
+          :on-change #(rf/dispatch [::subs.events/set-diff-visibility id (not diff?)])]]]]]]))
 
 (defclass sub-message-style
   []
@@ -282,69 +284,77 @@
       [rc/v-box
        :style {:margin-bottom pod-gap
                :margin-right  "1px"}
-       :children [[pod-header pod-info]
-                  [rc/v-box
-                   :children [(when open?
-                                (let [main-value (:value pod-info)
-                                      #_(cond value? (:value pod-info)
-                                              previous-value? (:previous-value pod-info)
-                                              :else nil)]
-                                  [rc/v-box
-                                   :class    (sub-data-style ambiance)
-                                   :children [(if (or value? #_previous-value?)
-                                                [cljs-devtools/simple-render
-                                                 main-value
-                                                 ["sub-path" path]]
-                                                [not-run-yet-message])]]))
+       :children
+       [[pod-header pod-info]
+        [rc/v-box
+         :children
+         [(when open?
+            (let [main-value (:value pod-info)
+                  #_(cond value? (:value pod-info)
+                          previous-value? (:previous-value pod-info)
+                          :else nil)]
+              [rc/v-box
+               :class    (sub-data-style ambiance)
+               :children
+               [(if (or value? #_previous-value?)
+                  [cljs-devtools/simple-render
+                   main-value
+                   ["sub-path" path]]
+                  [not-run-yet-message])]]))
 
-                              (when render-diff?
-                                (let [diffable?        (and value? previous-value?)
-                                      not-run?         (= (:order pod-info) [:sub/not-run])
-                                      previous-value   (:previous-value pod-info)
-                                      value            (:value pod-info)
-                                      unchanged-value? (get-in pod-info [:sub/traits :unchanged?] false)
-                                      [diff-before diff-after _] (clojure.data/diff previous-value value)]
-                                  [rc/v-box
-                                   :children [[rc/v-box
-                                               :class    (diff-header-style ambiance)
-                                               :justify  :end
-                                               :children [[rc/hyperlink
-                                                           :class  (styles/hyperlink ambiance)
-                                                           :label  "ONLY BEFORE"
-                                                           :style  {:margin-left styles/gs-7s}
-                                                           :attr   {:rel "noopener noreferrer"}
-                                                           :target "_blank"
-                                                           :href   app-db.views/diff-url]]]
-                                              [rc/v-box
-                                               :class    (diff-data-style ambiance)
-                                               :children [(cond
-                                                            not-run? [sub-not-run-message]
-                                                            unchanged-value? [unchanged-value-message]
-                                                            diffable? [cljs-devtools/simple-render
-                                                                       diff-before
-                                                                       ["app-db-diff" path]]
-                                                            :else [no-previous-value-message])]]
-                                              [rc/v-box
-                                               :class    (diff-header-style ambiance)
-                                               :justify  :end
-                                               :children [[rc/hyperlink
-                                                           :class  (styles/hyperlink ambiance)
-                                                           :label  "ONLY AFTER"
-                                                           :style  {:margin-left      styles/gs-7s}
-                                                           :attr   {:rel "noopener noreferrer"}
-                                                           :target "_blank"
-                                                           :href   app-db.views/diff-url]]]
-                                              [rc/v-box
-                                               :class    (diff-data-style ambiance)
-                                               :children [(cond
-                                                            not-run? [sub-not-run-message]
-                                                            unchanged-value? [unchanged-value-message]
-                                                            diffable? [cljs-devtools/simple-render
-                                                                       diff-after
-                                                                       ["app-db-diff" path]]
-                                                            :else [no-previous-value-message])]]]]))
-                              (when open?
-                                [rc/gap-f :size pod-padding])]]]])))
+          (when render-diff?
+            (let [diffable?        (and value? previous-value?)
+                  not-run?         (= (:order pod-info) [:sub/not-run])
+                  previous-value   (:previous-value pod-info)
+                  value            (:value pod-info)
+                  unchanged-value? (get-in pod-info [:sub/traits :unchanged?] false)
+                  [diff-before diff-after _] (clojure.data/diff previous-value value)]
+              [rc/v-box
+               :children
+               [[rc/v-box
+                 :class    (diff-header-style ambiance)
+                 :justify  :end
+                 :children
+                 [[rc/hyperlink
+                   :class  (styles/hyperlink ambiance)
+                   :label  "ONLY BEFORE"
+                   :style  {:margin-left styles/gs-7s}
+                   :attr   {:rel "noopener noreferrer"}
+                   :target "_blank"
+                   :href   app-db.views/diff-url]]]
+                [rc/v-box
+                 :class    (diff-data-style ambiance)
+                 :children
+                 [(cond
+                    not-run?         [sub-not-run-message]
+                    unchanged-value? [unchanged-value-message]
+                    diffable?        [cljs-devtools/simple-render
+                                      diff-before
+                                      ["app-db-diff" path]]
+                    :else            [no-previous-value-message])]]
+                [rc/v-box
+                 :class    (diff-header-style ambiance)
+                 :justify  :end
+                 :children
+                 [[rc/hyperlink
+                   :class  (styles/hyperlink ambiance)
+                   :label  "ONLY AFTER"
+                   :style  {:margin-left      styles/gs-7s}
+                   :attr   {:rel "noopener noreferrer"}
+                   :target "_blank"
+                   :href   app-db.views/diff-url]]]
+                [rc/v-box
+                 :class    (diff-data-style ambiance)
+                 :children
+                 [(cond
+                    not-run?         [sub-not-run-message]
+                    unchanged-value? [unchanged-value-message]
+                    diffable?        [cljs-devtools/simple-render
+                                      diff-after
+                                      ["app-db-diff" path]]
+                    :else            [no-previous-value-message])]]]]))
+          (when open?
+            [rc/gap-f :size pod-padding])]]]])))
 
 
 (defn no-pods []
@@ -370,28 +380,33 @@
                :width styles/gs-31s
                :child ""]
               [rc/box
-               :size  "1"
+               :size    "1"
                :justify :center
-               :child [rc/label :class (column-title-label-style) :label "ID"]]
+               :child
+               [rc/label :class (column-title-label-style) :label "ID"]]
               [rc/box
                :width styles/gs-50s
                :child ""]
               [rc/box
-               :width "132px"                               ;; styles/gs-131s + 1 border
+               :width   "132px"                               ;; styles/gs-131s + 1 border
                :justify :center
-               :child [rc/label :class (column-title-label-style) :label "ACTIVITY"]]
+               :child
+               [rc/label :class (column-title-label-style) :label "ACTIVITY"]]
               [rc/box
-               :width "32px"                                ;; styles/gs-31s + 1 border
+               :width   "32px"                                ;; styles/gs-31s + 1 border
                :justify :center
-               :child [rc/label :class (column-title-label-style) :label "LAYER"]]
+               :child
+               [rc/label :class (column-title-label-style) :label "LAYER"]]
               [rc/box
-               :width "51px"                                ;;  50px + 1 border
+               :width   "51px"                                ;;  50px + 1 border
                :justify :center
-               :child [rc/label :class (column-title-label-style) :label "PINNED"]]
+               :child
+               [rc/label :class (column-title-label-style) :label "PINNED"]]
               [rc/box
-               :width "51px"                                ;;  50px + 1 border
+               :width   "51px"                                ;;  50px + 1 border
                :justify :center
-               :child [rc/label :class (column-title-label-style) :label "DIFFS"]]
+               :child
+               [rc/label :class (column-title-label-style) :label "DIFFS"]]
               [rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
 (defclass pod-section-style
@@ -410,33 +425,35 @@
     [rc/v-box
      :size     "1"
      :class    (pod-section-style ambiance)
-     :children [(if (empty? all-subs)
-                  [no-pods]
-                  [pod-header-column-titles])
-                [rc/v-box
-                 :size "auto"
-                 :style {:overflow-x "hidden"
-                         :overflow-y "auto"}
-                 :children [(for [p all-subs]
-                              ^{:key (:id p)}
-                              [pod (merge p
-                                          (get sub-expansions (:id p))
-                                          (get sub-pins (:id p)))])
-                            (when (seq intra-epoch-subs)
-                              (list
-                                ^{:key "intra-epoch-line"}
-                                [rc/line :size styles/gs-2s
-                                 :style {:margin "19px 0px"}]
-                                ^{:key "intra-epoch-title"}
-                                [:h2 {:class "bm-heading-text"
-                                      :style {:margin "19px 0px"}}
-                                 [rc/hyperlink
-                                  :class (styles/hyperlink ambiance)
-                                  :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
-                                  :label "Intra-Epoch Subscriptions"]]
-                                (for [p intra-epoch-subs]
-                                  ^{:key (:id p)}
-                                  [pod (merge p (get sub-expansions (:id p)))])))]]]]))
+     :children
+     [(if (empty? all-subs)
+        [no-pods]
+        [pod-header-column-titles])
+      [rc/v-box
+       :size "auto"
+       :style {:overflow-x "hidden"
+               :overflow-y "auto"}
+       :children
+       [(for [p all-subs]
+          ^{:key (:id p)}
+          [pod (merge p
+                      (get sub-expansions (:id p))
+                      (get sub-pins (:id p)))])
+        (when (seq intra-epoch-subs)
+          (list
+            ^{:key "intra-epoch-line"}
+            [rc/line :size styles/gs-2s
+             :style {:margin "19px 0px"}]
+            ^{:key "intra-epoch-title"}
+            [:h2 {:class "bm-heading-text"
+                  :style {:margin "19px 0px"}}
+             [rc/hyperlink
+              :class (styles/hyperlink ambiance)
+              :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
+              :label "Intra-Epoch Subscriptions"]]
+            (for [p intra-epoch-subs]
+              ^{:key (:id p)}
+              [pod (merge p (get sub-expansions (:id p)))])))]]]]))
 
 
 (defn filter-section []
