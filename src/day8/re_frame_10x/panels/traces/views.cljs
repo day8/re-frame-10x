@@ -247,19 +247,17 @@
           [material/arrow-drop-down]
           [material/arrow-right])]
        [rc/box
-        :size      "2"
-        :class     (clickable-table-cell-style ambiance op-type)
-        :min-width styles/gs-212s
-        :attr      {:on-click
-                    (fn [ev]
-                      (rf/dispatch [::traces.events/add-query {:query (name op-type) :type :contains}])
-                      (.stopPropagation ev))}
+        :class (clickable-table-cell-style ambiance op-type)
+        :width styles/gs-81s
+        :attr  {:on-click
+                (fn [ev]
+                  (rf/dispatch [::traces.events/add-query {:query (name op-type) :type :contains}])
+                  (.stopPropagation ev))}
         :child
         [:span (str op-type)]]
        [rc/h-box
-        :size      "2"
+        :size      "1"
         :class     (clickable-table-cell-style ambiance op-type)
-        :min-width styles/gs-212s
         :attr      {:on-click
                     (fn [ev]
                       (rf/dispatch [::traces.events/add-query {:query (name op-name) :type :contains}])
@@ -273,8 +271,7 @@
                  (string/join ", ")
                  (pp/truncate-string :middle 40))])]]
        [rc/box
-        :size      "1"
-        :min-width styles/gs-81s
+        :width styles/gs-81s
         :child
         (if debug?
           [:span (:reaction (:tags trace)) "/" id]
@@ -320,8 +317,7 @@
        :class     (table-header-style ambiance)
        :align     :center
        :justify   :center
-       :size      "2"
-       :min-width styles/gs-212s
+       :width     styles/gs-81s
        :height    styles/gs-31s
        :child
        [rc/label :label "operations"]]
@@ -329,8 +325,7 @@
        :class     (table-header-style ambiance)
        :align     :center
        :justify   :center
-       :size      "2"
-       :min-width styles/gs-212s
+       :size      "1"
        :children
        [[rc/label :label (str (count traces) " traces")]
         [rc/gap-f :size styles/gs-5s]
@@ -342,8 +337,7 @@
        :class     (table-header-style ambiance)
        :align     :center
        :justify   :center
-       :size      "1"
-       :min-width styles/gs-81s
+       :width     styles/gs-81s
        :child
        [rc/label :label "meta"]]
       [rc/box
