@@ -86,12 +86,6 @@
   (fn [{:keys [selected-epoch-index]} _]
     selected-epoch-index))
 
-#_(rf/reg-sub
-    ::selected-epoch-id
-    :<- [::selected-match]
-    (fn [epochs _]
-      (:id (first epochs))))
-
 (rf/reg-sub
   ::beginning-trace-id
   :<- [::selected-match]
