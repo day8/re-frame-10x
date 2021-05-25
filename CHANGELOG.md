@@ -1,15 +1,21 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.1.0 (2021-05-25)
+
 ### Added
 
 - Add support for app-db paths reaching into lists. Fixes [#169](https://github.com/day8/re-frame-10x/issues/169)
 
 ### Changed
 
-- Change to a new Nord-based theme and new epoch navigation design.
-- Change root container to use shadow-dom. Fixes long standing issues with unsetting styles so that styling from the
+- Change to a new Nord-based theme and new epoch navigation design that always displays a list of
+  epoch history.
+- Change root container to use shadow-dom. Fixes long-standing issues with unsetting styles so that styling from the
   host page (i.e. application) does not override 10x styling.
+- Change styles to use [spade](https://github.com/dhleong/spade)
+- Broke monolithic events and subs namespaces up into individual namespaces alongside the associated
+panels/views.
 
 ### Fixed
 
