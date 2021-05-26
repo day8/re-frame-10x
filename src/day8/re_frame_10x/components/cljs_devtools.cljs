@@ -231,8 +231,7 @@
   [ambiance syntax-color-scheme]
   {:display          :flex
    :flex-direction   :row
-   :background-color (styles/syntax-color ambiance syntax-color-scheme :signature-background)
-   :padding          styles/gs-5}
+   :background-color (styles/syntax-color ambiance syntax-color-scheme :signature-background)}
   #_["> span"
      {:vertical-align :text-top}]
   [:li
