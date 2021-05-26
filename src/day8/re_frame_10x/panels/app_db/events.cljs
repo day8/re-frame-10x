@@ -1,5 +1,7 @@
 (ns day8.re-frame-10x.panels.app-db.events
   (:require
+    [re-frame.db]
+    [re-frame.interop]
     [clojure.string                                               :as string]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.fx.local-storage                           :as local-storage]
