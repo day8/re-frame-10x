@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.1.1 (2021-05-26)
+
+### Fixed
+
+- Fix epoch navigation cljs-devtools styling for very large event vectors. See [#303](https://github.com/day8/re-frame-10x/issues/303).
+- Fix compiler warning.
+
 ## 1.1.0 (2021-05-25)
 
 ### Added
