@@ -24,8 +24,9 @@
   ::paths
   :<- [::root]
   (fn [{:keys [paths]} _]
-    (map #(assoc (val %) :id (key %))
-         paths)))
+    (reverse
+      (map #(assoc (val %) :id (key %))
+           paths))))
 
 ;; [IJ] TODO: This doesn't appear to be used anywhere:
 (rf/reg-sub
