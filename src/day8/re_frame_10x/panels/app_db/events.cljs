@@ -29,7 +29,7 @@
     (assoc paths
       (js/Date.now)
       {:diff?       false
-       :open?       true
+       :open?       false
        :path        nil
        :path-str    ""
        :valid-path? true})))
