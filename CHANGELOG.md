@@ -1,6 +1,21 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+### Fixed
+
+- Fix cljs-devtools expansion styles (e.g. app-db panel inspectors, epoch navigation)
+- Fix use of :dispatch-later effect when opening/closing 10x window. See [#306](https://github.com/day8/re-frame-10x/issues/306).
+
+### Changed
+
+- Change cljs-devtools path expansion default to false
+
+## 1.1.2 (2021-06-08)
+
+### Fixed
+
+- Fix ordering of inspectors in app-db panel.
+
 ## 1.1.1 (2021-05-26)
 
 ### Fixed
