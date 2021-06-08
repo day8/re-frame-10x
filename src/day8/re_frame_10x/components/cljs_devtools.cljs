@@ -133,7 +133,7 @@
    :fn-name-style                          (style {:color        (styles/syntax-color ambiance syntax-color-scheme :fn)
                                                    :margin-right (px 2)})
    :fn-args-style                          (style {:color (styles/syntax-color ambiance syntax-color-scheme :fn-args)})
-   :fn-multi-arity-args-indent-style       (style {:visiblity :hidden})
+   :fn-multi-arity-args-indent-style       (style {:visibility :hidden})
    :standard-ol-style                      (style {:list-style-type :none
                                                    :padding-left    0
                                                    :margin-bottom   0
@@ -163,7 +163,7 @@
    :index-style                            (style {:min-width           styles/gs-50
                                                    :display             :inline-block
                                                    :text-align          :right
-                                                   :vertical-align      :top
+                                                   :vertical-align      :text-top
                                                    :background-color    (styles/syntax-color ambiance syntax-color-scheme :index-background)
                                                    :color               (styles/syntax-color ambiance syntax-color-scheme :index)
                                                    :opacity             0.5
@@ -229,18 +229,18 @@
 
 (defclass jsonml-style
   [ambiance syntax-color-scheme]
-  {:display          :flex
+  {:display          :inline
    :flex-direction   :row
    :background-color (styles/syntax-color ambiance syntax-color-scheme :signature-background)}
-  #_["> span"
-     {:vertical-align :text-top}]
+  ["> span"
+   {:vertical-align :text-top}]
   [:li
    {:margin 0}])
 
 (defclass toggle-style
   [ambiance]
   {:cursor      :pointer
-   :display     :flex
+   :display     :inline
    :align-self  :center
    #_#_:line-height 1}
   [:button
