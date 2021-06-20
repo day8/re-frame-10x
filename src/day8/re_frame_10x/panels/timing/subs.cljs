@@ -41,25 +41,27 @@
   :<- [::animation-frame-traces]
   :<- [::traces.subs/filtered-by-epoch-always]
   (fn [[af-start-end epoch-traces] [_ frame-number]]
-    (let [frame-pairs (partition 2 af-start-end)
-          [start end] (nth frame-pairs (dec frame-number))
-          af-traces   (into [] (metam/id-between-xf (:id start) (:id end)) epoch-traces)
-          total-time  (metam/elapsed-time start end)
-          ;; TODO: these times double count renders/subs that happened as a child of another
-          ;; need to fix either here, at ingestion point, or most preferably in re-frame at tracing point.
-          subs-time   (transduce (comp
-                                   (filter metam/subscription?)
-                                   (map :duration))
-                                 +nil af-traces)
-          render-time (transduce (comp
-                                   (filter metam/render?)
-                                   (map :duration))
-                                 +nil af-traces)]
-      {:timing/animation-frame-total  total-time
-       :timing/animation-frame-subs   subs-time
-       :timing/animation-frame-render render-time
-       ;; TODO: handle rounding weirdness here, make sure it is never below 0.
-       :timing/animation-frame-misc   (- total-time subs-time render-time)})))
+    (let [frame-pairs (partition 2 af-start-end)]
+      (when (> (count frame-pairs) frame-number)
+        (let [[start end] (nth frame-pairs (dec frame-number))
+              af-traces   (into [] (metam/id-between-xf (:id start) (:id end)) epoch-traces)
+              total-time  (metam/elapsed-time start end)
+              ;; TODO: these times double count renders/subs that happened as a child of another
+              ;; need to fix either here, at ingestion point, or most preferably in re-frame at tracing point.
+              subs-time   (transduce (comp
+                                       (filter metam/subscription?)
+                                       (map :duration))
+                                     +nil af-traces)
+              render-time (transduce (comp
+                                       (filter metam/render?)
+                                       (map :duration))
+                                     +nil af-traces)]
+          {:timing/animation-frame-total  total-time
+           :timing/animation-frame-subs   subs-time
+           :timing/animation-frame-render render-time
+           ;; TODO: handle rounding weirdness here, make sure it is never below 0.
+           :timing/animation-frame-misc   (- total-time subs-time render-time)})))))
+
 
 (rf/reg-sub
   ::event-processing-time
