@@ -35,13 +35,13 @@
 
 (rf/reg-event-db
   ::set-queries
-  [(rf/path [:traces :queries]) rf/trim-v (local-storage/after "filter-items")]
+  [(rf/path [:traces :queries]) rf/trim-v (local-storage/save "filter-items")]
   (fn [_ [filters]]
     filters))
 
 (rf/reg-event-db
   ::add-query
-  [(rf/path [:traces :queries]) rf/unwrap (local-storage/after "filter-items")]
+  [(rf/path [:traces :queries]) rf/unwrap (local-storage/save "filter-items")]
   (fn [filters {:keys [query type]}]
     (if (some #(= query (:query %)) filters)
       filters
@@ -57,19 +57,19 @@
 
 (rf/reg-event-db
   ::remove-query
-  [(rf/path [:traces :queries]) rf/unwrap (local-storage/after "filter-items")]
+  [(rf/path [:traces :queries]) rf/unwrap (local-storage/save "filter-items")]
   (fn [filters {:keys [id]}]
     (remove #(= (:id %) id) filters)))
 
 (rf/reg-event-db
   ::reset-queries
-  [(rf/path [:traces :queries]) (local-storage/after "filter-items")]
+  [(rf/path [:traces :queries]) (local-storage/save "filter-items")]
   (fn [_ _]
     []))
 
 (rf/reg-event-db
   ::toggle-categories
-  [(rf/path [:traces :categories]) rf/trim-v (local-storage/after "categories")]
+  [(rf/path [:traces :categories]) rf/trim-v (local-storage/save "categories")]
   (fn [old [new]]
     (if (set/superset? old new)
       (set/difference old new)
@@ -77,13 +77,13 @@
 
 (rf/reg-event-db
   ::set-categories
-  [(rf/path [:traces :categories]) rf/trim-v (local-storage/after "categories")]
+  [(rf/path [:traces :categories]) rf/trim-v (local-storage/save "categories")]
   (fn [_ [categories]]
     categories))
 
 (rf/reg-event-db
   ::set-filter-by-selected-epoch?
-  [(rf/path [:traces :filter-by-selected-epoch?]) rf/trim-v (local-storage/after "show-epoch-traces?")]
+  [(rf/path [:traces :filter-by-selected-epoch?]) rf/trim-v (local-storage/save "show-epoch-traces?")]
   (fn [_ [filter-by-selected-epoch?]]
     filter-by-selected-epoch?))
 

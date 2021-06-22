@@ -10,7 +10,7 @@
 (def paths-interceptors
   [(rf/path [:app-db :paths])
    rf/trim-v
-   (local-storage/after "app-db-paths")])
+   (local-storage/save "app-db-paths")])
 
 ;; The core idea with :app-db/update-path and :app-db/update-path-blur
 ;; is that we need to separate the users text input (`path-str`) with the
@@ -98,13 +98,13 @@
 
 (rf/reg-event-db
   ::set-json-ml-paths
-  [(rf/path [:app-db :json-ml-expansions]) rf/trim-v (local-storage/after "app-db-json-ml-expansions")]
+  [(rf/path [:app-db :json-ml-expansions]) rf/trim-v (local-storage/save "app-db-json-ml-expansions")]
   (fn [_ [paths]]
     paths))
 
 (rf/reg-event-db
   ::toggle-expansion
-  [(rf/path [:app-db :json-ml-expansions]) rf/trim-v (local-storage/after "app-db-json-ml-expansions")]
+  [(rf/path [:app-db :json-ml-expansions]) rf/trim-v (local-storage/save "app-db-json-ml-expansions")]
   (fn [paths [path]]
     (if (contains? paths path)
       (disj paths path)

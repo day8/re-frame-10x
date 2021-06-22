@@ -33,7 +33,7 @@
 
 (rf/reg-event-fx
   ::external-closed
-  [(rf/path [:settings :external-window?]) (local-storage/after "external-window?")]
+  [(rf/path [:settings :external-window?]) (local-storage/save "external-window?")]
   (fn [_ _]
     {:db false
      :fx [[:dispatch-later {:ms 400 :dispatch [::settings.events/show-panel? true]}]]}))

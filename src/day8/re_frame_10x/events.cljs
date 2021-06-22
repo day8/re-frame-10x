@@ -14,27 +14,27 @@
 
 (rf/reg-event-fx
   ::init
-  [(rf/inject-cofx ::local-storage/get {:key "panel-width-ratio" :or 0.35})
-   (rf/inject-cofx ::local-storage/get {:key "show-panel" :or true})
-   (rf/inject-cofx ::local-storage/get {:key "selected-tab" :or :event})
-   (rf/inject-cofx ::local-storage/get {:key "filter-items" :or []})
-   (rf/inject-cofx ::local-storage/get {:key "app-db-json-ml-expansions" :or #{}})
-   (rf/inject-cofx ::local-storage/get {:key "external-window?" :or false})
-   (rf/inject-cofx ::local-storage/get {:key "external-window-dimensions" :or {:width 800 :height 800 :top 0 :left 0}})
-   (rf/inject-cofx ::local-storage/get {:key "show-epoch-traces?" :or true})
-   (rf/inject-cofx ::local-storage/get {:key "using-trace?" :or true})
-   (rf/inject-cofx ::local-storage/get {:key "ignored-events" :or {}})
-   (rf/inject-cofx ::local-storage/get {:key "low-level-trace" :or {:reagent true :re-frame true}})
-   (rf/inject-cofx ::local-storage/get {:key "filtered-view-trace" :or (let [id1 (random-uuid)
-                                                                             id2  (random-uuid)]
-                                                                         {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
-                                                                          id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}})})
-   (rf/inject-cofx ::local-storage/get {:key "retained-epochs" :or 25})
-   (rf/inject-cofx ::local-storage/get {:key "app-db-paths" :or {}})
-   (rf/inject-cofx ::local-storage/get {:key "app-db-follows-events?" :or true})
-   (rf/inject-cofx ::local-storage/get {:key "ambiance" :or :bright})
-   (rf/inject-cofx ::local-storage/get {:key "syntax-color-scheme" :or :cljs-devtools})
-   (rf/inject-cofx ::local-storage/get {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose}})
+  [(rf/inject-cofx ::local-storage/load {:key "panel-width-ratio" :or 0.35})
+   (rf/inject-cofx ::local-storage/load {:key "show-panel" :or true})
+   (rf/inject-cofx ::local-storage/load {:key "selected-tab" :or :event})
+   (rf/inject-cofx ::local-storage/load {:key "filter-items" :or []})
+   (rf/inject-cofx ::local-storage/load {:key "app-db-json-ml-expansions" :or #{}})
+   (rf/inject-cofx ::local-storage/load {:key "external-window?" :or false})
+   (rf/inject-cofx ::local-storage/load {:key "external-window-dimensions" :or {:width 800 :height 800 :top 0 :left 0}})
+   (rf/inject-cofx ::local-storage/load {:key "show-epoch-traces?" :or true})
+   (rf/inject-cofx ::local-storage/load {:key "using-trace?" :or true})
+   (rf/inject-cofx ::local-storage/load {:key "ignored-events" :or {}})
+   (rf/inject-cofx ::local-storage/load {:key "low-level-trace" :or {:reagent true :re-frame true}})
+   (rf/inject-cofx ::local-storage/load {:key "filtered-view-trace" :or (let [id1 (random-uuid)
+                                                                              id2  (random-uuid)]
+                                                                          {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
+                                                                           id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}})})
+   (rf/inject-cofx ::local-storage/load {:key "retained-epochs" :or 25})
+   (rf/inject-cofx ::local-storage/load {:key "app-db-paths" :or {}})
+   (rf/inject-cofx ::local-storage/load {:key "app-db-follows-events?" :or true})
+   (rf/inject-cofx ::local-storage/load {:key "ambiance" :or :bright})
+   (rf/inject-cofx ::local-storage/load {:key "syntax-color-scheme" :or :cljs-devtools})
+   (rf/inject-cofx ::local-storage/load {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose}})
    rf/unwrap]
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?

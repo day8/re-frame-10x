@@ -7,7 +7,7 @@
 
 (rf/reg-event-db
   ::panel-width%
-  [(rf/path [:settings :panel-width%]) rf/trim-v (local-storage/after "panel-width-ratio")]
+  [(rf/path [:settings :panel-width%]) rf/trim-v (local-storage/save "panel-width-ratio")]
   (fn [_ [width%]]
     (max width% 0.05)))
 
@@ -19,7 +19,7 @@
 
 (rf/reg-event-db
   ::selected-tab
-  [(rf/path [:settings :selected-tab]) rf/trim-v (local-storage/after "selected-tab")]
+  [(rf/path [:settings :selected-tab]) rf/trim-v (local-storage/save "selected-tab")]
   (fn [_ [selected-tab]]
     selected-tab))
 
@@ -31,7 +31,7 @@
 
 (rf/reg-event-db
   ::show-panel?
-  [(rf/path [:settings :show-panel?]) rf/trim-v (local-storage/after "show-panel")]
+  [(rf/path [:settings :show-panel?]) rf/trim-v (local-storage/save "show-panel")]
   (fn [_ [show-panel?]]
     show-panel?))
 
@@ -45,19 +45,19 @@
 
 (rf/reg-event-db
   ::set-ambiance
-  [(rf/path [:settings :ambiance]) rf/trim-v (local-storage/after "ambiance")]
+  [(rf/path [:settings :ambiance]) rf/trim-v (local-storage/save "ambiance")]
   (fn [_ [ambiance]]
     ambiance))
 
 (rf/reg-event-db
   ::set-syntax-color-scheme
-  [(rf/path [:settings :syntax-color-scheme]) rf/trim-v (local-storage/after "syntax-color-scheme")]
+  [(rf/path [:settings :syntax-color-scheme]) rf/trim-v (local-storage/save "syntax-color-scheme")]
   (fn [_ [syntax-color-scheme]]
     syntax-color-scheme))
 
 (rf/reg-event-db
   ::set-number-of-retained-epochs
-  [(rf/path [:settings :number-of-epochs]) rf/trim-v (local-storage/after "retained-epochs")]
+  [(rf/path [:settings :number-of-epochs]) rf/trim-v (local-storage/save "retained-epochs")]
   (fn [_ [num-str]]
     ;; TODO: this is not perfect, there is an issue in re-com
     ;; where it won't update its model if it never receives another
@@ -73,7 +73,7 @@
 (def ignored-event-interceptors
   [(rf/path [:settings :ignored-events])
    rf/trim-v
-   (local-storage/after "ignored-events")])
+   (local-storage/save "ignored-events")])
 
 (rf/reg-event-db
   ::add-ignored-event
@@ -107,7 +107,7 @@
 (def filtered-view-trace-interceptors
   [(rf/path [:settings :filtered-view-trace])
    rf/trim-v
-   (local-storage/after "filtered-view-trace")])
+   (local-storage/save "filtered-view-trace")])
 
 (rf/reg-event-db
   ::add-filtered-view-trace
@@ -141,7 +141,7 @@
 (def low-level-trace-interceptors
   [(rf/path [:settings :low-level-trace])
    rf/trim-v
-   (local-storage/after "low-level-trace")])
+   (local-storage/save "low-level-trace")])
 
 (rf/reg-event-db
   ::set-low-level-trace
@@ -163,33 +163,33 @@
 
 (rf/reg-event-db
   ::app-db-follows-events?
-  [(rf/path [:settings :app-db-follows-events?]) rf/trim-v (local-storage/after "app-db-follows-events?")]
+  [(rf/path [:settings :app-db-follows-events?]) rf/trim-v (local-storage/save "app-db-follows-events?")]
   (fn [_ [follows-events?]]
     follows-events?))
 
 (rf/reg-event-db
   ::external-window-dimensions
-  [(rf/path [:settings :external-window-dimensions]) rf/trim-v (local-storage/after "external-window-dimensions")]
+  [(rf/path [:settings :external-window-dimensions]) rf/trim-v (local-storage/save "external-window-dimensions")]
   (fn [_ [external-window-dimensions]]
     external-window-dimensions))
 
 (rf/reg-event-db
   ::external-window-resize
-  [(rf/path [:settings :external-window-dimensions]) rf/unwrap (local-storage/after "external-window-dimensions")]
+  [(rf/path [:settings :external-window-dimensions]) rf/unwrap (local-storage/save "external-window-dimensions")]
   (fn [external-window-dimensions {:keys [width height]}]
     (assoc external-window-dimensions :width width :height height)))
 
 (rf/reg-event-db
   ::external-window-position
-  [(rf/path [:settings :external-window-dimensions]) rf/unwrap (local-storage/after "external-window-dimensions")]
+  [(rf/path [:settings :external-window-dimensions]) rf/unwrap (local-storage/save "external-window-dimensions")]
   (fn [external-window-dimensions {:keys [left top]}]
     (assoc external-window-dimensions :left left :top top)))
 
 (rf/reg-event-fx
   ::user-toggle-panel
   [(rf/path [:settings])
-   (local-storage/after "using-trace?" :using-trace?)
-   (local-storage/after "show-panel" :show-panel?)]
+   (local-storage/save "using-trace?" :using-trace?)
+   (local-storage/save "show-panel" :show-panel?)]
   (fn [{settings :db} _]
     (let [now-showing?    (not (get settings :show-panel?))
           external-panel? (get settings :external-window?)
