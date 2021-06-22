@@ -190,7 +190,7 @@
   [(rf/path [:settings])
    (local-storage/after "using-trace?" :using-trace?)
    (local-storage/after "show-panel" :show-panel?)]
-  (fn [settings _]
+  (fn [{settings :db} _]
     (let [now-showing?    (not (get settings :show-panel?))
           external-panel? (get settings :external-window?)
           using-trace?    (or external-panel? now-showing?)]
