@@ -18,7 +18,7 @@
 
 (rf/reg-event-fx
   ::launch-external-success
-  [(local-storage/after "external-window" [:settings :external-window?])]
+  [(local-storage/save "external-window?" [:settings :external-window?])]
   (fn [{:keys [db]} _]
     {:db (-> db
              (assoc-in [:settings :external-window?] true)

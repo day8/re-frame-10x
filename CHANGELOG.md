@@ -1,9 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.1.7 (2021-06-22)
+
 #### Fixed
 
 - Fix settings being mangled by false `get`. `refer-clojure :exclude` is :scream:. Fixes [#307](https://github.com/day8/re-frame-10x/issues/307). 
+- Fix incorrect key for `external-window?` setting
 
 ## 1.1.6 (2021-06-22)
 
