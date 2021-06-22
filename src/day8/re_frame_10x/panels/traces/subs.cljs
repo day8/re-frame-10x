@@ -114,9 +114,7 @@
   :<- [::filtered-by-cached-subscriptions]
   :<- [::categories]
   (fn [[traces categories] _]
-    (if-not (seq categories)
-      traces
-      (filter (fn [trace] (when (contains? categories (:op-type trace)) trace)) traces))))
+    (filter (fn [trace] (when (contains? categories (:op-type trace)) trace)) traces)))
 
 (defn query->fn [query]
   (if (= :contains (:type query))

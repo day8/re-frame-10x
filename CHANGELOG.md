@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.1.6 (2021-06-22)
+
+### Fixed
+
+- Fix exception in traces panel when unchecking all category filters. Fixes [#310](https://github.com/day8/re-frame-10x/issues/310).
+
 ## 1.1.5 (2021-06-22)
 
 ### Fixed
