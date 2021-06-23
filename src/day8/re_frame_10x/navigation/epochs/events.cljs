@@ -5,12 +5,28 @@
     [re-frame.db]
     [re-frame.trace]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+    [day8.re-frame-10x.fx.debounce                                :as debounce]
+    [day8.re-frame-10x.fx.scroll                                  :as scroll]
     [day8.re-frame-10x.tools.metamorphic                          :as metam]
     [day8.re-frame-10x.tools.coll                                 :as tools.coll]))
 
 (defn first-match-id
   [m]
   (-> m :match-info first :id))
+
+(rf/reg-event-fx
+  ::scroll-into-view-debounced
+  [rf/trim-v]
+  (fn [_ [js-dom]]
+    {:fx [[::debounce/dispatch {:key   ::scroll-into-view
+                                :event [::scroll-into-view js-dom]
+                                :delay 128}]]}))
+
+(rf/reg-event-fx
+  ::scroll-into-view
+  [rf/trim-v]
+  (fn [_ [js-dom]]
+    {:fx [[::scroll/into-view {:js-dom js-dom}]]}))
 
 (rf/reg-event-fx
   ::receive-new-traces

@@ -41,12 +41,12 @@
       {:component-did-mount
        (fn [this]
          (when @active?
-           (.scrollIntoView (rdom/dom-node this))))
+           (rf/dispatch [::epochs.events/scroll-into-view-debounced (rdom/dom-node this)])))
 
        :component-did-update
        (fn [this]
          (when @active?
-           (.scrollIntoView (rdom/dom-node this))))
+           (rf/dispatch [::epochs.events/scroll-into-view-debounced (rdom/dom-node this)])))
 
        :reagent-render
        (fn [event id]

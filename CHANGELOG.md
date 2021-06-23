@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+#### Fixed
+
+- Fix performance of auto-scrolling epoch navigation by using debounce.
+
 #### Changed
 
 - Upgrade re-highlight to 1.0.0. Includes [highlight.js 11.0.1](https://github.com/highlightjs/highlight.js/blob/main/CHANGES.md#version-1100).
