@@ -16,56 +16,36 @@ body:
       value: "A bug happened!"
     validations:
       required: true
-  - type: dropdown
-    id: version
+  - type: input
+    id: re-frame-10x-version
     attributes:
-      label: Version
+      label: 10x Version
       description: What version of re-frame-10x are you using?
-      options:
-        - 1.1.8 (Default)
-        - 1.1.7
-        - 1.1.6
-        - 1.1.5
-        - 1.1.4
-        - 1.1.3
-        - 1.1.2
-        - 1.1.1
-        - 1.1.0
-        - 1.0.2
-        - 1.0.1
-        - 1.0.0
-        - 0.7.0
-        - 0.6.7
-        - 0.6.6
-        - 0.6.5
-        - 0.6.4
-        - 0.6.3
-        - 0.6.2
-        - 0.6.1
-        - 0.6.0
-        - 0.5.2
-        - 0.5.1
-        - 0.5.0
-        - 0.4.7
-        - 0.4.6
-        - 0.4.5
-        - 0.4.4
-        - 0.4.3
-        - 0.4.2
-        - 0.4.1
-        - 0.4.0
-        - 0.3.7
-        - 0.3.6
-        - 0.3.5
-        - 0.3.4
-        - 0.3.3
-        - 0.3.2
-        - 0.3.1-react16
-        - 0.3.1
-        - 0.3.0-react16
-        - 0.3.0
     validations:
       required: true
+  - type: input
+    id: reagent-version
+    attributes:
+      label: Reagent Version
+      description: What version of reagent are you using?
+    validations:
+      required: true
+  - type: input
+    id: react-version
+    attributes:
+      label: React Version
+      description: What version of React are you using?
+    validations:
+      required: true
+  - type: input
+    id: re-frame-version
+    attributes:
+      label: re-frame Version
+      description: What version of re-frame are you using?
+    validations:
+      required: true
+ 
+      
   - type: dropdown
     id: browsers
     attributes:
