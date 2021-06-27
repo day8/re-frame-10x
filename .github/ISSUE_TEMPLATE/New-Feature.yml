@@ -12,7 +12,7 @@ body:
     attributes:
       label: What do you suggest?
       description: Also tell us, how will this improve your development workflow?
-      placeholder: Tell us what your vision!
+      placeholder: Tell us your vision!
       value: "Make it better!"
     validations:
       required: true
