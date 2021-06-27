@@ -1,0 +1,18 @@
+name: Enhancement
+description: Suggest a new feature or improvement
+title: "[Enhancement]: "
+labels: [enhancement, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new feature or improvement. A PR would be even better!
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: What do you suggest?
+      description: Also tell us, how will this improve your development workflow?
+      placeholder: Tell us what your vision!
+      value: "Make it better!"
+    validations:
+      required: true
