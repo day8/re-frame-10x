@@ -1,15 +1,17 @@
 (ns day8.re-frame-10x.navigation.views
   (:require
-    [goog.object                                                  :as gobj]
-    [re-frame.db                                                  :as db]
+    [goog.object :as gobj]
+    [re-frame.db :as db]
     [re-frame.trace]
-    [reagent.impl.batching                                        :as batching]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
+    [reagent.impl.batching :as batching]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core    :refer [css style]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core            :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom   :as spade.dom]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
     [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]
     [day8.re-frame-10x.components.buttons                         :as buttons]
     [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
@@ -32,7 +34,6 @@
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.svgs                                       :as svgs]
     [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.runtime    :as spade.runtime]
     [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]))
 
 
@@ -299,7 +300,8 @@
   ;; When programming here, we need to be careful about which document and window
   ;; we are operating on, and keep in mind that the window can close without going
   ;; through standard react lifecycle, so we hook the beforeunload event.
-  (let [container                (tools.shadow-dom/shadow-root popup-document "--re-frame-10x--")
+  (let [shadow-root              (tools.shadow-dom/shadow-root popup-document "--re-frame-10x--")
+        spade-container          (spade.dom/create-container shadow-root)
         resize-update-scheduled? (atom false)
         handle-window-resize     (fn [e]
                                    (when-not @resize-update-scheduled?
@@ -338,5 +340,7 @@
                                               handle-window-position
                                               2000)))
           :component-will-unmount unmount
-          :reagent-render         (fn [] [devtools-inner {:panel-type :popup}])})]
-      container)))
+          :reagent-render         (fn []
+                                    [spade.react/with-style-container spade-container
+                                     [devtools-inner {:panel-type :popup}]])})]
+      shadow-root)))

@@ -3,7 +3,9 @@
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.runtime    :as spade.runtime]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime         :as spade.runtime]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom   :as spade.dom]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
     [day8.reagent.impl.batching                                   :refer [patch-next-tick]]
     [day8.reagent.impl.component                                  :refer [patch-wrap-funs patch-custom-wrapper]]
     [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]
@@ -126,11 +128,15 @@
 (defn inject!
   []
   (rf/clear-subscription-cache!)
-  (let [container (tools.shadow-dom/shadow-root js/document "--re-frame-10x--")]
+  (let [shadow-root (tools.shadow-dom/shadow-root js/document "--re-frame-10x--")
+        container   (spade.dom/create-container shadow-root)]
+
     (rdom/render
-      [devtools-outer
-       {:panel-type :inline
-        :debug?     debug?}] container)))
+      [spade.react/with-style-container container
+       [devtools-outer
+        {:panel-type :inline
+         :debug?     debug?}]]
+      shadow-root)))
 
 (defn patch!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."

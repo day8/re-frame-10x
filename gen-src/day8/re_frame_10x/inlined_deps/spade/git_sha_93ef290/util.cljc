@@ -1,4 +1,4 @@
-(ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.util
+(ns ^:no-doc day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.util
   (:require [clojure.string :as str]))
 
 (defn factory->name
@@ -7,7 +7,8 @@
    factory; subsequent calls for the same factory *may not* return the
    same value (especially under :simple optimizations)."
   [factory]
-  (let [given-name (.-name factory)]
+  (let [given-name #?(:cljs (.-name factory)
+                      :clj (-> factory meta :name str))]
     (if (empty? given-name)
       ; under :simple optimizations, the way the function is declared does
       ; not leave any value for its name. so... generate one!
@@ -17,7 +18,7 @@
       ; this lets us have descriptive names in dev, and concise names in
       ; prod, without having to embed anything extra in the file
       (-> given-name
-          (str/replace "_factory$" "")
+          (str/replace #"[_-]factory\$" "")
           (str/replace #"[_$]" "-")
           (str/replace #"^-" "_")))))
 

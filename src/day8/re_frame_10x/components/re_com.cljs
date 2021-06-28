@@ -5,7 +5,7 @@
   (:require
     [clojure.string                                              :as string]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core      :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core      :refer [defclass]]
     [day8.re-frame-10x.material                                  :as material]))
 
 (defn px

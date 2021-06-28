@@ -6,7 +6,7 @@
     [re-highlight.core                                            :as re-highlight]
     ["highlight.js/lib/languages/clojure"]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px ms]]
-    [day8.re-frame-10x.inlined-deps.spade.v1v1v0.spade.core       :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
