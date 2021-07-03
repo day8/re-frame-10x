@@ -2,11 +2,22 @@
   (:require
     [goog.storage.Storage]
     [goog.storage.mechanism.HTML5LocalStorage]
+    [goog.testing.storage.FakeMechanism]
     [cljs.reader                                                  :as reader]
     [clojure.string                                               :as string]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
 
-(def storage (goog.storage.Storage. (goog.storage.mechanism.HTML5LocalStorage.)))
+(def storage-mechanism
+  "LocalStorage is not available in sandboxed iframes, so check
+  window.localStorage and use the fake storage mechanism if it's not available.
+  re-frame-10x settings will not persist, but it will work."
+  (try
+    (when js/localStorage
+      (goog.storage.mechanism.HTML5LocalStorage.))
+    (catch js/Error _
+      (goog.testing.storage.FakeMechanism.))))
+
+(def storage (goog.storage.Storage. storage-mechanism))
 
 (def safe-prefix "day8.re-frame-10x.")
 
@@ -24,10 +35,16 @@
        not-found
        (reader/read-string value)))))
 
+(defn- all-keys []
+  (try
+    (js/Object.keys js/localStorage)
+    (catch js/Error _
+      [])))
+
 (defn delete-all-keys!
   "Deletes all re-frame-10x config keys"
   []
-  (doseq [k (js/Object.keys js/localStorage)]
+  (doseq [k (all-keys)]
     (when (string/starts-with? k safe-prefix)
       (.remove storage k))))
 
