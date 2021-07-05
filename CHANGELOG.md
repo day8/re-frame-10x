@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file. This change
 
 #### Fixed
 
+- Fix crash when `window.localStorage` is not available. See [#308](https://github.com/day8/re-frame-10x/issues/308). Thanks to [@shepheb](https://github.com/shepheb).
+
+#### Changed
+
+- Upgrade inlined spade to git sha 93ef290
+
+## 1.1.8 (2021-07-05)
+
+#### Fixed
+
 - Fix performance of auto-scrolling epoch navigation by using debounce.
 
 #### Changed
