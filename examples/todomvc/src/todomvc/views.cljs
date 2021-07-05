@@ -100,6 +100,11 @@
 (defn todo-app
   []
   [:div
+   [:section#10x-dev
+    [:a
+     {:on-click #(dispatch [:flood])
+      :style {:cursor "pointer"}}
+     "Flood Events & app-db"]]
    [:section#todoapp
     [task-entry]
     (when (seq @(subscribe [:todos]))

@@ -35,7 +35,8 @@
 
   :release-tasks [["deploy" "clojars"]]
 
-  :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]]}
+  :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]
+                                         [metosin/malli   "0.5.1"]]}
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
                           :dependencies ^:replace [^:source-dep [re-frame "1.1.2"
                                                                  :exclusions [reagent

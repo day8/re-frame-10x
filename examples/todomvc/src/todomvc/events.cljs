@@ -3,7 +3,9 @@
     [todomvc.db :refer [default-db todos->local-store]]
     [re-frame.core :refer [reg-event-db reg-event-fx inject-cofx path after]]
     [cljs.spec.alpha :as s]
-    [day8.re-frame.tracing :refer-macros [fn-traced]]))
+    [day8.re-frame.tracing :refer-macros [fn-traced]]
+    [malli.generator :as mg]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
 
 
 ;; -- Interceptors --------------------------------------------------------------
@@ -222,3 +224,24 @@
                (reduce #(assoc-in %1 [%2 :done] new-done)
                        todos
                        (keys todos)))))
+
+(def Address
+  [:map
+   [:id string?]
+   [:tags [:set keyword?]]
+   [:address
+    [:map
+     [:street string?]
+     [:city string?]
+     [:zip int?]
+     [:lonlat [:tuple double? double?]]]]])
+
+(reg-event-fx
+  :flood
+  [(rf/path :flood)]
+  (fn-traced [{:keys [db]} _]
+    {:fx [[:dispatch-later {:ms 500 :dispatch [:flood]}]]
+     :db (let [address (mg/generate Address)]
+           (if db
+             (conj db address)
+             [address]))}))
