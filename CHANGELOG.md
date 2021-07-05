@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.1.9 (2021-07-05)
+
 #### Fixed
 
 - Fix crash when `window.localStorage` is not available. See [#308](https://github.com/day8/re-frame-10x/issues/308). Thanks to [@shepheb](https://github.com/shepheb).
@@ -9,7 +11,7 @@ All notable changes to this project will be documented in this file. This change
 
 - Upgrade inlined spade to git sha 93ef290
 
-## 1.1.8 (2021-07-05)
+## 1.1.8 (2021-06-23)
 
 #### Fixed
 
