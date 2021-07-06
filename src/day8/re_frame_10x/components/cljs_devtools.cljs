@@ -202,13 +202,17 @@
                             :color            styles/nord0})
    :body-style      (style body-style-base {:background-color styles/nord6})})
 
+;; This used to be in the api-call fn below. However, recalculating this on *every* render is expensive so moved
+;; here as static def.
+;; TODO: If we expose ambiance and/or syntax color scheme as settings will need to fix this, maybe by recalculating
+;; at the time the setting is changed/loaded.
+(def config
+  (merge default-config
+         (base-config :bright :cljs-devtools)
+         #_bright-ambiance-config))
+
 (defn api-call [api-fn ambiance syntax-color-scheme & args]
-  (let [config   (merge default-config
-                        (base-config ambiance syntax-color-scheme)
-                        #_(if (= ambiance :bright)
-                            bright-ambiance-config
-                            dark-ambiance-config))]
-    (with-cljs-devtools-prefs config (apply api-fn args))))
+  (with-cljs-devtools-prefs config (apply api-fn args)))
 
 (defn header [ambiance syntax-color-scheme & args]
   (apply api-call devtools.formatters.core/header-api-call ambiance syntax-color-scheme args))
