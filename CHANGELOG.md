@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+#### Changed
+
+- Upgrade re-highlight to 1.1.0. Includes [highlight.js 11.1.0](https://github.com/highlightjs/highlight.js/blob/main/CHANGES.md#version-1110).
+
+## 1.1.10 (2021-07-07)
+
+#### Fixed
+
+- Fix performance regression in 1.1.* due to rebuilding cljs-devtools configuration on every render.
+
 ## 1.1.9 (2021-07-05)
 
 #### Fixed
