@@ -18,9 +18,7 @@
                  [cljsjs/highlight                     "10.3.1-0"]]
 
   :plugins      [[day8/lein-git-inject "0.0.14"]
-                 [thomasa/mranderson   "0.5.3"]
-                 [lein-less            "RELEASE"]
-                 [lein-ancient         "0.6.15"]]
+                 [lein-less            "RELEASE"]]
 
   :middleware   [leiningen.git-inject/middleware]
 
@@ -36,7 +34,10 @@
   :release-tasks [["deploy" "clojars"]]
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]
-                                         [metosin/malli   "0.5.1"]]}
+                                         [metosin/malli   "0.5.1"]]
+                          :plugins      [[com.github.liquidz/antq "RELEASE"]
+                                         [thomasa/mranderson      "0.5.3"]]
+                          :antq         {}}
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
                           :dependencies ^:replace [^:source-dep [re-frame "1.1.2"
                                                                  :exclusions [reagent
