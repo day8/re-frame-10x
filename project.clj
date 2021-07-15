@@ -37,6 +37,7 @@
                                          [metosin/malli   "0.5.1"]]
                           :plugins      [[com.github.liquidz/antq "RELEASE"]
                                          [thomasa/mranderson      "0.5.3"]
+                                         [lein-count              "1.0.9"]
                                          [lein-pprint             "1.3.2"]]
                           :antq         {}}
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
