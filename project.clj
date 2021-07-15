@@ -34,12 +34,20 @@
   :release-tasks [["deploy" "clojars"]]
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]
-                                         [metosin/malli   "0.5.1"]]
+                                         [metosin/malli   "0.5.1"]
+                                         [clj-kondo       "RELEASE"]]
                           :plugins      [[com.github.liquidz/antq "RELEASE"]
                                          [thomasa/mranderson      "0.5.3"]
                                          [lein-count              "1.0.9"]
                                          [lein-pprint             "1.3.2"]]
-                          :antq         {}}
+                          :antq         {}
+                          :aliases      {"lint" ["run" "-m" "clj-kondo.main"
+                                                 "--lint"
+                                                 "src"  ; ~#(clojure.string/join ";" (leiningen.core.classpath/get-classpath %))
+                                                 "--config"
+                                                 ".clj-kondo/config.edn"
+                                                 "--parallel"
+                                                 "--copy-configs"]}}
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
                           :dependencies ^:replace [^:source-dep [re-frame "1.1.2"
                                                                  :exclusions [reagent

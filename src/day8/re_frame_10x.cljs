@@ -1,20 +1,19 @@
 (ns day8.re-frame-10x
   (:require
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime         :as spade.runtime]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core           :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom            :as rdom]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core         :as rf]
+    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db]
     [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom   :as spade.dom]
     [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
-    [day8.reagent.impl.batching                                   :refer [patch-next-tick]]
-    [day8.reagent.impl.component                                  :refer [patch-wrap-funs patch-custom-wrapper]]
-    [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]
-    [day8.re-frame-10x.events                                     :as events]
-    [day8.re-frame-10x.components.re-com                          :as rc]
-    [day8.re-frame-10x.navigation.views                           :as container]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
-    [day8.re-frame-10x.panels.settings.events                     :as settings.events]
-    [day8.re-frame-10x.styles                                     :as styles]))
+    [day8.reagent.impl.batching                                           :refer [patch-next-tick]]
+    [day8.reagent.impl.component                                          :refer [patch-wrap-funs patch-custom-wrapper]]
+    [day8.re-frame-10x.tools.shadow-dom                                   :as tools.shadow-dom]
+    [day8.re-frame-10x.events                                             :as events]
+    [day8.re-frame-10x.components.re-com                                  :as rc]
+    [day8.re-frame-10x.navigation.views                                   :as container]
+    [day8.re-frame-10x.panels.settings.subs                               :as settings.subs]
+    [day8.re-frame-10x.panels.settings.events                             :as settings.events]))
 
 (goog-define debug? false)
 
@@ -33,15 +32,12 @@
 (defn devtools-outer [opts]
   ;; Add clear button
   ;; Filter out different trace types
-  (let [position             (r/atom :right)
-        panel-width%         (rf/subscribe [::settings.subs/panel-width%])
+  (let [panel-width%         (rf/subscribe [::settings.subs/panel-width%])
         showing?             (rf/subscribe [::settings.subs/show-panel?])
         dragging?            (r/atom false)
-        pin-to-bottom?       (r/atom true)
-        selected-tab         (rf/subscribe [::settings.subs/selected-tab])
         window-width         (r/atom js/window.innerWidth)
         handle-window-resize (do (rf/dispatch [::settings.events/window-width js/window.innerWidth]) ;; Set initial
-                                 (fn [e]
+                                 (fn [_]
                                    ;; N.B. I don't think this should be a perf bottleneck.
                                    (let [window-width-val js/window.innerWidth]
                                      (rf/dispatch [::settings.events/window-width window-width-val])
@@ -64,7 +60,7 @@
                                      (when (<= width% 0.9)
                                        (rf/dispatch [::settings.events/panel-width% width%])))
                                    (reset! window-width new-window-width))))
-        handle-mouse-up      (fn [e] (reset! dragging? false))]
+        handle-mouse-up      (fn [_] (reset! dragging? false))]
     (r/create-class
       {:component-did-mount    (fn []
                                  (js/window.addEventListener "keydown" handle-keys)

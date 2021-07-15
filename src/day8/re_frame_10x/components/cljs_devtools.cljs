@@ -5,13 +5,10 @@
     [clojure.string :as string]
     [devtools.prefs]
     [devtools.formatters.core]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db   :as db]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core    :refer [style]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [em px percent]]
     [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
-    [day8.re-frame-10x.components.buttons                         :as buttons]
     [day8.re-frame-10x.components.re-com                          :as rc]
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.styles                                     :as styles]
@@ -211,17 +208,17 @@
          (base-config :bright :cljs-devtools)
          #_bright-ambiance-config))
 
-(defn api-call [api-fn ambiance syntax-color-scheme & args]
+(defn api-call [api-fn & args]
   (with-cljs-devtools-prefs config (apply api-fn args)))
 
-(defn header [ambiance syntax-color-scheme & args]
-  (apply api-call devtools.formatters.core/header-api-call ambiance syntax-color-scheme args))
+(defn header [& args]
+  (apply api-call devtools.formatters.core/header-api-call args))
 
-(defn body [ambiance syntax-color-scheme & args]
-  (apply api-call devtools.formatters.core/body-api-call ambiance syntax-color-scheme args))
+(defn body [& args]
+  (apply api-call devtools.formatters.core/body-api-call args))
 
-(defn has-body [ambiance syntax-color-scheme & args]
-  (apply api-call devtools.formatters.core/has-body-api-call ambiance syntax-color-scheme args))
+(defn has-body [& args]
+  (apply api-call devtools.formatters.core/has-body-api-call args))
 
 (defn get-object [jsonml]
   (.-object (get jsonml 1)))
@@ -254,7 +251,7 @@
   [:svg :path
    {:fill (if (= ambiance :bright) styles/nord0 styles/nord5)}])
 
-(defn data-structure [jsonml path]
+(defn data-structure [_ path]
   (let [ambiance            (rf/subscribe [::settings.subs/ambiance])
         syntax-color-scheme (rf/subscribe [::settings.subs/syntax-color-scheme])
         expanded?           (rf/subscribe [::app-db.subs/node-expanded? path])]
@@ -270,24 +267,20 @@
        (if (and @expanded? (has-body @ambiance @syntax-color-scheme (get-object jsonml) (get-config jsonml)))
          (jsonml->hiccup
            (body
-             @ambiance
-             @syntax-color-scheme
              (get-object jsonml)
              (get-config jsonml))
            (conj path :body))
          (jsonml->hiccup
            (header
-             @ambiance
-             @syntax-color-scheme
              (get-object jsonml)
              (get-config jsonml))
            (conj path :header)))])))
 
-(defn string->css [css-string]
+(defn string->css
   "This function converts jsonml css-strings to valid css maps for hiccup.
   Example: 'margin-left:0px;min-height:14px;' converts to
            {:margin-left '0px', :min-height '14px'}"
-
+  [css-string]
   (->> (string/split css-string #";")
        (map #(string/split % #":"))
        (reduce (fn [acc [property value]]
@@ -346,4 +339,4 @@
        :child
        (if (prn-str-render? data)
          (prn-str-render data)
-         (jsonml->hiccup (header @ambiance @syntax-color-scheme data) (conj path 0)))])))
+         (jsonml->hiccup (header data) (conj path 0)))])))

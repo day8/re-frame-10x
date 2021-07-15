@@ -18,7 +18,7 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]))
 
 (defclass selected-epoch-style
-  [ambiance active?]
+  [ambiance]
   {:composes    (styles/frame-2 ambiance)
    :height      styles/gs-31
    :margin-left styles/gs-12
@@ -30,7 +30,7 @@
         filter-by-selected-epoch? @(rf/subscribe [::traces.subs/filter-by-selected-epoch?])
         model                     (if filter-by-selected-epoch? :epoch :all)]
     [rc/h-box
-     :class    (selected-epoch-style ambiance filter-by-selected-epoch?)
+     :class    (selected-epoch-style ambiance)
      :align    :center
      :gap      styles/gs-12s
      :children
@@ -58,7 +58,7 @@
       nil)))
 
 (defclass category-style
-  [ambiance op-type checked?]
+  [op-type checked?]
   {;:composes        (styles/control-2 ambiance active?)
    :font-size        (px 12)
    :background-color (op-type->color op-type)
@@ -81,7 +81,7 @@
   (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
         categories @(rf/subscribe [::traces.subs/categories])
         checked?   (contains? categories (first keys))]
-    [:li {:class    (category-style ambiance (first keys) checked?)
+    [:li {:class    (category-style (first keys) checked?)
           :on-click #(rf/dispatch [::traces.events/toggle-categories keys])}
      (if checked?
        [material/check-box
@@ -92,7 +92,7 @@
       :label label]]))
 
 (defclass categories-style
-  [ambiance]
+  []
   {;:composes    (styles/frame-1 ambiance)
    :list-style  :none
    :display     :flex
@@ -103,8 +103,7 @@
 
 (defn filters
   []
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
-        options  [{:label "events"
+  (let [options  [{:label "events"
                    :keys #{:event}}
                   {:label "subs"
                    :keys  #{:sub/run :sub/create :sub/dispose}}
@@ -117,20 +116,19 @@
      :children
      [
       (into
-        [:ul {:class (categories-style ambiance)}
+        [:ul {:class (categories-style)}
          [rc/label :label "show:"]]
         (for [m options]
           [category m]))
       [selected-epoch]]]))
 
 (defclass draft-query-error-style
-  [ambiance]
+  []
   {:color styles/nord11})
 
 (defn draft-query
   []
-  (let [ambiance           @(rf/subscribe [::settings.subs/ambiance])
-        draft-query-type   @(rf/subscribe [::traces.subs/draft-query-type])
+  (let [draft-query-type   @(rf/subscribe [::traces.subs/draft-query-type])
         draft-query        @(rf/subscribe [::traces.subs/draft-query])
         draft-query-error? @(rf/subscribe [::traces.subs/draft-query-error])]
     [rc/h-box
@@ -147,17 +145,16 @@
         :placeholder "filter traces"}]
       (if draft-query-error?
         [rc/label
-         :class (draft-query-error-style ambiance)
+         :class (draft-query-error-style)
          :label "Please enter a valid number."])]]))
 
 (defclass query-clear-button-style
-  [ambiance]
+  []
   {:cursor :pointer})
 
 (defn queries
   []
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
-        queries  @(rf/subscribe [::traces.subs/queries])]
+  (let [queries  @(rf/subscribe [::traces.subs/queries])]
     [rc/v-box
      :gap      styles/gs-19s
      :children
@@ -176,7 +173,7 @@
                 [[:span type ": " query (when (= :slower-than type) " ms")]
                  [rc/box
                   :attr  {:on-click #(rf/dispatch [::traces.events/remove-query {:id id}])}
-                  :class (query-clear-button-style ambiance)
+                  :class (query-clear-button-style)
                   :child
                   [material/clear]]]])
              queries))])]]))
@@ -199,12 +196,12 @@
    :border-left [[(px 1) :solid (if (= :bright ambiance) styles/nord4 styles/nord3)]]})
 
 (defclass table-row-style
-  [ambiance op-type]
+  [op-type]
   {:color            styles/nord1
    :background-color (op-type->color op-type)})
 
 (defclass clickable-table-cell-style
-  [ambiance op-type]
+  [op-type]
   {:cursor :pointer}
   [:&:hover
    {:background-color (color/lighten (op-type->color op-type) 2)}])
@@ -234,7 +231,7 @@
                               operation)]
     [:<>
      [rc/h-box
-      :class    (table-row-style ambiance op-type)
+      :class    (table-row-style op-type)
       :height   styles/gs-19s
       :children
       [[rc/box
@@ -247,7 +244,7 @@
           [material/arrow-drop-down]
           [material/arrow-right])]
        [rc/box
-        :class (clickable-table-cell-style ambiance op-type)
+        :class (clickable-table-cell-style op-type)
         :width styles/gs-81s
         :attr  {:on-click
                 (fn [ev]
@@ -257,7 +254,7 @@
         [:span (str op-type)]]
        [rc/h-box
         :size      "1"
-        :class     (clickable-table-cell-style ambiance op-type)
+        :class     (clickable-table-cell-style op-type)
         :attr      {:on-click
                     (fn [ev]
                       (rf/dispatch [::traces.events/add-query {:query (name op-name) :type :contains}])

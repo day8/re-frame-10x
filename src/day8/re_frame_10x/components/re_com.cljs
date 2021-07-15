@@ -147,8 +147,7 @@
 
 (defn gap-f
   "Returns a component which produces a gap between children in a v-box/h-box along the main axis"
-  [& {:keys [size width height class style attr]
-      :as   args}]
+  [& {:keys [size width height class style attr]}]
   (let [s (merge
             (when size (flex-child-style size))
             (when width {:width width})
@@ -164,8 +163,7 @@
    It's primary role is to act as a container for components and lays it's children from left to right.
    By default, it also acts as a child under it's parent"
   [& {:keys [size width height min-width min-height max-width max-height justify align align-self margin padding gap children class style attr]
-      :or   {size "none" justify :start align :stretch}
-      :as   args}]
+      :or   {size "none" justify :start align :stretch}}]
   (let [s        (merge
                    (flex-flow-style "row nowrap")
                    (flex-child-style size)
@@ -198,8 +196,7 @@
    It's primary role is to act as a container for components and lays it's children from top to bottom.
    By default, it also acts as a child under it's parent"
   [& {:keys [size width height min-width min-height max-width max-height justify align align-self margin padding gap children class style attr]
-      :or   {size "none" justify :start align :stretch}
-      :as   args}]
+      :or   {size "none" justify :start align :stretch}}]
   (let [s        (merge
                    (flex-flow-style "column nowrap")
                    (flex-child-style size)
@@ -279,8 +276,7 @@
   "Returns hiccup which produces a box, which is generally used as a child of a v-box or an h-box.
    By default, it also acts as a container for further child compenents, or another h-box or v-box"
   [& {:keys [size scroll h-scroll v-scroll width height min-width min-height max-width max-height justify align align-self margin padding child class style attr]
-      :or   {size "none"}
-      :as   args}]
+      :or   {size "none"}}]
   (box-base :size size
             :scroll scroll
             :h-scroll h-scroll
@@ -306,8 +302,7 @@
   "Returns a component which produces a line between children in a v-box/h-box along the main axis.
    Specify size in pixels and a stancard CSS color. Defaults to a 1px lightgray line"
   [& {:keys [size color class style attr]
-      :or   {size "1px" color "lightgray"}
-      :as   args}]
+      :or   {size "1px" color "lightgray"}}]
   (let [s (merge
             (flex-child-style (str "0 0 " size))
             {:background-color color}
@@ -319,13 +314,12 @@
 
 (defn- input-text-base
   "Returns markup for a basic text input label"
-  [& {:keys [model input-type] :as args}]
+  [& {:keys [model input-type]}]
   (let [external-model (reagent/atom (deref-or-value model)) ;; Holds the last known external value of model, to detect external model changes
         internal-model (reagent/atom (if (nil? @external-model) "" @external-model))] ;; Create a new atom from the model to be used internally (avoid nil)
     (fn
       [& {:keys [model on-change on-submit status status-icon? status-tooltip placeholder width height rows change-on-blur? validation-regex disabled? class style attr]
-          :or   {change-on-blur? true}
-          :as   args}]
+          :or   {change-on-blur? true}}]
       (let [latest-ext-model (deref-or-value model)
             disabled?        (deref-or-value disabled?)
             change-on-blur?  (deref-or-value change-on-blur?)
@@ -399,8 +393,7 @@
 
 (defn label
   "Returns markup for a basic label"
-  [& {:keys [label on-click width class style attr]
-      :as   args}]
+  [& {:keys [label on-click width class style attr]}]
   [box
    :class (str "rc-label-wrapper " (inline-flex-style))
    :width width
@@ -445,8 +438,7 @@
   (let [showing? (reagent/atom false)]
     (fn
       [& {:keys [label on-click disabled? class style attr]
-          :or   {class "btn-default"}
-          :as   args}]
+          :or   {class "btn-default"}}]
       (let [disabled?  (deref-or-value disabled?)
             the-button [:button
                         (merge
@@ -474,7 +466,7 @@
   []
   (let [showing? (reagent/atom false)]
     (fn
-      [& {:keys [label on-click disabled? class style attr] :as args}]
+      [& {:keys [label on-click disabled? class style attr]}]
       (let [label      (deref-or-value label)
             disabled?  (deref-or-value disabled?)
             the-button [box
@@ -504,7 +496,7 @@
   []
   (let [showing? (reagent/atom false)]
     (fn
-      [& {:keys [label href target tooltip tooltip-position class style attr] :as args}]
+      [& {:keys [label href target tooltip tooltip-position class style attr]}]
       (when-not tooltip (reset! showing? false)) ;; To prevent tooltip from still showing after button drag/drop
       (let [label      (deref-or-value label)
             href       (deref-or-value href)
@@ -528,8 +520,7 @@
 
 (defn checkbox
   "I return the markup for a checkbox, with an optional RHS label"
-  [& {:keys [model on-change label disabled? label-class label-style class style attr]
-      :as   args}]
+  [& {:keys [model on-change label disabled? label-class label-style class style attr]}]
   (let [cursor      "default"
         model       (deref-or-value model)
         disabled?   (deref-or-value disabled?)
@@ -561,8 +552,7 @@
 
 (defn radio-button
   "I return the markup for a radio button, with an optional RHS label"
-  [& {:keys [model value on-change label disabled? label-class label-style class style attr]
-      :as   args}]
+  [& {:keys [model value on-change label disabled? label-class label-style class style attr]}]
   (let [cursor      "default"
         model       (deref-or-value model)
         disabled?   (deref-or-value disabled?)

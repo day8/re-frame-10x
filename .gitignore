@@ -14,6 +14,7 @@ core/
 out/
 target/
 compiled/
+.clj-kondo/.cache
 misc/
 .floo
 .flooignore

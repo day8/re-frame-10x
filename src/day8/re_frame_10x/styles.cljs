@@ -517,7 +517,7 @@
     :color nord7}])
 
 (defclass no-select
-  [ambiance]
+  []
   {:-webkit-touch-callout :none
    :-webkit-user-select   :none
    :-khtml-user-select    :none
@@ -526,13 +526,13 @@
    :user-select           :none})
 
 (defclass done-button
-  [ambiance]
+  []
   {:background-color nord13}
   [:&:hover
    {:background-color nord13}])
 
 (defclass trace-table
-  [ambiance]
+  []
   {:background-color nord4
    :border-radius    gs-2}
   [:thead

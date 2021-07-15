@@ -1,0 +1,5 @@
+{:lint-as
+ {day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors/defpseudoclass clojure.core/def
+  day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors/defpseudoelement clojure.core/def
+  day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units/defunit clojure.core/def
+  day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core/defclass clojure.core/defn}}

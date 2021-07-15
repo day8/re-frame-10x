@@ -77,7 +77,7 @@
          :height styles/gs-31s
          :justify :center
          :align :center
-         :class  (styles/no-select ambiance)
+         :class  (styles/no-select)
          :style  {:cursor "pointer"}
          :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
                   :on-click (handler-fn (rf/dispatch [::app-db.events/set-path-visibility id (not open?)]))}

@@ -4,14 +4,13 @@
     [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
     [day8.re-frame-10x.components.re-com                          :as rc]
-    [day8.re-frame-10x.navigation.events                          :as navigation.events]
     [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.styles                                     :as styles]))
 
 
 (defclass icon-style
-  [ambiance disabled?]
+  [disabled?]
   {:cursor           (if disabled? :default :pointer)
    :border-radius    (px 3)
    :background-color (if disabled? styles/nord2 styles/nord5)
@@ -27,11 +26,10 @@
       {:fill styles/nord1}]]))
 
 (defn icon
-  [{:keys [icon label title on-click disabled? class] :as args}]
-  (let [ambiance  @(rf/subscribe [::settings.subs/ambiance])
-        disabled? (rc/deref-or-value disabled?)]
+  [{:keys [icon label title on-click disabled? class]}]
+  (let [disabled? (rc/deref-or-value disabled?)]
     [rc/button
-     :class    (str (icon-style ambiance disabled?) " " class)
+     :class    (str (icon-style disabled?) " " class)
      :attr     {:title title}
      :label    [rc/h-box
                 :align    :center
@@ -44,7 +42,7 @@
      :on-click #(when-not disabled? (on-click))]))
 
 (defclass expansion-style
-  [ambiance]
+  []
   {:cursor :pointer}
   [:svg :path
    {:fill styles/nord0}]
@@ -54,9 +52,8 @@
 
 (defn expansion
   [{:keys [open? size]}]
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-    [rc/box
-     :class (expansion-style ambiance)
-     :child (if open?
-              [material/arrow-drop-down {:size size}]
-              [material/arrow-right {:size size}])]))
+  [rc/box
+   :class (expansion-style)
+   :child (if open?
+            [material/arrow-drop-down {:size size}]
+            [material/arrow-right {:size size}])])

@@ -27,7 +27,7 @@
   []
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [buttons/icon
-     {:class    (styles/done-button ambiance)
+     {:class    (styles/done-button)
       :icon     [material/check-circle-outline]
       :label    "Done"
       :on-click #(rf/dispatch [::settings.events/toggle])}]))
