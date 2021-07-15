@@ -3,13 +3,14 @@
   day8.re-frame-10x.tools.pretty-print-condensed
   (:refer-clojure :exclude [pr-seq-writer string-print pr-str-with-opts pr-opts pr])
   (:require [clojure.string :as str]
-            [goog.string    :as gstring])
+            [goog.string    :as gstring]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db])
   (:import [goog.string StringBuffer]))
 
 (defprotocol ILimited
   (-limited? [x]))
 
-(defn ^string truncate-string
+(defn ^js/String truncate-string
   "Truncate a string to length `n`.
 
   Removal occurs at `cut-from`, which may be :start, :end, or :middle.
@@ -55,7 +56,7 @@
   (assert (= (truncate-string 7 :middle "123456789") "12...89"))
   (assert (= (truncate-string 8 :middle "123456789") "12...789")))
 
-(defn ^string truncate-segments
+(defn ^js/String truncate-segments
   ([s limit] (truncate-segments s limit #"^[^.]+\." "…"))
   ([s limit match trunc-prefix]
    (if (<= (count s) limit)
@@ -85,7 +86,7 @@
   (assert (= (truncate-segments "a.b.c" 5) "a.b.c"))
   (assert (= (truncate-segments "a.b.c" 6) "a.b.c")))
 
-(defn ^string truncate-named
+(defn ^js/String truncate-named
   "Truncates `named`, which must satisfy INamed protocol, to within `n`
    characters, cutting from beginning. Adds a `…` prefix to indicate where
    cutting has occurred."
@@ -149,7 +150,7 @@
   (assert (= (truncate-named 14 'city/saskatoon) "city/saskatoon"))
   (assert (= (truncate-named 15 'city/saskatoon) "city/saskatoon")))
 
-(defn ^string truncate [n location param]
+(defn ^js/String truncate [n location param]
   (if (satisfies? INamed param)
     (truncate-named n param)
     (truncate-string n location (str param))))
@@ -272,7 +273,7 @@
          (truncate-string n))))
 
 (comment (defn testit []
-           (dotimes [i 5]
+           (dotimes [_ 5]
              (time
                (pr-str-truncated 200 @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db)))
            (pr-str-truncated 200 "=>" @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db)))

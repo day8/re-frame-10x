@@ -53,7 +53,7 @@
         handle-mousemove     (fn [e]
                                (when @dragging?
                                  (let [x                (.-clientX e)
-                                       y                (.-clientY e)
+                                       #_#_y                (.-clientY e)
                                        new-window-width js/window.innerWidth]
                                    (.preventDefault e)
                                    (let [width% (/ (- new-window-width x) new-window-width)]

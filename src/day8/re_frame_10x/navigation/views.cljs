@@ -7,12 +7,11 @@
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core    :refer [css style]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
     [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core            :refer [defclass]]
     [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom   :as spade.dom]
     [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
-    [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]
     [day8.re-frame-10x.components.buttons                         :as buttons]
     [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
     [day8.re-frame-10x.components.re-com                          :as rc]
@@ -32,7 +31,6 @@
     [day8.re-frame-10x.panels.timing.views                        :as timing.views]
     [day8.re-frame-10x.panels.traces.views                        :as traces.views]
     [day8.re-frame-10x.material                                   :as material]
-    [day8.re-frame-10x.svgs                                       :as svgs]
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]))
 
@@ -130,7 +128,7 @@
                 [tab-button :debug "debug"])]])
 
 (defclass tab-buttons-right-style
-  [ambiance]
+  [_]
   {:padding [[0 styles/gs-5 0 0]]})
 
 (defn tab-buttons-right
@@ -155,7 +153,7 @@
                 [tab-buttons-right]]]))
 
 (defclass warning-style
-  [ambiance]
+  [_]
   {:background-color styles/nord13
    :word-wrap        :break-word
    :margin-left      styles/gs-19
@@ -178,7 +176,7 @@
         [:pre "{re-frame.trace.trace-enabled? true}"] " in " [:pre ":closure-defines"]])]))
 
 (defclass error-style
-  [ambiance]
+  [_]
   {:background-color styles/nord11
    :margin-left      styles/gs-19
    :margin-right     styles/gs-19})
@@ -303,7 +301,7 @@
   (let [shadow-root              (tools.shadow-dom/shadow-root popup-document "--re-frame-10x--")
         spade-container          (spade.dom/create-container shadow-root)
         resize-update-scheduled? (atom false)
-        handle-window-resize     (fn [e]
+        handle-window-resize     (fn [_]
                                    (when-not @resize-update-scheduled?
                                      (batching/next-tick
                                        (fn []

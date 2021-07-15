@@ -5,9 +5,8 @@
     [clojure.data]
     [devtools.prefs]
     [devtools.formatters.core]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.components.buttons                         :as buttons]
     [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
@@ -43,12 +42,12 @@
 (def pod-border-edge (str "1px solid " styles/nord4))
 
 (defclass pod-header-section-style
-  [ambiance last?]
+  [_ last?]
   {:border-right (when-not last? [[(px 1) :solid styles/nord4]])
    #_#_:padding-left (px 3)})
 
 (defn pod-header-section
-  [& {:keys [size justify align gap width min-width background-color children attr last?]
+  [& {:keys [size justify align gap width min-width children attr last?]
       :or   {size "none" justify :start align :center}}]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
@@ -63,7 +62,7 @@
      :attr       attr
      :children   children]))
 
-(defn pod-header [{:keys [id path path-str open? diff?]}]
+(defn pod-header [{:keys [id path-str open? diff?]}]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class    (styles/section-header ambiance)
@@ -93,7 +92,7 @@
        :children
        [[rc/input-text
          :class           (styles/path-text-input-style ambiance)
-         :attr            {:on-blur (fn [e] (rf/dispatch [::app-db.events/update-path-blur id]))}
+         :attr            {:on-blur #(rf/dispatch [::app-db.events/update-path-blur id])}
          :width           "100%"
          :model           path-str
          :on-change       #(rf/dispatch [::app-db.events/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
@@ -124,7 +123,7 @@
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
-(defn pod [{:keys [id path open? diff?] :as pod-info}]
+(defn pod [{:keys [path open? diff?] :as pod-info}]
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])]
@@ -240,11 +239,11 @@
           [rc/gap-f :size styles/gs-12s]]))]))
 
 (defclass panel-style
-  [ambiance]
+  [_]
   {:margin-right styles/gs-5
    :overflow     :auto})
 
-(defn panel [app-db]
+(defn panel [_]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/v-box
      :class    (panel-style ambiance)

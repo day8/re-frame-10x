@@ -39,7 +39,7 @@
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
                ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
-               app-db-follow-events? ambiance syntax-color-scheme categories] :as cofx}
+               app-db-follow-events? ambiance syntax-color-scheme categories]}
        {:keys [debug?]}]
     {:fx [(when using-trace?
             [:dispatch [::settings.events/enable-tracing]])

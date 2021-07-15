@@ -1,6 +1,5 @@
 (ns day8.re-frame-10x.navigation.epochs.events
   (:require
-    [clojure.string                                               :as string]
     [re-frame.core]
     [re-frame.db]
     [re-frame.trace]

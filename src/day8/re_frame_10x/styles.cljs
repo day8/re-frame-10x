@@ -3,14 +3,12 @@
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :refer [defpseudoclass
                                                                              defpseudoelement]])
   (:require
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core       :as garden]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler   :refer [render-css]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units      :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color      :as color :refer [rgb rgba as-hsla opacify transparentize]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color      :as color :refer [rgb rgba transparentize]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :as s]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core          :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime       :as spade.runtime]))
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]))
 
 ;; ====
 ;; https://www.nordtheme.com/docs/colors-and-palettes
@@ -142,7 +140,7 @@
    :border-radius gs-2})
 
 (defclass colors-uncommon
-  [ambiance]
+  [_]
   {:color            :#fff
    :background-color nord15})
 
@@ -166,7 +164,7 @@
     {:fill nord7}]])
 
 (defclass hyperlink
-  [ambiance]
+  [_]
   {:color  nord9
    :cursor :pointer}
   [:&:hover
@@ -174,7 +172,7 @@
 
 (defn syntax-color
   [ambiance syntax-color-scheme key]
-  (let [signature (if (= :cljs-devtools)
+  (let [signature (if (= :cljs-devtools syntax-color-scheme)
                     (rgba 100 255 100 1)
                     (if (= :bright ambiance)
                       nord-ghost-white
@@ -347,7 +345,7 @@
   {:background-color (if (= ambiance :bright) :#fff nord0)})
 
 (defclass navigation
-  [ambiance]
+  [_]
   {:background-color nord0}
   [:.rc-label
    {:color       nord5
@@ -459,9 +457,9 @@
 
 (defclass section-header
   [ambiance]
-  (let [[foreground background border] (if (= :bright ambiance)
-                                         [nord0 nord5 nord4]
-                                         [nord6 nord1 nord3])]
+  (let [[_ _ border] (if (= :bright ambiance)
+                       [nord0 nord5 nord4]
+                       [nord6 nord1 nord3])]
     {:background-color (background-color-2 ambiance)
      :color            (color-2 ambiance)
      #_#_:padding-left     gs-12s ;; TODO: this conflicts between fx and subs; need padding for fx but no padding for subs.
@@ -493,7 +491,7 @@
     :font-weight 300}])
 
 (defclass pod-border
-  [ambiance]
+  [_]
   {:border-left      [[(px 1) :solid nord4]]
    :border-right     [[(px 1) :solid nord4]]
    :border-bottom    [[(px 1) :solid nord4]]})
@@ -510,7 +508,7 @@
    :padding     [[gs-5 gs-12]]})
 
 (defclass app-db-inspector-link
-  [ambiance]
+  [_]
   {}
   [:a
    {:font-size (px 11)
@@ -544,7 +542,7 @@
   (let [slide? false]
     [(at-keyframes :pulse-previous-re-frame-10x
                    [:from (merge {:color "white"}
-                                 (when slide? :left "-100%"))]
+                                 (when slide? {:left "-100%"}))]
                    [:to (when slide? {:left  "0%"})])
      (at-keyframes :pulse-next-re-frame-10x
                    [:from (merge {:color "white"}

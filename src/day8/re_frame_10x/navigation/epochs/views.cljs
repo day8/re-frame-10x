@@ -3,8 +3,7 @@
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :as units :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
     [day8.re-frame-10x.components.buttons                         :as buttons]
     [day8.re-frame-10x.components.re-com                          :as rc]
     [day8.re-frame-10x.material                                   :as material]
@@ -16,12 +15,12 @@
     [day8.re-frame-10x.styles                                     :as styles]))
 
 (defclass epoch-style
-  [ambiance active?]
+  [_ active?]
   {:cursor (if (not active?) :pointer :default)})
 
 
 (defclass epoch-chevron-style
-  [ambiance active? hover?]
+  [_ active? hover?]
   {:background-color (when (or active? hover?) styles/nord13)}
   [:svg :path
    {:fill (if (or active? hover?) :#fff styles/nord4)}]

@@ -4,16 +4,14 @@
   (:require
     [clojure.data]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [em px percent]]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px percent]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]
     [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
     [day8.re-frame-10x.components.data                            :as data]
     [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
     [day8.re-frame-10x.components.inputs                          :as inputs]
     [day8.re-frame-10x.components.re-com                          :as rc :refer [css-join]]
-    [day8.re-frame-10x.svgs                                       :as svgs]
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.panels.app-db.views                        :as app-db.views :refer [pod-gap pod-padding pod-border-edge
@@ -46,7 +44,7 @@
     styles/nord5))
 
 (defclass sub-tag-style
-  [ambiance type]
+  [_ type]
   {:color            :#fff
    :background-color (sub-type->color type)
    :border           [[(px 1) :solid (color/darken (sub-type->color type) 10)]]})
@@ -70,7 +68,7 @@
       [data/tag (sub-tag-style ambiance type) label]]]))
 
 (defclass panel-header-style
-  [ambiance]
+  [_]
   {:margin-bottom styles/gs-19
    :flex-flow     [[:row :wrap]]})
 
@@ -131,7 +129,7 @@
    :border-right     [[(px 1) :solid styles/nord4]]})
 
 (defclass layer-circle-style
-  [ambiance]
+  [_]
   {:width            styles/gs-19s
    :height           styles/gs-19s
    :border           pod-border-edge
@@ -139,7 +137,7 @@
    :margin           :auto
    :background-color :#fff})
 
-(defn pod-header [{:keys [id layer path open? diff? pin? run-times order]}]
+(defn pod-header [{:keys [id layer path open? diff? pin? order]}]
   ;; TODO: highlight when pin? is true
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
@@ -276,85 +274,85 @@
    :border-left  (styles/border-2 ambiance)
    :border-right (styles/border-2 ambiance)})
 
-(defn pod [{:keys [id layer path open? diff?] :as pod-info}]
-  (let [render-diff?    (and open? diff?)
+(defn pod [{:keys [path open? diff?] :as pod-info}]
+  (let [ambiance        @(rf/subscribe [::settings.subs/ambiance])
+        render-diff?    (and open? diff?)
         value?          (contains? pod-info :value)
         previous-value? (contains? pod-info :previous-value)]
-    (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+    [rc/v-box
+     :style {:margin-bottom pod-gap
+             :margin-right  "1px"}
+     :children
+     [[pod-header pod-info]
       [rc/v-box
-       :style {:margin-bottom pod-gap
-               :margin-right  "1px"}
        :children
-       [[pod-header pod-info]
-        [rc/v-box
-         :children
-         [(when open?
-            (let [main-value (:value pod-info)
-                  #_(cond value? (:value pod-info)
-                          previous-value? (:previous-value pod-info)
-                          :else nil)]
-              [rc/v-box
-               :class    (sub-data-style ambiance)
-               :children
-               [(if (or value? #_previous-value?)
-                  [cljs-devtools/simple-render
-                   main-value
-                   ["sub-path" path]]
-                  [not-run-yet-message])]]))
+       [(when open?
+          (let [main-value (:value pod-info)
+                #_(cond value? (:value pod-info)
+                        previous-value? (:previous-value pod-info)
+                        :else nil)]
+            [rc/v-box
+             :class    (sub-data-style ambiance)
+             :children
+             [(if value?  ;(or value? #_previous-value?)
+                [cljs-devtools/simple-render
+                 main-value
+                 ["sub-path" path]]
+                [not-run-yet-message])]]))
 
-          (when render-diff?
-            (let [diffable?        (and value? previous-value?)
-                  not-run?         (= (:order pod-info) [:sub/not-run])
-                  previous-value   (:previous-value pod-info)
-                  value            (:value pod-info)
-                  unchanged-value? (get-in pod-info [:sub/traits :unchanged?] false)
-                  [diff-before diff-after _] (clojure.data/diff previous-value value)]
-              [rc/v-box
+        (when render-diff?
+          (let [diffable?        (and value? previous-value?)
+                not-run?         (= (:order pod-info) [:sub/not-run])
+                previous-value   (:previous-value pod-info)
+                value            (:value pod-info)
+                unchanged-value? (get-in pod-info [:sub/traits :unchanged?] false)
+                [diff-before diff-after _] (clojure.data/diff previous-value value)]
+            [rc/v-box
+             :children
+             [[rc/v-box
+               :class    (diff-header-style ambiance)
+               :justify  :end
                :children
-               [[rc/v-box
-                 :class    (diff-header-style ambiance)
-                 :justify  :end
-                 :children
-                 [[rc/hyperlink
-                   :class  (styles/hyperlink ambiance)
-                   :label  "ONLY BEFORE"
-                   :style  {:margin-left styles/gs-7s}
-                   :attr   {:rel "noopener noreferrer"}
-                   :target "_blank"
-                   :href   app-db.views/diff-url]]]
-                [rc/v-box
-                 :class    (diff-data-style ambiance)
-                 :children
-                 [(cond
-                    not-run?         [sub-not-run-message]
-                    unchanged-value? [unchanged-value-message]
-                    diffable?        [cljs-devtools/simple-render
-                                      diff-before
-                                      ["app-db-diff" path]]
-                    :else            [no-previous-value-message])]]
-                [rc/v-box
-                 :class    (diff-header-style ambiance)
-                 :justify  :end
-                 :children
-                 [[rc/hyperlink
-                   :class  (styles/hyperlink ambiance)
-                   :label  "ONLY AFTER"
-                   :style  {:margin-left      styles/gs-7s}
-                   :attr   {:rel "noopener noreferrer"}
-                   :target "_blank"
-                   :href   app-db.views/diff-url]]]
-                [rc/v-box
-                 :class    (diff-data-style ambiance)
-                 :children
-                 [(cond
-                    not-run?         [sub-not-run-message]
-                    unchanged-value? [unchanged-value-message]
-                    diffable?        [cljs-devtools/simple-render
-                                      diff-after
-                                      ["app-db-diff" path]]
-                    :else            [no-previous-value-message])]]]]))
-          (when open?
-            [rc/gap-f :size pod-padding])]]]])))
+               [[rc/hyperlink
+                 :class  (styles/hyperlink ambiance)
+                 :label  "ONLY BEFORE"
+                 :style  {:margin-left styles/gs-7s}
+                 :attr   {:rel "noopener noreferrer"}
+                 :target "_blank"
+                 :href   app-db.views/diff-url]]]
+              [rc/v-box
+               :class    (diff-data-style ambiance)
+               :children
+               [(cond
+                  not-run?         [sub-not-run-message]
+                  unchanged-value? [unchanged-value-message]
+                  diffable?        [cljs-devtools/simple-render
+                                    diff-before
+                                    ["app-db-diff" path]]
+                  :else            [no-previous-value-message])]]
+              [rc/v-box
+               :class    (diff-header-style ambiance)
+               :justify  :end
+               :children
+               [[rc/hyperlink
+                 :class  (styles/hyperlink ambiance)
+                 :label  "ONLY AFTER"
+                 :style  {:margin-left      styles/gs-7s}
+                 :attr   {:rel "noopener noreferrer"}
+                 :target "_blank"
+                 :href   app-db.views/diff-url]]]
+              [rc/v-box
+               :class    (diff-data-style ambiance)
+               :children
+               [(cond
+                  not-run?         [sub-not-run-message]
+                  unchanged-value? [unchanged-value-message]
+                  diffable?        [cljs-devtools/simple-render
+                                    diff-after
+                                    ["app-db-diff" path]]
+                  :else            [no-previous-value-message])]]]]))
+        (when open?
+          [rc/gap-f :size pod-padding])]]]]))
 
 
 (defn no-pods []
@@ -410,7 +408,7 @@
               [rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
 (defclass pod-section-style
-  [ambiance]
+  [_]
   {:overflow-y :auto})
 
 (defn pod-section []
@@ -457,15 +455,13 @@
 
 
 (defn filter-section []
-  (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
-        filter-str (rf/subscribe [::subs.subs/filter-str])]
-    [inputs/search
-     {:placeholder "filter subs"
-      :on-change   #(rf/dispatch [::subs.events/set-filter
-                                  (-> % .-target .-value)])}]))
+  [inputs/search
+   {:placeholder "filter subs"
+    :on-change   #(rf/dispatch [::subs.events/set-filter
+                                (-> % .-target .-value)])}])
 
 (defclass panel-style
-  [ambiance]
+  [_]
   {:margin-right styles/gs-5
    :width        (percent 100)})
 

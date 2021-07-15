@@ -9,5 +9,5 @@
 
 (defn read-string-maybe [s]
   (try (cljs.tools.reader.edn/read-string {:readers default-readers} s)
-       (catch :default e
+       (catch :default _
          nil)))

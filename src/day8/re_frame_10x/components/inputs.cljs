@@ -11,7 +11,7 @@
     [day8.re-frame-10x.styles                                     :as styles]))
 
 (defclass checkbox-style
-  [ambiance checked? disabled?]
+  [ambiance checked? _]
   {:cursor :pointer}
   [:svg
    {:margin-right styles/gs-5}
@@ -43,7 +43,7 @@
          :label label])]]))
 
 (defclass radio-button-style
-  [ambiance checked? disabled?]
+  [_ checked? disabled?]
   {:cursor (when-not disabled? :pointer)}
   [:svg
    {:margin-right styles/gs-5}
@@ -83,7 +83,7 @@
    [:&:focus-visible
     {:outline :none}]])
 
-(defn search [{:keys [title placeholder on-save on-change on-stop]}]
+(defn search [{:keys [title placeholder on-save on-change]}]
   (let [ambiance (rf/subscribe [::settings.subs/ambiance])
         val  (r/atom title)
         save #(let [v (-> @val str string/trim)]

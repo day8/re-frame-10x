@@ -6,7 +6,7 @@
 
 (def registered-keys (atom nil))
 
-(defn dispatch-if-not-superceded [{:keys [key delay event time-received]}]
+(defn dispatch-if-not-superceded [{:keys [key event time-received]}]
   (when (= time-received (get @registered-keys key))
     ;; no new events on this key!
     (rf/dispatch event)))

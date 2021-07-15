@@ -97,5 +97,5 @@
   ::data-available?
   :<- [::traces.subs/filtered-by-epoch-always]
   (fn [traces]
-    (not (empty? traces))))
+    (seq traces)))
 

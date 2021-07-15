@@ -143,7 +143,7 @@
 (defn subscription-destroyed? [trace]
   (= :sub/dispose (:op-type trace)))
 
-(defn subscription-not-run? [trace]
+(defn subscription-not-run? [_]
   false)
 
 (defn low-level-re-frame-trace?
@@ -333,7 +333,8 @@
                                                                                                   :value (:value tags)))))
                                                   :sub/dispose (assoc-in state [reaction-id :disposed?] true))]
                                 (when-not (contains? (get new-state reaction-id) :subscription)
-                                  #?(:cljs (js/console.warn trace (get new-state reaction-id))))
+                                  #?(:clj  nil
+                                     :cljs (js/console.warn trace (get new-state reaction-id))))
 
 
                                 new-state))

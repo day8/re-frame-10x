@@ -8,7 +8,7 @@
     [reagent.impl.batching  :as batch]
     [reagent.impl.util      :as util]
     [reagent.ratom          :as ratom]
-    [reagent.debug          :refer-macros [dev? warn error warn-unless assert-callable]]))
+    [reagent.debug          :refer-macros [dev? assert-callable]]))
 
 (def operation-name (memoize (fn [c] (last (string/split (component/component-name c) #" > ")))))
 

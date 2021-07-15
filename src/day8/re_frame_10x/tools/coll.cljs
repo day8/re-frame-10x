@@ -27,7 +27,7 @@
   "Dissociates an entry from a nested associative structure returning a new
   nested structure. keys is a sequence of keys. Any empty maps that result
   will not be present in the new structure."
-  [m [k & ks :as keys]]
+  [m [k & ks]]
   (if ks
     (if-let [nextmap (clojure.core/get m k)]
       (let [newmap (dissoc-in nextmap ks)]

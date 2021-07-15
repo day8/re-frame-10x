@@ -58,7 +58,7 @@
       nil)))
 
 (defclass category-style
-  [op-type checked?]
+  [op-type _]
   {;:composes        (styles/control-2 ambiance active?)
    :font-size        (px 12)
    :background-color (op-type->color op-type)
@@ -78,8 +78,7 @@
 
 (defn category
   [{:keys [label keys]}]
-  (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
-        categories @(rf/subscribe [::traces.subs/categories])
+  (let [categories @(rf/subscribe [::traces.subs/categories])
         checked?   (contains? categories (first keys))]
     [:li {:class    (category-style (first keys) checked?)
           :on-click #(rf/dispatch [::traces.events/toggle-categories keys])}
@@ -129,7 +128,7 @@
 (defn draft-query
   []
   (let [draft-query-type   @(rf/subscribe [::traces.subs/draft-query-type])
-        draft-query        @(rf/subscribe [::traces.subs/draft-query])
+        #_#_draft-query        @(rf/subscribe [::traces.subs/draft-query])
         draft-query-error? @(rf/subscribe [::traces.subs/draft-query-error])]
     [rc/h-box
      :children
@@ -143,7 +142,7 @@
         :on-change   #(rf/dispatch [::traces.events/set-draft-query
                                     (.. % -target -value)])
         :placeholder "filter traces"}]
-      (if draft-query-error?
+      (when draft-query-error?
         [rc/label
          :class (draft-query-error-style)
          :label "Please enter a valid number."])]]))
@@ -207,7 +206,7 @@
    {:background-color (color/lighten (op-type->color op-type) 2)}])
 
 (defclass table-row-expansion-style
-  [ambiance]
+  [_]
   {:cursor :pointer}
   [:svg :path
    {:fill styles/nord1}]
@@ -346,7 +345,7 @@
        :child ""]]]))
 
 (defclass table-body-style
-  [ambiance]
+  [_]
   {:overflow-x :auto
    :overflow-y :scroll})
 

@@ -1,8 +1,8 @@
 (ns day8.re-frame-10x.components.hyperlinks
   (:require
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px percent]]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [percent]]
     [day8.re-frame-10x.components.re-com                          :as rc]
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.material                                   :as material]

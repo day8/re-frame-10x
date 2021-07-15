@@ -3,6 +3,7 @@
     [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
   (:require
     [clojure.string                                               :as string]
+    [goog.string                                                  :as gstring]
     [re-highlight.core                                            :as re-highlight]
     ["highlight.js/lib/languages/clojure"]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px ms]]
@@ -76,7 +77,7 @@
   (if (nil? search-str)
     [0 0]  ;; on mouse out etc
     (let [[form-str reindex]   (collapse-whitespace-and-index form-str) ;; match without whitespace
-          esc-str    (goog.string.regExpEscape search-str)
+          esc-str    (gstring/regExpEscape search-str)
           regex      (str "(\\s|\\(|\\[|\\{)" "(" esc-str ")(\\s|\\)|\\]|\\})")
           re         (re-pattern regex)
           results    (re-seq-idx re form-str)]
@@ -117,7 +118,7 @@
 
        :get-snapshot-before-update
                      (fn code-get-snapshot-before-update
-                       [this old-argv new-argv]
+                       [this _ _]
                        (let [node (rdom/dom-node this)]
                          (reset! scroll-pos {:top (.-scrollTop node) :left (.-scrollLeft node)})))
 
@@ -155,7 +156,7 @@
                                     form-str])]))})))
 
 (defclass clipboard-notification-style
-  [ambiance]
+  [_]
   {:opacity            0
    :color              styles/nord6
    :background-color   styles/nord12
@@ -183,7 +184,7 @@
    :border-right :none})
 
 (defclass controls-style
-  [ambiance]
+  [_]
   {:margin-right styles/gs-5})
 
 (defn controls
@@ -227,7 +228,7 @@
     [rc/h-box
      :children
      (into []
-           (for [i (range indent-level)]
+           (for [_ (range indent-level)]
              [rc/box
               :width styles/gs-12s
               :class (indent-block-style ambiance first?)
@@ -318,7 +319,7 @@
       [@(rf/subscribe [::epochs.subs/selected-epoch-id]) trace-id id]]]))
 
 (defclass fragment-style
-  [ambiance]
+  [_]
   {})
 
 (defn fragment
@@ -343,7 +344,7 @@
           [fragment-body frag]]])]]))
 
 (defclass fragments-style
-  [ambiance]
+  [_]
   {:overflow-y :auto
    :margin-right styles/gs-5})
 

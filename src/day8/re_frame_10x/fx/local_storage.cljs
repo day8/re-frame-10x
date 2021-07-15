@@ -21,8 +21,9 @@
 
 (def safe-prefix "day8.re-frame-10x.")
 
-(defn- safe-key [key]
+(defn- safe-key
   "Adds a unique prefix to local storage keys to ensure they don't collide with the host application"
+  [key]
   (str safe-prefix key))
 
 (defn load

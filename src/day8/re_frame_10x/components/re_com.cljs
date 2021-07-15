@@ -5,8 +5,7 @@
   (:require
     [clojure.string                                              :as string]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core      :refer [defclass]]
-    [day8.re-frame-10x.material                                  :as material]))
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core   :refer [defclass]]))
 
 (defn px
   "takes a number (and optional :negative keyword to indicate a negative value) and returns that number as a string with 'px' at the end"
@@ -318,12 +317,11 @@
   (let [external-model (reagent/atom (deref-or-value model)) ;; Holds the last known external value of model, to detect external model changes
         internal-model (reagent/atom (if (nil? @external-model) "" @external-model))] ;; Create a new atom from the model to be used internally (avoid nil)
     (fn
-      [& {:keys [model on-change on-submit status status-icon? status-tooltip placeholder width height rows change-on-blur? validation-regex disabled? class style attr]
+      [& {:keys [model on-change on-submit status status-icon? placeholder width height rows change-on-blur? validation-regex disabled? class style attr]
           :or   {change-on-blur? true}}]
       (let [latest-ext-model (deref-or-value model)
             disabled?        (deref-or-value disabled?)
-            change-on-blur?  (deref-or-value change-on-blur?)
-            showing?         (reagent/atom false)]
+            change-on-blur?  (deref-or-value change-on-blur?)]
         (when (not= @external-model latest-ext-model) ;; Has model changed externally?
           (reset! external-model latest-ext-model)
           (reset! internal-model latest-ext-model))
@@ -357,7 +355,7 @@
                          :placeholder placeholder
                          :value       @internal-model
                          :disabled    disabled?
-                         :on-change   (handler-fn
+                         :on-change   (fn [event]
                                         (let [new-val (-> event .-target .-value)]
                                           (when (and
                                                   on-change
@@ -366,18 +364,18 @@
                                             (reset! internal-model new-val)
                                             (when-not change-on-blur?
                                               (on-change @internal-model)))))
-                         :on-blur     (handler-fn
+                         :on-blur     (fn [_]
                                         (when (and
                                                 on-change
                                                 change-on-blur?
                                                 (not= @internal-model @external-model))
                                           (on-change @internal-model)))
-                         :on-key-down (handler-fn
+                         :on-key-down (fn [event]
                                         (case (.-which event)
                                           13 (when on-submit
                                                (on-submit @internal-model))
                                           true))
-                         :on-key-up   (handler-fn
+                         :on-key-up   (fn [event]
                                         (if disabled?
                                           (.preventDefault event)
                                           (case (.-which event)
@@ -447,7 +445,7 @@
                                        (flex-child-style "none")
                                        style)
                            :disabled disabled?
-                           :on-click (handler-fn
+                           :on-click (fn [event]
                                        (when (and on-click (not disabled?))
                                          (on-click event)))}
                           attr)
@@ -463,31 +461,28 @@
   "Renders an underlined text hyperlink component.
    This is very similar to the button component above but styled to looks like a hyperlink.
    Useful for providing button functionality for less important functions, e.g. Cancel"
-  []
-  (let [showing? (reagent/atom false)]
-    (fn
-      [& {:keys [label on-click disabled? class style attr]}]
-      (let [label      (deref-or-value label)
-            disabled?  (deref-or-value disabled?)
-            the-button [box
-                        :align :start
-                        :child [:a
-                                (merge
-                                  {:class    (str "rc-hyperlink noselect " class)
-                                   :style    (merge
-                                               (flex-child-style "none")
-                                               {:cursor (if disabled? "not-allowed" "pointer")
-                                                :color  (when disabled? "grey")}
-                                               style)
-                                   :on-click (handler-fn
-                                               (when (and on-click (not disabled?))
-                                                 (on-click event)))}
-                                  attr)
-                                label]]]
-        [box
-         :class (str "rc-hyperlink-wrapper " (inline-flex-style))
-         :align :start
-         :child the-button]))))
+  [& {:keys [label on-click disabled? class style attr]}]
+  (let [label      (deref-or-value label)
+        disabled?  (deref-or-value disabled?)
+        the-button [box
+                    :align :start
+                    :child [:a
+                            (merge
+                              {:class    (str "rc-hyperlink noselect " class)
+                               :style    (merge
+                                           (flex-child-style "none")
+                                           {:cursor (if disabled? "not-allowed" "pointer")
+                                            :color  (when disabled? "grey")}
+                                           style)
+                               :on-click (fn [event]
+                                           (when (and on-click (not disabled?))
+                                             (on-click event)))}
+                              attr)
+                            label]]]
+    [box
+     :class (str "rc-hyperlink-wrapper " (inline-flex-style))
+     :align :start
+     :child the-button]))
 
 (defn hyperlink-href
   "Renders an underlined text hyperlink component.
@@ -496,7 +491,7 @@
   []
   (let [showing? (reagent/atom false)]
     (fn
-      [& {:keys [label href target tooltip tooltip-position class style attr]}]
+      [& {:keys [label href target tooltip class style attr]}]
       (when-not tooltip (reset! showing? false)) ;; To prevent tooltip from still showing after button drag/drop
       (let [label      (deref-or-value label)
             href       (deref-or-value href)
@@ -607,7 +602,7 @@
                         style)
                :attr (merge
                        {:title          tooltip
-                        :on-click       (handler-fn (on-click)
+                        :on-click       (fn [event] (on-click)
                                                     (.stopPropagation event))
                         :on-mouse-enter (handler-fn (reset! over? true))
                         :on-mouse-leave (handler-fn (reset! over? false))}
@@ -615,10 +610,11 @@
                ;:child [:i {:class "zmdi zmdi-hc-fw-rc zmdi zmdi-close"}]
                :child [:span "×"]]])))
 
-(defn css-join [& args]
+(defn css-join
   "Creates a single string from all passed args, separated by spaces (all args are coerced to strings)
   Very simple, but handy
   e.g. {:padding (css-join common/gs-12s (px 25))}"
+  [& args]
   (clojure.string/join " " args))
 
 

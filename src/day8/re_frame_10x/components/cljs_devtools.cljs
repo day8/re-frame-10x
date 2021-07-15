@@ -7,8 +7,8 @@
     [devtools.formatters.core]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core    :refer [style]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
+    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
     [day8.re-frame-10x.components.re-com                          :as rc]
     [day8.re-frame-10x.material                                   :as material]
     [day8.re-frame-10x.styles                                     :as styles]
@@ -329,7 +329,7 @@
     [:div {:class (prn-str-render-style ambiance syntax-color-scheme)}
      (prn-str data)]))
 
-(defn simple-render [data path & [class]]
+(defn simple-render [_ path & [class]]
   (let [ambiance            (rf/subscribe [::settings.subs/ambiance])
         syntax-color-scheme (rf/subscribe [::settings.subs/syntax-color-scheme])]
     (fn [data]

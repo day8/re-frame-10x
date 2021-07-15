@@ -44,7 +44,7 @@
       [cljs-devtools/simple-render data [title] (styles/section-data ambiance)]]]))
 
 (defclass panel-style
-  [ambiance]
+  [_]
   {:width         (percent 100)})
 
 (defn panel []
