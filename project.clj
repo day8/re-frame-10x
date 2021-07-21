@@ -17,7 +17,7 @@
                  ;; for 10x to support other build systems.
                  [cljsjs/highlight                     "10.3.1-0"]]
 
-  :plugins      [[day8/lein-git-inject "0.0.14"]
+  :plugins      [[day8/lein-git-inject "0.0.15"]
                  [lein-less            "RELEASE"]]
 
   :middleware   [leiningen.git-inject/middleware]
