@@ -6,7 +6,7 @@
   :min-lein-version "2.9.1"
 
   :dependencies [[org.clojure/clojure                  "1.10.3"   :scope "provided"]
-                 [org.clojure/clojurescript            "1.10.866" :scope "provided"]
+                 [org.clojure/clojurescript            "1.10.879" :scope "provided"]
                  [binaryage/devtools                   "1.0.3"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8"
                   :exclusions [rhino/js]]
