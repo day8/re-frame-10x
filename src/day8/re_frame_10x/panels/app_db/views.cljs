@@ -239,16 +239,15 @@
           [rc/gap-f :size styles/gs-12s]]))]))
 
 (defclass panel-style
-  [_]
+  []
   {:margin-right styles/gs-5
    :overflow     :auto})
 
 (defn panel [_]
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-    [rc/v-box
-     :class    (panel-style ambiance)
-     :size     "1"
-     :children
-     [[panel-header]
-      [pod-section]
-      [rc/gap-f :size styles/gs-19s]]]))
+  [rc/v-box
+   :class    (panel-style)
+   :size     "1"
+   :children
+   [[panel-header]
+    [pod-section]
+    [rc/gap-f :size styles/gs-19s]]])

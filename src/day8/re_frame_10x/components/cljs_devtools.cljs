@@ -229,10 +229,10 @@
 (declare jsonml->hiccup)
 
 (defclass jsonml-style
-  [ambiance syntax-color-scheme]
+  []
   {:display          :inline
    :flex-direction   :row
-   :background-color (styles/syntax-color ambiance syntax-color-scheme :signature-background)}
+   :background-color (styles/syntax-color :bright :cljs-devtools :signature-background)}
   ["> span"
    {:vertical-align :text-top}]
   [:li
@@ -252,19 +252,17 @@
    {:fill (if (= ambiance :bright) styles/nord0 styles/nord5)}])
 
 (defn data-structure [_ path]
-  (let [ambiance            (rf/subscribe [::settings.subs/ambiance])
-        syntax-color-scheme (rf/subscribe [::settings.subs/syntax-color-scheme])
-        expanded?           (rf/subscribe [::app-db.subs/node-expanded? path])]
+  (let [expanded? (rf/subscribe [::app-db.subs/node-expanded? path])]
     (fn [jsonml path]
       [:span
-       {:class (jsonml-style @ambiance @syntax-color-scheme)}
-       [:span {:class    (toggle-style @ambiance)
+       {:class (jsonml-style)}
+       [:span {:class    (toggle-style :bright)
                :on-click #(rf/dispatch [::app-db.events/toggle-expansion path])}
         [:button
          (if @expanded?
            [material/arrow-drop-down]
            [material/arrow-right])]]
-       (if (and @expanded? (has-body @ambiance @syntax-color-scheme (get-object jsonml) (get-config jsonml)))
+       (if (and @expanded? (has-body (get-object jsonml) (get-config jsonml)))
          (jsonml->hiccup
            (body
              (get-object jsonml)
@@ -318,25 +316,21 @@
       (nil? data)))
 
 (defclass prn-str-render-style
-  [ambiance syntax-color-scheme]
-  {:background-color (styles/syntax-color ambiance syntax-color-scheme :signature-background)
-   :color            (styles/syntax-color ambiance syntax-color-scheme :bool)})
+  []
+  {:background-color (styles/syntax-color :bright :cljs-devtools :signature-background)
+   :color            (styles/syntax-color :bright :cljs-devtools :bool)})
 
 (defn prn-str-render
   [data]
-  (let [ambiance            @(rf/subscribe [::settings.subs/ambiance])
-        syntax-color-scheme @(rf/subscribe [::settings.subs/syntax-color-scheme])]
-    [:div {:class (prn-str-render-style ambiance syntax-color-scheme)}
-     (prn-str data)]))
+  [:div {:class (prn-str-render-style)}
+   (prn-str data)])
 
-(defn simple-render [_ path & [class]]
-  (let [ambiance            (rf/subscribe [::settings.subs/ambiance])
-        syntax-color-scheme (rf/subscribe [::settings.subs/syntax-color-scheme])]
-    (fn [data]
-      [rc/box
-       :size  "1"
-       :class (str (jsonml-style @ambiance @syntax-color-scheme) " " class)
-       :child
-       (if (prn-str-render? data)
-         (prn-str-render data)
-         (jsonml->hiccup (header data) (conj path 0)))])))
+(defn simple-render
+  [data path & [class]]
+  [rc/box
+   :size  "1"
+   :class (str (jsonml-style) " " class)
+   :child
+   (if (prn-str-render? data)
+     (prn-str-render data)
+     (jsonml->hiccup (header data) (conj path 0)))])
