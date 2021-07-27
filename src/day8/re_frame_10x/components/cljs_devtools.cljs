@@ -203,22 +203,21 @@
 ;; here as static def.
 ;; TODO: If we expose ambiance and/or syntax color scheme as settings will need to fix this, maybe by recalculating
 ;; at the time the setting is changed/loaded.
-(def config
+(def custom-config
   (merge default-config
          (base-config :bright :cljs-devtools)
          #_bright-ambiance-config))
 
-(defn api-call [api-fn & args]
-  (with-cljs-devtools-prefs config (apply api-fn args)))
+(defn header [value config]
+  (with-cljs-devtools-prefs custom-config (devtools.formatters.core/header-api-call value config)))
 
-(defn header [& args]
-  (apply api-call devtools.formatters.core/header-api-call args))
+(defn body [value config]
+  (with-cljs-devtools-prefs custom-config
+    (devtools.formatters.core/body-api-call value config)))
 
-(defn body [& args]
-  (apply api-call devtools.formatters.core/body-api-call args))
-
-(defn has-body [& args]
-  (apply api-call devtools.formatters.core/has-body-api-call args))
+(defn has-body [value config]
+  (with-cljs-devtools-prefs custom-config
+    (devtools.formatters.core/has-body-api-call value config)))
 
 (defn get-object [jsonml]
   (.-object (get jsonml 1)))
@@ -333,4 +332,4 @@
    :child
    (if (prn-str-render? data)
      (prn-str-render data)
-     (jsonml->hiccup (header data) (conj path 0)))])
+     (jsonml->hiccup (header data nil) (conj path 0)))])
