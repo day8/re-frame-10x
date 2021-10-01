@@ -10,8 +10,6 @@
     [reagent.ratom          :as ratom]
     [reagent.debug          :refer-macros [dev? assert-callable]]))
 
-(def operation-name (memoize (fn [c] (last (string/split (component/component-name c) #" > ")))))
-
 ;; Monkey patched reagent.impl.component/wrap-funs to hook into render
 (defn wrap-funs [fmap compiler]
   (when (dev?)
@@ -36,12 +34,13 @@
       :reagentRender render-fun
       :render (fn render []
                 (this-as c
-                  (trace/with-trace
-                    {:op-type :render
-                     :tags    (if-let [component-name (component/component-name c)]
-                                {:component-name component-name}
-                                {})
-                     :operation (operation-name c)})
+                  (let [component-name (component/component-name c)]
+                    (trace/with-trace
+                      {:op-type   :render
+                       :tags      (if component-name
+                                    {:component-name component-name}
+                                    {})
+                       :operation component-name}))
                   (if util/*non-reactive*
                     (component/do-render c compiler)
                     (let [^clj rat (gobj/get c "cljsRatom")
