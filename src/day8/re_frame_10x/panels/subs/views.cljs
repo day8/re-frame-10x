@@ -126,7 +126,9 @@
    :color            (styles/color-2 ambiance)
    :margin           styles/gs-2
    :height           styles/gs-31
-   :border-right     [[(px 1) :solid styles/nord4]]})
+   :border-right     [[(px 1) :solid styles/nord4]]
+   ;; Fixes https://github.com/day8/re-frame-10x/issues/320
+   :white-space      :nowrap})
 
 (defclass layer-circle-style
   [_]
