@@ -206,6 +206,8 @@
 (def custom-config
   (merge default-config
          (base-config :bright :cljs-devtools)
+         {;; Setting this prevents https://github.com/day8/re-frame-10x/issues/321
+          :max-number-body-items 10000}
          #_bright-ambiance-config))
 
 (defn header [value config]
