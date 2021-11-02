@@ -5,6 +5,18 @@
     [clojure.string :as string]
     [devtools.prefs]
     [devtools.formatters.core]
+    [goog.dom]
+    [goog.events]
+    [goog.style]
+    [goog.ui.Container]
+    [goog.ui.PopupMenu]
+    [goog.ui.MenuItem]
+    [goog.ui.MenuItemRenderer]
+    [goog.ui.Component]
+    [goog.ui.Button]
+    [goog.events.EventType]
+    [goog.positioning]
+    [goog.object]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core    :refer [style]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
@@ -14,7 +26,13 @@
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
     [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]))
+    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+    [day8.re-frame-10x.fx.clipboard                               :as clipboard]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
+    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as dom]
+    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn])
+  (:import
+    [goog.dom TagName]))
 
 (def default-config @devtools.prefs/default-config)
 
@@ -206,7 +224,8 @@
 (def custom-config
   (merge default-config
          (base-config :bright :cljs-devtools)
-         {;; Setting this prevents https://github.com/day8/re-frame-10x/issues/321
+         {:render-path-annotations true
+          ;; Setting this prevents https://github.com/day8/re-frame-10x/issues/321
           :max-number-body-items 10000}
          #_bright-ambiance-config))
 
@@ -228,6 +247,7 @@
   (.-config (get jsonml 1)))
 
 (declare jsonml->hiccup)
+(declare jsonml-with-path-annotations->hiccup)
 
 (defclass jsonml-style
   []
@@ -306,6 +326,9 @@
                                         children)
 
         (= tag-name "object") [data-structure jsonml path]
+        (= tag-name "annotation") (into [:span {}]
+                                        (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
+                                        children)
         :else jsonml))))
 
 (defn prn-str-render?
@@ -335,3 +358,221 @@
    (if (prn-str-render? data)
      (prn-str-render data)
      (jsonml->hiccup (header data nil) (conj path 0)))])
+
+(defn data-structure-with-path-annotations [_ path {:keys [update-path-fn object] :as opts}]
+  (let [expanded? (rf/subscribe [::app-db.subs/node-expanded? path])]
+    (fn [jsonml path]
+      [:span
+       {:class (jsonml-style)}
+       [:span {:class    (toggle-style :bright)
+               :on-click #(rf/dispatch [::app-db.events/toggle-expansion path])}
+        [:button
+         (if @expanded?
+           [material/arrow-drop-down]
+           [material/arrow-right])]]
+       (if (and @expanded? (has-body (get-object jsonml) (get-config jsonml)))
+         (jsonml-with-path-annotations->hiccup
+           (body
+             (get-object jsonml)
+             (get-config jsonml))
+           path
+           opts)
+         (jsonml-with-path-annotations->hiccup
+           (header
+             (get-object jsonml)
+             (get-config jsonml))
+           path
+           opts))])))
+
+(defn jsonml-with-path-annotations->hiccup
+  "JSONML is the format used by Chrome's Custom Object Formatters.
+  The spec is at https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview.
+
+  JSONML is pretty much Hiccup over JSON. Chrome's implementation of this can
+  be found at https://cs.chromium.org/chromium/src/third_party/WebKit/Source/devtools/front_end/object_ui/CustomPreviewComponent.js
+  "
+  [jsonml path {:keys [update-path-fn object click-listener menu-listener] :as opts}]
+  (if (number? jsonml)
+    jsonml
+    (let [[tag-name attributes & children] jsonml
+          tagnames #{"div" "span" "ol" "li" "table" "tr" "td"}]
+      (cond
+        (contains? tagnames tag-name) (let [document (-> js/window
+                                                         .-document
+                                                         (.getElementById "--re-frame-10x--")
+                                                         .-shadowRoot
+                                                         .-children)
+                                            div-child (->> document
+                                                           (filter #(clojure.string/includes? (.-className %) "rc-box"))
+                                                           first)
+                                            path-annotations (.getElementsByClassName div-child "path-annotation")]
+                                        ;(js/console.log (.-length path-annotations))
+                                        (into
+                                          [(keyword tag-name) {:style (-> (js->clj attributes)
+                                                                          (get "style")
+                                                                          (string->css))}]
+                                          (map-indexed (fn [i child] (jsonml-with-path-annotations->hiccup child path opts)))
+                                          children))
+
+        (= tag-name "object") [data-structure-with-path-annotations jsonml path opts]
+        (= tag-name "annotation") (let [current-path (conj path
+                                                           (last (-> attributes
+                                                                     (js->clj :keywordize-keys true)
+                                                                     :path)))
+                                        js-children  (-> children first)
+                                        clj-children (when js-children
+                                                       (js->clj js-children))
+                                        kw           (when (vector? clj-children)
+                                                       (last clj-children))
+                                        kw?          (or (and (string? kw)
+                                                              (clojure.string/starts-with? kw ":"))
+                                                         (number? kw))
+                                        kw-attr      (when-let [attr (second clj-children)]
+                                                       (when (map? attr)
+                                                         attr))
+                                        kw-style     (when (and (seq kw-attr)
+                                                                (seq (get kw-attr "style")))
+                                                       (-> kw-attr
+                                                           js->clj
+                                                           (get "style")
+                                                           string->css
+                                                           js->clj))
+                                        id           (-> (random-uuid) str)
+                                        attr         (assoc {} :style kw-style)]
+                                    (if kw?
+                                      [:> (r/create-class
+                                            {:component-did-mount (fn [component]
+                                                                    (let [component (dom/dom-node component)]
+                                                                      (goog.events/listen component "contextmenu" menu-listener)
+                                                                      (goog.events/listen component "click" click-listener)))
+                                             :reagent-render      (fn []
+                                                                    (into [:span (if kw?
+                                                                                   {:id        id
+                                                                                    :class     "path-annotation"
+                                                                                    :data-path (str current-path)}
+                                                                                   {})]
+                                                                          (map (fn [child] (jsonml-with-path-annotations->hiccup child current-path opts)) children)))})]
+                                      (into [:span (if kw?
+                                                     {:id        id
+                                                      :class     "path-annotation"
+                                                      :data-path (str current-path)}
+                                                     {})]
+                                            (map (fn [child] (jsonml-with-path-annotations->hiccup child current-path opts)) children))))
+        :else jsonml))))
+
+(def popup-menus (atom {}))
+(def event-log (atom (list )))
+;; assume that if the last event registered is 'unhighlight' then figure we should close the dialog
+
+(defn build-popup
+  [element data path current-path]
+  (if-let [rendered? (get @popup-menus (.-id element))]
+    (.setVisible rendered? true)
+    (let [menu-dom-help   (goog.dom.DomHelper.)
+          menu-renderer   (goog.ui.MenuRenderer.)
+          item-renderer   (goog.ui.MenuItemRenderer.)
+          popup-menu      (goog.ui.PopupMenu. menu-dom-help menu-renderer)
+          menu-style      (-> #js {#_:width         #_"200px"
+                                   :text-align "center"
+                                   :padding    "10px 0"
+                                   :border     "1px solid black"}
+                              (goog.style.toStyleAttribute))
+          create-menu-fn  (fn [menu-text]
+                            (-> (goog.dom.createDom TagName.DIV #js {} (goog.dom.createDom TagName.SPAN #js {} menu-text))
+                                (doto (.setAttribute "style" menu-style))
+                                goog.ui.MenuItem.))
+          copy-menu-item  (create-menu-fn "Copy path")
+          copy-obj-item   (create-menu-fn "Copy object")
+          copy-repl-item  (create-menu-fn "Copy REPL command")
+          rect            (.getBoundingClientRect element)
+          x-pos           (+ (.-left rect) (.-scrollX js/window))
+          y-pos           (+ (.-top rect) (.-scrollY js/window))
+          doc-10x         (or (->> (.getElementById js/document "--re-frame-10x--")
+                                   .-shadowRoot
+                                   .-children
+                                   (filter #(= (.-nodeName %) "DIV"))
+                                   first) (.-body js/document))
+          click-event    (-> #js ["click"] goog.events.getUniqueId goog.events.EventId.)]
+      (doto copy-menu-item
+        (.addClassName "copy-path")
+        (.addClassName "10x-menu-item"))
+      (doto copy-obj-item
+        (.addClassName "copy-object")
+        (.addClassName "10x-menu-item"))
+      (doto copy-repl-item
+        (.addClassName "copy-repl")
+        (.addClassName "10x-menu-item"))
+      (doto popup-menu
+        (.addItem copy-menu-item)
+        (.addItem copy-obj-item)
+        (.addItem copy-repl-item)
+        (.showAt x-pos y-pos)
+        (.render element))
+      (goog.object.forEach
+        goog.ui.Component.EventType
+        (fn [type]
+          (goog.events.listen
+            popup-menu
+            type
+            (fn [e] (cond
+                      (= (.-type e) "hide")
+                      (when-not (or (empty? @event-log) (= (peek @event-log) "unhighlight"))
+                        (.preventDefault e))
+
+                      (= (.-type e) "action")
+                      (let [class-names (-> e .-target .getExtraClassNames js->clj)]
+                        (swap! event-log conj "action")
+                        (cond
+                          (some (fn [class-name] (= class-name "copy-object")) class-names)
+                          (let [path-obj (reader.edn/read-string-maybe path)
+                                nested?  (when current-path
+                                           (count current-path))
+                                path-obj (if nested?
+                                           (subvec path-obj nested?)
+                                           path-obj)
+                                object   (get-in data path-obj)]
+                            (if object
+                              (do (clipboard/copy! object)
+                                  (js/console.log "Copied object"))
+                              (js/console.error "Could not copy!")))
+
+                          (some (fn [class-name] (= class-name "copy-path")) class-names)
+                          (do
+                            (clipboard/copy! path)
+                            (js/console.log "Copied path"))
+
+                          (some (fn [class-name] (= class-name "copy-repl")) class-names)
+                          (do (clipboard/copy! (str "(simple-render-with-path-annotations " data " " ["app-db-path" path] {} ")"))
+                              (js/console.log "Copied repl command"))))
+
+                      :else
+                      (swap! event-log conj (.-type e)))))))
+      (swap! popup-menus assoc (.-id element) popup-menu))))
+
+(defn simple-render-with-path-annotations
+  [data path {:keys [update-path-fn] :as opts} & [class]]
+  (let [current-path    (second path)
+        menu-listener   (fn [event]
+                          (let [target (-> event .-target .-parentElement)
+                                path   (.getAttribute target "data-path")]
+                            (.preventDefault event)
+                            (build-popup target data path current-path)))
+        click-listener  (fn [event]
+                          (let [target (-> event .-target .-parentElement)
+                                path   (.getAttribute target "data-path")
+                                btn    (.-button event)
+                                msg    (if (= btn 2) "Right click " (str "Button " btn))]
+                            (rf/dispatch (conj update-path-fn path))))]
+    [rc/box
+     :size "1"
+     :class (str (jsonml-style) " " class)
+     :child
+     (if (prn-str-render? data)
+       (prn-str-render data)
+       (jsonml-with-path-annotations->hiccup
+         (header data nil)
+         (or current-path [])
+         (assoc opts
+           :object data
+           :click-listener click-listener
+           :menu-listener menu-listener)))]))

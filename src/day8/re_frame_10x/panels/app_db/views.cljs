@@ -17,7 +17,9 @@
     [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
     [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
     [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
-    [day8.re-frame-10x.tools.coll                                 :as tools.coll]))
+    [day8.re-frame-10x.panels.event.events                        :as event.events]
+    [day8.re-frame-10x.tools.coll                                 :as tools.coll]
+    [day8.re-frame-10x.fx.clipboard                               :as clipboard]))
 
 (def pod-gap "-1px") ;; Overlap pods by 1px to avoid adjoining borders causing 2px borders
 (def pod-padding "0px")
@@ -37,7 +39,14 @@
 (defn panel-header []
   [rc/h-box
    :align    :center
-   :children [[path-inspector-button]]])
+   :gap "1"
+   :children [[path-inspector-button]
+              [buttons/icon
+               {:icon     [material/content-copy]
+                :label    "requires"
+                :title    "Copy to the clipboard, the require form to set things up for the \"repl\" links below"
+                :on-click #(do (clipboard/copy! "(require '[day8.re-frame-10x.components.cljs-devtools])")
+                               (rf/dispatch [::event.events/repl-msg-state :start]))}]]])
 
 (def pod-border-edge (str "1px solid " styles/nord4))
 
@@ -123,7 +132,7 @@
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
-(defn pod [{:keys [path open? diff?] :as pod-info}]
+(defn pod [{:keys [id path open? diff?] :as pod-info}]
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])]
@@ -140,9 +149,10 @@
                    :overflow-x "auto"
                    :overflow-y "hidden"}
            :children
-           [[cljs-devtools/simple-render
+           [[cljs-devtools/simple-render-with-path-annotations
              (tools.coll/get-in-with-lists @app-db-after path)
-             ["app-db-path" path]]]])
+             ["app-db-path" path]
+             {:update-path-fn [::app-db.events/update-path id]}]]])
         (when render-diff?
           (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
                 [diff-before diff-after _] (when render-diff?
