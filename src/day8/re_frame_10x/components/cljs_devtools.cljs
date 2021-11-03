@@ -405,7 +405,7 @@
 (def popup-menus (atom {}))                                 ;; stores all the current rendered menus to prevent re-rendering the same menu twice
 (def event-log (atom (list )))                              ;;stores a history of the events, treated as a stack
 
-;; `html` element is the html element that has received the right click
+;; `html-element` is the html element that has received the right click
 ;; `data` is the clj data from db that is passed to devtools
 ;; `path` is the current path at the point where the popup is clicked in `data`
 ;; `viewing path` is the path that is filled in the input box (if any) when the popup is opening
@@ -473,7 +473,8 @@
                                            (subvec path-obj nested?) ;; both path and viewing-path are from the root point of view
                                            path-obj)
                                 object   (get-in data path-obj)]
-                            (if object
+                            ;; note we cant copy nil objects
+                            (if (or object (and (not (nil? object)) (= object false)))
                               (do (clipboard/copy! object)
                                   (js/console.log "Copied object"))
                               (js/console.error "Could not copy!")))
