@@ -1,6 +1,51 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.2.0 (2021-11-03)
+
+#### Added
+
+- Add path annotation support to app-db panel inspectors. 
+  Left click to set the inspector's path to the path of the clicked item.
+  Right click to get a context menu to copy path, copy object or copy REPL forms.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+
+#### Changed
+
+- Set devtools max-no-body-items pref to 10K. Thanks to [MawiraIke](https://github.com/MawiraIke).
+
+#### Fixed
+
+- Use component name as operation name for tracing. See #322. Thanks to [p-himik](https://github.com/p-himik).
+- Fix subs ID overflowing on subs tab. Thanks to [MawiraIke](https://github.com/MawiraIke).
+
+## 1.1.13 (2021-07-27)
+
+#### Fixed
+
+- Fix overuse of `apply` fn in cljs-devtools wrapper
+
+## 1.1.12 (2021-07-23)
+
+#### Added
+
+- Add leiningen alias for clj-kondo
+- Add lein-count leiningen plugin
+- Add lein-pprint leiningen plugin
+
+#### Changed
+
+- Upgrade shadow-cljs to 2.15.2
+- Replace lein-ancient leiningen plugin with antq
+- Upgrade ClojureScript to 1.10.879
+
+#### Fixed
+
+- Fix linter errors and warnings
+- Reduce subscription load in cljs-devtools component
+
+## 1.1.11 (2021-07-14)
+
 #### Changed
 
 - Upgrade re-highlight to 1.1.0. Includes [highlight.js 11.1.0](https://github.com/highlightjs/highlight.js/blob/main/CHANGES.md#version-1110).
