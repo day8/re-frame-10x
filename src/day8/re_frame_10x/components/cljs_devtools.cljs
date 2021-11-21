@@ -360,7 +360,7 @@
                                         [:> (r/create-class
                                               {:component-did-mount (fn [component]
                                                                       (let [component (dom/dom-node component)]
-                                                                        (goog.events/listen component "contextmenu" menu-listener)
+                                                                        (goog.events/listen component "contextmenu" (partial menu-listener object))
                                                                         (goog.events/listen component "click" click-listener)))
                                                :reagent-render      (fn []
                                                                       (into [:span {:id        id
@@ -410,7 +410,7 @@
 ;; `path` is the current path at the point where the popup is clicked in `data`
 ;; `viewing path` is the path that is filled in the input box (if any) when the popup is opening
 (defn build-popup
-  [html-element data path viewing-path]
+  [data path viewing-path html-element]
   (if-let [rendered? (get @popup-menus (.-id html-element))]
     (.setVisible rendered? true)                            ;; we have already rendered the menu, proceed to display it
     (let [popup-menu       (goog.ui.PopupMenu.)
@@ -473,34 +473,36 @@
                                            (subvec path-obj nested?) ;; both path and viewing-path are from the root point of view
                                            path-obj)
                                 object   (get-in data path-obj)]
-                            ;; note we cant copy nil objects
+                            ;; note we can't copy nil objects
                             (if (or object (and (not (nil? object)) (= object false)))
-                              (do (clipboard/copy! object)
-                                  (js/console.log "Copied object"))
+                              (clipboard/copy! object)
                               (js/console.error "Could not copy!")))
 
                           (some (fn [class-name] (= class-name "copy-path")) class-names)
-                          (do
-                            (clipboard/copy! path)
-                            (js/console.log "Copied path"))
+                          (clipboard/copy! path)
 
                           (some (fn [class-name] (= class-name "copy-repl")) class-names)
-                          (do (clipboard/copy! (str "(simple-render-with-path-annotations " data " " ["app-db-path" path] {} ")"))
-                              (js/console.log "Copied repl command"))))
+                          (clipboard/copy! (str "(simple-render-with-path-annotations " data " " ["app-db-path" path] {} ")"))))
 
                       :else
                       (swap! event-log conj (.-type e)))))))
       (swap! popup-menus assoc (.-id html-element) popup-menu))))
 
+(def current-data (atom nil))
+
 (defn simple-render-with-path-annotations
   [data path {:keys [update-path-fn] :as opts} & [class]]
+  (when (not= @current-data data)
+    (reset! current-data data))
   (let [current-path    (second path)
         ;; triggered during `contextmenu` event when a path annotation is right clicked
-        menu-listener   (fn [event]
+        menu-listener   (fn [obj event]
+                          ;; at this stage `data` might have changed
+                          ;; we have to rely on `current-data` alias `obj`
                           (let [target (-> event .-target .-parentElement)
                                 path   (.getAttribute target "data-path")]
                             (.preventDefault event)
-                            (build-popup target data path current-path)))
+                            (build-popup @obj path current-path target)))
         ;; triggered during `click` event when a path annotation is clicked
         click-listener  (fn [event]
                           (let [target (-> event .-target .-parentElement)
@@ -518,6 +520,6 @@
          (header data nil)
          (or current-path [])
          (assoc opts
-           :object data
+           :object current-data
            :click-listener click-listener
            :menu-listener menu-listener)))]))
