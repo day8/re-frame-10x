@@ -335,7 +335,10 @@
    {:outline [[(px 1) :dotted :ButtonText]]}]
 
   [:textarea
-   {:overflow :auto}])
+   {:overflow :auto}]
+
+  [:ol
+   {:padding-inline-start 0}])
 
 ;; nord0 nord6 background when not syntax
 ;; nord1 nord4 background prominent/focused
