@@ -242,6 +242,7 @@
   (.-config (get jsonml 1)))
 
 (declare jsonml->hiccup)
+(declare jsonml->hiccup-with-path-annotations)
 
 (defclass jsonml-style
   []
@@ -266,7 +267,7 @@
   [:svg :path
    {:fill (if (= ambiance :bright) styles/nord0 styles/nord5)}])
 
-(defn data-structure [_ path & [{:keys [update-path-fn object] :as opts}]]
+(defn data-structure [_ path]
   (let [expanded? (rf/subscribe [::app-db.subs/node-expanded? path])]
     (fn [jsonml path]
       [:span
@@ -277,37 +278,44 @@
          (if @expanded?
            [material/arrow-drop-down]
            [material/arrow-right])]]
-       (let [body? (and @expanded? (has-body (get-object jsonml) (get-config jsonml)))]
-         (cond
-           (and body? (seq opts))
-           (jsonml->hiccup
-             (body
-               (get-object jsonml)
-               (get-config jsonml))
-             path
-             opts)
+       (if (and @expanded? (has-body (get-object jsonml) (get-config jsonml)))
+         (jsonml->hiccup
+           (body
+             (get-object jsonml)
+             (get-config jsonml))
+           (conj path :body))
+         (jsonml->hiccup
+           (header
+             (get-object jsonml)
+             (get-config jsonml))
+           (conj path :header)))])))
 
-           body?
-           (jsonml->hiccup
-             (body
-               (get-object jsonml)
-               (get-config jsonml))
-             (conj path :body))
-
-           (and (not body?) (seq opts))
-           (jsonml->hiccup
-             (header
-               (get-object jsonml)
-               (get-config jsonml))
-             path
-             opts)
-
-           (not body?)
-           (jsonml->hiccup
-             (header
-               (get-object jsonml)
-               (get-config jsonml))
-             (conj path :header))))])))
+(defn data-structure-with-path-annotations [_ indexed-path devtools-path {:keys [update-path-fn object] :as opts}]
+  (let [expanded? (rf/subscribe [::app-db.subs/node-expanded? indexed-path])]
+    (fn [jsonml indexed-path]
+      [:span
+       {:class (jsonml-style)}
+       [:span {:class    (toggle-style :bright)
+               :on-click #(rf/dispatch [::app-db.events/toggle-expansion indexed-path])}
+        [:button
+         (if @expanded?
+           [material/arrow-drop-down]
+           [material/arrow-right])]]
+       (if (and @expanded? (has-body (get-object jsonml) (get-config jsonml)))
+         (jsonml->hiccup-with-path-annotations
+           (body
+             (get-object jsonml)
+             (get-config jsonml))
+           (conj indexed-path :body)
+           devtools-path
+           opts)
+         (jsonml->hiccup-with-path-annotations
+           (header
+             (get-object jsonml)
+             (get-config jsonml))
+           (conj indexed-path :header)
+           devtools-path
+           opts))])))
 
 (defn string->css
   "This function converts jsonml css-strings to valid css maps for hiccup.
@@ -326,7 +334,7 @@
   JSONML is pretty much Hiccup over JSON. Chrome's implementation of this can
   be found at https://cs.chromium.org/chromium/src/third_party/WebKit/Source/devtools/front_end/object_ui/CustomPreviewComponent.js
   "
-  [jsonml path & [{:keys [update-path-fn object click-listener menu-listener] :as opts}]]
+  [jsonml path]
   (if (number? jsonml)
     jsonml
     (let [[tag-name attributes & children] jsonml
@@ -336,42 +344,62 @@
                                         [(keyword tag-name) {:style (-> (js->clj attributes)
                                                                         (get "style")
                                                                         (string->css))}]
-                                        (map-indexed (fn [i child] (if (seq opts)
-                                                                     (jsonml->hiccup child path opts)
-                                                                     (jsonml->hiccup child (conj path i)))))
+                                        (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
                                         children)
 
-        (= tag-name "object") [data-structure jsonml path opts]
-        (= tag-name "annotation") (if (seq opts)
-                                    (let [devtools-path (conj path
-                                                              (last (-> attributes
-                                                                        (js->clj :keywordize-keys true)
-                                                                        :path)))
-                                          js-children    (first children)
-                                          clj-children   (when js-children (js->clj js-children))
-                                          ;; wrap with path path only if the child is a keyword or number
-                                          num-or-kw?     (when-let [kw (and (vector? clj-children)
-                                                                            (last clj-children))]
-                                                           (or (and (string? kw)
-                                                                    (clojure.string/starts-with? kw ":"))
-                                                               (number? kw)))
-                                          id             (-> (random-uuid) str)]
-                                      (if num-or-kw?
-                                        [:> (r/create-class
-                                              {:component-did-mount (fn [component]
-                                                                      (let [component (dom/dom-node component)]
-                                                                        (goog.events/listen component "contextmenu" (partial menu-listener object))
-                                                                        (goog.events/listen component "click" click-listener)))
-                                               :reagent-render      (fn []
-                                                                      (into [:span {:id        id
-                                                                                    :class     "path-annotation"
-                                                                                    :data-path (str devtools-path)}]
-                                                                            (map (fn [child] (jsonml->hiccup child devtools-path opts)) children)))})]
-                                        (into [:span {}]
-                                              (map (fn [child] (jsonml->hiccup child devtools-path opts)) children))))
-                                    (into [:span {}]
-                                          (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
-                                          children))
+        (= tag-name "object") [data-structure jsonml path]
+        (= tag-name "annotation") (into [:span {}]
+                                        (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
+                                        children)
+        :else jsonml))))
+
+(defn jsonml->hiccup-with-path-annotations
+  "JSONML is the format used by Chrome's Custom Object Formatters.
+  The spec is at https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview.
+
+  JSONML is pretty much Hiccup over JSON. Chrome's implementation of this can
+  be found at https://cs.chromium.org/chromium/src/third_party/WebKit/Source/devtools/front_end/object_ui/CustomPreviewComponent.js
+  "
+  [jsonml indexed-path devtools-path {:keys [update-path-fn object click-listener menu-listener] :as opts}]
+  (if (number? jsonml)
+    jsonml
+    (let [[tag-name attributes & children] jsonml
+          tagnames #{"div" "span" "ol" "li" "table" "tr" "td"}]
+      (cond
+        (contains? tagnames tag-name) (into
+                                        [(keyword tag-name) {:style (-> (js->clj attributes)
+                                                                        (get "style")
+                                                                        (string->css))}]
+                                        (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) devtools-path opts)))
+                                        children)
+
+        (= tag-name "object") [data-structure-with-path-annotations jsonml indexed-path devtools-path opts]
+        (= tag-name "annotation") (let [devtools-path (conj devtools-path
+                                                            (last (-> attributes
+                                                                      (js->clj :keywordize-keys true)
+                                                                      :path)))
+                                        js-children    (first children)
+                                        clj-children   (when js-children (js->clj js-children))
+                                        ;; wrap with path only if the child is a keyword or number
+                                        num-or-kw?     (when-let [kw (and (vector? clj-children)
+                                                                          (last clj-children))]
+                                                         (or (and (string? kw)
+                                                                  (clojure.string/starts-with? kw ":"))
+                                                             (number? kw)))
+                                        id             (-> (random-uuid) str)]
+                                    (if num-or-kw?
+                                      [:> (r/create-class
+                                            {:component-did-mount (fn [component]
+                                                                    (let [component (dom/dom-node component)]
+                                                                      (goog.events/listen component "contextmenu" (partial menu-listener object))
+                                                                      (goog.events/listen component "click" click-listener)))
+                                             :reagent-render      (fn []
+                                                                    (into [:span {:id        id
+                                                                                  :class     "path-annotation"
+                                                                                  :data-path (str devtools-path)}]
+                                                                          (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) devtools-path opts)) children)))})]
+                                      (into [:span {}]
+                                            (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) devtools-path opts)) children))))
         :else jsonml))))
 
 (defn prn-str-render?
@@ -491,10 +519,10 @@
 (def current-data (atom nil))
 
 (defn simple-render-with-path-annotations
-  [data path {:keys [update-path-fn] :as opts} & [class]]
+  [data indexed-path {:keys [update-path-fn] :as opts} & [class]]
   (when (not= @current-data data)
     (reset! current-data data))
-  (let [current-path    (second path)
+  (let [devtools-path   (second indexed-path)
         ;; triggered during `contextmenu` event when a path annotation is right clicked
         menu-listener   (fn [obj event]
                           ;; at this stage `data` might have changed
@@ -502,7 +530,7 @@
                           (let [target (-> event .-target .-parentElement)
                                 path   (.getAttribute target "data-path")]
                             (.preventDefault event)
-                            (build-popup @obj path current-path target)))
+                            (build-popup @obj path devtools-path target)))
         ;; triggered during `click` event when a path annotation is clicked
         click-listener  (fn [event]
                           (let [target (-> event .-target .-parentElement)
@@ -516,9 +544,10 @@
      :child
      (if (prn-str-render? data)
        (prn-str-render data)
-       (jsonml->hiccup
+       (jsonml->hiccup-with-path-annotations
          (header data nil)
-         (or current-path [])
+         (conj indexed-path 0)
+         (or devtools-path [])
          (assoc opts
            :object current-data
            :click-listener click-listener
