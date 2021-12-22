@@ -71,7 +71,7 @@
      :attr       attr
      :children   children]))
 
-(defn pod-header [{:keys [id path-str open? diff?]} data]
+(defn pod-header [{:keys [id path-str open? diff? sort?]} data]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class    (styles/section-header ambiance)
@@ -121,6 +121,16 @@
                      :margin-top  "1px"}
          :on-change #(rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)])]]]
       [pod-header-section
+       :width    "49px"
+       :justify  :center
+       :align    :center
+       :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-sort-form? id (not sort?)]))}
+       :children
+       [[rc/checkbox
+         :model sort?
+         :label ""
+         :on-change #(rf/dispatch [::app-db.events/set-sort-form? id (not sort?)])]]]
+      [pod-header-section
        :width    styles/gs-50s
        :justify  :center
        :children
@@ -141,7 +151,7 @@
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
-(defn pod [{:keys [id path open? diff?] :as pod-info}]
+(defn pod [{:keys [id path open? diff? sort?] :as pod-info}]
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])
@@ -162,7 +172,8 @@
            [[cljs-devtools/simple-render-with-path-annotations
              data
              ["app-db-path" path]
-             {:update-path-fn [::app-db.events/update-path id]}]]])
+             {:update-path-fn [::app-db.events/update-path id]
+              :sort? sort?}]]])
         (when render-diff?
           (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
                 [diff-before diff-after _] (when render-diff?
@@ -237,6 +248,10 @@
      :width   styles/gs-50s                                ;;  50px + 1 border
      :justify :center
      :child   [rc/label :style {:font-size "9px"} :label "DIFFS"]]
+    [rc/box
+     :width   styles/gs-50s                                ;;  50px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label "SORT"]]
     [rc/box
      :width   styles/gs-50s                                ;;  50px + 1 border
      :justify :center
