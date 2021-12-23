@@ -116,3 +116,9 @@
   (fn [_ _]
     (re-frame.interop/reagent-id re-frame.db/app-db)))
 
+(rf/reg-event-db
+  ::set-sort-form?
+  paths-interceptors
+  (fn [paths [path-id sort]]
+    (-> paths
+        (assoc-in [path-id :sort?] sort))))

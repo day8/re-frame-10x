@@ -523,10 +523,11 @@
 (def current-data (atom nil))
 
 (defn simple-render-with-path-annotations
-  [data indexed-path {:keys [update-path-fn] :as opts} & [class]]
+  [data indexed-path {:keys [update-path-fn sort?] :as opts} & [class]]
   (when (not= @current-data data)
     (reset! current-data data))
-  (let [devtools-path   (second indexed-path)
+  (let [data            (if (and sort? (map? data)) (into (sorted-map) data) data)
+        devtools-path   (second indexed-path)
         ;; triggered during `contextmenu` event when a path annotation is right clicked
         menu-listener   (fn [obj event]
                           ;; at this stage `data` might have changed
