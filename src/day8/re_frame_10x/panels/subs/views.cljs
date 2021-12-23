@@ -7,6 +7,7 @@
     [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px percent]]
     [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]
+    [day8.re-frame-10x.components.buttons                         :as buttons]
     [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
     [day8.re-frame-10x.components.data                            :as data]
     [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
@@ -139,7 +140,7 @@
    :margin           :auto
    :background-color :#fff})
 
-(defn pod-header [{:keys [id layer path open? diff? pin? order]}]
+(defn pod-header [{:keys [id layer path open? diff? pin? order value]}]
   ;; TODO: highlight when pin? is true
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
@@ -224,7 +225,6 @@
       [pod-header-section
        :width    styles/gs-50s
        :attr     {:on-click (handler-fn (rf/dispatch [::subs.events/set-diff-visibility id (not diff?)]))}
-       :last?    true
        :children
        [[rc/box
          :style {:margin "auto"}
@@ -234,7 +234,18 @@
           :label     ""
           :style     {:margin-left "6px"
                       :margin-top  "1px"}
-          :on-change #(rf/dispatch [::subs.events/set-diff-visibility id (not diff?)])]]]]]]))
+          :on-change #(rf/dispatch [::subs.events/set-diff-visibility id (not diff?)])]]]]
+
+      [pod-header-section
+       :width    styles/gs-31s
+       :attr     {:on-click #(js/console.log value)}
+       :last?    true
+       :children
+       [[rc/box
+         :style {:margin "auto"}
+         :child
+         [buttons/icon {:icon [material/print]
+                        :on-click #()}]]]]]]))
 
 (defclass sub-message-style
   []
@@ -407,6 +418,11 @@
                :justify :center
                :child
                [rc/label :class (column-title-label-style) :label "DIFFS"]]
+              [rc/box
+               :width   "32px"                                ;; styles/gs-31s + 1 border
+               :justify :center
+               :child
+               [rc/label :class (column-title-label-style) :label ""]]
               [rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
 (defclass pod-section-style

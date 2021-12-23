@@ -71,7 +71,7 @@
      :attr       attr
      :children   children]))
 
-(defn pod-header [{:keys [id path-str open? diff?]}]
+(defn pod-header [{:keys [id path-str open? diff?]} data]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class    (styles/section-header ambiance)
@@ -123,22 +123,32 @@
       [pod-header-section
        :width    styles/gs-50s
        :justify  :center
-       :last?    true
        :children
        [[buttons/icon
          {:icon     [material/close]
           :title    "Remove this inspector"
-          :on-click #(rf/dispatch [::app-db.events/remove-path id])}]]]]]))
+          :on-click #(rf/dispatch [::app-db.events/remove-path id])}]]]
+      [pod-header-section
+       :width    styles/gs-31s
+       :justify  :center
+       :last?    true
+       :children
+       [[rc/box
+         :style {:margin "auto"}
+         :child
+         [buttons/icon {:icon [material/print]
+                        :on-click #(js/console.log data)}]]]]]]))
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
 (defn pod [{:keys [id path open? diff?] :as pod-info}]
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
-        app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])]
+        app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])
+        data         (tools.coll/get-in-with-lists @app-db-after path)]
     [rc/v-box
      :children
-     [[pod-header pod-info]
+     [[pod-header pod-info data]
       [rc/v-box
        :class (when open? (styles/pod-border ambiance))
        :children
@@ -150,7 +160,7 @@
                    :overflow-y "hidden"}
            :children
            [[cljs-devtools/simple-render-with-path-annotations
-             (tools.coll/get-in-with-lists @app-db-after path)
+             data
              ["app-db-path" path]
              {:update-path-fn [::app-db.events/update-path id]}]]])
         (when render-diff?
@@ -231,6 +241,10 @@
      :width   styles/gs-50s                                ;;  50px + 1 border
      :justify :center
      :child   [rc/label :style {:font-size "9px"} :label "DELETE"]]
+    [rc/box
+     :width   styles/gs-31s                                ;;  31px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label ""]]
     [rc/gap-f :size styles/gs-2s]
     #_[rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
