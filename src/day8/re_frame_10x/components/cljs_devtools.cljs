@@ -181,14 +181,16 @@
                                                    :padding             [[0 styles/gs-2 0 styles/gs-2]]
                                                    :margin              [[(px 1) 0 0 0]]
                                                    :-webkit-user-select :none})
-   :expanded-string-style                  (style {:padding       [[0 styles/gs-12 0 styles/gs-12]]
-                                                   :color         (styles/syntax-color ambiance syntax-color-scheme :string)
-                                                   :white-space   :pre
-                                                   :border        [[(px 1) :solid (styles/syntax-color ambiance syntax-color-scheme :expanded-string-border)]]
-                                                   :border-radius (px 1)
-                                                   :margin        [[0 0 (px 2) 0]]
+   :expanded-string-style                  (style {:padding          [[0 styles/gs-12 0 styles/gs-12]]
+                                                   :color            (styles/syntax-color ambiance syntax-color-scheme :string)
+                                                   :white-space      :pre
+                                                   :border           [[(px 1) :solid (styles/syntax-color ambiance syntax-color-scheme :expanded-string-border)]]
+                                                   :border-radius    (px 1)
+                                                   :margin           [[0 0 (px 2) 0]]
                                                    :background-color (styles/syntax-color ambiance syntax-color-scheme :expanded-string-background)})
-   :default-envelope-style                 ""})
+   :default-envelope-style                 ""
+   ;; Setting this prevents https://github.com/day8/re-frame-10x/issues/321
+   :max-number-body-items                  10000})
 
 
 
@@ -217,18 +219,20 @@
 ;; TODO: If we expose ambiance and/or syntax color scheme as settings will need to fix this, maybe by recalculating
 ;; at the time the setting is changed/loaded.
 (def custom-config
-  (merge default-config
-         (base-config :bright :cljs-devtools)
-         {:render-path-annotations true
-          ;; Setting this prevents https://github.com/day8/re-frame-10x/issues/321
-          :max-number-body-items 10000}
-         #_bright-ambiance-config))
+  (merge default-config (base-config :bright :cljs-devtools) #_bright-ambiance-config))
 
-(defn header [value config]
-  (with-cljs-devtools-prefs custom-config (devtools.formatters.core/header-api-call value config)))
+(defn header [value config & [{:keys [render-paths?]}]]
+  (with-cljs-devtools-prefs
+    (if render-paths?
+      (merge custom-config {:render-path-annotations       true})
+      custom-config)
+    (devtools.formatters.core/header-api-call value config)))
 
-(defn body [value config]
-  (with-cljs-devtools-prefs custom-config
+(defn body [value config & [{:keys [render-paths?]}]]
+  (with-cljs-devtools-prefs
+    (if render-paths?
+      (merge custom-config {:render-path-annotations       true})
+      custom-config)
     (devtools.formatters.core/body-api-call value config)))
 
 (defn has-body [value config]
@@ -305,7 +309,8 @@
          (jsonml->hiccup-with-path-annotations
            (body
              (get-object jsonml)
-             (get-config jsonml))
+             (get-config jsonml)
+             {:render-paths? true})
            (conj indexed-path :body)
            devtools-path
            opts)
@@ -374,20 +379,19 @@
                                         children)
 
         (= tag-name "object") [data-structure-with-path-annotations jsonml indexed-path devtools-path opts]
-        (= tag-name "annotation") (let [devtools-path (conj devtools-path
-                                                            (last (-> attributes
-                                                                      (js->clj :keywordize-keys true)
-                                                                      :path)))
-                                        js-children    (first children)
-                                        clj-children   (when js-children (js->clj js-children))
-                                        ;; wrap with path only if the child is a keyword or number
-                                        num-or-kw?     (when-let [kw (and (vector? clj-children)
-                                                                          (last clj-children))]
-                                                         (or (and (string? kw)
-                                                                  (clojure.string/starts-with? kw ":"))
-                                                             (number? kw)))
-                                        id             (-> (random-uuid) str)]
-                                    (if num-or-kw?
+        (= tag-name "annotation") (let [index         (-> attributes
+                                                          (js->clj :keywordize-keys true)
+                                                          :path
+                                                          last)
+                                        devtools-path (if index (conj devtools-path index) devtools-path)
+                                        id            (-> (random-uuid) str)
+                                        child-element (nth children 0 nil)
+                                        child-value   (when (instance? js/Array child-element)
+                                                        (nth child-element 2 nil))]
+                                    ;; add menu only to strings, numbers and keywords
+                                    (if (or (string? child-value)
+                                            (number? child-value)
+                                            (keyword? child-value))
                                       [:> (r/create-class
                                             {:component-did-mount (fn [component]
                                                                     (let [component (dom/dom-node component)]
@@ -545,7 +549,7 @@
      (if (prn-str-render? data)
        (prn-str-render data)
        (jsonml->hiccup-with-path-annotations
-         (header data nil)
+         (header data nil {:render-paths? true})
          (conj indexed-path 0)
          (or devtools-path [])
          (assoc opts
