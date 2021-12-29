@@ -352,7 +352,7 @@
 (defn table
   []
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
-        traces   @(rf/subscribe [::traces.subs/sorted])]
+        traces   @(rf/subscribe [::traces.subs/filtered-by-ignored-events])]
     [rc/v-box
      :size     "1"
      :class    (table-style ambiance)

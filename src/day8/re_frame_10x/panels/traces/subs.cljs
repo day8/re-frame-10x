@@ -142,3 +142,15 @@
   :<- [::filtered-by-queries]
   (fn [traces _]
     (sort-by :id traces)))
+
+(rf/reg-sub
+  ::filtered-by-ignored-events
+  :<- [::sorted]
+  :<- [::settings.subs/ignored-events]
+  (fn [[traces ignored-events] _]
+    (let [ignored-events (->> ignored-events (map :event-id) set)]
+      ;; loop over traces and find events, then remove any events in `ignored events`
+      (remove (fn [trace]
+                (let [event?     (= :event (:op-type trace))
+                      event-name (when event? (first (get-in trace [:tags :event])))]
+                  (contains? ignored-events event-name))) traces))))
