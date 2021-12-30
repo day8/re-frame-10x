@@ -54,3 +54,8 @@
   (fn [{:keys [reagent-id]} _]
     reagent-id))
 
+(rf/reg-sub
+  ::expand-all?
+  :<- [::root]
+  (fn [{:keys [expand-all?]} _]
+    expand-all?))

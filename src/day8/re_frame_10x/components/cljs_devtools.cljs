@@ -295,17 +295,18 @@
            (conj path :header)))])))
 
 (defn data-structure-with-path-annotations [_ indexed-path devtools-path {:keys [update-path-fn object] :as opts}]
-  (let [expanded? (rf/subscribe [::app-db.subs/node-expanded? indexed-path])]
+  (let [expanded?   (rf/subscribe [::app-db.subs/node-expanded? indexed-path])
+        expand-all? (rf/subscribe [::app-db.subs/expand-all?])]
     (fn [jsonml indexed-path]
       [:span
        {:class (jsonml-style)}
        [:span {:class    (toggle-style :bright)
                :on-click #(rf/dispatch [::app-db.events/toggle-expansion indexed-path])}
         [:button
-         (if @expanded?
+         (if (or @expand-all? @expanded?)
            [material/arrow-drop-down]
            [material/arrow-right])]]
-       (if (and @expanded? (has-body (get-object jsonml) (get-config jsonml)))
+       (if (and (or @expand-all? @expanded?) (has-body (get-object jsonml) (get-config jsonml)))
          (jsonml->hiccup-with-path-annotations
            (body
              (get-object jsonml)

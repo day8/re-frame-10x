@@ -122,3 +122,9 @@
   (fn [paths [path-id sort]]
     (-> paths
         (assoc-in [path-id :sort?] sort))))
+
+(rf/reg-event-db
+  ::set-expand-all?
+  [(rf/path [:app-db :expand-all?]) rf/trim-v]
+  (fn [_ [expand-all?]]
+    expand-all?))
