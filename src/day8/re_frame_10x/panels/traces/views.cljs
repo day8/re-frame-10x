@@ -136,6 +136,7 @@
                 :on-change #(rf/dispatch [::traces.events/set-draft-query-type
                                           (keyword (.. % -target -value))])}
        [:option {:value "contains"} "contains"]
+       [:option {:value "contains-not"} "doesn't contain"]
        [:option {:value "slower-than"} "slower than"]]
       [inputs/search
        {:on-save     #(rf/dispatch [::traces.events/save-draft-query])

@@ -117,10 +117,16 @@
     (filter (fn [trace] (when (contains? categories (:op-type trace)) trace)) traces)))
 
 (defn query->fn [query]
-  (if (= :contains (:type query))
+  (cond
+    (= :contains (:type query))
     (fn [trace]
       (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
                         (:query query)))
+    (= :contains-not (:type query))
+    (fn [trace]
+      (not (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
+                             (:query query))))
+    :else
     (fn [trace]
       (< (:query query) (:duration trace)))))
 
