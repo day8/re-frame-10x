@@ -116,19 +116,16 @@
   (fn [[traces categories] _]
     (filter (fn [trace] (when (contains? categories (:op-type trace)) trace)) traces)))
 
-(defn query->fn [query]
+(defn query->fn [query trace]
   (cond
     (= :contains (:type query))
-    (fn [trace]
-      (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
-                        (:query query)))
+    (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
+                      (:query query))
     (= :contains-not (:type query))
-    (fn [trace]
-      (not (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
-                             (:query query))))
+    (not (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
+                           (:query query)))
     :else
-    (fn [trace]
-      (< (:query query) (:duration trace)))))
+    (< (:query query) (:duration trace))))
 
 (rf/reg-sub
   ::filtered-by-queries
@@ -141,7 +138,10 @@
                                                queries)]
       (if-not (seq queries)
         traces
-        (filter (apply every-pred (map query->fn queries)) traces)))))
+        (reduce (fn [ret query]
+                  (->> traces
+                       (filter #(query->fn query %))
+                       (concat ret))) [] queries)))))
 
 (rf/reg-sub
   ::sorted
