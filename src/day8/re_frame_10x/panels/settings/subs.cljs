@@ -111,3 +111,9 @@
   :<- [::root]
   (fn [{:keys [syntax-color-scheme]} _]
     syntax-color-scheme))
+
+(rf/reg-sub
+  ::render-path-annotations?
+  :<- [::root]
+  (fn [{:keys [render-path-annotations?]} _]
+    render-path-annotations?))

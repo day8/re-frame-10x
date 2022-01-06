@@ -295,7 +295,8 @@
            (conj path :header)))])))
 
 (defn data-structure-with-path-annotations [_ indexed-path devtools-path {:keys [update-path-fn object] :as opts}]
-  (let [expanded? (rf/subscribe [::app-db.subs/node-expanded? indexed-path])]
+  (let [expanded?     (rf/subscribe [::app-db.subs/node-expanded? indexed-path])
+        render-paths? (rf/subscribe [::settings.subs/render-path-annotations?])]
     (fn [jsonml indexed-path]
       [:span
        {:class (jsonml-style)}
@@ -310,7 +311,7 @@
            (body
              (get-object jsonml)
              (get-config jsonml)
-             {:render-paths? true})
+             {:render-paths? @render-paths?})
            (conj indexed-path :body)
            devtools-path
            opts)
@@ -526,7 +527,8 @@
   [data indexed-path {:keys [update-path-fn sort?] :as opts} & [class]]
   (when (not= @current-data data)
     (reset! current-data data))
-  (let [data            (if (and sort? (map? data)) (into (sorted-map) data) data)
+  (let [render-paths?   (rf/subscribe [::settings.subs/render-path-annotations?])
+        data            (if (and sort? (map? data)) (into (sorted-map) data) data)
         devtools-path   (second indexed-path)
         ;; triggered during `contextmenu` event when a path annotation is right clicked
         menu-listener   (fn [obj event]
@@ -550,7 +552,7 @@
      (if (prn-str-render? data)
        (prn-str-render data)
        (jsonml->hiccup-with-path-annotations
-         (header data nil {:render-paths? true})
+         (header data nil {:render-paths? @render-paths?})
          (conj indexed-path 0)
          (or devtools-path [])
          (assoc opts
