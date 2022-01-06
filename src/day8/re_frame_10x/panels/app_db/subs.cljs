@@ -57,5 +57,5 @@
 (rf/reg-sub
   ::expand-all?
   :<- [::root]
-  (fn [{:keys [expand-all?]} _]
-    expand-all?))
+  (fn [{:keys [expand-all?]} [_ path-id]]
+    (get expand-all? path-id)))

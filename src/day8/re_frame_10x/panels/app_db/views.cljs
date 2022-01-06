@@ -73,7 +73,7 @@
 
 (defn pod-header [{:keys [id path-str open? diff? sort?]} data]
   (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])
-        expand-all? @(rf/subscribe [::app-db.subs/expand-all?])]
+        expand-all? @(rf/subscribe [::app-db.subs/expand-all? id])]
     [rc/h-box
      :class    (styles/section-header ambiance)
      :align    :center
@@ -135,10 +135,11 @@
        :width    "49px"
        :justify  :center
        :align    :center
-       :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-expand-all? (not expand-all?)]))}
+       :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)]))}
        :children
        [[buttons/icon {:icon     [(if expand-all? material/unfold-less material/unfold-more)]
-                       :on-click #(rf/dispatch [::app-db.events/set-expand-all? (not expand-all?)])}]]]
+                       :title    (if expand-all? "Collapse app-db" "Expand app-db")
+                       :on-click #(rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)])}]]]
       [pod-header-section
        :width    styles/gs-50s
        :justify  :center
@@ -181,8 +182,9 @@
            [[cljs-devtools/simple-render-with-path-annotations
              data
              ["app-db-path" path]
-             {:update-path-fn [::app-db.events/update-path id]
-              :sort? sort?}]]])
+             {:path-id        id
+              :update-path-fn [::app-db.events/update-path id]
+              :sort?          sort?}]]])
         (when render-diff?
           (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
                 [diff-before diff-after _] (when render-diff?
@@ -244,37 +246,37 @@
 
 (defn pod-header-column-titles
   []
-  (let [expand-all? @(rf/subscribe [::app-db.subs/expand-all?])] [rc/h-box
-    :height styles/gs-19s
-    :align  :center
-    :children
-    [[rc/gap-f :size styles/gs-31s]
-     [rc/box
-      :size   "1"
-      :height "31px"
-      :child  ""]
-     [rc/box
-      :width   styles/gs-50s                                  ;;  50px + 1 border
-      :justify :center
-      :child   [rc/label :style {:font-size "9px"} :label "DIFFS"]]
-     [rc/box
-      :width   styles/gs-50s                                  ;;  50px + 1 border
-      :justify :center
-      :child   [rc/label :style {:font-size "9px"} :label "SORT"]]
-     [rc/box
-      :width   styles/gs-50s                                  ;;  50px + 1 border
-      :justify :center
-      :child   [rc/label :style {:font-size "9px"} :label (if expand-all? "COLLAPSE" "EXPAND")]]
-     [rc/box
-      :width   styles/gs-50s                                  ;;  50px + 1 border
-      :justify :center
-      :child   [rc/label :style {:font-size "9px"} :label "DELETE"]]
-     [rc/box
-      :width   styles/gs-31s                                  ;;  31px + 1 border
-      :justify :center
-      :child   [rc/label :style {:font-size "9px"} :label ""]]
-     [rc/gap-f :size styles/gs-2s]
-     #_[rc/gap-f :size "6px"]]]))                     ;; Add extra space to look better when there is/aren't scrollbars
+  [rc/h-box
+   :height styles/gs-19s
+   :align  :center
+   :children
+   [[rc/gap-f :size styles/gs-31s]
+    [rc/box
+     :size   "1"
+     :height "31px"
+     :child  ""]
+    [rc/box
+     :width   styles/gs-50s                                  ;;  50px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label "DIFFS"]]
+    [rc/box
+     :width   styles/gs-50s                                  ;;  50px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label "SORT"]]
+    [rc/box
+     :width   styles/gs-50s                                  ;;  50px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label "EXPAND"]]
+    [rc/box
+     :width   styles/gs-50s                                  ;;  50px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label "DELETE"]]
+    [rc/box
+     :width   styles/gs-31s                                  ;;  31px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label ""]]
+    [rc/gap-f :size styles/gs-2s]
+    #_[rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
 (defn pod-section []
   (let [pods @(rf/subscribe [::app-db.subs/paths])]

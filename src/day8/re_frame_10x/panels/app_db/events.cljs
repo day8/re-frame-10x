@@ -126,5 +126,5 @@
 (rf/reg-event-db
   ::set-expand-all?
   [(rf/path [:app-db :expand-all?]) rf/trim-v]
-  (fn [_ [expand-all?]]
-    expand-all?))
+  (fn [db [path-id expand?]]
+    (assoc db path-id expand?)))
