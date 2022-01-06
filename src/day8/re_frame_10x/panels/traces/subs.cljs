@@ -116,7 +116,7 @@
   (fn [[traces categories] _]
     (filter (fn [trace] (when (contains? categories (:op-type trace)) trace)) traces)))
 
-(defn query->fn [query trace]
+(defn query->fn [trace query]
   (cond
     (= :contains (:type query))
     (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
@@ -138,10 +138,11 @@
                                                queries)]
       (if-not (seq queries)
         traces
-        (reduce (fn [ret query]
-                  (->> traces
-                       (filter #(query->fn query %))
-                       (concat ret))) [] queries)))))
+        ;; loop over traces, retain traces that match any of the queries
+        (reduce (fn [ret trace]
+                  (if (some #(query->fn trace %) queries)
+                    (conj ret trace)
+                    ret)) [] traces)))))
 
 (rf/reg-sub
   ::sorted
