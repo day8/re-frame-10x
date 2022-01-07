@@ -54,3 +54,8 @@
   (fn [{:keys [reagent-id]} _]
     reagent-id))
 
+(rf/reg-sub
+  ::data-path-annotations?
+  :<- [::root]
+  (fn [{:keys [data-path-annotations?]} _]
+    data-path-annotations?))
