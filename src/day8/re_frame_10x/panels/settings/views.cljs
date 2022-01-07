@@ -213,18 +213,6 @@
                      :on-change #(rf/dispatch [::settings.events/set-syntax-color-scheme %])]]])
 
               [rc/line]
-              (let [render-path-annotations? @(rf/subscribe [::settings.subs/render-path-annotations?])]
-                [settings-box
-                 [[rc/checkbox
-                   :model render-path-annotations?
-                   :label "render path annotations"
-                   :on-change #(rf/dispatch [::settings.events/render-path-annotations? %])]]
-                 [[:p "When this is checked, the app db is decorated with path annotations."]
-                  [:p "Right clicking on an element allows you to copy the path and copy the child element."]
-                  [:p "Note: Causes the app db to take longer to load in big maps."]] ;; see https://github.com/day8/re-frame-10x/issues/330
-                 settings-box-81])
-
-              [rc/line]
               (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
                 [settings-box
                  [[rc/button

@@ -212,9 +212,3 @@
   ::disable-tracing
   (fn [_ _]
     {::trace/disable {:key ::cb}}))
-
-(rf/reg-event-db
-  ::render-path-annotations?
-  [(rf/path [:settings :render-path-annotations?]) rf/trim-v (local-storage/save "render-path-annotations?")]
-  (fn [_ [render-path-annotations?]]
-    render-path-annotations?))

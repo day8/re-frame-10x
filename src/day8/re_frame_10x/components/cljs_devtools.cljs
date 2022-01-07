@@ -21,7 +21,6 @@
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
     [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
     [day8.re-frame-10x.fx.clipboard                               :as clipboard]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as dom]
@@ -296,7 +295,7 @@
 
 (defn data-structure-with-path-annotations [_ indexed-path devtools-path {:keys [update-path-fn object] :as opts}]
   (let [expanded?     (rf/subscribe [::app-db.subs/node-expanded? indexed-path])
-        render-paths? (rf/subscribe [::settings.subs/render-path-annotations?])]
+        render-paths? (rf/subscribe [::app-db.subs/data-path-annotations?])]
     (fn [jsonml indexed-path]
       [:span
        {:class (jsonml-style)}
@@ -527,7 +526,7 @@
   [data indexed-path {:keys [update-path-fn sort?] :as opts} & [class]]
   (when (not= @current-data data)
     (reset! current-data data))
-  (let [render-paths?   (rf/subscribe [::settings.subs/render-path-annotations?])
+  (let [render-paths?   (rf/subscribe [::app-db.subs/data-path-annotations?])
         data            (if (and sort? (map? data)) (into (sorted-map) data) data)
         devtools-path   (second indexed-path)
         ;; triggered during `contextmenu` event when a path annotation is right clicked
