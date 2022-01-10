@@ -116,13 +116,16 @@
   (fn [[traces categories] _]
     (filter (fn [trace] (when (contains? categories (:op-type trace)) trace)) traces)))
 
-(defn query->fn [query]
-  (if (= :contains (:type query))
-    (fn [trace]
-      (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
-                        (:query query)))
-    (fn [trace]
-      (< (:query query) (:duration trace)))))
+(defn query->fn [trace query]
+  (cond
+    (= :contains (:type query))
+    (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
+                      (:query query))
+    (= :contains-not (:type query))
+    (not (string/includes? (string/lower-case (str (:operation trace) " " (:op-type trace)))
+                           (:query query)))
+    :else
+    (< (:query query) (:duration trace))))
 
 (rf/reg-sub
   ::filtered-by-queries
@@ -135,10 +138,26 @@
                                                queries)]
       (if-not (seq queries)
         traces
-        (filter (apply every-pred (map query->fn queries)) traces)))))
+        ;; loop over traces, retain traces that match any of the queries
+        (reduce (fn [ret trace]
+                  (if (some #(query->fn trace %) queries)
+                    (conj ret trace)
+                    ret)) [] traces)))))
 
 (rf/reg-sub
   ::sorted
   :<- [::filtered-by-queries]
   (fn [traces _]
     (sort-by :id traces)))
+
+(rf/reg-sub
+  ::filtered-by-ignored-events
+  :<- [::sorted]
+  :<- [::settings.subs/ignored-events]
+  (fn [[traces ignored-events] _]
+    (let [ignored-events (->> ignored-events (map :event-id) set)]
+      ;; loop over traces and find events, then remove any events in `ignored events`
+      (remove (fn [trace]
+                (let [event?     (= :event (:op-type trace))
+                      event-name (when event? (first (get-in trace [:tags :event])))]
+                  (contains? ignored-events event-name))) traces))))

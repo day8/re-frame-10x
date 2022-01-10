@@ -136,6 +136,7 @@
                 :on-change #(rf/dispatch [::traces.events/set-draft-query-type
                                           (keyword (.. % -target -value))])}
        [:option {:value "contains"} "contains"]
+       [:option {:value "contains-not"} "doesn't contain"]
        [:option {:value "slower-than"} "slower than"]]
       [inputs/search
        {:on-save     #(rf/dispatch [::traces.events/save-draft-query])
@@ -352,7 +353,7 @@
 (defn table
   []
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
-        traces   @(rf/subscribe [::traces.subs/sorted])]
+        traces   @(rf/subscribe [::traces.subs/filtered-by-ignored-events])]
     [rc/v-box
      :size     "1"
      :class    (table-style ambiance)

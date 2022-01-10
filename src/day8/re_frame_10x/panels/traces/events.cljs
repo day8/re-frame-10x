@@ -50,7 +50,7 @@
                       filters)]
         (conj filters
               {:id    (random-uuid)
-               :query (if (= type :contains)
+               :query (if (or (= type :contains) (= type :contains-not))
                         (string/lower-case query)
                         (js/parseFloat query))
                :type  type})))))

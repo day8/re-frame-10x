@@ -10,6 +10,7 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.components.buttons                         :as buttons]
     [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+    [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
     [day8.re-frame-10x.components.re-com                          :as rc :refer [css-join]]
     [day8.re-frame-10x.svgs                                       :as svgs]
     [day8.re-frame-10x.material                                   :as material]
@@ -48,6 +49,19 @@
                 :on-click #(do (clipboard/copy! "(require '[day8.re-frame-10x.components.cljs-devtools])")
                                (rf/dispatch [::event.events/repl-msg-state :start]))}]]])
 
+(defn data-path-annotations []
+  (let [render-path-annotations? @(rf/subscribe [::app-db.subs/data-path-annotations?])]
+    [rc/h-box
+     :align    :center
+     :children [[rc/checkbox
+                 :model     render-path-annotations?
+                 :label     "data path annotations"
+                 :on-change #(rf/dispatch [::app-db.events/set-data-path-annotations? %])]
+                [rc/gap-f :size styles/gs-7s]
+                [rc/box
+                 :attr  {:title "When ticked, you can right-click on the rendered data (below) to obtain path data \n and cause focus etc. But this feature comes with a performance hit on rendering which \n is proportional to the size/depth of app-db. So, if your app-db is large and you are \n noticing a delay/pause in rendering app-db, untick this option to get better performance."}
+                 :child [hyperlinks/info]]]]))
+
 (def pod-border-edge (str "1px solid " styles/nord4))
 
 (defclass pod-header-section-style
@@ -71,7 +85,7 @@
      :attr       attr
      :children   children]))
 
-(defn pod-header [{:keys [id path-str open? diff?]}]
+(defn pod-header [{:keys [id path-str open? diff? sort?]} data]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class    (styles/section-header ambiance)
@@ -121,24 +135,44 @@
                      :margin-top  "1px"}
          :on-change #(rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)])]]]
       [pod-header-section
+       :width    "49px"
+       :justify  :center
+       :align    :center
+       :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-sort-form? id (not sort?)]))}
+       :children
+       [[rc/checkbox
+         :model sort?
+         :label ""
+         :on-change #(rf/dispatch [::app-db.events/set-sort-form? id (not sort?)])]]]
+      [pod-header-section
        :width    styles/gs-50s
        :justify  :center
-       :last?    true
        :children
        [[buttons/icon
          {:icon     [material/close]
           :title    "Remove this inspector"
-          :on-click #(rf/dispatch [::app-db.events/remove-path id])}]]]]]))
+          :on-click #(rf/dispatch [::app-db.events/remove-path id])}]]]
+      [pod-header-section
+       :width    styles/gs-31s
+       :justify  :center
+       :last?    true
+       :children
+       [[rc/box
+         :style {:margin "auto"}
+         :child
+         [buttons/icon {:icon [material/print]
+                        :on-click #(js/console.log data)}]]]]]]))
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
-(defn pod [{:keys [id path open? diff?] :as pod-info}]
+(defn pod [{:keys [id path open? diff? sort?] :as pod-info}]
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
-        app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])]
+        app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])
+        data         (tools.coll/get-in-with-lists @app-db-after path)]
     [rc/v-box
      :children
-     [[pod-header pod-info]
+     [[pod-header pod-info data]
       [rc/v-box
        :class (when open? (styles/pod-border ambiance))
        :children
@@ -150,9 +184,10 @@
                    :overflow-y "hidden"}
            :children
            [[cljs-devtools/simple-render-with-path-annotations
-             (tools.coll/get-in-with-lists @app-db-after path)
+             data
              ["app-db-path" path]
-             {:update-path-fn [::app-db.events/update-path id]}]]])
+             {:update-path-fn [::app-db.events/update-path id]
+              :sort? sort?}]]])
         (when render-diff?
           (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
                 [diff-before diff-after _] (when render-diff?
@@ -230,7 +265,15 @@
     [rc/box
      :width   styles/gs-50s                                ;;  50px + 1 border
      :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label "SORT"]]
+    [rc/box
+     :width   styles/gs-50s                                ;;  50px + 1 border
+     :justify :center
      :child   [rc/label :style {:font-size "9px"} :label "DELETE"]]
+    [rc/box
+     :width   styles/gs-31s                                ;;  31px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label ""]]
     [rc/gap-f :size styles/gs-2s]
     #_[rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
@@ -258,6 +301,8 @@
    :class    (panel-style)
    :size     "1"
    :children
-   [[panel-header]
+   [[data-path-annotations]
+    [rc/gap-f :size styles/gs-19s]
+    [panel-header]
     [pod-section]
     [rc/gap-f :size styles/gs-19s]]])

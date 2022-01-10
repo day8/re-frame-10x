@@ -7,7 +7,7 @@
   [zprint                               "1.0.1"]
   [superstructor/re-highlight           "1.1.0"]
   [secretary                            "1.2.3"]
-  [binaryage/devtools                   "1.0.3"]
+  [binaryage/devtools                   "1.0.4"]
   [metosin/malli                        "0.5.1"]]
 
  :source-paths ["src" "../../src" "../../gen-src"]

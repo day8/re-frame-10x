@@ -116,3 +116,15 @@
   (fn [_ _]
     (re-frame.interop/reagent-id re-frame.db/app-db)))
 
+(rf/reg-event-db
+  ::set-sort-form?
+  paths-interceptors
+  (fn [paths [path-id sort]]
+    (-> paths
+        (assoc-in [path-id :sort?] sort))))
+
+(rf/reg-event-db
+  ::set-data-path-annotations?
+  [(rf/path [:app-db :data-path-annotations?]) rf/trim-v (local-storage/save "data-path-annotations?")]
+  (fn [_ [data-path-annotations?]]
+    data-path-annotations?))
