@@ -293,8 +293,9 @@
               :style    {:margin-right styles/gs-5s}
               :children [[settings-button]
                          [popout-button external-window?]]]]]
-           (when-not (= @show-event-history? false)
-             [epochs.views/epochs])]]
+           (if-not (= @show-event-history? false)
+             [epochs.views/epochs]
+             [rc/line])]]
          [tab-buttons {:debug? debug?}]]
         [rc/h-box
          :class   (navigation-style ambiance)
