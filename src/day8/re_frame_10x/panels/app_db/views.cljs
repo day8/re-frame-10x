@@ -59,7 +59,7 @@
                  :on-change #(rf/dispatch [::app-db.events/set-data-path-annotations? %])]
                 [rc/gap-f :size styles/gs-7s]
                 [rc/box
-                 :attr  {:title "When ticked, you can right-click on the rendered data (below) to obtain path data and cause focus etc. But this feature comes with a performance hit on rendering which is proportional to the size/depth of app-db. So, if your app-db is large and you are noticing a delay/pause in rendering app-db, untick this option to get better performance."}
+                 :attr  {:title "When ticked, you can right-click on the rendered data (below) to obtain path data \n and cause focus etc. But this feature comes with a performance hit on rendering which \n is proportional to the size/depth of app-db. So, if your app-db is large and you are \n noticing a delay/pause in rendering app-db, untick this option to get better performance."}
                  :child [hyperlinks/info]]]]))
 
 (def pod-border-edge (str "1px solid " styles/nord4))
