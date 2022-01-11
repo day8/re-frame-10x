@@ -21,7 +21,6 @@
     [day8.re-frame-10x.styles                                     :as styles]
     [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
     [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
     [day8.re-frame-10x.fx.clipboard                               :as clipboard]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as dom]
@@ -295,10 +294,11 @@
            (conj path :header)))])))
 
 (defn data-structure-with-path-annotations [_ indexed-path devtools-path {:keys [path-id] :as opts}]
-  (let [expanded?   (rf/subscribe [::app-db.subs/node-expanded? indexed-path])
-        expand-all? (rf/subscribe [::app-db.subs/expand-all? path-id])] ;; expand-all? default is nil,
-        ;; false means that we have collapsed the app-db
-        ;; true means we have expanded the whole db
+  (let [expanded?     (rf/subscribe [::app-db.subs/node-expanded? indexed-path])
+        expand-all?   (rf/subscribe [::app-db.subs/expand-all? path-id]) ;; expand-all? default is nil,
+        render-paths? (rf/subscribe [::app-db.subs/data-path-annotations?])]
+    ;; false means that we have collapsed the app-db
+    ;; true means we have expanded the whole db
     (fn [jsonml indexed-path]
       (let [show-body? (and (has-body (get-object jsonml) (get-config jsonml))
                             (cond
@@ -307,8 +307,7 @@
         [:span
          {:class (jsonml-style)}
          [:span {:class    (toggle-style :bright)
-                 :on-click #(do (rf/dispatch [::app-db.events/toggle-expansion indexed-path])
-                                (rf/dispatch [::app-db.events/set-expand-all? path-id nil]))}
+                 :on-click #(rf/dispatch [::app-db.events/toggle-expansion indexed-path])}
           [:button
            (if show-body?
              [material/arrow-drop-down]
@@ -318,7 +317,7 @@
              (body
                (get-object jsonml)
                (get-config jsonml)
-               {:render-paths? true})
+               {:render-paths? @render-paths?})
              (conj indexed-path :body)
              devtools-path
              opts)
@@ -534,7 +533,8 @@
   [data indexed-path {:keys [update-path-fn sort?] :as opts} & [class]]
   (when (not= @current-data data)
     (reset! current-data data))
-  (let [data            (if (and sort? (map? data)) (into (sorted-map) data) data)
+  (let [render-paths?   (rf/subscribe [::app-db.subs/data-path-annotations?])
+        data            (if (and sort? (map? data)) (into (sorted-map) data) data)
         devtools-path   (second indexed-path)
         ;; triggered during `contextmenu` event when a path annotation is right clicked
         menu-listener   (fn [obj event]
@@ -558,7 +558,7 @@
      (if (prn-str-render? data)
        (prn-str-render data)
        (jsonml->hiccup-with-path-annotations
-         (header data nil {:render-paths? true})
+         (header data nil {:render-paths? @render-paths?})
          (conj indexed-path 0)
          (or devtools-path [])
          (assoc opts

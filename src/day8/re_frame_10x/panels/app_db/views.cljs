@@ -10,6 +10,7 @@
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.components.buttons                         :as buttons]
     [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+    [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
     [day8.re-frame-10x.components.re-com                          :as rc :refer [css-join]]
     [day8.re-frame-10x.svgs                                       :as svgs]
     [day8.re-frame-10x.material                                   :as material]
@@ -47,6 +48,19 @@
                 :title    "Copy to the clipboard, the require form to set things up for the \"repl\" links below"
                 :on-click #(do (clipboard/copy! "(require '[day8.re-frame-10x.components.cljs-devtools])")
                                (rf/dispatch [::event.events/repl-msg-state :start]))}]]])
+
+(defn data-path-annotations []
+  (let [render-path-annotations? @(rf/subscribe [::app-db.subs/data-path-annotations?])]
+    [rc/h-box
+     :align    :center
+     :children [[rc/checkbox
+                 :model     render-path-annotations?
+                 :label     "data path annotations"
+                 :on-change #(rf/dispatch [::app-db.events/set-data-path-annotations? %])]
+                [rc/gap-f :size styles/gs-7s]
+                [rc/box
+                 :attr  {:title "When ticked, you can right-click on the rendered data (below) to obtain path data \n and cause focus etc. But this feature comes with a performance hit on rendering which \n is proportional to the size/depth of app-db. So, if your app-db is large and you are \n noticing a delay/pause in rendering app-db, untick this option to get better performance."}
+                 :child [hyperlinks/info]]]]))
 
 (def pod-border-edge (str "1px solid " styles/nord4))
 
@@ -302,6 +316,8 @@
    :class    (panel-style)
    :size     "1"
    :children
-   [[panel-header]
+   [[data-path-annotations]
+    [rc/gap-f :size styles/gs-19s]
+    [panel-header]
     [pod-section]
     [rc/gap-f :size styles/gs-19s]]])

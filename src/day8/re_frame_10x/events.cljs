@@ -35,11 +35,12 @@
    (rf/inject-cofx ::local-storage/load {:key "ambiance" :or :bright})
    (rf/inject-cofx ::local-storage/load {:key "syntax-color-scheme" :or :cljs-devtools})
    (rf/inject-cofx ::local-storage/load {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose}})
+   (rf/inject-cofx ::local-storage/load {:key "data-path-annotations?" :or false})
    rf/unwrap]
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
                ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
-               app-db-follow-events? ambiance syntax-color-scheme categories]}
+               app-db-follow-events? ambiance syntax-color-scheme categories data-path-annotations?]}
        {:keys [debug?]}]
     {:fx [(when using-trace?
             [:dispatch [::settings.events/enable-tracing]])
@@ -56,6 +57,7 @@
           [:dispatch [::settings.events/debug? debug?]]
           ;; Important that window dimensions are set before we open an external window.
           [:dispatch [::settings.events/external-window-dimensions external-window-dimensions]]
+          [:dispatch [::app-db.events/set-data-path-annotations? data-path-annotations?]]
           (when external-window?
             [:dispatch [::navigation.events/launch-external navigation.views/mount]])
           [:dispatch [::traces.events/set-queries filter-items]]

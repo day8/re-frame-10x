@@ -124,6 +124,12 @@
         (assoc-in [path-id :sort?] sort))))
 
 (rf/reg-event-db
+  ::set-data-path-annotations?
+  [(rf/path [:app-db :data-path-annotations?]) rf/trim-v (local-storage/save "data-path-annotations?")]
+  (fn [_ [data-path-annotations?]]
+    data-path-annotations?))
+
+(rf/reg-event-db
   ::set-expand-all?
   [(rf/path [:app-db :expand-all?]) rf/trim-v]
   (fn [db [path-id expand?]]
