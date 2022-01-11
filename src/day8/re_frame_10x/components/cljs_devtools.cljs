@@ -307,7 +307,8 @@
         [:span
          {:class (jsonml-style)}
          [:span {:class    (toggle-style :bright)
-                 :on-click #(rf/dispatch [::app-db.events/toggle-expansion indexed-path])}
+                 :on-click #(do (rf/dispatch [::app-db.events/toggle-expansion indexed-path])
+                                (rf/dispatch [::app-db.events/set-expand-all? path-id nil]))}
           [:button
            (if show-body?
              [material/arrow-drop-down]
