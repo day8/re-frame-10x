@@ -144,14 +144,14 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
 
 - Update your re-frame dependency to at least `1.2.0` - `[re-frame "1.2.0"]`.
 
-- Add re-frame-10x as a dev dependency by placing `[day8.re-frame/re-frame-10x "1.0.2"]` within `:dependencies`
+- Add re-frame-10x as a dev dependency by placing `[day8.re-frame/re-frame-10x "1.2.2"]` within `:dependencies`
 
   - For shadow-cljs, within `dependencies`. For example:
 
   ```cljs
   :dependencies
   [[day8.re-frame/tracing      "0.6.2"]
-   [day8.re-frame/re-frame-10x "1.0.2"]]
+   [day8.re-frame/re-frame-10x "1.2.2"]]
   ```
 
   - For Leiningen, within `:profiles :dev :dependencies`. For example:
@@ -160,10 +160,18 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
   :profiles
      {:dev
         {:dependencies [[day8.re-frame/tracing      "0.6.2"] 
-                        [day8.re-frame/re-frame-10x "1.0.2"]] }}
+                        [day8.re-frame/re-frame-10x "1.2.2"]] }}
   ```
 
-
+  - For deps.edn, create a new aliass, or add the dependencies in your `dev` alias:
+  
+  ```cljs
+  {:aliases 
+    {:dev {:extra-deps
+           {day8.re-frame/tracing      {:mvn/version "0.6.2"}
+            day8.re-frame/re-frame-10x {:mvn/version "1.2.2"}}}}}
+  ```
+  
 - Locate your compiler config for your development build and add `:closure-defines` and `:preloads` to enable re-frame-10x.
 
   For example using [shadow-cljs](https://shadow-cljs.github.io/docs/UsersGuide.html) update your `shadow-cljs.edn`:
