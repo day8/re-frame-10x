@@ -1,6 +1,51 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## Unreleased
+
+#### Added
+
+- Make popup standalone and not embedded in the app db
+
+#### Fixed
+
+- Fix path generation in nested objects
+- Fix path generation in sets
+- Prevent erasure of path when the path or object is copied from the menu
+
+## 1.2.2 (2022-1-10)
+
+#### Added
+
+- Add option to enable and disable rendering of path generations. See #341.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Add a doesn't contain filter in traces. See #124.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Make trace panel filters act as ORs not AND. See #124.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+
+#### Fixed
+
+- Filter ignored events in settings from traces in traces tab. See #175.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+
+## 1.2.1 (2021-12-23)
+
+#### Changed
+
+- Update devtools to version 1.0.4.
+
+#### Fixed
+
+- Improve path generation performance. See #330.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Add indexed path alongside devtools path in app db. See #331.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Allow `copy object` on updated data. See #329.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Remove redundant indenting in maps. See #309.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+
 ## 1.2.0 (2021-11-03)
 
 #### Added
