@@ -169,7 +169,7 @@
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])
-        data         (tools.coll/get-in-with-lists @app-db-after path)]
+        data         (tools.coll/get-in-with-lists-and-sets @app-db-after path)]
     [rc/v-box
      :children
      [[pod-header pod-info data]
@@ -187,7 +187,8 @@
              data
              ["app-db-path" path]
              {:update-path-fn [::app-db.events/update-path id]
-              :sort? sort?}]]])
+              :sort?          sort?
+              :object         @app-db-after}]]])
         (when render-diff?
           (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
                 [diff-before diff-after _] (when render-diff?

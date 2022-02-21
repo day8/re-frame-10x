@@ -247,13 +247,21 @@
   [ambiance]
   {:composes (styles/colors-0 ambiance)})
 
+;; this is the styling to be applied to popup menus
+(defclass path-annotations-menu-style
+  []
+  {}
+  [:.goog-menu
+   {:position         :absolute
+    :background-color :#E5E9F0}])
+
 (defn devtools-inner [{:keys [panel-type debug?]}]
   (let [ambiance          @(rf/subscribe [::settings.subs/ambiance])
         selected-tab      @(rf/subscribe [::settings.subs/selected-tab])
         external-window?  (= panel-type :popup)
         showing-settings? (= selected-tab :settings)]
     [rc/v-box
-     :class    (str (styles/normalize) " " (devtools-inner-style ambiance))
+     :class    (str (styles/normalize) " " (devtools-inner-style ambiance) " " (path-annotations-menu-style))
      :height   "100%"
      :width    "100%"
      :children
