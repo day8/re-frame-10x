@@ -401,7 +401,7 @@
                                                 {:component-did-mount (fn [component]
                                                                         (let [component (dom/dom-node component)]
                                                                           (goog.events/listen component "contextmenu" menu-listener)
-                                                                          (goog.events/listen component "click" click-listener)))
+                                                                          (goog.events/listen component "dblclick" click-listener)))
                                                  :reagent-render      (fn []
                                                                         (into [:span {:id        element-id
                                                                                       :class     "path-annotation"
