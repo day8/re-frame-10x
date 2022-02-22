@@ -366,7 +366,7 @@
   JSONML is pretty much Hiccup over JSON. Chrome's implementation of this can
   be found at https://cs.chromium.org/chromium/src/third_party/WebKit/Source/devtools/front_end/object_ui/CustomPreviewComponent.js
   "
-  [jsonml indexed-path devtools-path {:keys [click-listener menu-listener] :as opts}] ;;indexed-path
+  [jsonml indexed-path devtools-path {:keys [click-listener middle-click-listener menu-listener] :as opts}] ;;indexed-path
   ;; is updated on every html element such as `tagnames` while devtools-path is updated only when we encounter an
   ;; element that contains the `:path` attribute.
   (if (number? jsonml)
@@ -401,7 +401,8 @@
                                                 {:component-did-mount (fn [component]
                                                                         (let [component (dom/dom-node component)]
                                                                           (goog.events/listen component "contextmenu" menu-listener)
-                                                                          (goog.events/listen component "dblclick" click-listener)))
+                                                                          (goog.events/listen component "dblclick" click-listener)
+                                                                          (goog.events/listen component "mousedown" middle-click-listener)))
                                                  :reagent-render      (fn []
                                                                         (into [:span {:id        element-id
                                                                                       :class     "path-annotation"
@@ -549,7 +550,14 @@
                                  path   (.getAttribute target "data-path")
                                  btn    (.-button event)]
                              (when (= btn 0)                ;;left click btn
-                               (rf/dispatch (conj update-path-fn path)))))]
+                               (rf/dispatch (conj update-path-fn path)))))
+        ;; triggered during `mousedown` event when an element is clicked.
+        middle-click-listener (fn [event]
+                                (let [target (-> event .-target .-parentElement)
+                                      path   (.getAttribute target "data-path")
+                                      btn    (.-button event)]
+                                  (when (= btn 1)           ;;middle click btn
+                                    (rf/dispatch [::app-db.events/create-path-and-skip-to path]))))]
     [rc/box
      :size "1"
      :class (str (jsonml-style) " " class)
@@ -561,5 +569,6 @@
          (conj indexed-path 0)
          (or input-field-path [])
          (assoc opts
-           :click-listener click-listener
-           :menu-listener menu-listener)))]))
+           :click-listener        click-listener
+           :middle-click-listener middle-click-listener
+           :menu-listener         menu-listener)))]))

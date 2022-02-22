@@ -34,6 +34,20 @@
        :path-str    ""
        :valid-path? true})))
 
+(rf/reg-event-fx
+  ::create-path-and-skip-to
+  paths-interceptors
+  (fn [{:keys [db]} [skip-to-path]]
+    (let [path-id (js/Date.now)]
+      {:db       (assoc db
+                   path-id
+                   {:diff?       false
+                    :open?       false
+                    :path        nil
+                    :path-str    ""
+                    :valid-path? true})
+       :dispatch [::update-path path-id skip-to-path]})))
+
 (rf/reg-event-db
   ::update-path
   paths-interceptors
