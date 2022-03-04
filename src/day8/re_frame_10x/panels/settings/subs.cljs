@@ -111,3 +111,9 @@
   :<- [::root]
   (fn [{:keys [syntax-color-scheme]} _]
     syntax-color-scheme))
+
+(rf/reg-sub
+  ::show-event-history?
+  :<- [::root]
+  (fn [{:keys [show-event-history?]} _]
+    show-event-history?))

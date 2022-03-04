@@ -220,6 +220,18 @@
                   :settings [settings.views/render]
                             [app-db.views/panel db/app-db])]]))
 
+(defn show-history-button
+  []
+  (let [show-event-history? (rf/subscribe [::settings.subs/show-event-history?])
+        standard-history    (if (nil? @show-event-history?) true @show-event-history?)]
+    [buttons/icon
+     {:icon     [rc/checkbox
+                 :model standard-history
+                 :on-change #(rf/dispatch [::settings.events/show-event-history? %])]
+      :title    (if standard-history "Hide event history" "Show event history")
+      :label    "history"
+      :on-click #(rf/dispatch [::settings.events/show-event-history? (not standard-history)])}]))
+
 (defn settings-button
   []
   [buttons/icon
@@ -256,10 +268,11 @@
     :background-color :#E5E9F0}])
 
 (defn devtools-inner [{:keys [panel-type debug?]}]
-  (let [ambiance          @(rf/subscribe [::settings.subs/ambiance])
-        selected-tab      @(rf/subscribe [::settings.subs/selected-tab])
-        external-window?  (= panel-type :popup)
-        showing-settings? (= selected-tab :settings)]
+  (let [ambiance            @(rf/subscribe [::settings.subs/ambiance])
+        selected-tab        @(rf/subscribe [::settings.subs/selected-tab])
+        show-event-history? (rf/subscribe [::settings.subs/show-event-history?])
+        external-window?    (= panel-type :popup)
+        showing-settings?   (= selected-tab :settings)]
     [rc/v-box
      :class    (str (styles/normalize) " " (devtools-inner-style ambiance) " " (path-annotations-menu-style))
      :height   "100%"
@@ -275,14 +288,22 @@
             :height  styles/gs-31s
             :gap     styles/gs-19s
             :children
-            [[rc/label :label "Event History"]
-             [epochs.views/left-buttons]
+            [(when-not (= @show-event-history? false)
+               [rc/label :label "Event History"])
+             (if-not (= @show-event-history? false)
+               [epochs.views/left-buttons]
+               [rc/box
+                :size "1"
+                :child [:div]])
+             [show-history-button]
              [rc/h-box
               :gap      styles/gs-12s
               :style    {:margin-right styles/gs-5s}
               :children [[settings-button]
                          [popout-button external-window?]]]]]
-           [epochs.views/epochs]]]
+           (if-not (= @show-event-history? false)
+             [epochs.views/epochs]
+             [rc/line])]]
          [tab-buttons {:debug? debug?}]]
         [rc/h-box
          :class   (navigation-style ambiance)
