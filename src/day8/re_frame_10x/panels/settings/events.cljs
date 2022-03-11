@@ -212,3 +212,9 @@
   ::disable-tracing
   (fn [_ _]
     {::trace/disable {:key ::cb}}))
+
+(rf/reg-event-db
+  ::show-event-history?
+  [(rf/path [:settings :show-event-history?]) rf/trim-v (local-storage/save "show-event-history")]
+  (fn [_ [show-event-history?]]
+    show-event-history?))

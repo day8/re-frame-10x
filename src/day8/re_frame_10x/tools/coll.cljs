@@ -37,13 +37,16 @@
       m)
     (dissoc m k)))
 
-(defn get-in-with-lists
-  "cljs.core/get-in with support for index access of lists."
+(defn get-in-with-lists-and-sets
+  "cljs.core/get-in with support for index access of lists and sets"
   [m ks]
   (reduce
     (fn [ret k]
-      (if (list? ret)
-        (nth ret k)
-        (get ret k)))
+      (cond
+        (list? ret) (nth ret k)
+        (set? ret)  (if (number? k)
+                      (nth (vec ret) k)
+                      (get ret k))
+        :else       (get ret k)))
     m
     ks))

@@ -36,11 +36,12 @@
    (rf/inject-cofx ::local-storage/load {:key "syntax-color-scheme" :or :cljs-devtools})
    (rf/inject-cofx ::local-storage/load {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose}})
    (rf/inject-cofx ::local-storage/load {:key "data-path-annotations?" :or false})
+   (rf/inject-cofx ::local-storage/load {:key "show-event-history" :or true})
    rf/unwrap]
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
                ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
-               app-db-follow-events? ambiance syntax-color-scheme categories data-path-annotations?]}
+               app-db-follow-events? ambiance syntax-color-scheme categories data-path-annotations? show-event-history]}
        {:keys [debug?]}]
     {:fx [(when using-trace?
             [:dispatch [::settings.events/enable-tracing]])
@@ -66,7 +67,8 @@
           [:dispatch [::app-db.events/paths (into (sorted-map) app-db-paths)]]
           [:dispatch [::app-db.events/set-json-ml-paths app-db-json-ml-expansions]]
           [:dispatch [:global/add-unload-hook]]
-          [:dispatch [::app-db.events/reagent-id]]]}))
+          [:dispatch [::app-db.events/reagent-id]]
+          [:dispatch [::settings.events/show-event-history? show-event-history]]]}))
 
 ;; Global
 

@@ -85,7 +85,7 @@
      :attr       attr
      :children   children]))
 
-(defn pod-header [{:keys [id path-str open? diff? sort?]} data]
+(defn pod-header [{:keys [id path path-str open? diff? sort?]} data]
   (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])
         expand-all? @(rf/subscribe [::app-db.subs/expand-all? id])]
     [rc/h-box
@@ -123,6 +123,22 @@
          :on-submit       #()                   ;; #(rf/dispatch [::app-db.events/add-path %])
          :change-on-blur? false
          :placeholder     "enter an app-db path like [:todos 1]"]]]
+
+      (when (> (count path) 0)
+        [buttons/icon
+         {:icon     [material/clear]
+          :title    "Clear path in current inspector"
+          :on-click #(rf/dispatch [::app-db.events/update-path id ""])}])
+
+      (when (> (count path) 0)
+        [rc/gap-f :size styles/gs-7s])
+
+      (when (> (count path) 0)
+        [buttons/icon
+         {:icon     [material/arrow-drop-up]
+          :title    "Open parent path in current inspector"
+          :on-click #(rf/dispatch [::app-db.events/update-path id (str (if (> (count path) 1) (pop path) ""))])}])
+
       [pod-header-section
        :width    "49px"
        :justify  :center
@@ -179,7 +195,7 @@
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])
-        data         (tools.coll/get-in-with-lists @app-db-after path)]
+        data         (tools.coll/get-in-with-lists-and-sets @app-db-after path)]
     [rc/v-box
      :children
      [[pod-header pod-info data]
@@ -198,7 +214,8 @@
              ["app-db-path" path]
              {:path-id        id
               :update-path-fn [::app-db.events/update-path id]
-              :sort?          sort?}]]])
+              :sort?          sort?
+              :object         @app-db-after}]]])
         (when render-diff?
           (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
                 [diff-before diff-after _] (when render-diff?
