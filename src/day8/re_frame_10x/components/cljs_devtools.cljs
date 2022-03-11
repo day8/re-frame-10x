@@ -294,34 +294,42 @@
              (get-config jsonml))
            (conj path :header)))])))
 
-(defn data-structure-with-path-annotations [_ indexed-path _ _]
+(defn data-structure-with-path-annotations [_ indexed-path _ {:keys [path-id]}]
   (let [expanded?     (rf/subscribe [::app-db.subs/node-expanded? indexed-path])
+        expand-all?   (rf/subscribe [::app-db.subs/expand-all? path-id]) ;; expand-all? default is nil,
         render-paths? (rf/subscribe [::app-db.subs/data-path-annotations?])]
+    ;; false means that we have collapsed the app-db
+    ;; true means we have expanded the whole db
     (fn [jsonml indexed-path devtools-path opts]
-      [:span
-       {:class (jsonml-style)}
-       [:span {:class    (toggle-style :bright)
-               :on-click #(rf/dispatch [::app-db.events/toggle-expansion indexed-path])}
-        [:button
-         (if @expanded?
-           [material/arrow-drop-down]
-           [material/arrow-right])]]
-       (if (and @expanded? (has-body (get-object jsonml) (get-config jsonml)))
-         (jsonml->hiccup-with-path-annotations
-           (body
-             (get-object jsonml)
-             (get-config jsonml)
-             {:render-paths? @render-paths?})
-           (conj indexed-path :body)
-           devtools-path
-           opts)
-         (jsonml->hiccup-with-path-annotations
-           (header
-             (get-object jsonml)
-             (get-config jsonml))
-           (conj indexed-path :header)
-           devtools-path
-           opts))])))
+      (let [show-body? (and (has-body (get-object jsonml) (get-config jsonml))
+                            (cond
+                              @expand-all? true
+                              (and @expanded? (not= @expand-all? false)) true))]
+        [:span
+         {:class (jsonml-style)}
+         [:span {:class    (toggle-style :bright)
+                 :on-click #(do (rf/dispatch [::app-db.events/toggle-expansion indexed-path])
+                                (rf/dispatch [::app-db.events/set-expand-all? path-id nil]))}
+          [:button
+           (if show-body?
+             [material/arrow-drop-down]
+             [material/arrow-right])]]
+         (if show-body?
+           (jsonml->hiccup-with-path-annotations
+             (body
+               (get-object jsonml)
+               (get-config jsonml)
+               {:render-paths? @render-paths?})
+             (conj indexed-path :body)
+             devtools-path
+             opts)
+           (jsonml->hiccup-with-path-annotations
+             (header
+               (get-object jsonml)
+               (get-config jsonml))
+             (conj indexed-path :header)
+             devtools-path
+             opts))]))))
 
 (defn string->css
   "This function converts jsonml css-strings to valid css maps for hiccup.

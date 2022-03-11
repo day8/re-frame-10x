@@ -86,7 +86,8 @@
      :children   children]))
 
 (defn pod-header [{:keys [id path path-str open? diff? sort?]} data]
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+  (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])
+        expand-all? @(rf/subscribe [::app-db.subs/expand-all? id])]
     [rc/h-box
      :class    (styles/section-header ambiance)
      :align    :center
@@ -161,6 +162,15 @@
          :label ""
          :on-change #(rf/dispatch [::app-db.events/set-sort-form? id (not sort?)])]]]
       [pod-header-section
+       :width    "49px"
+       :justify  :center
+       :align    :center
+       :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)]))}
+       :children
+       [[buttons/icon {:icon     [(if expand-all? material/unfold-less material/unfold-more)]
+                       :title    (if expand-all? "Collapse app-db" "Expand app-db")
+                       :on-click #(rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)])}]]]
+      [pod-header-section
        :width    styles/gs-50s
        :justify  :center
        :children
@@ -202,7 +212,8 @@
            [[cljs-devtools/simple-render-with-path-annotations
              data
              ["app-db-path" path]
-             {:update-path-fn [::app-db.events/update-path id]
+             {:path-id        id
+              :update-path-fn [::app-db.events/update-path id]
               :sort?          sort?
               :object         @app-db-after}]]])
         (when render-diff?
@@ -267,28 +278,32 @@
 (defn pod-header-column-titles
   []
   [rc/h-box
-   :height   styles/gs-19s
-   :align    :center
+   :height styles/gs-19s
+   :align  :center
    :children
    [[rc/gap-f :size styles/gs-31s]
     [rc/box
-     :size  "1"
+     :size   "1"
      :height "31px"
-     :child ""]
+     :child  ""]
     [rc/box
-     :width   styles/gs-50s                                ;;  50px + 1 border
+     :width   styles/gs-50s                                  ;;  50px + 1 border
      :justify :center
      :child   [rc/label :style {:font-size "9px"} :label "DIFFS"]]
     [rc/box
-     :width   styles/gs-50s                                ;;  50px + 1 border
+     :width   styles/gs-50s                                  ;;  50px + 1 border
      :justify :center
      :child   [rc/label :style {:font-size "9px"} :label "SORT"]]
     [rc/box
-     :width   styles/gs-50s                                ;;  50px + 1 border
+     :width   styles/gs-50s                                  ;;  50px + 1 border
+     :justify :center
+     :child   [rc/label :style {:font-size "9px"} :label "EXPAND"]]
+    [rc/box
+     :width   styles/gs-50s                                  ;;  50px + 1 border
      :justify :center
      :child   [rc/label :style {:font-size "9px"} :label "DELETE"]]
     [rc/box
-     :width   styles/gs-31s                                ;;  31px + 1 border
+     :width   styles/gs-31s                                  ;;  31px + 1 border
      :justify :center
      :child   [rc/label :style {:font-size "9px"} :label ""]]
     [rc/gap-f :size styles/gs-2s]

@@ -59,3 +59,9 @@
   :<- [::root]
   (fn [{:keys [data-path-annotations?]} _]
     data-path-annotations?))
+
+(rf/reg-sub
+  ::expand-all?
+  :<- [::root]
+  (fn [{:keys [expand-all?]} [_ path-id]]
+    (get expand-all? path-id)))
