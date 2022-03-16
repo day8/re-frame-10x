@@ -5,13 +5,32 @@ All notable changes to this project will be documented in this file. This change
 
 #### Added
 
-- Make popup standalone and not embedded in the app db
+- Make popup standalone and not embedded in the app db. See #348.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Add button to expand or collapse the entire app db. See #82.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Change to open path on double click instead of single click. See #348.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Add option to open path in new inspector after middle click. See #348.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Add button to open parent path in current inspector. See #348.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Add button to clear path. See #348.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Add toggle for showing or hiding the event history. See #311.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+
+#### Changed
+- Upgrade devtools to version 1.0.5
 
 #### Fixed
 
-- Fix path generation in nested objects
-- Fix path generation in sets
-- Prevent erasure of path when the path or object is copied from the menu
+- Fix path generation in nested objects. See #347.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Fix path generation in sets. See #347.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Fix erasure of path when the path or object is copied from the popup menu. See #347.
+  Thanks to [MawiraIke](https://github.com/MawiraIke).
 
 ## 1.2.2 (2022-1-10)
 
