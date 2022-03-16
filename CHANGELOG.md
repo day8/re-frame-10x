@@ -6,19 +6,12 @@ All notable changes to this project will be documented in this file. This change
 #### Added
 
 - Make popup standalone and not embedded in the app db. See #348.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Add button to expand or collapse the entire app db. See #82.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Change to open path on double click instead of single click. See #348.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Add option to open path in new inspector after middle click. See #348.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Add button to open parent path in current inspector. See #348.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Add button to clear path. See #348.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Add toggle for showing or hiding the event history. See #311.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 
 #### Changed
 - Upgrade devtools to version 1.0.5
@@ -26,27 +19,20 @@ All notable changes to this project will be documented in this file. This change
 #### Fixed
 
 - Fix path generation in nested objects. See #347.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Fix path generation in sets. See #347.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Fix erasure of path when the path or object is copied from the popup menu. See #347.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 
 ## 1.2.2 (2022-1-10)
 
 #### Added
 
 - Add option to enable and disable rendering of path generations. See #341.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Add a doesn't contain filter in traces. See #124.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Make trace panel filters act as ORs not AND. See #124.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 
 #### Fixed
 
 - Filter ignored events in settings from traces in traces tab. See #175.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 
 ## 1.2.1 (2021-12-23)
 
@@ -57,13 +43,9 @@ All notable changes to this project will be documented in this file. This change
 #### Fixed
 
 - Improve path generation performance. See #330.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Add indexed path alongside devtools path in app db. See #331.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Allow `copy object` on updated data. See #329.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 - Remove redundant indenting in maps. See #309.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 
 ## 1.2.0 (2021-11-03)
 
@@ -72,16 +54,15 @@ All notable changes to this project will be documented in this file. This change
 - Add path annotation support to app-db panel inspectors. 
   Left click to set the inspector's path to the path of the clicked item.
   Right click to get a context menu to copy path, copy object or copy REPL forms.
-  Thanks to [MawiraIke](https://github.com/MawiraIke).
 
 #### Changed
 
-- Set devtools max-no-body-items pref to 10K. Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Set devtools max-no-body-items pref to 10K. 
 
 #### Fixed
 
 - Use component name as operation name for tracing. See #322. Thanks to [p-himik](https://github.com/p-himik).
-- Fix subs ID overflowing on subs tab. Thanks to [MawiraIke](https://github.com/MawiraIke).
+- Fix subs ID overflowing on subs tab. 
 
 ## 1.1.13 (2021-07-27)
 
