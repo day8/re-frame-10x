@@ -564,6 +564,7 @@
                                 (let [target (-> event .-target .-parentElement)
                                       path   (.getAttribute target "data-path")
                                       btn    (.-button event)]
+                                  (.preventDefault event)
                                   (when (= btn 1)           ;;middle click btn
                                     (rf/dispatch [::app-db.events/create-path-and-skip-to path]))))]
     [rc/box
