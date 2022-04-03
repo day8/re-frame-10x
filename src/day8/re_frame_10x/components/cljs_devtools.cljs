@@ -188,9 +188,7 @@
                                                    :border-radius    (px 1)
                                                    :margin           [[0 0 (px 2) 0]]
                                                    :background-color (styles/syntax-color ambiance syntax-color-scheme :expanded-string-background)})
-   :default-envelope-style                 ""
-   ;; Setting this prevents https://github.com/day8/re-frame-10x/issues/321
-   :max-number-body-items                  10000})
+   :default-envelope-style                 ""})
 
 
 
@@ -564,6 +562,7 @@
                                 (let [target (-> event .-target .-parentElement)
                                       path   (.getAttribute target "data-path")
                                       btn    (.-button event)]
+                                  (.preventDefault event)
                                   (when (= btn 1)           ;;middle click btn
                                     (rf/dispatch [::app-db.events/create-path-and-skip-to path]))))]
     [rc/box
