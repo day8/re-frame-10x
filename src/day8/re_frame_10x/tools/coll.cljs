@@ -43,10 +43,15 @@
   (reduce
     (fn [ret k]
       (cond
-        (list? ret) (nth ret k)
-        (set? ret)  (if (number? k)
-                      (nth (vec ret) k)
-                      (get ret k))
-        :else       (get ret k)))
+        (or (list? ret) (instance? cljs.core/LazySeq ret))
+        (nth ret k)
+        (set? ret)
+        (if (number? k)
+          (nth (vec ret) k)
+          (get ret k))
+        (map? ret)
+        (get ret k)
+        :else
+        (get ret k)))
     m
     ks))
