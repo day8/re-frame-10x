@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+#### Fixed
+- Fix path inspector `get-in` in lazy sequences.
+- Change expand app-db button tooltip. See #347.
+
+## 1.2.4 (2022-4-4)
+
+#### Fixed
+
+- Prevent entering scroll mode when the middle click button is clicked to show app-db paths menu popup. See #348.
+- Fix performance when viewing extremely large dbs by loading only first 100 items. See #347.
+
+## 1.2.3 (2022-3-11)
+
 #### Added
 
 - Make popup standalone and not embedded in the app db. See #348.
