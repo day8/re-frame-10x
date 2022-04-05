@@ -168,7 +168,7 @@
        :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)]))}
        :children
        [[buttons/icon {:icon     [(if expand-all? material/unfold-less material/unfold-more)]
-                       :title    (if expand-all? "Collapse app-db" "Expand app-db")
+                       :title    (if expand-all? "Close all nodes in this inspector" "Expand all nodes in this inspector")
                        :on-click #(rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)])}]]]
       [pod-header-section
        :width    styles/gs-50s
