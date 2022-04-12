@@ -452,6 +452,7 @@
 ;; `html-element` is the html element that has received the right click
 ;; `app-db` is the full app db
 ;; `path` is the current path at the point where the popup is clicked in `data`
+;; `html-target`, optional, is the element which the menus will be rendered in
 (defn build-popup
   [app-db path indexed-path html-element & [html-target]]
   (if-let [rendered? (get @popup-menus (.-id html-element))]
@@ -472,8 +473,14 @@
           copy-obj-item    (create-menu-item "Copy object")
           copy-repl-item   (create-menu-item "Copy REPL command")
           element-rect     (.getBoundingClientRect html-element)
-          x-pos            (+ (.-left element-rect) (.-scrollX js/window))
-          y-pos            (+ (.-top element-rect) (.-scrollY js/window))]
+          target-rect      (when html-target (.getBoundingClientRect html-target))
+          target-x-offset  (when target-rect (+ (.-left target-rect) (.-scrollX js/window)))
+          element-x-pos    (+ (.-left element-rect) (.-scrollX js/window))
+          ;; element-x-pos is relative to window, so we remove offset of element we're rendering in below
+          menu-x-pos       (if target-x-offset
+                             (- element-x-pos target-x-offset)
+                             element-x-pos)
+          menu-y-pos       (+ (.-top element-rect) (.-scrollY js/window))]
       (doto copy-path-item
         (.addClassName "copy-path")
         (.addClassName "10x-menu-item"))
@@ -487,7 +494,7 @@
         (.addItem copy-path-item)
         (.addItem copy-obj-item)
         (.addItem copy-repl-item)
-        (.showAt x-pos y-pos)
+        (.showAt menu-x-pos menu-y-pos)
         (.render (or html-target html-element)))            ;;if menu target is not supplied we render on clicked element
       (goog.object.forEach
         goog.ui.Component.EventType
