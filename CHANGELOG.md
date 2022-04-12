@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. This change
 ## Unreleased
 
 #### Fixed
+- Fix path annotations menu positioning
+
+## 1.2.4 (2022-4-6)
+
+#### Fixed
 - Fix path inspector `get-in` in lazy sequences.
 - Change expand app-db button tooltip. See #347.
 
