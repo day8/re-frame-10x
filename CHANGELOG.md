@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+#### Changed
+- Upgrade devtools to version 1.0.6
+
 #### Fixed
 - Fix path annotations menu positioning. See #348.
 - Add option to open new inspectors by default. See #347 and #348.
