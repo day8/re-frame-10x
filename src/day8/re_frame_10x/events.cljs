@@ -37,11 +37,13 @@
    (rf/inject-cofx ::local-storage/load {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose}})
    (rf/inject-cofx ::local-storage/load {:key "data-path-annotations?" :or false})
    (rf/inject-cofx ::local-storage/load {:key "show-event-history" :or true})
+   (rf/inject-cofx ::local-storage/load {:key "open-new-inspectors?" :or true})
    rf/unwrap]
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
                ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
-               app-db-follow-events? ambiance syntax-color-scheme categories data-path-annotations? show-event-history]}
+               app-db-follow-events? ambiance syntax-color-scheme categories data-path-annotations?
+               show-event-history open-new-inspectors?]}
        {:keys [debug?]}]
     {:fx [(when using-trace?
             [:dispatch [::settings.events/enable-tracing]])
@@ -68,7 +70,8 @@
           [:dispatch [::app-db.events/set-json-ml-paths app-db-json-ml-expansions]]
           [:dispatch [:global/add-unload-hook]]
           [:dispatch [::app-db.events/reagent-id]]
-          [:dispatch [::settings.events/show-event-history? show-event-history]]]}))
+          [:dispatch [::settings.events/show-event-history? show-event-history]]
+          [:dispatch [::settings.events/open-new-inspectors? open-new-inspectors?]]]}))
 
 ;; Global
 

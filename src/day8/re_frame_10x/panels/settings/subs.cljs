@@ -117,3 +117,9 @@
   :<- [::root]
   (fn [{:keys [show-event-history?]} _]
     show-event-history?))
+
+(rf/reg-sub
+  ::open-new-inspectors?
+  :<- [::root]
+  (fn [{:keys [open-new-inspectors?]} _]
+    open-new-inspectors?))

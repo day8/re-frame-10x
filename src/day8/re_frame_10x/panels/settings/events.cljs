@@ -218,3 +218,9 @@
   [(rf/path [:settings :show-event-history?]) rf/trim-v (local-storage/save "show-event-history")]
   (fn [_ [show-event-history?]]
     show-event-history?))
+
+(rf/reg-event-db
+  ::open-new-inspectors?
+  [(rf/path [:settings :open-new-inspectors?]) rf/trim-v (local-storage/save "open-new-inspectors?")]
+  (fn [_ [open-new-inspectors?]]
+    open-new-inspectors?))

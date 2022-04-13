@@ -25,7 +25,8 @@
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as dom]
     [day8.re-frame-10x.tools.coll                                 :as tools.coll]
-    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn])
+    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]
+    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs])
   (:import
     [goog.dom TagName]))
 
@@ -535,35 +536,36 @@
 
 (defn simple-render-with-path-annotations
   [data indexed-path {:keys [object update-path-fn sort?] :as opts} & [class]]
-  (let [render-paths?    (rf/subscribe [::app-db.subs/data-path-annotations?])
-        data             (if (and sort? (map? data)) (into (sorted-map) data) data)
-        input-field-path (second indexed-path)              ;;path typed in input-box
-        shadow-root      (-> (.getElementById js/document "--re-frame-10x--") ;;main shadow-root html component
-                             .-shadowRoot
-                             .-children)
-        root-div         (-> (filter (fn [element]          ;; root re-frame-10x parent div
-                                       (= (.-tagName element) "DIV")) shadow-root)
-                             first)
-        menu-html-target (when root-div
-                           (.-firstChild root-div))
-        menu-html-target (when (= (.-childElementCount menu-html-target) 2) ;; we will render menus on this element
-                           (.-lastChild menu-html-target))
+  (let [render-paths?         (rf/subscribe [::app-db.subs/data-path-annotations?])
+        open-new-inspectors?  @(rf/subscribe [::settings.subs/open-new-inspectors?])
+        data                  (if (and sort? (map? data)) (into (sorted-map) data) data)
+        input-field-path      (second indexed-path)              ;;path typed in input-box
+        shadow-root           (-> (.getElementById js/document "--re-frame-10x--") ;;main shadow-root html component
+                                  .-shadowRoot
+                                  .-children)
+        root-div              (-> (filter (fn [element]     ;; root re-frame-10x parent div
+                                            (= (.-tagName element) "DIV")) shadow-root)
+                                  first)
+        menu-html-target      (when root-div
+                                (.-firstChild root-div))
+        menu-html-target      (when (= (.-childElementCount menu-html-target) 2) ;; we will render menus on this element
+                                (.-lastChild menu-html-target))
         ;; triggered during `contextmenu` event when a path annotation is right-clicked
-        menu-listener    (fn [event]
-                           ;; at this stage `data` might have changed
-                           ;; we have to rely on `current-data` alias `obj`
-                           (let [target   (-> event .-target .-parentElement)
-                                 path     (.getAttribute target "data-path")
-                                 path-obj (reader.edn/read-string-maybe path)]
-                             (.preventDefault event)
-                             (build-popup object path-obj indexed-path target menu-html-target)))
+        menu-listener         (fn [event]
+                                ;; at this stage `data` might have changed
+                                ;; we have to rely on `current-data` alias `obj`
+                                (let [target   (-> event .-target .-parentElement)
+                                      path     (.getAttribute target "data-path")
+                                      path-obj (reader.edn/read-string-maybe path)]
+                                  (.preventDefault event)
+                                  (build-popup object path-obj indexed-path target menu-html-target)))
         ;; triggered during `click` event when a path annotation is clicked
-        click-listener   (fn [event]
-                           (let [target (-> event .-target .-parentElement)
-                                 path   (.getAttribute target "data-path")
-                                 btn    (.-button event)]
-                             (when (= btn 0)                ;;left click btn
-                               (rf/dispatch (conj update-path-fn path)))))
+        click-listener        (fn [event]
+                                (let [target (-> event .-target .-parentElement)
+                                      path   (.getAttribute target "data-path")
+                                      btn    (.-button event)]
+                                  (when (= btn 0)           ;;left click btn
+                                    (rf/dispatch (conj update-path-fn path)))))
         ;; triggered during `mousedown` event when an element is clicked.
         middle-click-listener (fn [event]
                                 (let [target (-> event .-target .-parentElement)
@@ -571,7 +573,7 @@
                                       btn    (.-button event)]
                                   (.preventDefault event)
                                   (when (= btn 1)           ;;middle click btn
-                                    (rf/dispatch [::app-db.events/create-path-and-skip-to path]))))]
+                                    (rf/dispatch [::app-db.events/create-path-and-skip-to path open-new-inspectors?]))))]
     [rc/box
      :size "1"
      :class (str (jsonml-style) " " class)

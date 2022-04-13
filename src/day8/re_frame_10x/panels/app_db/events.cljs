@@ -25,11 +25,11 @@
 (rf/reg-event-db
   ::create-path
   paths-interceptors
-  (fn [paths _]
+  (fn [paths [open-new-inspectors?]]
     (assoc paths
       (js/Date.now)
       {:diff?       false
-       :open?       false
+       :open?       open-new-inspectors?
        :path        nil
        :path-str    ""
        :valid-path? true})))
@@ -37,12 +37,12 @@
 (rf/reg-event-fx
   ::create-path-and-skip-to
   paths-interceptors
-  (fn [{:keys [db]} [skip-to-path]]
+  (fn [{:keys [db]} [skip-to-path open-new-inspectors?]]
     (let [path-id (js/Date.now)]
       {:db       (assoc db
                    path-id
                    {:diff?       false
-                    :open?       false
+                    :open?       open-new-inspectors?
                     :path        nil
                     :path-str    ""
                     :valid-path? true})
