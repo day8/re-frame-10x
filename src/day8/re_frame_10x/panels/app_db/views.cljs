@@ -27,7 +27,8 @@
 
 (defn path-inspector-button
   []
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+  (let [ambiance             @(rf/subscribe [::settings.subs/ambiance])
+        open-new-inspectors? @(rf/subscribe [::settings.subs/open-new-inspectors?])]
     [rc/button
      :class    (styles/button ambiance)
      :label    [rc/h-box
@@ -35,7 +36,7 @@
                 :children [[material/add
                             {:size styles/gs-19s}]
                            "path inspector"]]
-     :on-click #(rf/dispatch [::app-db.events/create-path])]))
+     :on-click #(rf/dispatch [::app-db.events/create-path open-new-inspectors?])]))
 
 (defn panel-header []
   [rc/h-box

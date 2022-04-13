@@ -184,6 +184,16 @@
                  [[:p "Most of the time, low level trace is noisy and you want it filtered out."]]
                  settings-box-131])
 
+              [rc/line]
+              (let [open-inspectors? (rf/subscribe [::settings.subs/open-new-inspectors?])]
+                [settings-box
+                 [[rc/checkbox
+                   :model open-inspectors?
+                   :label "open new inspectors by default"
+                   :on-change #(rf/dispatch [::settings.events/open-new-inspectors? %])]]
+                 [[:p "Should all new inspectors in the app-db tab be opened by default?"]]
+                 settings-box-81])
+
               #_[rc/line] ;; [IJ] TODO: :dark ambiance theme is unfinished, so disabled for now.
               #_(let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
                   [settings-box
