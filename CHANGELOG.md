@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file. This change
 ## Unreleased
 
 #### Fixed
-- Fix path annotations menu positioning
+- Fix path annotations menu positioning. See #348.
+- Add option to open new inspectors by default. See #347 and #348.
 
 ## 1.2.4 (2022-4-6)
 
