@@ -293,14 +293,13 @@
              (get-config jsonml))
            (conj path :header)))])))
 
-(defn data-structure-with-path-annotations [_ indexed-path _ {:keys [path-id]}]
-  (let [expanded?     (rf/subscribe [::app-db.subs/node-expanded? indexed-path])
-        expand-all?   (rf/subscribe [::app-db.subs/expand-all? path-id]) ;; expand-all? default is nil,
+(defn data-structure-with-path-annotations [_ _ _ {:keys [path-id]}]
+  (let [expand-all?   (rf/subscribe [::app-db.subs/expand-all? path-id]) ;; default is nil, false means that we have collapsed the app-db
+        ;; true means we have expanded the whole db
         render-paths? (rf/subscribe [::app-db.subs/data-path-annotations?])]
-    ;; false means that we have collapsed the app-db
-    ;; true means we have expanded the whole db
     (fn [jsonml indexed-path devtools-path opts]
-      (let [show-body? (and (has-body (get-object jsonml) (get-config jsonml))
+      (let [expanded?  (rf/subscribe [::app-db.subs/node-expanded? indexed-path])
+            show-body? (and (has-body (get-object jsonml) (get-config jsonml))
                             (cond
                               @expand-all? true
                               (and @expanded? (not= @expand-all? false)) true))]
