@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## Unreleased
+## 1.2.6 (2022-4-13)
 
 #### Changed
 - Upgrade devtools to version 1.0.6
@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. This change
 - Fix path annotations menu positioning. See #348.
 - Add option to open new inspectors by default. See #347 and #348.
 
-## 1.2.4 (2022-4-6)
+## 1.2.5 (2022-4-6)
 
 #### Fixed
 - Fix path inspector `get-in` in lazy sequences.
