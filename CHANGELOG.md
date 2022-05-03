@@ -3,10 +3,12 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+## 1.2.7 (2022-05-04)
+
 #### Fixed
 - Fix top most level expand arrow toggling in app-db tab.
 
-## 1.2.6 (2022-4-13)
+## 1.2.6 (2022-04-13)
 
 #### Changed
 - Upgrade devtools to version 1.0.6
@@ -15,20 +17,20 @@ All notable changes to this project will be documented in this file. This change
 - Fix path annotations menu positioning. See #348.
 - Add option to open new inspectors by default. See #347 and #348.
 
-## 1.2.5 (2022-4-6)
+## 1.2.5 (2022-04-6)
 
 #### Fixed
 - Fix path inspector `get-in` in lazy sequences.
 - Change expand app-db button tooltip. See #347.
 
-## 1.2.4 (2022-4-4)
+## 1.2.4 (2022-04-4)
 
 #### Fixed
 
 - Prevent entering scroll mode when the middle click button is clicked to show app-db paths menu popup. See #348.
 - Fix performance when viewing extremely large dbs by loading only first 100 items. See #347.
 
-## 1.2.3 (2022-3-11)
+## 1.2.3 (2022-03-11)
 
 #### Added
 
@@ -49,7 +51,7 @@ All notable changes to this project will be documented in this file. This change
 - Fix path generation in sets. See #347.
 - Fix erasure of path when the path or object is copied from the popup menu. See #347.
 
-## 1.2.2 (2022-1-10)
+## 1.2.2 (2022-01-10)
 
 #### Added
 
