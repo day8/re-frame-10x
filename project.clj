@@ -11,7 +11,7 @@
                  [com.yahoo.platform.yui/yuicompressor "2.4.8"
                   :exclusions [rhino/js]]
                  [zprint                               "1.0.1"]
-                 [superstructor/re-highlight           "1.1.0"]
+                 [superstructor/re-highlight           "2.0.0"]
                  ;; re-highlight only has a transitive dependency on highlight.js for
                  ;; shadow-cljs builds, so we need to declare a dependency on cljsjs/highlight
                  ;; for 10x to support other build systems.

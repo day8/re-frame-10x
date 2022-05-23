@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+#### Changed
+
+- Upgrade [re-highlight to 2.0.0](https://github.com/superstructor/re-highlight/blob/master/CHANGELOG.md#200-2022-05-22).
+  Fixes build performance issues caused by previously loading all languages instead of just Clojure.
+
 ## 1.2.7 (2022-05-04)
 
 #### Fixed
