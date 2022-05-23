@@ -203,3 +203,9 @@
         (when-some [new-db (metam/app-db-after event)]
           (reset! re-frame.db/app-db new-db))))
     db))
+
+(rf/reg-event-db
+  ::set-filter
+  [(rf/path [:epochs :filter-str]) rf/trim-v]
+  (fn [_ [filter-str]]
+    filter-str))

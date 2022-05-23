@@ -14,6 +14,7 @@
     [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
     [day8.re-frame-10x.components.buttons                         :as buttons]
     [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
+    [day8.re-frame-10x.components.inputs                          :as inputs]
     [day8.re-frame-10x.components.re-com                          :as rc]
     [day8.re-frame-10x.navigation.events                          :as navigation.events]
     [day8.re-frame-10x.navigation.subs                            :as navigation.subs]
@@ -232,6 +233,31 @@
       :label    "history"
       :on-click #(rf/dispatch [::settings.events/show-event-history? (not standard-history)])}]))
 
+(defn epoch-filtering
+  []
+  (let [ambiance            (rf/subscribe [::settings.subs/ambiance])
+        show-event-history? (rf/subscribe [::settings.subs/show-event-history?])
+        filter-str          (rf/subscribe [::epochs.subs/filter-str])]
+    (when-not (= @show-event-history? false)
+      [rc/h-box
+       :class    (inputs/search-style @ambiance)
+       :align    :center
+       :children [[material/search]
+                  [:input {:type        "text"
+                           :value       @filter-str
+                           :auto-focus  true
+                           :placeholder "filter event history"
+                           :size        (if (> 20 (count (str @filter-str)))
+                                          25
+                                          (count (str @filter-str)))
+                           :on-change   #(rf/dispatch [::epochs.events/set-filter
+                                                       (-> % .-target .-value)])}]
+                  (when (seq @filter-str)
+                    [buttons/icon
+                     {:icon     [material/clear]
+                      :title    "Clear epoch filter"
+                      :on-click #(rf/dispatch [::epochs.events/set-filter ""])}])]])))
+
 (defn settings-button
   []
   [buttons/icon
@@ -295,6 +321,7 @@
                [rc/box
                 :size "1"
                 :child [:div]])
+             [epoch-filtering]
              [show-history-button]
              [rc/h-box
               :gap      styles/gs-12s
