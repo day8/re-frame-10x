@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+#### Added
+- Event history filtering
+
+## 1.2.8 (2022-05-22)
+
 #### Changed
 
 - Upgrade [re-highlight to 2.0.0](https://github.com/superstructor/re-highlight/blob/master/CHANGELOG.md#200-2022-05-22).
