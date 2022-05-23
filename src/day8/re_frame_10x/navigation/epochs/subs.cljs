@@ -10,6 +10,12 @@
     epochs))
 
 (rf/reg-sub
+  ::filter-str
+  :<- [::root]
+  (fn [{:keys [filter-str]} _]
+    filter-str))
+
+(rf/reg-sub
   ::matches-by-id
   :<- [::root]
   (fn [{:keys [matches-by-id]} _]
@@ -18,10 +24,21 @@
 (rf/reg-sub
   ::events-by-id
   :<- [::matches-by-id]
-  (fn [matches-by-id _]
-    (->> (map (juxt key (comp :event :tags metam/matched-event :match-info val))
-              matches-by-id)
-         (sort-by first >))))
+  :<- [::filter-str]
+  (fn [[matches-by-id filter-str] _]
+    (let [matches-by-id (map (juxt key (comp :event :tags metam/matched-event :match-info val))
+                             matches-by-id)]
+      (sort-by first > (if (seq filter-str)
+                         (filter (fn [match]
+                                   (let [reg-ex       (try
+                                                        (re-pattern filter-str)
+                                                        (catch js/Error e
+                                                          (js/console.error e)
+                                                          #""))
+                                         match-string (-> match second str)]
+                                     (re-find reg-ex match-string)))
+                                 matches-by-id)
+                         matches-by-id)))))
 
 (rf/reg-sub
   ::selected-epoch-id
