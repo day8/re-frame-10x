@@ -33,163 +33,19 @@
 (def default-config @devtools.prefs/default-config)
 
 (defn base-config
-  [ambiance syntax-color-scheme]
-  {:index-tag                              [:span :none-style]
-   :min-expandable-sequable-count-for-well-known-types
-                                           3
-   ; Hide the index spans on the left hand of collections. Shows how many elements in a collection.
+  []
+  {; Hide index tags
+   :index-tag                              [:span :none-style]
    :none-style                             (style {:display :none})
 
    ; Our JSON renderer does not have hierarchy depth limit,
    ; See https://github.com/binaryage/cljs-devtools/blob/master/src/lib/devtools/formatters/budgeting.cljs
    :initial-hierarchy-depth-budget         false
-
-   :header-style                           (style {:white-space :nowrap})
-   :expandable-style                       (style {:white-space  :nowrap
-                                                   :padding-left styles/gs-2})
-   :expandable-inner-style                 (style {:margin-left (px -2)})
    :item-style                             (style {:display     :inline-block
                                                    :white-space :nowrap
                                                    :border-left [[(px 2) :solid :#000]]
                                                    :padding     [[0 styles/gs-5 0 styles/gs-5]]
-                                                   :margin      [[(px 1 0 0 0)]]})
-   :fn-header-style                        ""
-   :fn-prefix-style                        ""
-   :nil-style                              (style {:color (styles/syntax-color ambiance syntax-color-scheme :nil)})
-   :keyword-style                          (style {:color (styles/syntax-color ambiance syntax-color-scheme :keyword)})
-   :integer-style                          (style {:color (styles/syntax-color ambiance syntax-color-scheme :integer)})
-   :float-style                            (style {:color (styles/syntax-color ambiance syntax-color-scheme :float)})
-   :float-nan-style                        (style {:color (styles/syntax-color ambiance syntax-color-scheme :float-nan)})
-   :float-infinity-style                   (style {:color (styles/syntax-color ambiance syntax-color-scheme :float-infinity)})
-   :string-style                           (style {:color (styles/syntax-color ambiance syntax-color-scheme :string)})
-   :symbol-style                           (style {:color (styles/syntax-color ambiance syntax-color-scheme :symbol)})
-   :bool-style                             (style {:color (styles/syntax-color ambiance syntax-color-scheme :bool)})
-   :native-reference-wrapper-style         (style {:position :relative
-                                                   :display  :inline-block})
-   :native-reference-style                 (style {:padding  [[0 (px 3)]]
-                                                   :margin   [[(px -4) 0 (px -2)]]
-                                                   :position :relative
-                                                   :top      (px 1)})
-   :type-wrapper-style                     (style {:position      :relative
-                                                   :padding-left  (px 1)
-                                                   :border-radius (px 2)})
-   :type-ref-style                         (style {:position :relative})
-   :type-header-style                      (style {:color               (styles/syntax-color ambiance syntax-color-scheme :type-text)
-                                                   :padding             [[0 (px 2) 0 (px 2)]]
-                                                   :-webkit-user-select :none
-                                                   :border-radius       (px 2)})
-   :type-name-style                        (style {:padding-right (px 4)})
-   :type-basis-style                       (style {:margin-right (px 3)})
-   :protocol-name-style                    (style {:position :relative})
-   :fast-protocol-style                    (style {:color               (styles/syntax-color ambiance syntax-color-scheme :fast-protocol)
-                                                   :position            :relative
-                                                   :padding             [[0 (px 4)]]
-                                                   :border-radius       (px 2)
-                                                   :-webkit-user-select :none})
-   :slow-protocol-style                    (style {:color               (styles/syntax-color ambiance syntax-color-scheme :slow-protocol)
-                                                   :position            :relative
-                                                   :padding             [[0 (px 4)]]
-                                                   :border-radius       (px 2)
-                                                   :-webkit-user-select :none})
-   :protocol-more-style                    (style {:font-size (px 8)
-                                                   :position  :relative})
-   :protocol-ns-name-style                 (style {:color (styles/syntax-color ambiance syntax-color-scheme :ns)})
-   :list-style                             ""
-   :body-field-name-style                  (style {:color (styles/syntax-color ambiance syntax-color-scheme :field)})
-   :body-field-value-style                 (style {:margin-left (px 6)})
-   :header-field-name-style                (style {:color (styles/syntax-color ambiance syntax-color-scheme :field)})
-   :body-field-td1-style                   (style {:vertical-align :top
-                                                   :padding        0
-                                                   :padding-right  (px 4)})
-   :body-field-td2-style                   (style {:vertical-align :top
-                                                   :padding        0})
-   :body-field-td3-style                   (style {:vertical-align :top
-                                                   :padding        0})
-   ;type-outline-style (css (str "box-shadow: 0px 0px 0px 1px " (named-color :type 0.5) " inset;")
-   ;     "margin-top: 1px;"
-   ;     "border-radius: 2px;")
-   ;:instance-header-style                  (style {#_#_:position :relative}) ;; type-outline-style
-   ;:expandable-wrapper-style               ""
-   ;:standalone-type-style                  ""               ;; type-outline-style
-   :instance-custom-printing-style         (style {:position :relative
-                                                   :padding  [[0 (px 2) 0 (px 4)]]})
-   :instance-custom-printing-wrapper-style (style {:position      :relative
-                                                   :border-radius (px 2)})
-   :instance-type-header-style             (style {:color               (styles/syntax-color ambiance syntax-color-scheme :type-text)
-                                                   :padding             [[0 (px 2) 0 (px 2)]]
-                                                   :-webkit-user-select :none
-                                                   :border-radius       [[(px 2) 0 0 (px 2)]]})
-   :instance-body-fields-table-style       (style {:border-spacing  0
-                                                   :border-collapse :collapse
-                                                   :margin-bottom   (px -2)
-                                                   :display         :inline-block})
-   :fields-header-style                    (style {:padding [[0 styles/gs-2]]})
-   :protocol-method-name-style             (style {:margin-right (px 6)
-                                                   :color        (styles/syntax-color ambiance syntax-color-scheme :protocol)})
-   :meta-wrapper-style                     (style {:box-shadow    [[0 0 0 (px 1) (styles/syntax-color ambiance syntax-color-scheme :meta) :inset]]
-                                                   :margin-top    (px 1)
-                                                   :border-radius (px 2)})
-   :meta-reference-style                   (style {:background-color (styles/syntax-color ambiance syntax-color-scheme :meta)
-                                                   :border-radius    [[0 (px 2) (px 2) 0]]})
-   :meta-style                             (style {:color               (styles/syntax-color ambiance syntax-color-scheme :meta-text)
-                                                   :padding             [[0 (px 3)]]
-                                                   :-webkit-user-select :none})
-   :meta-body-style                        (style {:background-color           (styles/syntax-color ambiance syntax-color-scheme :meta)
-                                                   :box-shadow                 [[0 0 0 (px 1) (styles/syntax-color ambiance syntax-color-scheme :meta) :inset]]
-                                                   :position                   :relative
-                                                   :top                        (px -1)
-                                                   :padding                    [[(px 3) (px 12)]]
-                                                   :border-bottom-right-radius (px 2)})
-   :fn-ns-name-style                       (style {:color (styles/syntax-color ambiance syntax-color-scheme :ns)})
-   :fn-name-style                          (style {:color        (styles/syntax-color ambiance syntax-color-scheme :fn)
-                                                   :margin-right (px 2)})
-   :fn-args-style                          (style {:color (styles/syntax-color ambiance syntax-color-scheme :fn-args)})
-   :fn-multi-arity-args-indent-style       (style {:visibility :hidden})
-   :standard-ol-style                      (style {:list-style-type :none
-                                                   :padding-left    0
-                                                   :margin-bottom   0
-                                                   :margin-left     0})
-   :standard-ol-no-margin-style            (style {:list-style-type :none
-                                                   :padding-left    0
-                                                   :margin-top      0
-                                                   :margin-bottom   0
-                                                   :margin-left     0})
-   :standard-li-style                      (style {:margin-left 0
-                                                   :min-height  (px 14)})
-   :standard-li-no-margin-style            (style {:margin-left 0
-                                                   :min-height  (px 14)})
-   :aligned-li-style                       (style {:margin-left 0
-                                                   :min-height  (px 14)})
-   :body-items-more-style                  (style {:background-color    (styles/syntax-color ambiance syntax-color-scheme :more-background)
-                                                   :min-width           styles/gs-50
-                                                   :display             :inline-block
-                                                   :color               (styles/syntax-color ambiance syntax-color-scheme :more)
-                                                   :cursor              :pointer
-                                                   :line-height         (px 14)
-                                                   :font-size           (px 10)
-                                                   :border-radius       (px 2)
-                                                   :padding             [[0 (px 4) 0 (px 4)]]
-                                                   :margin              [[(px 1) 0 0 0]]
-                                                   :-webkit-user-select :none})
-   :index-style                            (style {:min-width           styles/gs-50
-                                                   :display             :inline-block
-                                                   :text-align          :right
-                                                   :vertical-align      :text-top
-                                                   :background-color    (styles/syntax-color ambiance syntax-color-scheme :index-background)
-                                                   :color               (styles/syntax-color ambiance syntax-color-scheme :index)
-                                                   :opacity             0.5
-                                                   :margin-right        styles/gs-2
-                                                   :padding             [[0 styles/gs-2 0 styles/gs-2]]
-                                                   :margin              [[(px 1) 0 0 0]]
-                                                   :-webkit-user-select :none})
-   :expanded-string-style                  (style {:padding          [[0 styles/gs-12 0 styles/gs-12]]
-                                                   :color            (styles/syntax-color ambiance syntax-color-scheme :string)
-                                                   :white-space      :pre
-                                                   :border           [[(px 1) :solid (styles/syntax-color ambiance syntax-color-scheme :expanded-string-border)]]
-                                                   :border-radius    (px 1)
-                                                   :margin           [[0 0 (px 2) 0]]
-                                                   :background-color (styles/syntax-color ambiance syntax-color-scheme :expanded-string-background)})
-   :default-envelope-style                 ""})
+                                                   :margin      [[(px 1 0 0 0)]]})})
 
 
 
@@ -218,7 +74,7 @@
 ;; TODO: If we expose ambiance and/or syntax color scheme as settings will need to fix this, maybe by recalculating
 ;; at the time the setting is changed/loaded.
 (def custom-config
-  (merge default-config (base-config :bright :cljs-devtools) #_bright-ambiance-config))
+  (merge default-config (base-config ) #_bright-ambiance-config))
 
 (defn header [value config & [{:keys [render-paths?]}]]
   (with-cljs-devtools-prefs
