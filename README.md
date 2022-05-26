@@ -355,3 +355,4 @@ If you want to work on re-frame-10x, see [DEVELOPERS.md](DEVELOPERS.md).
 * [Arrow Down](https://thenounproject.com/term/down/1920957/#) by Alice Design from the Noun Project
 * [Arrow Left](https://thenounproject.com/term/arrow/1920815/#) by Alice Design from the Noun Project
 * [Arrow Right](https://thenounproject.com/term/right/1920795/#) by Alice Design from the Noun Project
+* [Collapse right](https://thenounproject.com/icon/collapse-right-45856/) by By useiconic.com, from the Noun Project
