@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. This change
 ## Unreleased
 
 #### Added
+- UI button to hide trace panel.
+
+## 1.3.0 (2022-05-23)
+
+#### Added
 - Event history filtering
 
 ## 1.2.8 (2022-05-22)
