@@ -275,6 +275,14 @@
       :title    "Pop out"
       :on-click #(rf/dispatch-sync [::navigation.events/launch-external mount])}]))
 
+(defn hide-panel-button
+  [external-window?]
+  (when-not external-window?
+    [buttons/icon
+     {:icon     [material/collapse-right]
+      :title    "Hide panel"
+      :on-click #(rf/dispatch [::settings.events/user-toggle-panel])}]))
+
 (defclass navigation-style
   [ambiance]
   {:composes (styles/navigation-border-bottom ambiance)}
@@ -327,7 +335,8 @@
               :gap      styles/gs-12s
               :style    {:margin-right styles/gs-5s}
               :children [[settings-button]
-                         [popout-button external-window?]]]]]
+                         [popout-button external-window?]
+                         [hide-panel-button external-window?]]]]]
            (if-not (= @show-event-history? false)
              [epochs.views/epochs]
              [rc/line])]]

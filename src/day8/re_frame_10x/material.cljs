@@ -206,3 +206,11 @@
          :viewBox "0 0 24 24"
          :width   size}
    [:path {:d "M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"}]])
+
+(defn collapse-right
+  [{:keys [size]
+    :or   {size styles/gs-19s}}]
+  [:svg {:height  size
+         :viewBox "0 0 700 550"
+         :width   size}
+   [:path {:d "m70 0v560h105v-560zm525 0v560h35v-560zm-157.5 210v52.5h-210v52.5h210v52.5l105-78.75z"}]])
