@@ -109,6 +109,16 @@
    :white-space   :pre
    :margin-right  styles/gs-5}) ;; TODO: This is a quick fix for issue #270
 
+(defclass hljs-error-style
+  [ambiance syntax-color-scheme]
+  {:background-color styles/nord11
+   :color styles/nord4
+   :border-radius "3px"
+   :padding styles/gs-12s
+   :margin-right styles/gs-31s}
+  [:p
+   {:margin-top "0px"}])
+
 (defn code
   []
   (let [scroll-pos (atom {:top 0 :left 0})]
@@ -160,12 +170,15 @@
                                             ^{:key "after"} after)]
                                      [re-highlight/highlight {:language "clojure"}
                                       form-str])]
-                           [rc/p
-                            "re-frame-10x can't display the source code for event traces as the Highlight.js dependency
-                             is either missing or an incompatible version. It is likely your project either has a direct
-                             or transitive dependency on a version of Highlight.js that is incompatible. To fix this
-                             examine your dependency tree using your build tooling to determine where Highlight.js is
-                             being pulled in then add appropriate exclusions."])))})))
+                           [rc/v-box
+                            :class (hljs-error-style ambiance syntax-color-scheme)
+                            :children [[rc/p
+                                        "re-frame-10x found a version mismatch between the Highlight.js loaded and the one that it expects to use."]
+                                       [rc/p
+                                        "As a result, it can't display the source code for this function."]
+                                       [rc/p
+                                        "To fix this, please examine this application's dependency tree to see how an old version of Highlight.js is being pulled in (probably transitively) and perhaps then use an appropriate exclusion for that dependency."]]])))})))
+
 
 (defclass clipboard-notification-style
   [_]
