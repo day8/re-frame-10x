@@ -1,11 +1,11 @@
 {:dependencies
  [[reagent                              "1.1.0"]
   [re-frame                             "1.2.0"]
-  [day8.re-frame/tracing                "0.6.0"]
+  [day8.re-frame/tracing                "0.6.2"]
   [com.yahoo.platform.yui/yuicompressor "2.4.8"
    :exclusions [rhino/js]]
   [zprint                               "1.0.1"]
-  [superstructor/re-highlight           "1.1.0"]
+  [superstructor/re-highlight           "2.0.1"]
   [secretary                            "1.2.3"]
   [binaryage/devtools                   "1.0.6"]
   [metosin/malli                        "0.5.1"]]

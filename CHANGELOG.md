@@ -4,11 +4,23 @@ All notable changes to this project will be documented in this file. This change
 ## Unreleased
 
 #### Added
+
 - UI button to hide trace panel.
+
+#### Changed
+
+- Upgrade [re-highlight to 2.0.1](https://github.com/superstructor/re-highlight/blob/master/CHANGELOG.md#201-2022-05-30).
+
+#### Fixed
+
+- If the version of Highlight.js loaded on the page is incompatible with the re-highlight wrapper library that is used
+by re-frame-10x, then instead of crashing we now display a message to the user that the source code cannot be displayed
+and refer them to check the Highlight.js dependency.
 
 ## 1.3.0 (2022-05-23)
 
 #### Added
+
 - Event history filtering
 
 ## 1.2.8 (2022-05-22)
