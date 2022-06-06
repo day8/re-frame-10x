@@ -74,7 +74,7 @@
 ;; TODO: If we expose ambiance and/or syntax color scheme as settings will need to fix this, maybe by recalculating
 ;; at the time the setting is changed/loaded.
 (def custom-config
-  (merge (base-config ) default-config #_bright-ambiance-config))
+  (merge default-config (base-config ) #_bright-ambiance-config))
 
 (defn header [value config & [{:keys [render-paths?]}]]
   (with-cljs-devtools-prefs
