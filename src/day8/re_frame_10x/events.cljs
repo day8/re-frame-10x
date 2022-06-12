@@ -42,7 +42,7 @@
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
                ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
-               app-db-follow-events? ambiance syntax-color-scheme categories data-path-annotations?
+               app-db-follows-events? ambiance syntax-color-scheme categories data-path-annotations?
                show-event-history open-new-inspectors?]}
        {:keys [debug?]}]
     {:fx [(when using-trace?
@@ -54,7 +54,7 @@
           [:dispatch [::settings.events/set-filtered-view-trace filtered-view-trace]]
           [:dispatch [::settings.events/set-low-level-trace low-level-trace]]
           [:dispatch [::settings.events/set-number-of-retained-epochs retained-epochs]]
-          [:dispatch [::settings.events/app-db-follows-events? app-db-follow-events?]]
+          [:dispatch [::settings.events/app-db-follows-events? app-db-follows-events?]]
           [:dispatch [::settings.events/set-ambiance ambiance]]
           [:dispatch [::settings.events/set-syntax-color-scheme syntax-color-scheme]]
           [:dispatch [::settings.events/debug? debug?]]
