@@ -3,9 +3,12 @@
   (:require-macros
     [day8.re-frame-10x.components.re-com :refer [handler-fn]])
   (:require
+    [goog.object                                                 :as    gobj]
     [clojure.string                                              :as string]
     [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core   :refer [defclass]]))
+    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core   :refer [defclass]]
+    [reagent.impl.component                                      :as    component]
+    [reagent.core                                                :as    r]))
 
 (defn px
   "takes a number (and optional :negative keyword to indicate a negative value) and returns that number as a string with 'px' at the end"
@@ -111,6 +114,9 @@
     {:-webkit-flex flex
      :flex         flex}))
 
+(defn display-flex-style
+  []
+  {:display :flex})
 
 (defn justify-style
   "Determines the value for the flex 'justify-content' attribute.
@@ -617,4 +623,225 @@
   [& args]
   (clojure.string/join " " args))
 
+(defn loggable-args
+  "Return a version of args which is stripped of uninteresting values, suitable for logging."
+  [args]
+  (if (map? args)
+    (->> ;; Remove args already represented in component hierarchy
+      (dissoc args :src :child :children :panel-1 :panel-2 :debug-as)
+      ;; Remove args with nil value
+      (remove (comp nil? second))
+      (into {}))
+    args))
 
+(defn short-component-name
+  "Returns the interesting part of component-name"
+  [component-name]
+  ;; reagent.impl.component/component-name is used to obtain the component name, which returns
+  ;; e.g. re_com.checkbox.checkbox. We are only interested in the last part.
+  ;;
+  ;; Also some components are form-2 or form-3 so will return -return from the anonymous render
+  ;; function name. We keep the -render in the anonymous function name for JavaScript stack
+  ;; traces for non-validation errors (i.e. exceptions), but we are not interested in that here.
+  (-> component-name
+      (string/split #"\.")
+      (last)
+      (string/replace #"_render" "")
+      (string/replace #"_" "-")))
+
+(defn ->attr
+  [{:keys [src debug-as debug?] :as args}]
+  (if-not debug?                         ;; This is in a separate `if` so Google Closure dead code elimination can run...
+    {}
+    (let [rc-component (or (:component debug-as)
+                           (short-component-name (component/component-name (r/current-component))))
+          rc-args      (loggable-args
+                         (or (:args debug-as)
+                             args))
+          ref-fn       (fn [^js/Element el]
+                         ;; If the ref callback is defined as an inline function, it will get called twice during updates,
+                         ;; first with null and then again with the DOM element.
+                         ;;
+                         ;; See: 'Caveats with callback refs' at
+                         ;; https://reactjs.org/docs/refs-and-the-dom.html#caveats-with-callback-refs
+                         (when el
+                           ;; Remember args so they can be logged later:
+                           (gobj/set el "__rc-args" rc-args))
+                         ;; User may have supplied their own ref like so: {:attr {:ref (fn ...)}}
+                         (when-let [user-ref-fn (get-in args [:attr :ref])]
+                           (when (fn? user-ref-fn)
+                             (user-ref-fn el))))
+          {:keys [file line]} src]
+      (cond->
+        {:ref     ref-fn
+         :data-rc rc-component}
+        src
+        (assoc :data-rc-src (str file ":" line))))))
+
+(defn get-element-by-id
+  [id]
+  (.getElementById js/document id))
+
+(defn drag-handle
+  "Return a drag handle to go into a vertical or horizontal splitter bar:
+    orientation: Can be :horizontal or :vertical
+    over?:       When true, the mouse is assumed to be over the splitter so show a bolder color"
+  [orientation over? parts]
+  (let [vertical? (= orientation :vertical)
+        length    "20px"
+        width     "8px"
+        pos1      "3px"
+        pos2      "3px"
+        color     (if over? "#999" "#ccc")
+        border    (str "solid 1px " color)
+        flex-flow (str (if vertical? "row" "column") " nowrap")]
+    [:div
+     (merge
+       {:class (str "rc-" (if vertical? "v" "h") "-split-handle display-flex " (get-in parts [:handle :class]))
+        :style (merge (flex-flow-style flex-flow)
+                      {:width  (if vertical? width length)
+                       :height (if vertical? length width)
+                       :margin "auto"}
+                      (get-in parts [:handle :style]))}
+       (get-in parts [:handle :attr]))
+     [:div
+      (merge
+        {:class (str "rc-" (if vertical? "v" "h") "-split-handle-bar-1 " (get-in parts [:handle-bar-1 :class]))
+         :style (merge
+                  (if vertical?
+                    {:width pos1   :height length :border-right  border}
+                    {:width length :height pos1   :border-bottom border})
+                  (get-in parts [:handle-bar-1 :style]))}
+        (get-in parts [:handle-bar-1 :attr]))]
+     [:div
+      (merge
+        {:class (str "rc-" (if vertical? "v" "h") "-split-handle-bar-2 " (get-in parts [:handle-bar-2 :class]))
+         :style (merge
+                  (if vertical?
+                    {:width pos2   :height length :border-right  border}
+                    {:width length :height pos2   :border-bottom border})
+                  (get-in parts [:handle-bar-2 :style]))}
+        (get-in parts [:handle-bar-2 :attr]))]]))
+
+(defn v-split
+  "Returns markup for a vertical layout component"
+  [& {:keys [size width height split-is-px? on-split-change initial-split splitter-size margin src debug?]
+      :or   {size "auto" initial-split 50 splitter-size "8px" margin "8px"}
+      :as   args}]
+  (let [container-id         (gensym "v-split-")
+        split-perc           (reagent/atom (js/parseInt initial-split))  ;; splitter position as a percentage of height
+        dragging?            (reagent/atom false)                        ;; is the user dragging the splitter (mouse is down)?
+        over?                (reagent/atom false)                        ;; is the mouse over the splitter, if so, highlight it
+
+        stop-drag            (fn []
+                               (when on-split-change (on-split-change @split-perc))
+                               (reset! dragging? false))
+
+        calc-perc            (fn [event]                                                                ;; turn a mouse y coordinate into a percentage position
+                               (let [get-v-split-from-click (fn [event-target]
+                                                              (loop [target        event-target
+                                                                     nesting-level 0]
+                                                                (let [class-name  (-> target .-className)
+                                                                      id-name     (-> target .-id)
+                                                                      is-v-split? (and (clojure.string/includes? class-name "rc-v-split 10x-v-split")
+                                                                                       (clojure.string/includes? id-name "v-split-"))]
+                                                                  (cond
+                                                                    is-v-split? target
+                                                                    (> target 3) nil
+                                                                    :else (recur (.-parentElement target) (inc nesting-level))))))
+                                     mouse-y                (.-clientY event)
+                                     target                 (get-v-split-from-click (.-target event))
+                                     container              (if target
+                                                              target
+                                                              (get-element-by-id container-id)) ;; the outside container
+                                     c-height               (.-clientHeight container) ;; the container's height
+                                     c-top-y                (+ (.-pageYOffset js/window)
+                                                               (-> container .getBoundingClientRect .-top)) ;; the container's top Y
+                                     relative-y             (- mouse-y c-top-y)] ;; the Y of the mouse, relative to container
+                                 (if split-is-px?
+                                   relative-y                                              ;; return the top offset in px
+                                   (* 100.0 (/ relative-y c-height)))))                    ;; return the percentage panel-1 height against container width
+
+        <html>?              #(= % (.-documentElement js/document))                        ;; test for the <html> element
+
+        mouseout             (fn [event]
+                               (if (<html>? (.-relatedTarget event))                       ;; stop drag if we leave the <html> element
+                                 (stop-drag)))
+
+        mousemove            (fn [event]
+                               (reset! split-perc (calc-perc event)))
+
+        mousedown            (fn [event]
+                               (.preventDefault event)                                    ;; stop selection of text during drag
+                               (reset! dragging? true))
+
+        mouseover-split      #(reset! over? true)
+        mouseout-split       #(reset! over? false)
+
+        make-container-attrs (fn [class style attr in-drag?]
+                               (merge {:class (str "rc-v-split 10x-v-split " class)
+                                       :id    container-id
+                                       :style (merge (display-flex-style)
+                                                     (flex-child-style size)
+                                                     (flex-flow-style "column nowrap")
+                                                     {:margin margin
+                                                      :width  width
+                                                      :height height}
+                                                     style)}
+                                      (when in-drag?                             ;; only listen when we are dragging
+                                        {:on-mouse-up   (handler-fn (stop-drag))
+                                         :on-mouse-move (handler-fn (mousemove event))
+                                         :on-mouse-out  (handler-fn (mouseout event))})
+                                      (->attr args)
+                                      attr))
+
+        make-panel-attrs     (fn [class style attr in-drag? percentage]
+                               (merge
+                                 {:class class
+                                  :style (merge (display-flex-style)
+                                                (flex-child-style (if split-is-px?
+                                                                    (if (pos? percentage)
+                                                                      (str "0 0 " percentage "px") ;; flex for panel-1
+                                                                      (str "1 1 0px"))             ;; flex for panel-2
+                                                                    (str percentage " 1 0px")))
+                                                (when in-drag? {:pointer-events "none"})
+                                                style)}
+                                 attr))
+
+        make-splitter-attrs  (fn [class style attr]
+                               (merge
+                                 {:class         class
+                                  :on-mouse-down (handler-fn (mousedown event))
+                                  :on-mouse-over (handler-fn (mouseover-split))
+                                  :on-mouse-out  (handler-fn (mouseout-split))
+                                  :style         (merge (display-flex-style)
+                                                        (flex-child-style (str "0 0 " splitter-size))
+                                                        {:cursor  "row-resize"}
+                                                        (when @over? {:background-color "#f8f8f8"})
+                                                        style)}
+                                 attr))]
+
+    (fn v-split-render
+      [& {:keys [panel-1 panel-2 _size _width _height _on-split-change _initial-split _splitter-size _margin class style attr parts src]}]
+      [:div (make-container-attrs class style attr @dragging?)
+       [:div (make-panel-attrs
+               (str "rc-v-split-top " (get-in parts [:top :class]))
+               (get-in parts [:top :style])
+               (get-in parts [:top :attr])
+               @dragging?
+               @split-perc)
+        panel-1]
+       [:div (make-splitter-attrs
+               (str "rc-v-split-splitter " (get-in parts [:splitter :class]))
+               (get-in parts [:splitter :style])
+               (get-in parts [:splitter :attr]))
+        [drag-handle :horizontal @over? parts]]
+       [:div (make-panel-attrs
+               (str "rc-v-split-bottom " (get-in parts [:bottom :class]))
+               (get-in parts [:bottom :style])
+               (get-in parts [:bottom :attr])
+               @dragging?
+               (if split-is-px?
+                 (- @split-perc) ;; Negative value indicates this is for panel-2
+                 (- 100 @split-perc)))
+        panel-2]])))
