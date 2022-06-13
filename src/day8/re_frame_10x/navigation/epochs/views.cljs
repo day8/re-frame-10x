@@ -86,7 +86,6 @@
         all-events @(rf/subscribe [::epochs.subs/events-by-id])]
     [rc/v-box
      :class    (epochs-style ambiance)
-     :height   styles/gs-131s
      :children (into [[rc/gap-f :size styles/gs-2s]]
                      (for [[id event] (reverse all-events)
                            :when (not-empty event)]
