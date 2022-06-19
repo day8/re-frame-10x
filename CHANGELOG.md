@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file. This change
 - If the version of Highlight.js loaded on the page is incompatible with the re-highlight wrapper library that is used
 by re-frame-10x, then instead of crashing we now display a message to the user that the source code cannot be displayed
 and refer them to check the Highlight.js dependency.
+- Save `App db follows events` setting to local storage. See #353.
 
 ## 1.3.0 (2022-05-23)
 
