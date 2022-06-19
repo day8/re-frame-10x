@@ -623,61 +623,6 @@
   [& args]
   (clojure.string/join " " args))
 
-(defn loggable-args
-  "Return a version of args which is stripped of uninteresting values, suitable for logging."
-  [args]
-  (if (map? args)
-    (->> ;; Remove args already represented in component hierarchy
-      (dissoc args :src :child :children :panel-1 :panel-2 :debug-as)
-      ;; Remove args with nil value
-      (remove (comp nil? second))
-      (into {}))
-    args))
-
-(defn short-component-name
-  "Returns the interesting part of component-name"
-  [component-name]
-  ;; reagent.impl.component/component-name is used to obtain the component name, which returns
-  ;; e.g. re_com.checkbox.checkbox. We are only interested in the last part.
-  ;;
-  ;; Also some components are form-2 or form-3 so will return -return from the anonymous render
-  ;; function name. We keep the -render in the anonymous function name for JavaScript stack
-  ;; traces for non-validation errors (i.e. exceptions), but we are not interested in that here.
-  (-> component-name
-      (string/split #"\.")
-      (last)
-      (string/replace #"_render" "")
-      (string/replace #"_" "-")))
-
-(defn ->attr
-  [{:keys [src debug-as debug?] :as args}]
-  (if-not debug?                         ;; This is in a separate `if` so Google Closure dead code elimination can run...
-    {}
-    (let [rc-component (or (:component debug-as)
-                           (short-component-name (component/component-name (r/current-component))))
-          rc-args      (loggable-args
-                         (or (:args debug-as)
-                             args))
-          ref-fn       (fn [^js/Element el]
-                         ;; If the ref callback is defined as an inline function, it will get called twice during updates,
-                         ;; first with null and then again with the DOM element.
-                         ;;
-                         ;; See: 'Caveats with callback refs' at
-                         ;; https://reactjs.org/docs/refs-and-the-dom.html#caveats-with-callback-refs
-                         (when el
-                           ;; Remember args so they can be logged later:
-                           (gobj/set el "__rc-args" rc-args))
-                         ;; User may have supplied their own ref like so: {:attr {:ref (fn ...)}}
-                         (when-let [user-ref-fn (get-in args [:attr :ref])]
-                           (when (fn? user-ref-fn)
-                             (user-ref-fn el))))
-          {:keys [file line]} src]
-      (cond->
-        {:ref     ref-fn
-         :data-rc rc-component}
-        src
-        (assoc :data-rc-src (str file ":" line))))))
-
 (defn get-element-by-id
   [id]
   (.getElementById js/document id))
@@ -792,7 +737,6 @@
                                         {:on-mouse-up   (handler-fn (stop-drag))
                                          :on-mouse-move (handler-fn (mousemove event))
                                          :on-mouse-out  (handler-fn (mouseout event))})
-                                      (->attr args)
                                       attr))
 
         make-panel-attrs     (fn [class style attr in-drag? percentage]
