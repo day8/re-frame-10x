@@ -387,6 +387,9 @@
      (let [d (util/clip 1 179 distance-from-complement)]
          (hue-rotations color 0 d (- d)))))
 
+(defn- abs
+  [x]
+  (if (neg? x) (- x) x))
 
 (defn tetrad
   "Given a color return a quadruple of four colors which are
