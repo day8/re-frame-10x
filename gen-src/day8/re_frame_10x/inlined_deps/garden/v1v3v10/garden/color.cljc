@@ -1,6 +1,6 @@
 (ns ^{:mranderson/inlined true} day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color
   "Utilities for color creation, conversion, and manipulation."
-  (:refer-clojure :exclude [complement])
+  (:refer-clojure :exclude [complement abs])
   #?(:cljs
      (:require-macros
       [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color :refer [defcolor-operation]]))
