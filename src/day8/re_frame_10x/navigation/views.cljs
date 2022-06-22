@@ -345,6 +345,7 @@
        :panel-1       [rc/v-box
                        :height "100%"
                        :width "100%"
+                       :style {:overflow :auto}
                        :children
                        [[rc/h-box
                          :class  (navigation-style ambiance)

@@ -77,7 +77,6 @@
 (defclass epochs-style
   [ambiance]
   {:composes     (styles/background ambiance)
-   :overflow-y   :auto
    #_#_:padding-left styles/gs-2s})
 
 (defn epochs
@@ -86,6 +85,7 @@
         all-events @(rf/subscribe [::epochs.subs/events-by-id])]
     [rc/v-box
      :class    (epochs-style ambiance)
+     :width    "100%"
      :children (into [[rc/gap-f :size styles/gs-2s]]
                      (for [[id event] (reverse all-events)
                            :when (not-empty event)]
