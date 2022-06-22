@@ -743,6 +743,7 @@
                                (merge
                                  {:class class
                                   :style (merge (display-flex-style)
+                                                (scroll-style :overflow :off)
                                                 (flex-child-style (if split-is-px?
                                                                     (if (pos? percentage)
                                                                       (str "0 0 " percentage "px") ;; flex for panel-1
