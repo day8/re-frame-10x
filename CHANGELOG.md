@@ -1,11 +1,26 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## Unreleased
+## 1.4.1 (2022-06-23)
+
+#### Fixed
+
+- Fix v-split overflow.
+
+## 1.4.0 (2022-06-21)
 
 #### Added
 
-- UI button to hide trace panel.
+- Inline v-split. See #311.
+
+#### Fixed 
+
+ - Remove unused Devtools config. See #319.
+ - Save `app-db-follows-events` setting to local storage. See #365.
+
+#### Added
+
+- UI button to hide trace panel. See #238
 
 #### Changed
 
