@@ -42,11 +42,6 @@
          (when @active?
            (rf/dispatch [::epochs.events/scroll-into-view-debounced (rdom/dom-node this)])))
 
-       :component-did-update
-       (fn [this]
-         (when @active?
-           (rf/dispatch [::epochs.events/scroll-into-view-debounced (rdom/dom-node this)])))
-
        :reagent-render
        (fn [event id]
          (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
