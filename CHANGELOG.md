@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+#### Unreleased
+- Stop listening to componentDidUpdate in epochs. See #312.
+
 ## 1.4.1 (2022-06-23)
 
 #### Fixed
