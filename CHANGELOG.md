@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.5.0 (2022-08-03)
+
+#### Fixed
+
+- Fix epochs history scroll behaviour by stop listening to componentDidUpdate
+
 ## 1.4.1 (2022-06-23)
 
 #### Fixed
