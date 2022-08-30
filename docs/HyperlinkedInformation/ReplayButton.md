@@ -34,7 +34,7 @@ So, Step 1 is "reestablish initial conditions" and Step 2 is "do it all again".
 It facilitates "The HotPlay Workflow": 
   - A. You `Observe` an Epoch (in `re-frame-10x`) to see if an event was correctly processed 
   - B. You notice a problem, and you `Edit` (fix) the event handler (or subs handler, view, etc) via Cursive, Emacs, etc.
-  - C. Shadow/Figwheel (or whatever compiler you are using) will re-compile and `Hotload` your correction
+  - C. Shadow-cljs/Figwheel (or whatever compiler you are using) will re-compile and `Hotload` your correction
   - D: You click the `Replay` button
   - E: Back to A
 
@@ -50,5 +50,5 @@ returning to initial conditions each iteration.
 ### The Workflow Name
 
 The initials of this Observe/Edit/Hotload/Replay process are OEHR, which, well, doesn't exactly roll off the tounge like REPL.
-So we call it "HotPlay" because "Hotload" and "Replay" are the two central pieces of tech. We love you Figwheel.
+So we call it "HotPlay" because "Hotload" and "Replay" are the two central pieces of tech. We love you Figwheel and Shadow-cljs
 
