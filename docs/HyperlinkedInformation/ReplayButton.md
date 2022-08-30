@@ -34,7 +34,7 @@ So, Step 1 is "reestablish initial conditions" and Step 2 is "do it all again".
 It facilitates "The HotPlay Workflow": 
   - A. You `Observe` an Epoch (in `re-frame-10x`) to see if an event was correctly processed 
   - B. You notice a problem, and you `Edit` (fix) the event handler (or subs handler, view, etc) via Cursive, Emacs, etc.
-  - C. Figwheel will re-compile and `Hotload` your correction
+  - C. Shadow/Figwheel (or whatever compiler you are using) will re-compile and `Hotload` your correction
   - D: You click the `Replay` button
   - E: Back to A
 
