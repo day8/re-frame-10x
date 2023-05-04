@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.6.0 (2023-05-04)
+
+#### Changed
+
+- Upgrade re-highlight to 2.0.2 merge PR #383
+
 ## 1.5.0 (2022-08-03)
 
 #### Fixed
