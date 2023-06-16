@@ -46,7 +46,7 @@ in a namespace `day8.re-frame-10x`, which you can call from the REPL like this:
 (day8.re-frame-10x/traced-result 80 4)
 ```
 
-Wait. Yes, it is a function call, but what are those arguments `80` and `4`?  And how will I know what alternaitve arguments to supply for my case? 
+Wait. Yes, it is a function call, but what are those arguments `80` and `4`?  And how will I know what alternative arguments to supply for my case?
 Well, as you'll soon see, it actually doesn't matter and you won't be suppling them yourself. 
 But, because your brain is curious and needs an answer, let's give it one, even if it doesn't matter, and I'm lying. 
 Those numbers are "trace coordinates" which identify the particular piece of trace data you want.
