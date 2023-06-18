@@ -123,3 +123,9 @@
   :<- [::root]
   (fn [{:keys [open-new-inspectors?]} _]
     open-new-inspectors?))
+
+(rf/reg-sub
+ ::handle-keys?
+ :<- [::root]
+ (fn [{:keys [handle-keys?]} _]
+   handle-keys?))

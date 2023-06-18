@@ -224,3 +224,9 @@
   [(rf/path [:settings :open-new-inspectors?]) rf/trim-v (local-storage/save "open-new-inspectors?")]
   (fn [_ [open-new-inspectors?]]
     open-new-inspectors?))
+
+(rf/reg-event-db
+  ::handle-keys?
+  [(rf/path [:settings :handle-keys?]) rf/trim-v (local-storage/save "handle-keys?")]
+  (fn [_ [handle-keys?]]
+    handle-keys?))

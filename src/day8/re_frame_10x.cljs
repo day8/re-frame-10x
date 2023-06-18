@@ -32,7 +32,8 @@
 (defn devtools-outer [opts]
   ;; Add clear button
   ;; Filter out different trace types
-  (let [panel-width%         (rf/subscribe [::settings.subs/panel-width%])
+  (let [handle-keys?         (rf/subscribe [::settings.subs/handle-keys?])
+        panel-width%         (rf/subscribe [::settings.subs/panel-width%])
         showing?             (rf/subscribe [::settings.subs/show-panel?])
         dragging?            (r/atom false)
         window-width         (r/atom js/window.innerWidth)
@@ -46,6 +47,7 @@
                                (let [tag-name        (.-tagName (.-target e))
                                      entering-input? (contains? #{"INPUT" "SELECT" "TEXTAREA"} tag-name)]
                                  (when (and (not entering-input?)
+                                            @handle-keys?
                                             (= (.-key e) "h")
                                             (.-ctrlKey e))
                                    (rf/dispatch [::settings.events/user-toggle-panel])

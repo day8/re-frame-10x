@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## Unreleased
+
+#### Added
+
+- Option to ignore keyboard input. See #386.
+
 ## 1.6.0 (2023-05-04)
 
 #### Changed
