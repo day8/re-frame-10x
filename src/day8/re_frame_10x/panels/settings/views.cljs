@@ -221,6 +221,15 @@
                      :label     "nord"
                      :value     :nord
                      :on-change #(rf/dispatch [::settings.events/set-syntax-color-scheme %])]]])
+              [rc/line]
+              (let [handle-keys? (rf/subscribe [::settings.subs/handle-keys?])]
+                [settings-box
+                 [[rc/checkbox
+                   :model handle-keys?
+                   :label "handle keyboard events"
+                   :on-change #(rf/dispatch [::settings.events/handle-keys? %])]]
+                 [[:p "Should 10x respond to key-press events (such as to open/close the panel)?"]]
+                 settings-box-81])
 
               [rc/line]
               (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]

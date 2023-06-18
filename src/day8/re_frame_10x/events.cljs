@@ -38,12 +38,13 @@
    (rf/inject-cofx ::local-storage/load {:key "data-path-annotations?" :or false})
    (rf/inject-cofx ::local-storage/load {:key "show-event-history" :or true})
    (rf/inject-cofx ::local-storage/load {:key "open-new-inspectors?" :or true})
+   (rf/inject-cofx ::local-storage/load {:key "handle-keys?" :or true})
    rf/unwrap]
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
                ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
                app-db-follows-events? ambiance syntax-color-scheme categories data-path-annotations?
-               show-event-history open-new-inspectors?]}
+               show-event-history open-new-inspectors? handle-keys?]}
        {:keys [debug?]}]
     {:fx [(when using-trace?
             [:dispatch [::settings.events/enable-tracing]])
@@ -71,7 +72,8 @@
           [:dispatch [:global/add-unload-hook]]
           [:dispatch [::app-db.events/reagent-id]]
           [:dispatch [::settings.events/show-event-history? show-event-history]]
-          [:dispatch [::settings.events/open-new-inspectors? open-new-inspectors?]]]}))
+          [:dispatch [::settings.events/open-new-inspectors? open-new-inspectors?]]
+          [:dispatch [::settings.events/handle-keys? handle-keys?]]]}))
 
 ;; Global
 
