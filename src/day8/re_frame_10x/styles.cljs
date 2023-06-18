@@ -483,7 +483,7 @@
   [ambiance]
   {:background-color (background-color-1 ambiance)
    :height           (px 25)
-   :width            "-webkit-fill-available" ;; This took a bit of finding!
+   :width            #{"-webkit-fill-available" "-moz-available;"}
    :padding          [[0 gs-7]]
    :border           :none}
   [:&:focus
