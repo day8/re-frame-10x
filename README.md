@@ -112,7 +112,7 @@ features, and build a cognitive map of how the code is structured.
 
 ### Temporary Warning
 
-> Some of the claims above are aspirational. `re-frame-10x` [remains a WIP](https://github.com/day8/re-frame-10x/issues/118).
+> Some of the claims above are aspirational. `re-frame-10x` [remains a WIP](https://github.com/day8/re-frame-10x/discussions/301).
 
 ## Of Sausage And Sizzle
 
