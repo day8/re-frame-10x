@@ -8,6 +8,7 @@
     [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
     [day8.reagent.impl.batching                                           :refer [patch-next-tick]]
     [day8.reagent.impl.component                                          :refer [patch-wrap-funs patch-custom-wrapper]]
+    [day8.re-frame-10x.tools.datafy                                       :as tools.datafy]
     [day8.re-frame-10x.tools.shadow-dom                                   :as tools.shadow-dom]
     [day8.re-frame-10x.events                                             :as events]
     [day8.re-frame-10x.components.re-com                                  :as rc]
@@ -37,6 +38,8 @@
         showing?             (rf/subscribe [::settings.subs/show-panel?])
         dragging?            (r/atom false)
         window-width         (r/atom js/window.innerWidth)
+        panel-key            (rf/subscribe [::settings.subs/key-bindings :show-panel])
+        ready-to-bind-key    (rf/subscribe [::settings.subs/ready-to-bind-key])
         handle-window-resize (do (rf/dispatch [::settings.events/window-width js/window.innerWidth]) ;; Set initial
                                  (fn [_]
                                    ;; N.B. I don't think this should be a perf bottleneck.
@@ -45,13 +48,20 @@
                                      (reset! window-width window-width-val))))
         handle-keys          (fn [e]
                                (let [tag-name        (.-tagName (.-target e))
+                                     modifier?       (contains? #{"Shift" "Alt" "Control"} (.-key e))
                                      entering-input? (contains? #{"INPUT" "SELECT" "TEXTAREA"} tag-name)]
-                                 (when (and (not entering-input?)
-                                            @handle-keys?
-                                            (= (.-key e) "h")
-                                            (.-ctrlKey e))
-                                   (rf/dispatch [::settings.events/user-toggle-panel])
-                                   (.preventDefault e))))
+                                 (when-not entering-input?
+                                   (cond
+                                     (and @ready-to-bind-key (not modifier?))
+                                     (do (rf/dispatch [::settings.events/bind-key
+                                                       @ready-to-bind-key
+                                                       (tools.datafy/keyboard-event e)])
+                                         (rf/dispatch [::settings.events/ready-to-bind-key nil])
+                                         (.preventDefault e))
+                                     (and @handle-keys?
+                                          (= @panel-key (tools.datafy/keyboard-event e)))
+                                     (do (rf/dispatch [::settings.events/user-toggle-panel])
+                                         (.preventDefault e))))))
         handle-mousemove     (fn [e]
                                (when @dragging?
                                  (let [x                (.-clientX e)

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This change
 #### Added
 
 - Option to ignore keyboard input. See #386.
+- Option to re-bind the open/close panel key. See #386.
 
 ## 1.6.0 (2023-05-04)
 

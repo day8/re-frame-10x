@@ -11,7 +11,8 @@
     [day8.re-frame-10x.panels.settings.subs                        :as settings.subs]
     [day8.re-frame-10x.panels.traces.subs                          :as traces.subs]
     [day8.re-frame-10x.material                                    :as material]
-    [day8.re-frame-10x.styles                                      :as styles]))
+    [day8.re-frame-10x.styles                                      :as styles]
+    [day8.re-frame-10x.tools.datafy                                :as tools.datafy]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")
@@ -228,7 +229,24 @@
                    :model handle-keys?
                    :label "handle keyboard events"
                    :on-change #(rf/dispatch [::settings.events/handle-keys? %])]]
-                 [[:p "Should 10x respond to key-press events (such as to open/close the panel)?"]]
+                 [[:p "Should 10x respond to key-press events?"]]
+                 settings-box-81])
+              (let [ready? @(rf/subscribe [::settings.subs/ready-to-bind-key])
+                    panel-key (rf/subscribe [::settings.subs/key-bindings :show-panel])
+                    ambiance @(rf/subscribe [::settings.subs/ambiance])]
+                [settings-box
+                 [[rc/button
+                   :class (styles/button ambiance)
+                   :style {:width "100px"}
+                   :model panel-key
+                   :label [rc/v-box
+                           :align :center
+                           :children [(if ready? "Input key..."
+                                          (or (some-> @panel-key tools.datafy/keyboard-event->str)
+                                              "empty"))]]
+                   :on-click #(do (println "")
+                                  (rf/dispatch [::settings.events/ready-to-bind-key :show-panel]))]]
+                 [[:p "Open/close the trace panel."]]
                  settings-box-81])
 
               [rc/line]

@@ -230,3 +230,19 @@
   [(rf/path [:settings :handle-keys?]) rf/trim-v (local-storage/save "handle-keys?")]
   (fn [_ [handle-keys?]]
     handle-keys?))
+
+(rf/reg-event-db
+ ::ready-to-bind-key
+ [(rf/path [:settings :ready-to-bind-key]) rf/trim-v]
+ (fn [_ [key-intent]] key-intent))
+
+(rf/reg-event-db
+ ::key-bindings
+ [(rf/path [:settings :key-bindings]) rf/trim-v (local-storage/save "key-bindings")]
+ (fn [_ [key-bindings]] key-bindings))
+
+(rf/reg-event-db
+ ::bind-key
+ [(rf/path [:settings :key-bindings]) rf/trim-v (local-storage/save "key-bindings")]
+ (fn [{key-bindings :db} [key-intent value]]
+   (assoc key-bindings key-intent value)))
