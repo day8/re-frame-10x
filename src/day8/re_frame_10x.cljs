@@ -119,6 +119,10 @@
 (defn ^:export show-panel! [show-panel?]
   (rf/dispatch [::settings.events/show-panel? show-panel?]))
 
+
+(defn ^:export handle-keys! [handle-keys?]
+  (rf/dispatch [::settings.events/handle-keys? handle-keys?]))
+
 ;; --- NEW ---
 
 
