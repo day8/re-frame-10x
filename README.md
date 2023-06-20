@@ -112,7 +112,7 @@ features, and build a cognitive map of how the code is structured.
 
 ### Temporary Warning
 
-> Some of the claims above are aspirational. `re-frame-10x` [remains a WIP](https://github.com/day8/re-frame-10x/issues/118).
+> Some of the claims above are aspirational. `re-frame-10x` [remains a WIP](https://github.com/day8/re-frame-10x/discussions/301).
 
 ## Of Sausage And Sizzle
 
@@ -259,6 +259,14 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 
 - When the panel is closed, tracing is disabled.
 
+### Controlling the Trace Panel
+
+In addition to `ctrl-h`, you can open the trace panel:
+
+- At the REPL: `(day8.re-frame-10x/show-panel! true)`
+- At the browser console: `day8.re_frame_10x.show_panel_BANG_(true)`
+- With a re-frame event: `(re-frame.core/dispatch [:day8.re-frame-10x.panels.settings.events/show-panel? true])`
+
 ## Use Cases
 
 ### app-db
@@ -309,6 +317,7 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 
 * Make sure that your browser window doesn't have focus in a text-box or something else that is intercepting keyboard events.
 * Make sure that the re-frame-10x div has been created. Run `document.querySelector('#--re-frame-10x--')` in your browser's console to check if an element is returned. If this returns `null` then something else isn't working correctly.
+* You can also [open it programmatically](#controlling-the-trace-panel).
 
 ### If re-frame-10x throws an exception on startup
 

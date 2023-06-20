@@ -3,11 +3,12 @@
 ### Using the example project (easy)
 
 There is an example TodoMVC project in `/examples/todomvc` in this repo. It is a pretty basic
-application, but in many cases is all you need to work on re-frame-10x.
+application, but in many cases it is all you need to work on re-frame-10x.
 
 ```console
 $ cd examples/todomvc
-$ lein do clean, dev-auto
+$ npm install
+$ npx shadow-cljs watch app
 ```
 
 ### Setting up re-frame-10x for development (more advanced)
