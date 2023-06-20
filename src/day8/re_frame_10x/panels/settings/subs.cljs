@@ -129,3 +129,17 @@
  :<- [::root]
  (fn [{:keys [handle-keys?]} _]
    handle-keys?))
+
+(rf/reg-sub
+ ::ready-to-bind-key
+ :<- [::root]
+ (fn [{:keys [ready-to-bind-key]} _]
+   ready-to-bind-key))
+
+(rf/reg-sub
+ ::key-bindings
+ :<- [::root]
+ (fn [{:keys [key-bindings]} [_ k]]
+   (if k
+     (get key-bindings k)
+     key-bindings)))

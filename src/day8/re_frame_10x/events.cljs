@@ -39,12 +39,17 @@
    (rf/inject-cofx ::local-storage/load {:key "show-event-history" :or true})
    (rf/inject-cofx ::local-storage/load {:key "open-new-inspectors?" :or true})
    (rf/inject-cofx ::local-storage/load {:key "handle-keys?" :or true})
+   (rf/inject-cofx ::local-storage/load {:key "key-bindings" :or {:show-panel {:key "h"
+                                                                               :altKey false
+                                                                               :ctrlKey true
+                                                                               :metaKey false
+                                                                               :shiftKey false}}})
    rf/unwrap]
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
                ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
                app-db-follows-events? ambiance syntax-color-scheme categories data-path-annotations?
-               show-event-history open-new-inspectors? handle-keys?]}
+               show-event-history open-new-inspectors? handle-keys? key-bindings]}
        {:keys [debug?]}]
     {:fx [(when using-trace?
             [:dispatch [::settings.events/enable-tracing]])
@@ -73,7 +78,8 @@
           [:dispatch [::app-db.events/reagent-id]]
           [:dispatch [::settings.events/show-event-history? show-event-history]]
           [:dispatch [::settings.events/open-new-inspectors? open-new-inspectors?]]
-          [:dispatch [::settings.events/handle-keys? handle-keys?]]]}))
+          [:dispatch [::settings.events/handle-keys? handle-keys?]]
+          [:dispatch [::settings.events/key-bindings key-bindings]]]}))
 
 ;; Global
 
