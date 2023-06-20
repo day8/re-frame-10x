@@ -39,11 +39,11 @@
    (rf/inject-cofx ::local-storage/load {:key "show-event-history" :or true})
    (rf/inject-cofx ::local-storage/load {:key "open-new-inspectors?" :or true})
    (rf/inject-cofx ::local-storage/load {:key "handle-keys?" :or true})
-   (rf/inject-cofx ::local-storage/load {:key "key-bindings" :or {:show-panel {:key "h"
+   (rf/inject-cofx ::local-storage/load {:key "key-bindings" :or {:show-panel {:key "X"
                                                                                :altKey false
                                                                                :ctrlKey true
                                                                                :metaKey false
-                                                                               :shiftKey false}}})
+                                                                               :shiftKey true}}})
    rf/unwrap]
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
