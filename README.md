@@ -255,7 +255,7 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 
 - Start up your application.
 
-- Once it is loaded, focus the document window and press `ctrl-h` to slide open the trace panel and enable tracing.
+- Once it is loaded, focus the document window and press `ctrl-shift-x` to slide open the trace panel and enable tracing.
 
 - When the panel is closed, tracing is disabled.
 
@@ -313,10 +313,11 @@ In addition to `ctrl-h`, you can open the trace panel:
 * Make sure you have followed all the installation steps.
 * Make sure you have checked the [prerequisites](#important-prerequisites)
 
-### If the re-frame-10x window won't show up when pressing Ctrl-H
+### If the re-frame-10x window won't show up when pressing `ctrl-shift-x`
 
 * Make sure that your browser window doesn't have focus in a text-box or something else that is intercepting keyboard events.
 * Make sure that the re-frame-10x div has been created. Run `document.querySelector('#--re-frame-10x--')` in your browser's console to check if an element is returned. If this returns `null` then something else isn't working correctly.
+* Try [clearing your localStore](https://superuser.com/questions/519628/clear-html5-local-storage-on-a-specific-page) and refreshing. This should restore the default key bindings.
 * You can also [open it programmatically](#controlling-the-trace-panel).
 
 ### If re-frame-10x throws an exception on startup
