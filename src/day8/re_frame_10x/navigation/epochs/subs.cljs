@@ -98,12 +98,6 @@
     (count matches)))
 
 (rf/reg-sub
-  ::selected-event-index
-  :<- [::root]
-  (fn [{:keys [selected-epoch-index]} _]
-    selected-epoch-index))
-
-(rf/reg-sub
   ::beginning-trace-id
   :<- [::selected-match]
   (fn [match _]
