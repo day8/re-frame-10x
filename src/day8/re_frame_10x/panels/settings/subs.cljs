@@ -143,3 +143,18 @@
    (if k
      (get key-bindings k)
      key-bindings)))
+
+(rf/reg-sub
+ ::log-outputs
+ :<- [::root]
+ (fn [{:keys [log-outputs]} [_ k]]
+   (if k
+     (get log-outputs k)
+     log-outputs)))
+
+(rf/reg-sub
+ ::log-pretty?
+ :<- [::root]
+ (fn [{:keys [log-pretty?]} _]
+   log-pretty?))
+

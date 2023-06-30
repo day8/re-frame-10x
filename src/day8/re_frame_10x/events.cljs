@@ -6,6 +6,7 @@
     [re-frame.interop]
     [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
     [day8.re-frame-10x.fx.local-storage                           :as local-storage]
+    [day8.re-frame-10x.fx.log                                     :as log]
     [day8.re-frame-10x.navigation.events                          :as navigation.events]
     [day8.re-frame-10x.navigation.views                           :as navigation.views]
     [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
@@ -44,12 +45,14 @@
                                                                                :ctrlKey true
                                                                                :metaKey false
                                                                                :shiftKey true}}})
+   (rf/inject-cofx ::local-storage/load {:key "log-outputs" :or [:day8.re-frame-10x.fx.log/console]})
+   (rf/inject-cofx ::local-storage/load {:key "log-pretty?" :or true})
    rf/unwrap]
   (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
                external-window? external-window-dimensions show-epoch-traces? using-trace?
                ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
                app-db-follows-events? ambiance syntax-color-scheme categories data-path-annotations?
-               show-event-history open-new-inspectors? handle-keys? key-bindings]}
+               show-event-history open-new-inspectors? handle-keys? key-bindings log-outputs log-pretty?]}
        {:keys [debug?]}]
     {:fx [(when using-trace?
             [:dispatch [::settings.events/enable-tracing]])
@@ -79,7 +82,9 @@
           [:dispatch [::settings.events/show-event-history? show-event-history]]
           [:dispatch [::settings.events/open-new-inspectors? open-new-inspectors?]]
           [:dispatch [::settings.events/handle-keys? handle-keys?]]
-          [:dispatch [::settings.events/key-bindings key-bindings]]]}))
+          [:dispatch [::settings.events/key-bindings key-bindings]]
+          [:dispatch [::settings.events/log-outputs log-outputs]]
+          [:dispatch [::settings.events/log-pretty? log-pretty?]]]}))
 
 ;; Global
 
@@ -93,3 +98,10 @@
   :global/unloading?
   (fn [db [_ unloading?]]
     (assoc-in db [:global :unloading?] unloading?)))
+
+(rf/reg-event-fx
+ :global/log
+ [(rf/path [:settings]) rf/trim-v]
+ (fn [{{:keys [log-outputs log-pretty?]} :db} [value]]
+   {:fx (mapv #(do [% {:value value :pretty? log-pretty?}])
+              log-outputs)}))

@@ -238,7 +238,7 @@
 
       [pod-header-section
        :width    styles/gs-31s
-       :attr     {:on-click #(js/console.log value)}
+       :attr     {:on-click #(rf/dispatch [:global/log value])}
        :last?    true
        :children
        [[rc/box

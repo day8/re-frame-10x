@@ -279,7 +279,7 @@
         :size    styles/gs-31s
         :child
         [buttons/icon {:icon [material/print]
-                       :on-click #(js/console.log tags)}]]]]
+                       :on-click #(rf/dispatch [:global/log tags])}]]]]
      (when expanded?
        [rc/h-box
         :class    (table-row-expanded-style ambiance syntax-color-scheme)
