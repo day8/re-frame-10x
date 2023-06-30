@@ -12,7 +12,8 @@
     [day8.re-frame-10x.panels.traces.subs                          :as traces.subs]
     [day8.re-frame-10x.material                                    :as material]
     [day8.re-frame-10x.styles                                      :as styles]
-    [day8.re-frame-10x.tools.datafy                                :as tools.datafy]))
+    [day8.re-frame-10x.tools.datafy                                :as tools.datafy]
+    [day8.re-frame-10x.fx.log                                      :as log]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")
@@ -249,6 +250,29 @@
                  [[:p "Open/close the trace panel."]]
                  settings-box-81])
 
+              [rc/line]
+              (let [log-outputs @(rf/subscribe [::settings.subs/log-outputs])
+                    log-pretty? @(rf/subscribe [::settings.subs/log-pretty?])]
+                [settings-box
+                 [[rc/label :label [:span "Dump data to:"]]
+                  [rc/checkbox
+                   :model (-> log-outputs set ::log/console)
+                   :label "Browser console (cljs-devtools view)"
+                   :on-change #(rf/dispatch [::settings.events/log-outputs ::log/console %])]
+                  [rc/checkbox
+                   :model (-> log-outputs set ::log/console-raw)
+                   :label "Browser console (raw string)"
+                   :on-change #(rf/dispatch [::settings.events/log-outputs ::log/console-raw %])]
+                  [rc/checkbox
+                   :model (-> log-outputs set ::log/clipboard)
+                   :label "Clipboard"
+                   :on-change #(rf/dispatch [::settings.events/log-outputs ::log/clipboard %])]
+                  [rc/checkbox
+                   :model log-pretty?
+                   :label "Pretty-print?"
+                   :on-change #(rf/dispatch [::settings.events/log-pretty? %])]]
+                 [[:div "How should the log (" [material/print] ") buttons behave?"]]
+                 settings-box-131])
               [rc/line]
               (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
                 [settings-box

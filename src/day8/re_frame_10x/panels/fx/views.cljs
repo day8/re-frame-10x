@@ -37,7 +37,7 @@
                          :margin-right "1px"}
                  :child
                  [buttons/icon {:icon [material/print]
-                                :on-click #(js/console.log data)}]]]]))
+                                :on-click #(rf/dispatch [:global/log data])}]]]]))
 
 (defclass section-style
   [ambiance]

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 #### Added
 
+- Options to dump data to the console & clipboard, as a raw or pretty string. See #178.
 - Option to ignore keyboard input. See #386.
 - Option to re-bind the open/close panel key. See #386.
 - Open/close panel key now binds to `Ctrl-Shift-X` (from `Ctrl-h`). See #386.

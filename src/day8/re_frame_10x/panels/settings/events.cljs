@@ -246,3 +246,20 @@
  [(rf/path [:settings :key-bindings]) rf/trim-v (local-storage/save "key-bindings")]
  (fn [key-bindings [key-intent value]]
    (assoc key-bindings key-intent value)))
+
+(rf/reg-event-db
+ ::log-outputs
+ [(rf/path [:settings :log-outputs]) rf/trim-v (local-storage/save "log-outputs")]
+ (fn [log-outputs [value & [enabled?]]]
+   (if (vector? value)
+     value
+     (-> (set log-outputs)
+         ((if-not (false? enabled?) conj disj) value)
+         sort
+         vec))))
+
+(rf/reg-event-db
+ ::log-pretty?
+ [(rf/path [:settings :log-pretty?]) rf/trim-v (local-storage/save "log-pretty?")]
+ (fn [_ [pretty?]]
+   pretty?))

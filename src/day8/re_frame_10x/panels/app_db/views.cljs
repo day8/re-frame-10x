@@ -189,7 +189,7 @@
          :child
          [buttons/icon {:icon [material/print]
                         :title    "Dump inspector data into DevTools"
-                        :on-click #(js/console.log data)}]]]]]]))
+                        :on-click #(rf/dispatch [:global/log data])}]]]]]]))
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 

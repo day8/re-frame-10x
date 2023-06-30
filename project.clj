@@ -15,7 +15,8 @@
                  ;; re-highlight only has a transitive dependency on highlight.js for
                  ;; shadow-cljs builds, so we need to declare a dependency on cljsjs/highlight
                  ;; for 10x to support other build systems.
-                 [cljsjs/highlight                     "10.3.1-0"]]
+                 [cljsjs/highlight                     "10.3.1-0"]
+                 [org.clojure/tools.logging "1.2.4"]]
 
   :plugins      [[day8/lein-git-inject "0.0.15"]
                  [lein-less            "RELEASE"]]
