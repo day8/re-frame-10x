@@ -90,20 +90,19 @@
             retained-traces            (into [] (comp (drop-while #(< (:id %) first-id-to-retain))
                                                       (remove (fn [trace]
                                                                 (or (when drop-reagent (metam/low-level-reagent-trace? trace))
-                                                                    (when drop-re-frame (metam/low-level-re-frame-trace? trace)))))) all-traces)]
+                                                                    (when drop-re-frame (metam/low-level-re-frame-trace? trace)))))) all-traces)
+            match-ids (mapv first-match-id retained-matches)]
         {:db       (-> db
                        (assoc-in [:traces :all] retained-traces)
-                       (update :epochs (fn [epochs]
-                                         (let [selected-id    (:selected-epoch-id epochs)]
-                                           (assoc epochs
-                                             :matches retained-matches
-                                             :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
-                                             :match-ids (mapv first-match-id retained-matches)
-                                             :parse-state parse-state
-                                             :sub-state new-sub-state
-                                             :subscription-info subscription-info
-                                             ;; Reset selected epoch to the head of the list if we got a new event in.
-                                             :selected-epoch-id (if (seq new-matches) (first-match-id (last retained-matches)) selected-id))))))
+                       (update :epochs assoc
+                               :matches retained-matches
+                               :match-ids match-ids
+                               :matches-by-id (zipmap match-ids retained-matches)
+                               :parse-state parse-state
+                               :sub-state new-sub-state
+                               :subscription-info subscription-info)
+                       ;; Reset selected epoch to the head of the list if we got a new event in.
+                       (cond-> (seq new-matches) (assoc-in [:epochs :selected-epoch-id] (last match-ids))))
          :dispatch (when quiescent? [::quiescent])})
       ;; Else
       {:db db})))
