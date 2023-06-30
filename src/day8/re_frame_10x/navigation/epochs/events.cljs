@@ -94,8 +94,7 @@
         {:db       (-> db
                        (assoc-in [:traces :all] retained-traces)
                        (update :epochs (fn [epochs]
-                                         (let [selected-index (:selected-epoch-index epochs)
-                                               selected-id    (:selected-epoch-id epochs)]
+                                         (let [selected-id    (:selected-epoch-id epochs)]
                                            (assoc epochs
                                              :matches retained-matches
                                              :matches-by-id (into {} (map (juxt first-match-id identity)) retained-matches)
@@ -104,8 +103,7 @@
                                              :sub-state new-sub-state
                                              :subscription-info subscription-info
                                              ;; Reset selected epoch to the head of the list if we got a new event in.
-                                             :selected-epoch-id (if (seq new-matches) (first-match-id (last retained-matches)) selected-id)
-                                             :selected-epoch-index (if (seq new-matches) nil selected-index))))))
+                                             :selected-epoch-id (if (seq new-matches) (first-match-id (last retained-matches)) selected-id))))))
          :dispatch (when quiescent? [::quiescent])})
       ;; Else
       {:db db})))
@@ -146,8 +144,7 @@
   [(rf/path [:epochs])]
   (fn [{:keys [db]} _]
     (let [new-id (tools.coll/last-in-vec (:match-ids db))]
-      {:db       (assoc db :selected-epoch-index nil
-                           :selected-epoch-id new-id)
+      {:db       (assoc db :selected-epoch-id new-id)
        :dispatch [::reset-current-epoch-app-db new-id]})))
 
 (rf/reg-event-fx
