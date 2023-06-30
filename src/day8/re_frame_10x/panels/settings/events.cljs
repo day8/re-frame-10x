@@ -244,5 +244,5 @@
 (rf/reg-event-db
  ::bind-key
  [(rf/path [:settings :key-bindings]) rf/trim-v (local-storage/save "key-bindings")]
- (fn [{key-bindings :db} [key-intent value]]
+ (fn [key-bindings [key-intent value]]
    (assoc key-bindings key-intent value)))
