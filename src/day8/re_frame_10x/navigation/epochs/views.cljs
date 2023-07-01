@@ -85,6 +85,7 @@
                      (for [[id event] (reverse all-events)
                            :when (not-empty event)]
                        [:<>
+                        ^{:key id}
                         [epoch event id]
                         [rc/gap-f :size styles/gs-2s]]))]))
 
