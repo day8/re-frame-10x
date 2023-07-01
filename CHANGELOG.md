@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file. This change
 
 - Disabled syntax highlighting in the event tab. This prevents a crash. See #376, #346.
 
+#### Changed
+
+- Selecting any epoch but the latest causes the selection to stay on it. See #190.
+
 ## 1.6.0 (2023-05-04)
 
 #### Changed
