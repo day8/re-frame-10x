@@ -91,7 +91,11 @@
                                                       (remove (fn [trace]
                                                                 (or (when drop-reagent (metam/low-level-reagent-trace? trace))
                                                                     (when drop-re-frame (metam/low-level-re-frame-trace? trace)))))) all-traces)
-            match-ids (mapv first-match-id retained-matches)]
+            match-ids (mapv first-match-id retained-matches)
+            ;; Select the latest event when it arrives, unless the user has selected an older one.
+            select-latest? (and (seq new-matches)
+                                (or (empty? previous-matches)
+                                    (-> db :epochs :selected-epoch-id #{(first-match-id (last previous-matches))})))]
         {:db       (-> db
                        (assoc-in [:traces :all] retained-traces)
                        (update :epochs assoc
@@ -101,8 +105,7 @@
                                :parse-state parse-state
                                :sub-state new-sub-state
                                :subscription-info subscription-info)
-                       ;; Reset selected epoch to the head of the list if we got a new event in.
-                       (cond-> (seq new-matches) (assoc-in [:epochs :selected-epoch-id] (last match-ids))))
+                       (cond-> select-latest? (assoc-in [:epochs :selected-epoch-id] (last match-ids))))
          :dispatch (when quiescent? [::quiescent])})
       ;; Else
       {:db db})))
