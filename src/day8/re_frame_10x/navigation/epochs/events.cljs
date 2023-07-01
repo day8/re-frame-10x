@@ -107,36 +107,23 @@
       ;; Else
       {:db db})))
 
-;; TODO: this code is a bit messy, needs refactoring and cleaning up.
 (rf/reg-event-fx
   ::previous
   [(rf/path [:epochs])]
-  (fn [{:keys [db]} _]
-    (if-some [selected-id (:selected-epoch-id db)]
-      (let [match-ids         (:match-ids db)
-            match-array-index (tools.coll/find-index-in-vec (fn [x] (= selected-id x)) match-ids)
-            new-id            (nth match-ids (dec match-array-index))]
-        {:db       (assoc db :selected-epoch-id new-id)
-         :dispatch [::reset-current-epoch-app-db new-id]})
-      (let [new-id (nth (:match-ids db)
-                        (- (count (:match-ids db)) 2))]
-        {:db       (assoc db :selected-epoch-id new-id)
-         :dispatch [::reset-current-epoch-app-db new-id]}))))
-
+  (fn [{{:keys [match-ids selected-epoch-id] :as db} :db} _]
+    (let [new-id (->> match-ids (take-while (complement #{selected-epoch-id})) last)]
+      {:db       (assoc db :selected-epoch-id new-id)
+       :dispatch [::reset-current-epoch-app-db new-id]})))
 
 (rf/reg-event-fx
   ::next
   [(rf/path [:epochs])]
-  (fn [{:keys [db]} _]
-    (if-some [selected-id (:selected-epoch-id db)]
-      (let [match-ids         (:match-ids db)
-            match-array-index (tools.coll/find-index-in-vec (fn [x] (= selected-id x)) match-ids)
-            new-id            (nth match-ids (inc match-array-index))]
-        {:db       (assoc db :selected-epoch-id new-id)
-         :dispatch [::reset-current-epoch-app-db new-id]})
-      (let [new-id (tools.coll/last-in-vec (:match-ids db))]
-        {:db       (assoc db :selected-epoch-id new-id)
-         :dispatch [::reset-current-epoch-app-db new-id]}))))
+  (fn [{{:keys [match-ids selected-epoch-id] :as db} :db} _]
+    (let [new-id (if-not selected-epoch-id
+                   (tools.coll/last-in-vec match-ids)
+                   (->> match-ids (drop-while (complement #{selected-epoch-id})) (take 2) last))]
+      {:db       (assoc db :selected-epoch-id new-id)
+       :dispatch [::reset-current-epoch-app-db new-id]})))
 
 (rf/reg-event-fx
   ::most-recent
