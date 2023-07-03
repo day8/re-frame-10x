@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file. This change
 
 #### Changed
 
+- Upgrade zprint to 1.2.5.
 - Upgrade re-highlight to 2.0.2 merge PR #383
 
 ## 1.5.0 (2022-08-03)
