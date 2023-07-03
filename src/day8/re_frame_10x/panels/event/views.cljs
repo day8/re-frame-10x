@@ -164,11 +164,11 @@
                             :class (code-style ambiance syntax-color-scheme show-all-code?)
                             :attr  {:on-double-click (handler-fn (rf/dispatch [::event.events/set-show-all-code? (not show-all-code?)]))}
                             :child (if (some? highlighted-form)
-                                     [re-highlight/highlight {:language "clojure"}
+                                     [#_re-highlight/highlight :span {:language "clojure"}
                                       (list ^{:key "before"} before
                                             ^{:key "hl"} [:span.code-listing--highlighted highlight]
                                             ^{:key "after"} after)]
-                                     [re-highlight/highlight {:language "clojure"}
+                                     [#_re-highlight/highlight :span {:language "clojure"}
                                       form-str])]
                            [rc/v-box
                             :class (hljs-error-style ambiance syntax-color-scheme)
