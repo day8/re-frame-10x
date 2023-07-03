@@ -221,54 +221,70 @@
   "JSONML is the format used by Chrome's Custom Object Formatters.
   The spec is at https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview.
 
-  JSONML is pretty much Hiccup over JSON. Chrome's implementation of this can
-  be found at https://cs.chromium.org/chromium/src/third_party/WebKit/Source/devtools/front_end/object_ui/CustomPreviewComponent.js
-  "
-  [jsonml indexed-path devtools-path {:keys [click-listener middle-click-listener menu-listener] :as opts}] ;;indexed-path
-  ;; is updated on every html element such as `tagnames` while devtools-path is updated only when we encounter an
-  ;; element that contains the `:path` attribute.
+  JSONML is pretty much Hiccup over JSON. Chrome's implementation of this can be found at
+  https://cs.chromium.org/chromium/src/third_party/WebKit/Source/devtools/front_end/object_ui/CustomPreviewComponent.js
+"
+  [jsonml indexed-path devtools-path {:keys [click-listener middle-click-listener menu-listener]
+                                      :as   opts}]
+  ;; indexed-path is updated on every html element such as `tagnames`
+  ;; while devtools-path is updated only when we encounter an element that contains the `:path` attribute.
   (if (number? jsonml)
     jsonml
     (let [[tag-name attributes & children] jsonml
-          tagnames #{"div" "span" "ol" "li" "table" "tr" "td"}]
+          tagnames                         #{"div" "span" "ol" "li" "table" "tr" "td"}]
       (cond
-        (contains? tagnames tag-name) (into
-                                       [(keyword tag-name) {:style (-> (js->clj attributes)
-                                                                       (get "style")
-                                                                       (string->css))}]
-                                       (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) devtools-path opts)))
-                                       children)
+        (contains? tagnames
+                   tag-name) (into [(keyword tag-name) {:style (-> (js->clj attributes)
+                                                                   (get "style")
+                                                                   (string->css))}]
+                                   (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations
+                                                               child
+                                                               (conj indexed-path i)
+                                                               devtools-path
+                                                               opts)))
+                                   children)
 
-        (= tag-name "object")         [data-structure-with-path-annotations jsonml indexed-path devtools-path opts]
-        (= tag-name "annotation")     (let [jsonml-path-index       (-> attributes
-                                                                        (js->clj :keywordize-keys true)
-                                                                        :path
-                                                                        last) ;;index of the current element in the immediate parent
-                                            absolute-devtools-path  (if jsonml-path-index
-                                                                      (conj devtools-path jsonml-path-index)
-                                                                      devtools-path) ;; path of the current visible db from root node view
-                                            element-id              (str (random-uuid))
-                                            child-element           (nth children 0 nil)
-                                            child-value             (when (instance? js/Array child-element)
-                                                                      (nth child-element 2 nil))]
-                                        ;; add menu only to strings, numbers and keywords
-                                        (if (or (string? child-value)
-                                                (number? child-value)
-                                                (keyword? child-value))
-                                          [:> (r/create-class
-                                               {:component-did-mount (fn [component]
-                                                                       (let [component (dom/dom-node component)]
-                                                                         (goog.events/listen component "contextmenu" menu-listener)
-                                                                         (goog.events/listen component "dblclick" click-listener)
-                                                                         (goog.events/listen component "mousedown" middle-click-listener)))
-                                                :reagent-render      (fn []
-                                                                       (into [:span {:id        element-id
-                                                                                     :class     "path-annotation"
-                                                                                     :data-path (str absolute-devtools-path)}]
-                                                                             (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) absolute-devtools-path opts)) children)))})]
-                                          (into [:span {}]
-                                                (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) absolute-devtools-path opts)) children))))
-        :else                         jsonml))))
+        (= tag-name
+           "object")     [data-structure-with-path-annotations jsonml indexed-path devtools-path opts]
+        (= tag-name
+           "annotation") (let [;;index of the current element in the immediate parent
+                               jsonml-path-index      (-> attributes
+                                                          (js->clj :keywordize-keys true)
+                                                          :path
+                                                          last)
+                               ;; path of the current visible db from root node view
+                               absolute-devtools-path (if jsonml-path-index
+                                                        (conj devtools-path jsonml-path-index)
+                                                        devtools-path)
+                               element-id             (str (random-uuid))
+                               child-element          (nth children 0 nil)
+                               child-value            (when (instance? js/Array child-element)
+                                                        (nth child-element 2 nil))
+                               child-component        (fn [i child] (jsonml->hiccup-with-path-annotations
+                                                                     child
+                                                                     (conj indexed-path i)
+                                                                     absolute-devtools-path
+                                                                     opts))]
+                           ;; add menu only to strings, numbers and keywords
+                           (if (or (string? child-value)
+                                   (number? child-value)
+                                   (keyword? child-value))
+                             [:> (r/create-class
+                                  {:component-did-mount
+                                   (fn [component]
+                                     (let [component (dom/dom-node component)]
+                                       (goog.events/listen component "contextmenu" menu-listener)
+                                       (goog.events/listen component "dblclick" click-listener)
+                                       (goog.events/listen component "mousedown" middle-click-listener)))
+                                   :reagent-render
+                                   (fn []
+                                     (into [:span {:id        element-id
+                                                   :class     "path-annotation"
+                                                   :data-path (str absolute-devtools-path)}]
+                                           (map-indexed child-component children)))})]
+                             (into [:span {}]
+                                   (map-indexed child-component children))))
+        :else            jsonml))))
 
 (defn prn-str-render?
   [data]
@@ -287,7 +303,6 @@
   [data]
   [:div {:class (prn-str-render-style)}
    (prn-str data)])
-
 
 (defn simple-render
   [data path & [{:keys [class sort?]}]]
@@ -314,80 +329,80 @@
 (defn build-popup
   [app-db path indexed-path html-element offset-x offset-y & [html-target]]
   (let [popup-menu       (goog.ui.PopupMenu.)
-          js-menu-style    (-> #js {:text-align "center"
-                                    :padding    "10px"
-                                    :border     "1px solid #b9bdc6"}
-                               (goog.style.toStyleAttribute))
-          create-menu-item (fn [menu-text]
-                             (-> (goog.dom.createDom
-                                  TagName.DIV
-                                  #js {}
-                                  (goog.dom.createDom TagName.SPAN #js {} menu-text))
-                                 (doto (.setAttribute "style" js-menu-style))
-                                 goog.ui.MenuItem.))
-          copy-path-item   (create-menu-item "Copy path")
-          copy-obj-item    (create-menu-item "Copy object")
-          copy-repl-item   (create-menu-item "Copy REPL command")
-          element-rect     (.getBoundingClientRect html-element)
-          target-rect      (when html-target (.getBoundingClientRect html-target))
-          target-x-offset  (when target-rect (+ (.-left target-rect) (.-scrollX js/window)))
-          element-x-pos    (+ (.-left element-rect) (.-scrollX js/window))
+        js-menu-style    (-> #js {:text-align "center"
+                                  :padding    "10px"
+                                  :border     "1px solid #b9bdc6"}
+                             (goog.style.toStyleAttribute))
+        create-menu-item (fn [menu-text]
+                           (-> (goog.dom.createDom
+                                TagName.DIV
+                                #js {}
+                                (goog.dom.createDom TagName.SPAN #js {} menu-text))
+                               (doto (.setAttribute "style" js-menu-style))
+                               goog.ui.MenuItem.))
+        copy-path-item   (create-menu-item "Copy path")
+        copy-obj-item    (create-menu-item "Copy object")
+        copy-repl-item   (create-menu-item "Copy REPL command")
+        element-rect     (.getBoundingClientRect html-element)
+        target-rect      (when html-target (.getBoundingClientRect html-target))
+        target-x-offset  (when target-rect (+ (.-left target-rect) (.-scrollX js/window)))
+        element-x-pos    (+ (.-left element-rect) (.-scrollX js/window))
           ;; element-x-pos is relative to window, so we remove offset of element we're rendering in below
-          menu-x-pos       (+ offset-x
-                              (if target-x-offset
-                                (- element-x-pos target-x-offset)
-                                element-x-pos))
-          menu-y-pos       (+ offset-y (.-top element-rect) (.-scrollY js/window))]
-      (doto copy-path-item
-        (.addClassName "copy-path")
-        (.addClassName "10x-menu-item"))
-      (doto copy-obj-item
-        (.addClassName "copy-object")
-        (.addClassName "10x-menu-item"))
-      (doto copy-repl-item
-        (.addClassName "copy-repl")
-        (.addClassName "10x-menu-item"))
-      (doto popup-menu
-        (.addItem copy-path-item)
-        (.addItem copy-obj-item)
-        (.addItem copy-repl-item)
-        (.showAt menu-x-pos menu-y-pos)
-        (.render (or html-target html-element)))            ;;if menu target is not supplied we render on clicked element
-      (goog.object.forEach
-       goog.ui.Component.EventType
-       (fn [type]
-         (goog.events.listen
-          popup-menu
-          type
-          (fn [e]
-            (cond
-              (= (.-type e) "hide")
-              (when (= (peek @event-log) "highlight")
+        menu-x-pos       (+ offset-x
+                            (if target-x-offset
+                              (- element-x-pos target-x-offset)
+                              element-x-pos))
+        menu-y-pos       (+ offset-y (.-top element-rect) (.-scrollY js/window))]
+    (doto copy-path-item
+      (.addClassName "copy-path")
+      (.addClassName "10x-menu-item"))
+    (doto copy-obj-item
+      (.addClassName "copy-object")
+      (.addClassName "10x-menu-item"))
+    (doto copy-repl-item
+      (.addClassName "copy-repl")
+      (.addClassName "10x-menu-item"))
+    (doto popup-menu
+      (.addItem copy-path-item)
+      (.addItem copy-obj-item)
+      (.addItem copy-repl-item)
+      (.showAt menu-x-pos menu-y-pos)
+      (.render (or html-target html-element)))            ;;if menu target is not supplied we render on clicked element
+    (goog.object.forEach
+     goog.ui.Component.EventType
+     (fn [type]
+       (goog.events.listen
+        popup-menu
+        type
+        (fn [e]
+          (cond
+            (= (.-type e) "hide")
+            (when (= (peek @event-log) "highlight")
                   ;; if the last event registered is 'highlight' then we should not close the dialog
                   ;; `highlight` event is dispatched right before `action`. Action would not be dispatched
                   ;; if the preceding `highlight` closes the dialog
-                (.preventDefault e))
+              (.preventDefault e))
 
                 ;; `action` is thrown after hide
                 ;; `action` is thrown before unhighlight -> hide -> leave
-              (= (.-type e) "action")
-              (let [class-names (-> e .-target .getExtraClassNames js->clj)
-                    object      (tools.coll/get-in-with-lists-and-sets app-db path)]
-                (swap! event-log conj "action")
-                (cond
-                  (some (fn [class-name] (= class-name "copy-object")) class-names)
-                  (if (or object (= object false))
-                    (clipboard/copy! object)              ;; note we can't copy nil objects
-                    (js/console.error "Could not copy!"))
+            (= (.-type e) "action")
+            (let [class-names (-> e .-target .getExtraClassNames js->clj)
+                  object      (tools.coll/get-in-with-lists-and-sets app-db path)]
+              (swap! event-log conj "action")
+              (cond
+                (some (fn [class-name] (= class-name "copy-object")) class-names)
+                (if (or object (= object false))
+                  (clipboard/copy! object)              ;; note we can't copy nil objects
+                  (js/console.error "Could not copy!"))
 
-                  (some (fn [class-name] (= class-name "copy-path")) class-names)
-                  (clipboard/copy! path)
+                (some (fn [class-name] (= class-name "copy-path")) class-names)
+                (clipboard/copy! path)
 
-                  (some (fn [class-name] (= class-name "copy-repl")) class-names)
-                  (clipboard/copy! (str "(simple-render-with-path-annotations " app-db " " ["app-db-path" indexed-path] {} ")"))))
+                (some (fn [class-name] (= class-name "copy-repl")) class-names)
+                (clipboard/copy! (str "(simple-render-with-path-annotations " app-db " " ["app-db-path" indexed-path] {} ")"))))
 
-              :else
-              (swap! event-log conj (.-type e)))))))))
+            :else
+            (swap! event-log conj (.-type e)))))))))
 
 (defn simple-render-with-path-annotations
   [data indexed-path {:keys [object update-path-fn sort?] :as opts} & [class]]
