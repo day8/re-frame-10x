@@ -1,14 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## 1.6.1 (2023-07-03)
+## 1.7.0 (2023-07-03)
 
 #### Added
 
 - Options to dump data to the console & clipboard, as a raw or pretty string. See #178.
 - Option to ignore keyboard input. See #386.
 - Option to re-bind the open/close panel key. See #386.
-- Open/close panel key now binds to `Ctrl-Shift-X` (from `Ctrl-h`). See #386.
 
 #### Fixed
 
@@ -16,6 +15,7 @@ All notable changes to this project will be documented in this file. This change
 
 #### Changed
 
+- Open/close panel key now binds to `Ctrl-Shift-X` (from `Ctrl-h`). See #386.
 - Selecting any epoch but the latest causes the selection to stay on it. See #190.
 
 ## 1.6.0 (2023-05-04)
