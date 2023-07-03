@@ -33,40 +33,33 @@
 
 (defn epoch
   []
-  (let [hover?     (r/atom false)
-        active?    (r/atom false)]
-    (r/create-class
-     {:component-did-mount
-      (fn [this]
-        (when @active?
-          (rf/dispatch [::epochs.events/scroll-into-view-debounced (rdom/dom-node this)])))
-
-      :reagent-render
-      (fn [event id]
-        (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
-              current-id @(rf/subscribe [::epochs.subs/selected-epoch-id])]
-          (reset! active? (= id current-id))
-          [rc/h-box
-           :class      (epoch-style ambiance @active?)
-           :align      :start
+  (let [hover?     (r/atom false)]
+    (fn [event id]
+      (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
+            active?    (= id @(rf/subscribe [::epochs.subs/selected-epoch-id]))]
+        [rc/h-box
+         :class      (epoch-style ambiance active?)
+         :align      :start
+         :min-height styles/gs-19s
+         :attr       {:ref            #(when active?
+                                         (rf/dispatch [::epochs.events/scroll-into-view-debounced %]))
+                      :on-click       #(when-not active? (rf/dispatch [::epochs.events/load id]))
+                      :on-mouse-enter #(reset! hover? true)
+                      :on-mouse-leave #(reset! hover? false)}
+         :children
+         [[rc/box
+           :class  (epoch-chevron-style ambiance active? @hover?)
+           :height styles/gs-19s
+           :align  :center
+           :child
+           [material/chevron-right
+            {:size "17px"}]]
+          [rc/gap-f :size styles/gs-2s]
+          [rc/box
+           :class      (epoch-data-style ambiance)
            :min-height styles/gs-19s
-           :attr       {:on-click       #(when-not @active? (rf/dispatch [::epochs.events/load id]))
-                        :on-mouse-enter #(reset! hover? true)
-                        :on-mouse-leave #(reset! hover? false)}
-           :children
-           [[rc/box
-             :class  (epoch-chevron-style ambiance @active? @hover?)
-             :height styles/gs-19s
-             :align  :center
-             :child
-             [material/chevron-right
-              {:size "17px"}]]
-            [rc/gap-f :size styles/gs-2s]
-            [rc/box
-             :class      (epoch-data-style ambiance)
-             :min-height styles/gs-19s
-             :size       "1"
-             :child      [cljs-devtools/simple-render event [id]]]]]))})))
+           :size       "1"
+           :child      [cljs-devtools/simple-render event [id]]]]]))))
 
 (defclass epochs-style
   [ambiance]
