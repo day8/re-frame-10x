@@ -80,8 +80,8 @@
               after               (subs form-str end-idx)]
           ^{:key (gensym)}
           [rc/box
-             :class (code-style ambiance syntax-color-scheme show-all-code?)
-             :attr  {:on-double-click (handler-fn (rf/dispatch [::event.events/set-show-all-code? (not show-all-code?)]))}
+           :class (code-style ambiance syntax-color-scheme show-all-code?)
+           :attr  {:on-double-click (handler-fn (rf/dispatch [::event.events/set-show-all-code? (not show-all-code?)]))}
            :child [str->hiccup form-str]]))})))
 
 (defclass clipboard-notification-style
