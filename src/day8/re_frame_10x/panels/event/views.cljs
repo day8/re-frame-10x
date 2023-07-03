@@ -2,10 +2,10 @@
   (:require-macros
    [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
   (:require
+   ["react"                                                      :as react]
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px ms]]
    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
    [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.core   :as r]
-   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.dom    :as rdom]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.components.buttons                         :as buttons]
    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
@@ -49,20 +49,21 @@
 
 (defn code
   []
-  (let [scroll-pos (atom {:top 0 :left 0})]
+  (let [scroll-pos (atom {:top 0 :left 0})
+        ref        (react/createRef)]
     (r/create-class
      {:display-name "code"
 
       :get-snapshot-before-update
       (fn code-get-snapshot-before-update
         [this _ _]
-        (let [node (rdom/dom-node this)]
+        (let [node (.-current ref)]
           (reset! scroll-pos {:top (.-scrollTop node) :left (.-scrollLeft node)})))
 
       :component-did-update
       (fn code-component-did-update
         [this]
-        (let [node (rdom/dom-node this)]
+        (let [node (.-current ref)]
           (set! (.-scrollTop node) (:top @scroll-pos))
           (set! (.-scrollLeft node) (:left @scroll-pos))))
 
@@ -81,7 +82,8 @@
           ^{:key (gensym)}
           [rc/box
            :class (code-style ambiance syntax-color-scheme show-all-code?)
-           :attr  {:on-double-click (handler-fn (rf/dispatch [::event.events/set-show-all-code? (not show-all-code?)]))}
+           :attr  {:ref             ref
+                   :on-double-click (handler-fn (rf/dispatch [::event.events/set-show-all-code? (not show-all-code?)]))}
            :child [str->hiccup form-str]]))})))
 
 (defclass clipboard-notification-style
@@ -321,4 +323,3 @@
        [[code]
         [controls]
         [fragments]])]))
-
