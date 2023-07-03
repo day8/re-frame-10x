@@ -1,13 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## Unreleased
+## 1.6.1 (2023-07-03)
 
 #### Added
 
 - Option to ignore keyboard input. See #386.
 - Option to re-bind the open/close panel key. See #386.
 - Open/close panel key now binds to `Ctrl-Shift-X` (from `Ctrl-h`). See #386.
+
+#### Fixed
+
+- Disabled syntax highlighting in the event tab. This prevents a crash. See #376, #346.
 
 ## 1.6.0 (2023-05-04)
 
