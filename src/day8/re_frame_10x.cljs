@@ -124,20 +124,21 @@
 (defn ^:export handle-keys! [handle-keys?]
   (rf/dispatch [::settings.events/handle-keys? handle-keys?]))
 
-;; --- NEW ---
+(defn create-shadow-root []
+  (tools.shadow-dom/shadow-root js/document "--re-frame-10x--"))
+
+(defn create-style-container [shadow-root]
+  [spade.react/with-style-container
+   (spade.dom/create-container shadow-root)
+   [devtools-outer
+    {:panel-type :inline
+     :debug?     debug?}]])
 
 (defn inject!
   []
   (rf/clear-subscription-cache!)
-  (let [shadow-root (tools.shadow-dom/shadow-root js/document "--re-frame-10x--")
-        container   (spade.dom/create-container shadow-root)]
-
-    (rdom/render
-     [spade.react/with-style-container container
-      [devtools-outer
-       {:panel-type :inline
-        :debug?     debug?}]]
-     shadow-root)))
+  (let [shadow-root (create-shadow-root)]
+    (rdom/render (create-style-container shadow-root) shadow-root)))
 
 (defn patch!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
