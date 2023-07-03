@@ -265,25 +265,18 @@
                                                                      (conj indexed-path i)
                                                                      absolute-devtools-path
                                                                      opts))]
-                           ;; add menu only to strings, numbers and keywords
-                           (if (or (string? child-value)
-                                   (number? child-value)
-                                   (keyword? child-value))
-                             [:> (r/create-class
-                                  {:component-did-mount
-                                   (fn [component]
-                                     (let [component (dom/dom-node component)]
-                                       (goog.events/listen component "contextmenu" menu-listener)
-                                       (goog.events/listen component "dblclick" click-listener)
-                                       (goog.events/listen component "mousedown" middle-click-listener)))
-                                   :reagent-render
-                                   (fn []
-                                     (into [:span {:id        element-id
-                                                   :class     "path-annotation"
-                                                   :data-path (str absolute-devtools-path)}]
-                                           (map-indexed child-component children)))})]
-                             (into [:span {}]
-                                   (map-indexed child-component children))))
+                           (into [:span (if-not (or (string? child-value)
+                                                    (number? child-value)
+                                                    (keyword? child-value))
+                                          {}
+                                          {:id        element-id
+                                           :ref       #(doto %
+                                                         (goog.events/listen "contextmenu" menu-listener)
+                                                         (goog.events/listen "dblclick" click-listener)
+                                                         (goog.events/listen "mousedown" middle-click-listener))
+                                           :class     "path-annotation"
+                                           :data-path (str absolute-devtools-path)})]
+                                 (map-indexed child-component children)))
         :else            jsonml))))
 
 (defn prn-str-render?
