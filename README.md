@@ -261,7 +261,9 @@ re-frame-10x includes an experimental code tracing feature for tracing the code 
 
 ### Controlling the Trace Panel
 
-In addition to `ctrl-h`, you can open the trace panel:
+By default, press `ctrl-shift-x` to open or close the trace panel. You can re-bind or disable this keystroke in the settings menu.
+
+You can also control the panel programmatically:
 
 - At the REPL: `(day8.re-frame-10x/show-panel! true)`
 - At the browser console: `day8.re_frame_10x.show_panel_BANG_(true)`
