@@ -25,6 +25,7 @@
    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as dom]
    [day8.re-frame-10x.tools.coll                                 :as tools.coll]
+   [day8.re-frame-10x.tools.datafy                               :as tools.datafy]
    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]
    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs])
   (:import
@@ -287,15 +288,19 @@
   [:div {:class (prn-str-render-style)}
    (prn-str data)])
 
+
 (defn simple-render
-  [data path & [{:keys [class]}]]
-  [rc/box
-   :size  "1"
-   :class (str (jsonml-style) " " class)
-   :child
-   (if (prn-str-render? data)
-     (prn-str-render data)
-     (jsonml->hiccup (header data nil) (conj path 0)))])
+  [data path & [{:keys [class sort?]}]]
+  (let [ns->alias             @(rf/subscribe [::settings.subs/ns->alias])
+        data                  (cond->> data sort? tools.datafy/deep-sorted-map)
+        data                  (tools.datafy/alias-namespaces data ns->alias)]
+    [rc/box
+     :size  "1"
+     :class (str (jsonml-style) " " class)
+     :child
+     (if (prn-str-render? data)
+       (prn-str-render data)
+       (jsonml->hiccup (header data nil) (conj path 0)))]))
 
 (def event-log (atom '()))                                  ;;stores a history of the events, treated as a stack
 
@@ -385,7 +390,7 @@
   [data indexed-path {:keys [object update-path-fn sort?] :as opts} & [class]]
   (let [render-paths?         (rf/subscribe [::app-db.subs/data-path-annotations?])
         open-new-inspectors?  @(rf/subscribe [::settings.subs/open-new-inspectors?])
-        data                  (if (and sort? (map? data)) (into (sorted-map) data) data)
+        data                  (cond->> data sort? tools.datafy/deep-sorted-map)
         input-field-path      (second indexed-path)              ;;path typed in input-box
         shadow-root           (-> (.getElementById js/document "--re-frame-10x--") ;;main shadow-root html component
                                   .-shadowRoot

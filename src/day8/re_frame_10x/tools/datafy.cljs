@@ -1,5 +1,6 @@
 (ns day8.re-frame-10x.tools.datafy
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.walk :as walk]))
 
 (defn keyboard-event [e]
   {:key (.-key e)
@@ -27,3 +28,5 @@
                   (mapv mod-key->str))]
     (str/join "-" (conj mods key-str))))
 
+(defn deep-sorted-map [m]
+  (walk/postwalk #(cond->> % (map? %) (into (sorted-map))) m))
