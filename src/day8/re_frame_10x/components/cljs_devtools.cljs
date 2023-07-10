@@ -393,7 +393,9 @@
   [data indexed-path {:keys [object update-path-fn sort?] :as opts} & [class]]
   (let [render-paths?         (rf/subscribe [::app-db.subs/data-path-annotations?])
         open-new-inspectors?  @(rf/subscribe [::settings.subs/open-new-inspectors?])
+        ns->alias             @(rf/subscribe [::settings.subs/ns->alias])
         data                  (cond->> data sort? tools.datafy/deep-sorted-map)
+        data                  (tools.datafy/alias-namespaces data ns->alias)
         input-field-path      (second indexed-path)              ;;path typed in input-box
         shadow-root           (-> (.getElementById js/document "--re-frame-10x--") ;;main shadow-root html component
                                   .-shadowRoot

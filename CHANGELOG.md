@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 #### Added
 
+- Pods render namespaced keywords with an alias if it is declared in the settings. See #393
 - Added rewrite-clj 1.1.47 dependency
 
 #### Changed

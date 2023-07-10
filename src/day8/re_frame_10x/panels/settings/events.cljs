@@ -263,3 +263,37 @@
  [(rf/path [:settings :log-pretty?]) rf/trim-v (local-storage/save "log-pretty?")]
  (fn [_ [pretty?]]
    pretty?))
+
+(def ns-aliases-interceptors
+  [(rf/path [:settings :ns-aliases])
+   rf/trim-v
+   (local-storage/save "ns-aliases")])
+
+(rf/reg-event-db
+ ::ns-aliases
+ ns-aliases-interceptors
+ (fn [_ [ns-aliases]]
+   ns-aliases))
+
+(rf/reg-event-db
+ ::add-ns-alias
+ ns-aliases-interceptors
+ (fn [ns-aliases [ns-full ns-alias]]
+   (let [id (random-uuid)]
+     (assoc ns-aliases id {:id id
+                           :ns-full ns-full
+                           :ns-alias ns-alias
+                           :sort (js/Date.now)}))))
+
+(rf/reg-event-db
+ ::remove-ns-alias
+ ns-aliases-interceptors
+ (fn [ns-aliases [id]]
+   (dissoc ns-aliases id)))
+
+(rf/reg-event-db
+ ::update-ns-alias
+ ns-aliases-interceptors
+ (fn [ns-aliases [id ns-full ns-alias]]
+   (update ns-aliases id merge {:ns-full (str ns-full)
+                                :ns-alias (str ns-alias)})))
