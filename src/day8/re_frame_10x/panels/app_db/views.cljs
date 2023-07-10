@@ -241,7 +241,8 @@
                :children
                [[cljs-devtools/simple-render
                  diff-before
-                 ["app-db-diff" path]]]]
+                 ["app-db-diff" path]
+                 {:sort? sort?}]]]
               [rc/v-box
                :class    (styles/app-db-inspector-link ambiance)
                :justify  :end
@@ -259,7 +260,8 @@
                :children
                [[cljs-devtools/simple-render
                  diff-after
-                 ["app-db-diff" path]]]]]]))
+                 ["app-db-diff" path]
+                 {:sort? sort?}]]]]]))
         (when open?
           [rc/gap-f :size pod-padding])]]]]))
 
