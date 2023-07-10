@@ -1,39 +1,39 @@
 (ns day8.re-frame-10x.panels.subs.subs
   (:require
-    [clojure.string                                               :as string]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.navigation.epochs.subs                     :as epochs.subs]
-    [day8.re-frame-10x.panels.traces.subs                         :as traces.subs]
-    [day8.re-frame-10x.tools.metamorphic                          :as metam]))
+   [clojure.string                                               :as string]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.navigation.epochs.subs                     :as epochs.subs]
+   [day8.re-frame-10x.panels.traces.subs                         :as traces.subs]
+   [day8.re-frame-10x.tools.metamorphic                          :as metam]))
 
 (rf/reg-sub
-  ::root
-  (fn [{:keys [subs]} _]
-    subs))
+ ::root
+ (fn [{:keys [subs]} _]
+   subs))
 
 (rf/reg-sub
-  ::all-sub-traces
-  :<- [::traces.subs/filtered-by-epoch-always]
-  (fn [traces]
-    (filter metam/subscription? traces)))
+ ::all-sub-traces
+ :<- [::traces.subs/filtered-by-epoch-always]
+ (fn [traces]
+   (filter metam/subscription? traces)))
 
 (rf/reg-sub
-  ::subscription-info
-  :<- [::epochs.subs/root]
-  (fn [{:keys [subscription-info]} _]
-    subscription-info))
+ ::subscription-info
+ :<- [::epochs.subs/root]
+ (fn [{:keys [subscription-info]} _]
+   subscription-info))
 
 (rf/reg-sub
-  ::sub-state
-  :<- [::epochs.subs/root]
-  (fn [{:keys [sub-state]} _]
-    sub-state))
+ ::sub-state
+ :<- [::epochs.subs/root]
+ (fn [{:keys [sub-state]} _]
+   sub-state))
 
 (rf/reg-sub
-  ::current-epoch-sub-state
-  :<- [::epochs.subs/selected-match-state]
-  (fn [{:keys [sub-state]} _]
-    sub-state))
+ ::current-epoch-sub-state
+ :<- [::epochs.subs/selected-match-state]
+ (fn [{:keys [sub-state]} _]
+   sub-state))
 
 (defn sub-type->value
   [sub-type]
@@ -42,7 +42,7 @@
     :sub/run     4
     :sub/dispose 3
     :sub/not-run 2
-                 1))
+    1))
 
 (defn accumulate-sub-value
   "Calculate a sorting value for a series of subscription trace types."
@@ -101,106 +101,106 @@
     subx))
 
 (rf/reg-sub
-  ::pre-epoch-state
-  :<- [::current-epoch-sub-state]
-  (fn [{:keys [pre-epoch-state]} _]
-    pre-epoch-state))
+ ::pre-epoch-state
+ :<- [::current-epoch-sub-state]
+ (fn [{:keys [pre-epoch-state]} _]
+   pre-epoch-state))
 
 (rf/reg-sub
-  ::reaction-state
-  :<- [::current-epoch-sub-state]
-  (fn [{:keys [reaction-state]} _]
-    reaction-state))
+ ::reaction-state
+ :<- [::current-epoch-sub-state]
+ (fn [{:keys [reaction-state]} _]
+   reaction-state))
 
 (rf/reg-sub
-  ::intra-epoch-subs
-  :<- [::subscription-info]
-  :<- [::pre-epoch-state]
-  prepare-pod-info)
+ ::intra-epoch-subs
+ :<- [::subscription-info]
+ :<- [::pre-epoch-state]
+ prepare-pod-info)
 
 (rf/reg-sub
-  ::all-subs
-  :<- [::subscription-info]
-  :<- [::reaction-state]
-  prepare-pod-info)
+ ::all-subs
+ :<- [::subscription-info]
+ :<- [::reaction-state]
+ prepare-pod-info)
 
 (rf/reg-sub
-  ::filter-str
-  :<- [::root]
-  (fn [{:keys [filter-str]} _]
-    filter-str))
+ ::filter-str
+ :<- [::root]
+ (fn [{:keys [filter-str]} _]
+   filter-str))
 
 (rf/reg-sub
-  ::visible-subs
-  :<- [::all-subs]
-  :<- [::ignore-unchanged-l2-subs?]
-  :<- [::filter-str]
-  :<- [::sub-pins]
-  (fn [[all-subs ignore-unchanged-l2? filter-str pins]]
-    (let [compare-fn (fn [s1 s2]
-                       (let [p1 (boolean (get-in pins [(:id s1) :pin?]))
-                             p2 (boolean (get-in pins [(:id s2) :pin?]))]
-                         (if (= p1 p2)
-                           (compare (:path s1) (:path s2))
-                           p1)))]
-      (cond->> (sort compare-fn all-subs)
-               ignore-unchanged-l2? (remove metam/unchanged-l2-subscription?)
-               (not-empty filter-str) (filter (fn [{:keys [path id]}]
-                                                (or (string/includes? path filter-str)
-                                                    (get-in pins [id :pin?]))))))))
+ ::visible-subs
+ :<- [::all-subs]
+ :<- [::ignore-unchanged-l2-subs?]
+ :<- [::filter-str]
+ :<- [::sub-pins]
+ (fn [[all-subs ignore-unchanged-l2? filter-str pins]]
+   (let [compare-fn (fn [s1 s2]
+                      (let [p1 (boolean (get-in pins [(:id s1) :pin?]))
+                            p2 (boolean (get-in pins [(:id s2) :pin?]))]
+                        (if (= p1 p2)
+                          (compare (:path s1) (:path s2))
+                          p1)))]
+     (cond->> (sort compare-fn all-subs)
+       ignore-unchanged-l2? (remove metam/unchanged-l2-subscription?)
+       (not-empty filter-str) (filter (fn [{:keys [path id]}]
+                                        (or (string/includes? path filter-str)
+                                            (get-in pins [id :pin?]))))))))
 
 (rf/reg-sub
-  ::sub-counts
-  :<- [::visible-subs]
-  (fn [subs _]
-    (->> subs
-         (mapcat :order)
-         (frequencies))))
+ ::sub-counts
+ :<- [::visible-subs]
+ (fn [subs _]
+   (->> subs
+        (mapcat :order)
+        (frequencies))))
 
 (rf/reg-sub
-  ::created-count
-  :<- [::sub-counts]
-  (fn [counts]
-    (get counts :sub/create 0)))
+ ::created-count
+ :<- [::sub-counts]
+ (fn [counts]
+   (get counts :sub/create 0)))
 
 (rf/reg-sub
-  ::re-run-count
-  :<- [::sub-counts]
-  (fn [counts]
-    (get counts :sub/run 0)))
+ ::re-run-count
+ :<- [::sub-counts]
+ (fn [counts]
+   (get counts :sub/run 0)))
 
 (rf/reg-sub
-  ::destroyed-count
-  :<- [::sub-counts]
-  (fn [counts]
-    (get counts :sub/dispose 0)))
+ ::destroyed-count
+ :<- [::sub-counts]
+ (fn [counts]
+   (get counts :sub/dispose 0)))
 
 (rf/reg-sub
-  ::not-run-count
-  :<- [::sub-counts]
-  (fn [counts]
-    (get counts :sub/not-run 0)))
+ ::not-run-count
+ :<- [::sub-counts]
+ (fn [counts]
+   (get counts :sub/not-run 0)))
 
 (rf/reg-sub
-  ::unchanged-l2-subs-count
-  :<- [::all-subs]
-  (fn [subs]
-    (count (filter metam/unchanged-l2-subscription? subs))))
+ ::unchanged-l2-subs-count
+ :<- [::all-subs]
+ (fn [subs]
+   (count (filter metam/unchanged-l2-subscription? subs))))
 
 (rf/reg-sub
-  ::ignore-unchanged-l2-subs?
-  :<- [::root]
-  (fn [subs _]
-    (:ignore-unchanged-subs? subs true)))
+ ::ignore-unchanged-l2-subs?
+ :<- [::root]
+ (fn [subs _]
+   (:ignore-unchanged-subs? subs true)))
 
 (rf/reg-sub
-  ::sub-expansions
-  :<- [::root]
-  (fn [{:keys [expansions]} _]
-    expansions))
+ ::sub-expansions
+ :<- [::root]
+ (fn [{:keys [expansions]} _]
+   expansions))
 
 (rf/reg-sub
-  ::sub-pins
-  :<- [::root]
-  (fn [{:keys [pinned]} _]
-    pinned))
+ ::sub-pins
+ :<- [::root]
+ (fn [{:keys [pinned]} _]
+   pinned))

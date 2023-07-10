@@ -1,6 +1,6 @@
 (ns ^{:doc    "Utilities for pretty-printing abbreviated Clojure forms"
       :author "Matthew Huebert"}
-  day8.re-frame-10x.tools.pretty-print-condensed
+ day8.re-frame-10x.tools.pretty-print-condensed
   (:refer-clojure :exclude [pr-seq-writer string-print pr-str-with-opts pr-opts pr])
   (:require [clojure.string :as str]
             [goog.string    :as gstring]
@@ -35,8 +35,8 @@
                      ;; 100 - 9 = 91 / 2 = 45
                      ;; subs string 0
                      (str (subs string 0 (cond-> per-side-budget
-                                                 (even? content-budget)
-                                                 (dec)))
+                                           (even? content-budget)
+                                           (dec)))
                           "..."
                           (subs string (- c per-side-budget) c)))))
        string))))
@@ -69,7 +69,6 @@
                 match
                 trunc-prefix))))))
 
-
 (comment
   (assert (= (truncate-segments "a.bcd" 1) "…"))
   (assert (= (truncate-segments "a.bcd" 2) "…"))
@@ -77,7 +76,6 @@
   (assert (= (truncate-segments "a.bcd" 4) "…bcd"))
   (assert (= (truncate-segments "a.bcd" 5) "a.bcd"))
   (assert (= (truncate-segments "a.bcd" 6) "a.bcd"))
-
 
   (assert (= (truncate-segments "a.b.c" 1) "…"))
   (assert (= (truncate-segments "a.b.c" 2) "…c"))
@@ -98,7 +96,7 @@
     (if (or (> (count the-name) (if the-ns (- n ns-prefix-size) n))
             (nil? the-ns))
       (let [prefix (cond-> (if kw? ":" "")
-                           the-ns (str "…/"))]
+                     the-ns (str "…/"))]
         (str prefix
              (truncate-string (- n (count prefix)) :start the-name)))
       (let [end       (str "/" the-name)
@@ -108,7 +106,6 @@
         (str prefix
              ns-string
              end)))))
-
 
 (assert (= (truncate-named 12 :city/saskatoon)
 
@@ -121,7 +118,6 @@
   (assert (= (truncate-named 3 :saskatoon) ":…n"))
   (assert (= (truncate-named 9 :saskatoon) ":…skatoon"))
   (assert (= (truncate-named 10 :saskatoon) ":saskatoon"))
-
 
   (assert (= (truncate-named 1 :city/saskatoon) ":…/…"))
   (assert (= (truncate-named 2 :city/saskatoon) ":…/…"))
@@ -160,7 +156,7 @@
     (let [name (second (re-find #"\.([^.]+)$" s))]
       (if name (symbol (subs s 0 (- (count s) (count name) 1))
                        name)
-               (symbol s)))
+          (symbol s)))
     s))
 
 (defn edges
@@ -192,7 +188,7 @@
      (number? form) (str form)
      (and (enter-pred form)
           (< depth max-depth)) (with-edges form
-                                           (str/join ", " (mapv (partial pretty-condensed (inc depth) enter-pred max-depth) form)))
+                                 (str/join ", " (mapv (partial pretty-condensed (inc depth) enter-pred max-depth) form)))
      :else (with-edges form "…"))))
 
 ;; Copied from cljs.core and modified to take a LimitedStringBufferWriter
@@ -266,14 +262,14 @@
   (let [opts (pr-opts)]
     (->> (pr-str-with-opts objs (assoc opts
                                   ;; Each sequence element must be at least a single character, plus a space separator
-                                  :print-length (/ n 2)
-                                  :more-marker "…"
-                                  :debux/max-string-length (inc n) ;; One higher so we can detect truncation vs. max limit
-                                  :alt-impl pr-writer-impl))
+                                       :print-length (/ n 2)
+                                       :more-marker "…"
+                                       :debux/max-string-length (inc n) ;; One higher so we can detect truncation vs. max limit
+                                       :alt-impl pr-writer-impl))
          (truncate-string n))))
 
 (comment (defn testit []
            (dotimes [_ 5]
              (time
-               (pr-str-truncated 200 @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db)))
+              (pr-str-truncated 200 @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db)))
            (pr-str-truncated 200 "=>" @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db)))

@@ -1,12 +1,12 @@
 (ns day8.re-frame-10x.panels.timing.views
   (:require
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
-    [day8.re-frame-10x.components.re-com                          :as rc]
-    [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
-    [day8.re-frame-10x.panels.timing.subs                         :as timing.subs]
-    [day8.re-frame-10x.components.data                            :as data]))
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
+   [day8.re-frame-10x.components.re-com                          :as rc]
+   [day8.re-frame-10x.styles                                     :as styles]
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+   [day8.re-frame-10x.panels.timing.subs                         :as timing.subs]
+   [day8.re-frame-10x.components.data                            :as data]))
 
 (defn ms->str
   [ms]
@@ -100,42 +100,41 @@
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
         n        @(rf/subscribe [::timing.subs/animation-frame-count])]
     (into
-      [:<>]
-      (for [i    (range 1 (inc n))
-            :let [times @(rf/subscribe [::timing.subs/animation-frame-time i])]]
-        [rc/h-box
-         :class (section-style ambiance)
-         :align :center
-         :gap   styles/gs-12s
-         :children
-         [[rc/v-box
-           :align    :center
-           :width    styles/gs-81s
-           :children
-           [[rc/label
-             :label "animation"]
-            [rc/label
-             :label  (str "frame #" i)]]]
-          [tag
-           {:label "total"
-            :time  (:timing/animation-frame-total times)}]
-          [:span "="]
-          [tag
-           {:label "subs"
-            :time  (:timing/animation-frame-subs times)}]
-          [:span "+"]
-          [tag
-           {:label "views"
-            :time  (:timing/animation-frame-render times)}]
-          [:span "+"]
-          [tag
-           {:label "react, etc"
-            :time  (:timing/animation-frame-misc times)}]]]))))
+     [:<>]
+     (for [i    (range 1 (inc n))
+           :let [times @(rf/subscribe [::timing.subs/animation-frame-time i])]]
+       [rc/h-box
+        :class (section-style ambiance)
+        :align :center
+        :gap   styles/gs-12s
+        :children
+        [[rc/v-box
+          :align    :center
+          :width    styles/gs-81s
+          :children
+          [[rc/label
+            :label "animation"]
+           [rc/label
+            :label  (str "frame #" i)]]]
+         [tag
+          {:label "total"
+           :time  (:timing/animation-frame-total times)}]
+         [:span "="]
+         [tag
+          {:label "subs"
+           :time  (:timing/animation-frame-subs times)}]
+         [:span "+"]
+         [tag
+          {:label "views"
+           :time  (:timing/animation-frame-render times)}]
+         [:span "+"]
+         [tag
+          {:label "react, etc"
+           :time  (:timing/animation-frame-misc times)}]]]))))
 
 (defclass panel-style
   [_]
   {:margin-right styles/gs-5})
-
 
 (defn panel
   []

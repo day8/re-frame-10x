@@ -1,19 +1,19 @@
 (ns day8.re-frame-10x.panels.settings.views
   (:require
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core  :as rf]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units    :refer [px* px-]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :refer [render-css]]
-    [day8.re-frame-10x.components.buttons                          :as buttons]
-    [day8.re-frame-10x.components.re-com                           :as rc :refer [css-join]]
-    [day8.re-frame-10x.navigation.epochs.events                    :as epochs.events]
-    [day8.re-frame-10x.navigation.epochs.subs                      :as epochs.subs]
-    [day8.re-frame-10x.panels.settings.events                      :as settings.events]
-    [day8.re-frame-10x.panels.settings.subs                        :as settings.subs]
-    [day8.re-frame-10x.panels.traces.subs                          :as traces.subs]
-    [day8.re-frame-10x.material                                    :as material]
-    [day8.re-frame-10x.styles                                      :as styles]
-    [day8.re-frame-10x.tools.datafy                                :as tools.datafy]
-    [day8.re-frame-10x.fx.log                                      :as log]))
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core  :as rf]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units    :refer [px* px-]]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :refer [render-css]]
+   [day8.re-frame-10x.components.buttons                          :as buttons]
+   [day8.re-frame-10x.components.re-com                           :as rc :refer [css-join]]
+   [day8.re-frame-10x.navigation.epochs.events                    :as epochs.events]
+   [day8.re-frame-10x.navigation.epochs.subs                      :as epochs.subs]
+   [day8.re-frame-10x.panels.settings.events                      :as settings.events]
+   [day8.re-frame-10x.panels.settings.subs                        :as settings.subs]
+   [day8.re-frame-10x.panels.traces.subs                          :as traces.subs]
+   [day8.re-frame-10x.material                                    :as material]
+   [day8.re-frame-10x.styles                                      :as styles]
+   [day8.re-frame-10x.tools.datafy                                :as tools.datafy]
+   [day8.re-frame-10x.fx.log                                      :as log]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")

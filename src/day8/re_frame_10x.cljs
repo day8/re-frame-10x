@@ -1,28 +1,25 @@
 (ns day8.re-frame-10x
   (:require
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core           :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom            :as rdom]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core         :as rf]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom   :as spade.dom]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
-    [day8.reagent.impl.batching                                           :refer [patch-next-tick]]
-    [day8.reagent.impl.component                                          :refer [patch-wrap-funs patch-custom-wrapper]]
-    [day8.re-frame-10x.tools.datafy                                       :as tools.datafy]
-    [day8.re-frame-10x.tools.shadow-dom                                   :as tools.shadow-dom]
-    [day8.re-frame-10x.events                                             :as events]
-    [day8.re-frame-10x.components.re-com                                  :as rc]
-    [day8.re-frame-10x.navigation.views                                   :as container]
-    [day8.re-frame-10x.panels.settings.subs                               :as settings.subs]
-    [day8.re-frame-10x.panels.settings.events                             :as settings.events]))
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core           :as r]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom            :as rdom]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core         :as rf]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom   :as spade.dom]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
+   [day8.reagent.impl.batching                                           :refer [patch-next-tick]]
+   [day8.reagent.impl.component                                          :refer [patch-wrap-funs patch-custom-wrapper]]
+   [day8.re-frame-10x.tools.datafy                                       :as tools.datafy]
+   [day8.re-frame-10x.tools.shadow-dom                                   :as tools.shadow-dom]
+   [day8.re-frame-10x.events                                             :as events]
+   [day8.re-frame-10x.components.re-com                                  :as rc]
+   [day8.re-frame-10x.navigation.views                                   :as container]
+   [day8.re-frame-10x.panels.settings.subs                               :as settings.subs]
+   [day8.re-frame-10x.panels.settings.events                             :as settings.events]))
 
 (goog-define debug? false)
 
 #_(defonce real-schedule reagent.impl.batching/schedule)
 #_(defonce do-after-render-trace-scheduled? (atom false))
-
-
-
 
 (defn resizer-style [draggable-area]
   {:position "absolute" :z-index 2 :opacity 0
@@ -74,49 +71,44 @@
                                    (reset! window-width new-window-width))))
         handle-mouse-up      (fn [_] (reset! dragging? false))]
     (r/create-class
-      {:component-did-mount    (fn []
-                                 (js/window.addEventListener "keydown" handle-keys)
-                                 (js/window.addEventListener "mousemove" handle-mousemove)
-                                 (js/window.addEventListener "mouseup" handle-mouse-up)
-                                 (js/window.addEventListener "resize" handle-window-resize))
-       :component-will-unmount (fn []
-                                 (js/window.removeEventListener "keydown" handle-keys)
-                                 (js/window.removeEventListener "mousemove" handle-mousemove)
-                                 (js/window.removeEventListener "mouseup" handle-mouse-up)
-                                 (js/window.removeEventListener "resize" handle-window-resize))
-       :display-name           "devtools outer"
-       :reagent-render         (fn []
-                                 (let [draggable-area 10
-                                       left           (if @showing? (str (* 100 (- 1 @panel-width%)) "%")
-                                                                    (str @window-width "px"))
-                                       transition     (if @dragging?
-                                                        ""
-                                                        ease-transition)]
-                                   [rc/box
-                                    :width  "0px"
-                                    :height "0px"
-                                    :style  {:position "fixed"
-                                             :top      "0px"
-                                             :left     "0px"
-                                             :z-index  99999999}
-                                    :child [rc/h-box
-                                            :width (str (* 100 @panel-width%) "%")
-                                            :height "100%"
-                                            :style {:position   "fixed"
-                                                    :z-index    1
-                                                    :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px"
-                                                    :background "white"
-                                                    :left       left
-                                                    :top        "0px"
-                                                    :transition transition}
-                                            :children [[:div.panel-resizer (when @showing? {:style         (resizer-style draggable-area)
-                                                                                            :on-mouse-down #(reset! dragging? true)})]
-                                                       [container/devtools-inner opts]]]]))})))
-
-
-
-
-
+     {:component-did-mount    (fn []
+                                (js/window.addEventListener "keydown" handle-keys)
+                                (js/window.addEventListener "mousemove" handle-mousemove)
+                                (js/window.addEventListener "mouseup" handle-mouse-up)
+                                (js/window.addEventListener "resize" handle-window-resize))
+      :component-will-unmount (fn []
+                                (js/window.removeEventListener "keydown" handle-keys)
+                                (js/window.removeEventListener "mousemove" handle-mousemove)
+                                (js/window.removeEventListener "mouseup" handle-mouse-up)
+                                (js/window.removeEventListener "resize" handle-window-resize))
+      :display-name           "devtools outer"
+      :reagent-render         (fn []
+                                (let [draggable-area 10
+                                      left           (if @showing? (str (* 100 (- 1 @panel-width%)) "%")
+                                                         (str @window-width "px"))
+                                      transition     (if @dragging?
+                                                       ""
+                                                       ease-transition)]
+                                  [rc/box
+                                   :width  "0px"
+                                   :height "0px"
+                                   :style  {:position "fixed"
+                                            :top      "0px"
+                                            :left     "0px"
+                                            :z-index  99999999}
+                                   :child [rc/h-box
+                                           :width (str (* 100 @panel-width%) "%")
+                                           :height "100%"
+                                           :style {:position   "fixed"
+                                                   :z-index    1
+                                                   :box-shadow "rgba(0, 0, 0, 0.3) 0px 0px 4px"
+                                                   :background "white"
+                                                   :left       left
+                                                   :top        "0px"
+                                                   :transition transition}
+                                           :children [[:div.panel-resizer (when @showing? {:style         (resizer-style draggable-area)
+                                                                                           :on-mouse-down #(reset! dragging? true)})]
+                                                      [container/devtools-inner opts]]]]))})))
 
 (defn traced-result [trace-id fragment-id]
   ;; TODO: this is not terribly efficient, figure out how to get the index of the trace directly.
@@ -129,13 +121,10 @@
 (defn ^:export show-panel! [show-panel?]
   (rf/dispatch [::settings.events/show-panel? show-panel?]))
 
-
 (defn ^:export handle-keys! [handle-keys?]
   (rf/dispatch [::settings.events/handle-keys? handle-keys?]))
 
 ;; --- NEW ---
-
-
 
 (defn inject!
   []
@@ -144,11 +133,11 @@
         container   (spade.dom/create-container shadow-root)]
 
     (rdom/render
-      [spade.react/with-style-container container
-       [devtools-outer
-        {:panel-type :inline
-         :debug?     debug?}]]
-      shadow-root)))
+     [spade.react/with-style-container container
+      [devtools-outer
+       {:panel-type :inline
+        :debug?     debug?}]]
+     shadow-root)))
 
 (defn patch!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."

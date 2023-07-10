@@ -3,7 +3,6 @@
             [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as str]))
 
-
 (defn todo-input [{:keys [title on-save on-stop]}]
   (let [val  (reagent/atom title)
         stop #(do (reset! val "")
@@ -22,7 +21,6 @@
                                       13 (save)
                                       27 (stop)
                                       nil)})])))
-
 
 (defn todo-item
   []
@@ -49,7 +47,6 @@
                        (dispatch [:delete-todo id]))
            :on-stop #(reset! editing false)}])])))
 
-
 (defn task-list
   []
   (let [visible-todos @(subscribe [:visible-todos])
@@ -65,7 +62,6 @@
      [:ul#todo-list
       (for [todo visible-todos]
         ^{:key (:id todo)} [todo-item todo])]]))
-
 
 (defn footer-controls
   []
@@ -85,7 +81,6 @@
        [:button#clear-completed {:on-click #(dispatch [:clear-completed])}
         "Clear completed"])]))
 
-
 (defn task-entry
   []
   [:header#header
@@ -95,7 +90,6 @@
      :placeholder "What needs to be done?"
      :on-save     #(when (seq %)
                      (dispatch [:add-todo %]))}]])
-
 
 (defn todo-app
   []

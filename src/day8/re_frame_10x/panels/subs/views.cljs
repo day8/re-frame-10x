@@ -1,26 +1,26 @@
 (ns day8.re-frame-10x.panels.subs.views
   (:require-macros
-    [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
+   [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
   (:require
-    [clojure.data]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px percent]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]
-    [day8.re-frame-10x.components.buttons                         :as buttons]
-    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
-    [day8.re-frame-10x.components.data                            :as data]
-    [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
-    [day8.re-frame-10x.components.inputs                          :as inputs]
-    [day8.re-frame-10x.components.re-com                          :as rc :refer [css-join]]
-    [day8.re-frame-10x.material                                   :as material]
-    [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.panels.app-db.views                        :as app-db.views :refer [pod-gap pod-padding pod-border-edge
-                                                                                           pod-header-section]]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
-    [day8.re-frame-10x.panels.subs.events                         :as subs.events]
-    [day8.re-frame-10x.panels.subs.subs                           :as subs.subs]
-    [day8.re-frame-10x.tools.string                               :as tools.string]))
+   [clojure.data]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px percent]]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]
+   [day8.re-frame-10x.components.buttons                         :as buttons]
+   [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+   [day8.re-frame-10x.components.data                            :as data]
+   [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
+   [day8.re-frame-10x.components.inputs                          :as inputs]
+   [day8.re-frame-10x.components.re-com                          :as rc :refer [css-join]]
+   [day8.re-frame-10x.material                                   :as material]
+   [day8.re-frame-10x.styles                                     :as styles]
+   [day8.re-frame-10x.panels.app-db.views                        :as app-db.views :refer [pod-gap pod-padding pod-border-edge
+                                                                                          pod-header-section]]
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+   [day8.re-frame-10x.panels.subs.events                         :as subs.events]
+   [day8.re-frame-10x.panels.subs.subs                           :as subs.subs]
+   [day8.re-frame-10x.tools.string                               :as tools.string]))
 
 (def tag-types
   {:sub/create  {:long "CREATED"  :short "C"}
@@ -193,8 +193,8 @@
        :children
        (into []
              (comp
-               (take 3)
-               (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
+              (take 3)
+              (map (fn [o] [short-sub-tag o (short-tag-desc o)])))
              order)]
 
       [pod-header-section
@@ -367,7 +367,6 @@
         (when open?
           [rc/gap-f :size pod-padding])]]]]))
 
-
 (defn no-pods []
   [rc/h-box
    :margin     (css-join "0px 0px 0px" styles/gs-19s)
@@ -375,7 +374,6 @@
    :align      :start
    :align-self :start
    :children   [[rc/label :label "There are no subscriptions to show"]]])
-
 
 (defclass column-title-label-style
   []
@@ -457,20 +455,19 @@
                       (get sub-pins (:id p)))])
         (when (seq intra-epoch-subs)
           (list
-            ^{:key "intra-epoch-line"}
-            [rc/line :size styles/gs-2s
-             :style {:margin "19px 0px"}]
-            ^{:key "intra-epoch-title"}
-            [:h2 {:class "bm-heading-text"
-                  :style {:margin "19px 0px"}}
-             [rc/hyperlink
-              :class (styles/hyperlink ambiance)
-              :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
-              :label "Intra-Epoch Subscriptions"]]
-            (for [p intra-epoch-subs]
-              ^{:key (:id p)}
-              [pod (merge p (get sub-expansions (:id p)))])))]]]]))
-
+           ^{:key "intra-epoch-line"}
+           [rc/line :size styles/gs-2s
+            :style {:margin "19px 0px"}]
+           ^{:key "intra-epoch-title"}
+           [:h2 {:class "bm-heading-text"
+                 :style {:margin "19px 0px"}}
+            [rc/hyperlink
+             :class (styles/hyperlink ambiance)
+             :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
+             :label "Intra-Epoch Subscriptions"]]
+           (for [p intra-epoch-subs]
+             ^{:key (:id p)}
+             [pod (merge p (get sub-expansions (:id p)))])))]]]]))
 
 (defn filter-section []
   [inputs/search

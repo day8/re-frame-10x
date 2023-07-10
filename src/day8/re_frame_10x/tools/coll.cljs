@@ -41,17 +41,17 @@
   "cljs.core/get-in with support for index access of lists and sets"
   [m ks]
   (reduce
-    (fn [ret k]
-      (cond
-        (or (list? ret) (instance? cljs.core/LazySeq ret))
-        (nth ret k)
-        (set? ret)
-        (if (number? k)
-          (nth (vec ret) k)
-          (get ret k))
-        (map? ret)
-        (get ret k)
-        :else
-        (get ret k)))
-    m
-    ks))
+   (fn [ret k]
+     (cond
+       (or (list? ret) (instance? cljs.core/LazySeq ret))
+       (nth ret k)
+       (set? ret)
+       (if (number? k)
+         (nth (vec ret) k)
+         (get ret k))
+       (map? ret)
+       (get ret k)
+       :else
+       (get ret k)))
+   m
+   ks))

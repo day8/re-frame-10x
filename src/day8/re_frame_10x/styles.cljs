@@ -1,14 +1,14 @@
 (ns day8.re-frame-10x.styles
   (:require-macros
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :refer [defpseudoclass
-                                                                             defpseudoelement]])
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :refer [defpseudoclass
+                                                                            defpseudoelement]])
   (:require
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler   :refer [render-css]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units      :refer [em px percent]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color      :as color :refer [rgb rgba transparentize]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :as s]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]))
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler   :refer [render-css]]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units      :refer [em px percent]]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color      :as color :refer [rgb rgba transparentize]]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :as s]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]))
 
 ;; ====
 ;; https://www.nordtheme.com/docs/colors-and-palettes
@@ -119,8 +119,6 @@
   {:composes      (colors-1 ambiance)
    :border        (border-1 ambiance)
    :border-radius gs-2})
-
-
 
 (defclass colors-2
   [ambiance]
@@ -471,7 +469,6 @@
      :font-size        (px 14)
      ;:font-weight      :bold ;; TODO same as above
      :overflow         :hidden}))
-
 
 (defclass path-header-style
   [ambiance]

@@ -91,7 +91,6 @@
       (dissoc :start :duration :end :child-of)
       (update :tags dissoc :app-db-before :app-db-after :effects :coeffects :interceptors)))
 
-
 (defn summarise-match [match]
   (map summarise-event match))
 ;
@@ -166,7 +165,6 @@
        (not-any? #(= :sub/dispose %) (:order sub))
        (= 2 (get sub :layer))))
 
-
 (defn finish-run?
   "Marks the end of event processing running."
   [event]
@@ -218,44 +216,42 @@
 
 (defn parse-traces [parse-state traces]
   (reduce
-    (fn [state event]
-      (let [current-match  (:current-match state)
-            previous-event (:previous-event state)
-            no-match?      (nil? current-match)]
-        (-> (cond
+   (fn [state event]
+     (let [current-match  (:current-match state)
+           previous-event (:previous-event state)
+           no-match?      (nil? current-match)]
+       (-> (cond
 
               ;; No current match yet, check if this is the start of an epoch
-              no-match?
-              (if (start-of-epoch? event)
-                (assoc state :current-match [event])
-                state)
+             no-match?
+             (if (start-of-epoch? event)
+               (assoc state :current-match [event])
+               state)
 
               ;; We are in an epoch match, and reagent has gone to a quiescent state
-              (quiescent? event)
-              (-> state
-                  (update :partitions conj (conj current-match event))
-                  (assoc :current-match nil))
+             (quiescent? event)
+             (-> state
+                 (update :partitions conj (conj current-match event))
+                 (assoc :current-match nil))
 
               ;; We are in an epoch match, and we have started a new epoch
               ;; The previously seen event was the last event of the old epoch,
               ;; and we need to start a new one from this event.
-              (start-of-epoch-and-prev-end? event state)
-              (-> state
-                  (update :partitions conj (conj current-match previous-event))
-                  (assoc :current-match [event]))
+             (start-of-epoch-and-prev-end? event state)
+             (-> state
+                 (update :partitions conj (conj current-match previous-event))
+                 (assoc :current-match [event]))
 
-              (event-run? event)
-              (update state :current-match conj event)
+             (event-run? event)
+             (update state :current-match conj event)
 
-
-              :else
-              state)
+             :else
+             state)
             ;; Add a timeout/warning if a match goes on for more than a second?
 
-
-            (assoc :previous-event event))))
-    parse-state
-    traces))
+           (assoc :previous-event event))))
+   parse-state
+   traces))
 
 (defn matched-event [match]
   (->> match
@@ -297,13 +293,11 @@
   (into {}
         (comp
           ;; Remove disposed subscriptions
-          (filter (fn [me] (when-not (:disposed? (val me)) me)))
+         (filter (fn [me] (when-not (:disposed? (val me)) me)))
           ;; Remove transient state
-          (map (fn [[k v]]
-                 [k (dissoc v :order :created? :run? :disposed? :previous-value :sub/traits)])))
+         (map (fn [[k v]]
+                [k (dissoc v :order :created? :run? :disposed? :previous-value :sub/traits)])))
         state))
-
-
 
 (defn process-sub-traces
   [initial-state traces]
@@ -317,25 +311,24 @@
                                                     ;; disposed of previously (and removed from the sub state).
                                                     (assoc-in [reaction-id :subscription] (:query-v tags)))
                                     new-state
-                                                (case (:op-type trace)
-                                                  :sub/create (-> state
-                                                                  (assoc-in [reaction-id :created?] true)
-                                                                  (assoc-in [reaction-id :subscription] (:query-v tags)))
-                                                  :sub/run (update state reaction-id (fn [sub-state]
+                                    (case (:op-type trace)
+                                      :sub/create (-> state
+                                                      (assoc-in [reaction-id :created?] true)
+                                                      (assoc-in [reaction-id :subscription] (:query-v tags)))
+                                      :sub/run (update state reaction-id (fn [sub-state]
                                                                                        ;; TODO: should we keep track of subscriptions that have been disposed
                                                                                        ;; so we can detect zombies?
 
                                                                                        ;; TODO: this should only update once per phase, even if a sub runs multiple times
-                                                                                       (-> (if (contains? sub-state :value)
-                                                                                             (assoc sub-state :previous-value (:value sub-state))
-                                                                                             sub-state)
-                                                                                           (assoc :run? true
-                                                                                                  :value (:value tags)))))
-                                                  :sub/dispose (assoc-in state [reaction-id :disposed?] true))]
+                                                                           (-> (if (contains? sub-state :value)
+                                                                                 (assoc sub-state :previous-value (:value sub-state))
+                                                                                 sub-state)
+                                                                               (assoc :run? true
+                                                                                      :value (:value tags)))))
+                                      :sub/dispose (assoc-in state [reaction-id :disposed?] true))]
                                 (when-not (contains? (get new-state reaction-id) :subscription)
                                   #?(:clj  nil
                                      :cljs (js/console.warn trace (get new-state reaction-id))))
-
 
                                 new-state))
                             initial-state
@@ -377,14 +370,14 @@
                       last-match-id    (:id (last match))
                       pre-epoch-traces (into []
                                              (comp
-                                               (id-between-xf (inc previous-id)
-                                                              (dec first-match-id))
-                                               (filter subscription?))
+                                              (id-between-xf (inc previous-id)
+                                                             (dec first-match-id))
+                                              (filter subscription?))
                                              filtered-traces)
                       epoch-traces     (into []
                                              (comp
-                                               (id-between-xf first-match-id last-match-id)
-                                               (filter subscription?))
+                                              (id-between-xf first-match-id last-match-id)
+                                              (filter subscription?))
                                              filtered-traces)
                       reaction-state   (:reaction-state state)
                       pre-epoch-state  (-> reaction-state

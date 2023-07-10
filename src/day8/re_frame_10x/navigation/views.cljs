@@ -1,40 +1,39 @@
 (ns day8.re-frame-10x.navigation.views
   (:require
-    [goog.object :as gobj]
-    [re-frame.db :as db]
-    [re-frame.trace]
-    [reagent.impl.batching :as batching]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core            :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom   :as spade.dom]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
-    [day8.re-frame-10x.components.buttons                         :as buttons]
-    [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
-    [day8.re-frame-10x.components.inputs                          :as inputs]
-    [day8.re-frame-10x.components.re-com                          :as rc]
-    [day8.re-frame-10x.navigation.events                          :as navigation.events]
-    [day8.re-frame-10x.navigation.subs                            :as navigation.subs]
-    [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]
-    [day8.re-frame-10x.navigation.epochs.subs                     :as epochs.subs]
-    [day8.re-frame-10x.navigation.epochs.views                    :as epochs.views]
-    [day8.re-frame-10x.panels.app-db.views                        :as app-db.views]
-    [day8.re-frame-10x.panels.debug.views                         :as debug.views]
-    [day8.re-frame-10x.panels.event.views                         :as event.views]
-    [day8.re-frame-10x.panels.fx.views                            :as fx.views]
-    [day8.re-frame-10x.panels.settings.events                     :as settings.events]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
-    [day8.re-frame-10x.panels.settings.views                      :as settings.views]
-    [day8.re-frame-10x.panels.subs.views                          :as subs.views]
-    [day8.re-frame-10x.panels.timing.views                        :as timing.views]
-    [day8.re-frame-10x.panels.traces.views                        :as traces.views]
-    [day8.re-frame-10x.material                                   :as material]
-    [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]))
-
+   [goog.object :as gobj]
+   [re-frame.db :as db]
+   [re-frame.trace]
+   [reagent.impl.batching :as batching]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core :as r]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core            :refer [defclass]]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom   :as spade.dom]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
+   [day8.re-frame-10x.components.buttons                         :as buttons]
+   [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
+   [day8.re-frame-10x.components.inputs                          :as inputs]
+   [day8.re-frame-10x.components.re-com                          :as rc]
+   [day8.re-frame-10x.navigation.events                          :as navigation.events]
+   [day8.re-frame-10x.navigation.subs                            :as navigation.subs]
+   [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]
+   [day8.re-frame-10x.navigation.epochs.subs                     :as epochs.subs]
+   [day8.re-frame-10x.navigation.epochs.views                    :as epochs.views]
+   [day8.re-frame-10x.panels.app-db.views                        :as app-db.views]
+   [day8.re-frame-10x.panels.debug.views                         :as debug.views]
+   [day8.re-frame-10x.panels.event.views                         :as event.views]
+   [day8.re-frame-10x.panels.fx.views                            :as fx.views]
+   [day8.re-frame-10x.panels.settings.events                     :as settings.events]
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+   [day8.re-frame-10x.panels.settings.views                      :as settings.views]
+   [day8.re-frame-10x.panels.subs.views                          :as subs.views]
+   [day8.re-frame-10x.panels.timing.views                        :as timing.views]
+   [day8.re-frame-10x.panels.traces.views                        :as traces.views]
+   [day8.re-frame-10x.material                                   :as material]
+   [day8.re-frame-10x.styles                                     :as styles]
+   [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]))
 
 #_(defglobal container-styles
     [:#--re-frame-10x--
@@ -219,7 +218,7 @@
                   :traces   [traces.views/panel]
                   :debug    [debug.views/render]
                   :settings [settings.views/render]
-                            [app-db.views/panel db/app-db])]]))
+                  [app-db.views/panel db/app-db])]]))
 
 (defn show-history-button
   []
@@ -389,11 +388,11 @@
         handle-window-resize     (fn [_]
                                    (when-not @resize-update-scheduled?
                                      (batching/next-tick
-                                       (fn []
-                                         (let [width  (.-innerWidth popup-window)
-                                               height (.-innerHeight popup-window)]
-                                           (rf/dispatch [::settings.events/external-window-resize {:width width :height height}]))
-                                         (reset! resize-update-scheduled? false)))
+                                      (fn []
+                                        (let [width  (.-innerWidth popup-window)
+                                              height (.-innerHeight popup-window)]
+                                          (rf/dispatch [::settings.events/external-window-resize {:width width :height height}]))
+                                        (reset! resize-update-scheduled? false)))
                                      (reset! resize-update-scheduled? true)))
         handle-window-position   (let [pos (atom {})]
                                    (fn []
@@ -412,18 +411,18 @@
                                    nil)]
     (gobj/set popup-window "onunload" #(rf/dispatch [::navigation.events/external-closed]))
     (rdom/render
-      [(r/create-class
-         {:display-name           "devtools outer external"
-          :component-did-mount    (fn []
-                                    (.addEventListener popup-window "resize" handle-window-resize)
-                                    (.addEventListener popup-window "beforeunload" unmount)
+     [(r/create-class
+       {:display-name           "devtools outer external"
+        :component-did-mount    (fn []
+                                  (.addEventListener popup-window "resize" handle-window-resize)
+                                  (.addEventListener popup-window "beforeunload" unmount)
                                     ;; Check the window position every 10 seconds
-                                    (reset! window-position-interval
-                                            (js/setInterval
-                                              handle-window-position
-                                              2000)))
-          :component-will-unmount unmount
-          :reagent-render         (fn []
-                                    [spade.react/with-style-container spade-container
-                                     [devtools-inner {:panel-type :popup}]])})]
-      shadow-root)))
+                                  (reset! window-position-interval
+                                          (js/setInterval
+                                           handle-window-position
+                                           2000)))
+        :component-will-unmount unmount
+        :reagent-render         (fn []
+                                  [spade.react/with-style-container spade-container
+                                   [devtools-inner {:panel-type :popup}]])})]
+     shadow-root)))

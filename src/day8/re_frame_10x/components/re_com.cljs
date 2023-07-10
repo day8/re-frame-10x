@@ -1,14 +1,14 @@
 (ns day8.re-frame-10x.components.re-com
   "Shameless pilfered from re-com."
   (:require-macros
-    [day8.re-frame-10x.components.re-com :refer [handler-fn]])
+   [day8.re-frame-10x.components.re-com :refer [handler-fn]])
   (:require
-    [goog.object                                                 :as    gobj]
-    [clojure.string                                              :as string]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core   :refer [defclass]]
-    [reagent.impl.component                                      :as    component]
-    [reagent.core                                                :as    r]))
+   [goog.object                                                 :as    gobj]
+   [clojure.string                                              :as string]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core   :refer [defclass]]
+   [reagent.impl.component                                      :as    component]
+   [reagent.core                                                :as    r]))
 
 (defn px
   "takes a number (and optional :negative keyword to indicate a negative value) and returns that number as a string with 'px' at the end"
@@ -133,7 +133,6 @@
     {:-webkit-justify-content js
      :justify-content         js}))
 
-
 (defn align-style
   "Determines the value for the flex align type attributes.
    This parameter determines how children are aligned on the cross axis.
@@ -154,14 +153,14 @@
   "Returns a component which produces a gap between children in a v-box/h-box along the main axis"
   [& {:keys [size width height class style attr]}]
   (let [s (merge
-            (when size (flex-child-style size))
-            (when width {:width width})
-            (when height {:height height})
-            style)]
+           (when size (flex-child-style size))
+           (when width {:width width})
+           (when height {:height height})
+           style)]
     [:div
      (merge
-       {:class (str "rc-gap " class) :style s}
-       attr)]))
+      {:class (str "rc-gap " class) :style s}
+      attr)]))
 
 (defn h-box
   "Returns hiccup which produces a horizontal box.
@@ -170,20 +169,20 @@
   [& {:keys [size width height min-width min-height max-width max-height justify align align-self margin padding gap children class style attr]
       :or   {size "none" justify :start align :stretch}}]
   (let [s        (merge
-                   (flex-flow-style "row nowrap")
-                   (flex-child-style size)
-                   (when width {:width width})
-                   (when height {:height height})
-                   (when min-width {:min-width min-width})
-                   (when min-height {:min-height min-height})
-                   (when max-width {:max-width max-width})
-                   (when max-height {:max-height max-height})
-                   (justify-style justify)
-                   (align-style :align-items align)
-                   (when align-self (align-style :align-self align-self))
-                   (when margin {:margin margin})       ;; margin and padding: "all" OR "top&bottom right&left" OR "top right bottom left"
-                   (when padding {:padding padding})
-                   style)
+                  (flex-flow-style "row nowrap")
+                  (flex-child-style size)
+                  (when width {:width width})
+                  (when height {:height height})
+                  (when min-width {:min-width min-width})
+                  (when min-height {:min-height min-height})
+                  (when max-width {:max-width max-width})
+                  (when max-height {:max-height max-height})
+                  (justify-style justify)
+                  (align-style :align-items align)
+                  (when align-self (align-style :align-self align-self))
+                  (when margin {:margin margin})       ;; margin and padding: "all" OR "top&bottom right&left" OR "top right bottom left"
+                  (when padding {:padding padding})
+                  style)
         gap-form (when gap [gap-f
                             :size gap
                             :width gap]) ;; TODO: required to get around a Chrome bug: https://code.google.com/p/chromium/issues/detail?id=423112. Remove once fixed.
@@ -192,8 +191,8 @@
                    children)]
     (into [:div
            (merge
-             {:class (str "rc-h-box " (flex-style) " " class) :style s}
-             attr)]
+            {:class (str "rc-h-box " (flex-style) " " class) :style s}
+            attr)]
           children)))
 
 (defn v-box
@@ -203,20 +202,20 @@
   [& {:keys [size width height min-width min-height max-width max-height justify align align-self margin padding gap children class style attr]
       :or   {size "none" justify :start align :stretch}}]
   (let [s        (merge
-                   (flex-flow-style "column nowrap")
-                   (flex-child-style size)
-                   (when width {:width width})
-                   (when height {:height height})
-                   (when min-width {:min-width min-width})
-                   (when min-height {:min-height min-height})
-                   (when max-width {:max-width max-width})
-                   (when max-height {:max-height max-height})
-                   (justify-style justify)
-                   (align-style :align-items align)
-                   (when align-self (align-style :align-self align-self))
-                   (when margin {:margin margin})       ;; margin and padding: "all" OR "top&bottom right&left" OR "top right bottom left"
-                   (when padding {:padding padding})
-                   style)
+                  (flex-flow-style "column nowrap")
+                  (flex-child-style size)
+                  (when width {:width width})
+                  (when height {:height height})
+                  (when min-width {:min-width min-width})
+                  (when min-height {:min-height min-height})
+                  (when max-width {:max-width max-width})
+                  (when max-height {:max-height max-height})
+                  (justify-style justify)
+                  (align-style :align-items align)
+                  (when align-self (align-style :align-self align-self))
+                  (when margin {:margin margin})       ;; margin and padding: "all" OR "top&bottom right&left" OR "top right bottom left"
+                  (when padding {:padding padding})
+                  style)
         gap-form (when gap [gap-f
                             :size gap
                             :height gap]) ;; TODO: required to get around a Chrome bug: https://code.google.com/p/chromium/issues/detail?id=423112. Remove once fixed.
@@ -225,8 +224,8 @@
                    children)]
     (into [:div
            (merge
-             {:class (str "rc-v-box " (flex-style) " " class) :style s}
-             attr)]
+            {:class (str "rc-v-box " (flex-style) " " class) :style s}
+            attr)]
           children)))
 
 (defn scroll-style
@@ -240,41 +239,40 @@
                :on "scroll"
                :spill "visible")})
 
-
 (defn- box-base
   "This should generally NOT be used as it is the basis for the box, scroller and border components"
   [& {:keys [size scroll h-scroll v-scroll width height min-width min-height max-width max-height justify align align-self
              margin padding border l-border r-border t-border b-border radius bk-color child class-name class style attr]}]
   (let [s (merge
-            (flex-flow-style "inherit")
-            (flex-child-style size)
-            (when scroll (scroll-style :overflow scroll))
-            (when h-scroll (scroll-style :overflow-x h-scroll))
-            (when v-scroll (scroll-style :overflow-y v-scroll))
-            (when width {:width width})
-            (when height {:height height})
-            (when min-width {:min-width min-width})
-            (when min-height {:min-height min-height})
-            (when max-width {:max-width max-width})
-            (when max-height {:max-height max-height})
-            (when justify (justify-style justify))
-            (when align (align-style :align-items align))
-            (when align-self (align-style :align-self align-self))
-            (when margin {:margin margin})       ;; margin and padding: "all" OR "top&bottom right&left" OR "top right bottom left"
-            (when padding {:padding padding})
-            (when border {:border border})
-            (when l-border {:border-left l-border})
-            (when r-border {:border-right r-border})
-            (when t-border {:border-top t-border})
-            (when b-border {:border-bottom b-border})
-            (when radius {:border-radius radius})
-            (when bk-color
-              {:background-color bk-color})
-            style)]
+           (flex-flow-style "inherit")
+           (flex-child-style size)
+           (when scroll (scroll-style :overflow scroll))
+           (when h-scroll (scroll-style :overflow-x h-scroll))
+           (when v-scroll (scroll-style :overflow-y v-scroll))
+           (when width {:width width})
+           (when height {:height height})
+           (when min-width {:min-width min-width})
+           (when min-height {:min-height min-height})
+           (when max-width {:max-width max-width})
+           (when max-height {:max-height max-height})
+           (when justify (justify-style justify))
+           (when align (align-style :align-items align))
+           (when align-self (align-style :align-self align-self))
+           (when margin {:margin margin})       ;; margin and padding: "all" OR "top&bottom right&left" OR "top right bottom left"
+           (when padding {:padding padding})
+           (when border {:border border})
+           (when l-border {:border-left l-border})
+           (when r-border {:border-right r-border})
+           (when t-border {:border-top t-border})
+           (when b-border {:border-bottom b-border})
+           (when radius {:border-radius radius})
+           (when bk-color
+             {:background-color bk-color})
+           style)]
     [:div
      (merge
-       {:class (str class-name " " (flex-style) " " class) :style s}
-       attr)
+      {:class (str class-name " " (flex-style) " " class) :style s}
+      attr)
      child]))
 
 (defn box
@@ -309,13 +307,13 @@
   [& {:keys [size color class style attr]
       :or   {size "1px" color "lightgray"}}]
   (let [s (merge
-            (flex-child-style (str "0 0 " size))
-            {:background-color color}
-            style)]
+           (flex-child-style (str "0 0 " size))
+           {:background-color color}
+           style)]
     [:div
      (merge
-       {:class (str "rc-line " class) :style s}
-       attr)]))
+      {:class (str "rc-line " class) :style s}
+      attr)]))
 
 (defn- input-text-base
   "Returns markup for a basic text input label"
@@ -346,50 +344,49 @@
                       :style (flex-child-style "auto")}
                      [(if (= input-type :password) :input input-type)
                       (merge
-                        {:class       (str "form-control " class)
-                         :type        (case input-type
-                                        :input "text"
-                                        :password "password"
-                                        nil)
-                         :rows        (when (= input-type :textarea) (or rows 3))
-                         :style       (merge
-                                        (flex-child-style "none")
-                                        {:height        height
-                                         :box-sizing    "border-box" ;; TODO: Added to override the incorrect default of "content-box" somehow set up by :all unset
-                                         :padding-right "12px"} ;; override for when icon exists
-                                        style)
-                         :placeholder placeholder
-                         :value       @internal-model
-                         :disabled    disabled?
-                         :on-change   (fn [event]
-                                        (let [new-val (-> event .-target .-value)]
-                                          (when (and
-                                                  on-change
-                                                  (not disabled?)
-                                                  (if validation-regex (re-find validation-regex new-val) true))
-                                            (reset! internal-model new-val)
-                                            (when-not change-on-blur?
-                                              (on-change @internal-model)))))
-                         :on-blur     (fn [_]
-                                        (when (and
+                       {:class       (str "form-control " class)
+                        :type        (case input-type
+                                       :input "text"
+                                       :password "password"
+                                       nil)
+                        :rows        (when (= input-type :textarea) (or rows 3))
+                        :style       (merge
+                                      (flex-child-style "none")
+                                      {:height        height
+                                       :box-sizing    "border-box" ;; TODO: Added to override the incorrect default of "content-box" somehow set up by :all unset
+                                       :padding-right "12px"} ;; override for when icon exists
+                                      style)
+                        :placeholder placeholder
+                        :value       @internal-model
+                        :disabled    disabled?
+                        :on-change   (fn [event]
+                                       (let [new-val (-> event .-target .-value)]
+                                         (when (and
                                                 on-change
-                                                change-on-blur?
-                                                (not= @internal-model @external-model))
-                                          (on-change @internal-model)))
-                         :on-key-down (fn [event]
-                                        (case (.-which event)
-                                          13 (when on-submit
-                                               (on-submit @internal-model))
-                                          true))
-                         :on-key-up   (fn [event]
-                                        (if disabled?
-                                          (.preventDefault event)
-                                          (case (.-which event)
-                                            #_#_13 (when on-change (on-change @internal-model))
-                                            27 (reset! internal-model @external-model)
-                                            true)))}
-                        attr)]]]]))))
-
+                                                (not disabled?)
+                                                (if validation-regex (re-find validation-regex new-val) true))
+                                           (reset! internal-model new-val)
+                                           (when-not change-on-blur?
+                                             (on-change @internal-model)))))
+                        :on-blur     (fn [_]
+                                       (when (and
+                                              on-change
+                                              change-on-blur?
+                                              (not= @internal-model @external-model))
+                                         (on-change @internal-model)))
+                        :on-key-down (fn [event]
+                                       (case (.-which event)
+                                         13 (when on-submit
+                                              (on-submit @internal-model))
+                                         true))
+                        :on-key-up   (fn [event]
+                                       (if disabled?
+                                         (.preventDefault event)
+                                         (case (.-which event)
+                                           #_#_13 (when on-change (on-change @internal-model))
+                                           27 (reset! internal-model @external-model)
+                                           true)))}
+                       attr)]]]]))))
 
 (defn input-text
   [& args]
@@ -404,12 +401,12 @@
    :align :start
    :child [:span
            (merge
-             {:class (str "rc-label " class)
-              :style (merge (flex-child-style "none")
-                            style)}
-             (when on-click
-               {:on-click (handler-fn (on-click))})
-             attr)
+            {:class (str "rc-label " class)
+             :style (merge (flex-child-style "none")
+                           style)}
+            (when on-click
+              {:on-click (handler-fn (on-click))})
+            attr)
            label]])
 
 (defn p
@@ -446,15 +443,15 @@
       (let [disabled?  (deref-or-value disabled?)
             the-button [:button
                         (merge
-                          {:class    (str "rc-button btn noselect " class)
-                           :style    (merge
-                                       (flex-child-style "none")
-                                       style)
-                           :disabled disabled?
-                           :on-click (fn [event]
-                                       (when (and on-click (not disabled?))
-                                         (on-click event)))}
-                          attr)
+                         {:class    (str "rc-button btn noselect " class)
+                          :style    (merge
+                                     (flex-child-style "none")
+                                     style)
+                          :disabled disabled?
+                          :on-click (fn [event]
+                                      (when (and on-click (not disabled?))
+                                        (on-click event)))}
+                         attr)
                         label]]
         (when disabled?
           (reset! showing? false))
@@ -474,16 +471,16 @@
                     :align :start
                     :child [:a
                             (merge
-                              {:class    (str "rc-hyperlink noselect " class)
-                               :style    (merge
-                                           (flex-child-style "none")
-                                           {:cursor (if disabled? "not-allowed" "pointer")
-                                            :color  (when disabled? "grey")}
-                                           style)
-                               :on-click (fn [event]
-                                           (when (and on-click (not disabled?))
-                                             (on-click event)))}
-                              attr)
+                             {:class    (str "rc-hyperlink noselect " class)
+                              :style    (merge
+                                         (flex-child-style "none")
+                                         {:cursor (if disabled? "not-allowed" "pointer")
+                                          :color  (when disabled? "grey")}
+                                         style)
+                              :on-click (fn [event]
+                                          (when (and on-click (not disabled?))
+                                            (on-click event)))}
+                             attr)
                             label]]]
     [box
      :class (str "rc-hyperlink-wrapper " (inline-flex-style))
@@ -532,15 +529,15 @@
      :align :start
      :children [[:input
                  (merge
-                   {:class     (str "rc-checkbox " class)
-                    :type      "checkbox"
-                    :style     (merge (flex-child-style "none")
-                                      {:cursor cursor}
-                                      style)
-                    :disabled  disabled?
-                    :checked   (boolean model)
-                    :on-change (handler-fn (callback-fn))}
-                   attr)]
+                  {:class     (str "rc-checkbox " class)
+                   :type      "checkbox"
+                   :style     (merge (flex-child-style "none")
+                                     {:cursor cursor}
+                                     style)
+                   :disabled  disabled?
+                   :checked   (boolean model)
+                   :on-change (handler-fn (callback-fn))}
+                  attr)]
                 (when label
                   [:span
                    {:class    label-class
@@ -558,22 +555,22 @@
         model       (deref-or-value model)
         disabled?   (deref-or-value disabled?)
         callback-fn #(when (and on-change (not disabled?))
-                      (on-change value))]  ;; call on-change with the :value arg
+                       (on-change value))]  ;; call on-change with the :value arg
     [h-box
      :class    (str "noselect rc-radio-button-wrapper")
      :align    :start
      :children [[:input
                  (merge
-                   {:class     (str "rc-radio-button " class)
-                    :style     (merge
-                                 (flex-child-style "none")
-                                 {:cursor cursor}
-                                 style)
-                    :type      "radio"
-                    :disabled  disabled?
-                    :checked   (= model value)
-                    :on-change (handler-fn (callback-fn))}
-                   attr)]
+                  {:class     (str "rc-radio-button " class)
+                   :style     (merge
+                               (flex-child-style "none")
+                               {:cursor cursor}
+                               style)
+                   :type      "radio"
+                   :disabled  disabled?
+                   :checked   (= model value)
+                   :on-change (handler-fn (callback-fn))}
+                  attr)]
                 (when label
                   [:span
                    {:class    label-class
@@ -599,20 +596,20 @@
                :height   (px div-size)}
        :child [box
                :style (merge
-                        {:position  "absolute"
-                         :cursor    "pointer"
-                         :font-size (px font-size)
-                         :color     (if @over? hover-color color)
-                         :top       (px (- (/ (- font-size div-size) 2) top-offset) :negative)
-                         :left      (px (- (/ (- font-size div-size) 2) left-offset) :negative)}
-                        style)
+                       {:position  "absolute"
+                        :cursor    "pointer"
+                        :font-size (px font-size)
+                        :color     (if @over? hover-color color)
+                        :top       (px (- (/ (- font-size div-size) 2) top-offset) :negative)
+                        :left      (px (- (/ (- font-size div-size) 2) left-offset) :negative)}
+                       style)
                :attr (merge
-                       {:title          tooltip
-                        :on-click       (fn [event] (on-click)
-                                                    (.stopPropagation event))
-                        :on-mouse-enter (handler-fn (reset! over? true))
-                        :on-mouse-leave (handler-fn (reset! over? false))}
-                       attr)
+                      {:title          tooltip
+                       :on-click       (fn [event] (on-click)
+                                         (.stopPropagation event))
+                       :on-mouse-enter (handler-fn (reset! over? true))
+                       :on-mouse-leave (handler-fn (reset! over? false))}
+                      attr)
                ;:child [:i {:class "zmdi zmdi-hc-fw-rc zmdi zmdi-close"}]
                :child [:span "×"]]])))
 
@@ -642,31 +639,31 @@
         flex-flow (str (if vertical? "row" "column") " nowrap")]
     [:div
      (merge
-       {:class (str "rc-" (if vertical? "v" "h") "-split-handle display-flex " (get-in parts [:handle :class]))
-        :style (merge (flex-flow-style flex-flow)
-                      {:width  (if vertical? width length)
-                       :height (if vertical? length width)
-                       :margin "auto"}
-                      (get-in parts [:handle :style]))}
-       (get-in parts [:handle :attr]))
+      {:class (str "rc-" (if vertical? "v" "h") "-split-handle display-flex " (get-in parts [:handle :class]))
+       :style (merge (flex-flow-style flex-flow)
+                     {:width  (if vertical? width length)
+                      :height (if vertical? length width)
+                      :margin "auto"}
+                     (get-in parts [:handle :style]))}
+      (get-in parts [:handle :attr]))
      [:div
       (merge
-        {:class (str "rc-" (if vertical? "v" "h") "-split-handle-bar-1 " (get-in parts [:handle-bar-1 :class]))
-         :style (merge
-                  (if vertical?
-                    {:width pos1   :height length :border-right  border}
-                    {:width length :height pos1   :border-bottom border})
-                  (get-in parts [:handle-bar-1 :style]))}
-        (get-in parts [:handle-bar-1 :attr]))]
+       {:class (str "rc-" (if vertical? "v" "h") "-split-handle-bar-1 " (get-in parts [:handle-bar-1 :class]))
+        :style (merge
+                (if vertical?
+                  {:width pos1   :height length :border-right  border}
+                  {:width length :height pos1   :border-bottom border})
+                (get-in parts [:handle-bar-1 :style]))}
+       (get-in parts [:handle-bar-1 :attr]))]
      [:div
       (merge
-        {:class (str "rc-" (if vertical? "v" "h") "-split-handle-bar-2 " (get-in parts [:handle-bar-2 :class]))
-         :style (merge
-                  (if vertical?
-                    {:width pos2   :height length :border-right  border}
-                    {:width length :height pos2   :border-bottom border})
-                  (get-in parts [:handle-bar-2 :style]))}
-        (get-in parts [:handle-bar-2 :attr]))]]))
+       {:class (str "rc-" (if vertical? "v" "h") "-split-handle-bar-2 " (get-in parts [:handle-bar-2 :class]))
+        :style (merge
+                (if vertical?
+                  {:width pos2   :height length :border-right  border}
+                  {:width length :height pos2   :border-bottom border})
+                (get-in parts [:handle-bar-2 :style]))}
+       (get-in parts [:handle-bar-2 :attr]))]]))
 
 (defn v-split
   "Returns markup for a vertical layout component"
@@ -741,52 +738,52 @@
 
         make-panel-attrs     (fn [class style attr in-drag? percentage]
                                (merge
-                                 {:class class
-                                  :style (merge (display-flex-style)
-                                                (scroll-style :overflow :off)
-                                                (flex-child-style (if split-is-px?
-                                                                    (if (pos? percentage)
-                                                                      (str "0 0 " percentage "px") ;; flex for panel-1
-                                                                      (str "1 1 0px"))             ;; flex for panel-2
-                                                                    (str percentage " 1 0px")))
-                                                (when in-drag? {:pointer-events "none"})
-                                                style)}
-                                 attr))
+                                {:class class
+                                 :style (merge (display-flex-style)
+                                               (scroll-style :overflow :off)
+                                               (flex-child-style (if split-is-px?
+                                                                   (if (pos? percentage)
+                                                                     (str "0 0 " percentage "px") ;; flex for panel-1
+                                                                     (str "1 1 0px"))             ;; flex for panel-2
+                                                                   (str percentage " 1 0px")))
+                                               (when in-drag? {:pointer-events "none"})
+                                               style)}
+                                attr))
 
         make-splitter-attrs  (fn [class style attr]
                                (merge
-                                 {:class         class
-                                  :on-mouse-down (handler-fn (mousedown event))
-                                  :on-mouse-over (handler-fn (mouseover-split))
-                                  :on-mouse-out  (handler-fn (mouseout-split))
-                                  :style         (merge (display-flex-style)
-                                                        (flex-child-style (str "0 0 " splitter-size))
-                                                        {:cursor  "row-resize"}
-                                                        (when @over? {:background-color "#f8f8f8"})
-                                                        style)}
-                                 attr))]
+                                {:class         class
+                                 :on-mouse-down (handler-fn (mousedown event))
+                                 :on-mouse-over (handler-fn (mouseover-split))
+                                 :on-mouse-out  (handler-fn (mouseout-split))
+                                 :style         (merge (display-flex-style)
+                                                       (flex-child-style (str "0 0 " splitter-size))
+                                                       {:cursor  "row-resize"}
+                                                       (when @over? {:background-color "#f8f8f8"})
+                                                       style)}
+                                attr))]
 
     (fn v-split-render
       [& {:keys [panel-1 panel-2 _size _width _height _on-split-change _initial-split _splitter-size _margin class style attr parts src]}]
       [:div (make-container-attrs class style attr @dragging?)
        [:div (make-panel-attrs
-               (str "rc-v-split-top " (get-in parts [:top :class]))
-               (get-in parts [:top :style])
-               (get-in parts [:top :attr])
-               @dragging?
-               @split-perc)
+              (str "rc-v-split-top " (get-in parts [:top :class]))
+              (get-in parts [:top :style])
+              (get-in parts [:top :attr])
+              @dragging?
+              @split-perc)
         panel-1]
        [:div (make-splitter-attrs
-               (str "rc-v-split-splitter " (get-in parts [:splitter :class]))
-               (get-in parts [:splitter :style])
-               (get-in parts [:splitter :attr]))
+              (str "rc-v-split-splitter " (get-in parts [:splitter :class]))
+              (get-in parts [:splitter :style])
+              (get-in parts [:splitter :attr]))
         [drag-handle :horizontal @over? parts]]
        [:div (make-panel-attrs
-               (str "rc-v-split-bottom " (get-in parts [:bottom :class]))
-               (get-in parts [:bottom :style])
-               (get-in parts [:bottom :attr])
-               @dragging?
-               (if split-is-px?
-                 (- @split-perc) ;; Negative value indicates this is for panel-2
-                 (- 100 @split-perc)))
+              (str "rc-v-split-bottom " (get-in parts [:bottom :class]))
+              (get-in parts [:bottom :style])
+              (get-in parts [:bottom :attr])
+              @dragging?
+              (if split-is-px?
+                (- @split-perc) ;; Negative value indicates this is for panel-2
+                (- 100 @split-perc)))
         panel-2]])))

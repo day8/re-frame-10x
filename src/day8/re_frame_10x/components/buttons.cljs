@@ -1,11 +1,10 @@
 (ns day8.re-frame-10x.components.buttons
   (:require
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core  :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
-    [day8.re-frame-10x.components.re-com                        :as rc]
-    [day8.re-frame-10x.material                                 :as material]
-    [day8.re-frame-10x.styles                                   :as styles]))
-
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core  :refer [defclass]]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units :refer [px]]
+   [day8.re-frame-10x.components.re-com                        :as rc]
+   [day8.re-frame-10x.material                                 :as material]
+   [day8.re-frame-10x.styles                                   :as styles]))
 
 (defclass icon-style
   [disabled?]

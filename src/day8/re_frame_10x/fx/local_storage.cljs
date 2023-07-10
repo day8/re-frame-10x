@@ -1,11 +1,11 @@
 (ns day8.re-frame-10x.fx.local-storage
   (:require
-    [goog.storage.Storage]
-    [goog.storage.mechanism.HTML5LocalStorage]
-    [goog.testing.storage.FakeMechanism]
-    [cljs.reader                                                  :as reader]
-    [clojure.string                                               :as string]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
+   [goog.storage.Storage]
+   [goog.storage.mechanism.HTML5LocalStorage]
+   [goog.testing.storage.FakeMechanism]
+   [cljs.reader                                                  :as reader]
+   [clojure.string                                               :as string]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
 
 (def storage-mechanism
   "LocalStorage is not available in sandboxed iframes, so check
@@ -52,20 +52,20 @@
 (defn save
   ([key]
    (rf/after
-     (fn [db]
-       (.set storage (safe-key key) (pr-str db)))))
+    (fn [db]
+      (.set storage (safe-key key) (pr-str db)))))
   ([key & ks]
    (rf/after
-     (fn [db]
-       (run!
-         (fn [k]
-           (let [v (if (vector? k) (get-in db k) (get db k))]
-             (.set storage (safe-key key) (pr-str v))))
-         ks)))))
+    (fn [db]
+      (run!
+       (fn [k]
+         (let [v (if (vector? k) (get-in db k) (get db k))]
+           (.set storage (safe-key key) (pr-str v))))
+       ks)))))
 
 (rf/reg-cofx
-  ::load
-  (fn [coeffects {:keys [key or]}]
-    (assoc coeffects
-      (keyword key)
-      (load key or))))
+ ::load
+ (fn [coeffects {:keys [key or]}]
+   (assoc coeffects
+          (keyword key)
+          (load key or))))

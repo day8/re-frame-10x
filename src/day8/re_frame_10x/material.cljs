@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.material
   (:require
-    [day8.re-frame-10x.styles :as styles])
+   [day8.re-frame-10x.styles :as styles])
   (:refer-clojure :exclude [print]))
 
 ;; Icons from https://material.io/resources/icons/ 'Sharp' theme.

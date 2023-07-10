@@ -1,28 +1,28 @@
 (ns day8.re-frame-10x.panels.event.views
   (:require-macros
-    [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
+   [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
   (:require
-    [clojure.string                                               :as string]
-    [goog.string                                                  :as gstring]
-    [re-highlight.core                                            :as re-highlight]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px ms]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.components.buttons                         :as buttons]
-    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
-    [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
-    [day8.re-frame-10x.components.inputs                          :as inputs]
-    [day8.re-frame-10x.components.re-com                          :as rc]
-    [day8.re-frame-10x.material                                   :as material]
-    [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.navigation.epochs.subs                     :as epochs.subs]
-    [day8.re-frame-10x.panels.event.events                        :as event.events]
-    [day8.re-frame-10x.panels.event.subs                          :as event.subs]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
-    [day8.re-frame-10x.fx.clipboard                               :as clipboard]
-    [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]))
+   [clojure.string                                               :as string]
+   [goog.string                                                  :as gstring]
+   [re-highlight.core                                            :as re-highlight]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px ms]]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.components.buttons                         :as buttons]
+   [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+   [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
+   [day8.re-frame-10x.components.inputs                          :as inputs]
+   [day8.re-frame-10x.components.re-com                          :as rc]
+   [day8.re-frame-10x.material                                   :as material]
+   [day8.re-frame-10x.styles                                     :as styles]
+   [day8.re-frame-10x.navigation.epochs.subs                     :as epochs.subs]
+   [day8.re-frame-10x.panels.event.events                        :as event.events]
+   [day8.re-frame-10x.panels.event.subs                          :as event.subs]
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+   [day8.re-frame-10x.fx.clipboard                               :as clipboard]
+   [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]))
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
@@ -42,10 +42,10 @@
            match-index (.-index matches)]
        (cons [match-vals, (+ offset match-index)]
              (lazy-seq
-               (let [post-idx (+ (.-index matches)
-                                 (max 1 (.-length match-str)))]
-                 (when (<= post-idx (.-length s))
-                   (re-seq-idx re (subs s post-idx) (+ offset post-idx))))))))))
+              (let [post-idx (+ (.-index matches)
+                                (max 1 (.-length match-str)))]
+                (when (<= post-idx (.-length s))
+                  (re-seq-idx re (subs s post-idx) (+ offset post-idx))))))))))
 
 (defn collapse-whitespace-and-index
   "given a string argument `s` it will return a vector of two values:
@@ -123,62 +123,61 @@
   []
   (let [scroll-pos (atom {:top 0 :left 0})]
     (r/create-class
-      {:display-name "code"
+     {:display-name "code"
 
-       :get-snapshot-before-update
-                     (fn code-get-snapshot-before-update
-                       [this _ _]
-                       (let [node (rdom/dom-node this)]
-                         (reset! scroll-pos {:top (.-scrollTop node) :left (.-scrollLeft node)})))
+      :get-snapshot-before-update
+      (fn code-get-snapshot-before-update
+        [this _ _]
+        (let [node (rdom/dom-node this)]
+          (reset! scroll-pos {:top (.-scrollTop node) :left (.-scrollLeft node)})))
 
-       :component-did-update
-                     (fn code-component-did-update
-                       [this]
-                       (let [node (rdom/dom-node this)]
-                         (set! (.-scrollTop node) (:top @scroll-pos))
-                         (set! (.-scrollLeft node) (:left @scroll-pos))))
+      :component-did-update
+      (fn code-component-did-update
+        [this]
+        (let [node (rdom/dom-node this)]
+          (set! (.-scrollTop node) (:top @scroll-pos))
+          (set! (.-scrollLeft node) (:left @scroll-pos))))
 
-       :reagent-render
-                     (fn
-                       []
-                       (let [ambiance            @(rf/subscribe [::settings.subs/ambiance])
-                             syntax-color-scheme @(rf/subscribe [::settings.subs/syntax-color-scheme])
-                             highlighted-form    @(rf/subscribe [::event.subs/highlighted-form])
-                             form-str            @(rf/subscribe [::event.subs/zprint-form-for-epoch])
-                             show-all-code?      @(rf/subscribe [::event.subs/show-all-code?])
-                             [start-index end-index] (find-bounds form-str (:form highlighted-form) (:num-seen highlighted-form))
-                             before              (subs form-str 0 start-index)
-                             highlight           (subs form-str start-index end-index)
-                             after               (subs form-str end-index)]
+      :reagent-render
+      (fn
+        []
+        (let [ambiance            @(rf/subscribe [::settings.subs/ambiance])
+              syntax-color-scheme @(rf/subscribe [::settings.subs/syntax-color-scheme])
+              highlighted-form    @(rf/subscribe [::event.subs/highlighted-form])
+              form-str            @(rf/subscribe [::event.subs/zprint-form-for-epoch])
+              show-all-code?      @(rf/subscribe [::event.subs/show-all-code?])
+              [start-index end-index] (find-bounds form-str (:form highlighted-form) (:num-seen highlighted-form))
+              before              (subs form-str 0 start-index)
+              highlight           (subs form-str start-index end-index)
+              after               (subs form-str end-index)]
                          ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
                          ;; Possibly relevant? https://stackoverflow.com/questions/21926083/failed-to-execute-removechild-on-node
-                         ^{:key (gensym)}
+          ^{:key (gensym)}
                          ;; At some point around March 2021 Highlight.js changed their API significantly (e.g. highlightBlock -> highlightElement).
                          ;; re-highlight, the wrapper around Highlight.js, depends on a modern version of Highlight.js with highlightElement.
                          ;; Prior to the below check being added, a transitive dependency or direct project dependency that overrides
                          ;; the version of Highlight.js with an older release than that reqeusted by re-highlight would cause 10x to crash.
                          ;; Therefore, we added this check to ensure that prior to attempting to render source code with Highlight.js we check
                          ;; that a compatible dependency has been loaded.
-                         (if (re-highlight/hljs-compatible?)
-                           [rc/box
-                            :class (code-style ambiance syntax-color-scheme show-all-code?)
-                            :attr  {:on-double-click (handler-fn (rf/dispatch [::event.events/set-show-all-code? (not show-all-code?)]))}
-                            :child (if (some? highlighted-form)
-                                     [#_re-highlight/highlight :span {:language "clojure"}
-                                      (list ^{:key "before"} before
-                                            ^{:key "hl"} [:span.code-listing--highlighted highlight]
-                                            ^{:key "after"} after)]
-                                     [#_re-highlight/highlight :span {:language "clojure"}
-                                      form-str])]
-                           [rc/v-box
-                            :class (hljs-error-style ambiance syntax-color-scheme)
-                            :children [[rc/p
-                                        "re-frame-10x found a version mismatch between the Highlight.js loaded and the one that it expects to use."]
-                                       [rc/p
-                                        "As a result, it can't display the source code for this function."]
-                                       [rc/p
-                                        "To fix this, please examine this application's dependency tree to see how an old version of Highlight.js is being pulled in (probably transitively) and perhaps then use an appropriate exclusion for that dependency."]]])))})))
-
+          (if (re-highlight/hljs-compatible?)
+            [rc/box
+             :class (code-style ambiance syntax-color-scheme show-all-code?)
+             :attr  {:on-double-click (handler-fn (rf/dispatch [::event.events/set-show-all-code? (not show-all-code?)]))}
+             :child (if (some? highlighted-form)
+                      [#_re-highlight/highlight :span {:language "clojure"}
+                       (list ^{:key "before"} before
+                             ^{:key "hl"} [:span.code-listing--highlighted highlight]
+                             ^{:key "after"} after)]
+                      [#_re-highlight/highlight :span {:language "clojure"}
+                       form-str])]
+            [rc/v-box
+             :class (hljs-error-style ambiance syntax-color-scheme)
+             :children [[rc/p
+                         "re-frame-10x found a version mismatch between the Highlight.js loaded and the one that it expects to use."]
+                        [rc/p
+                         "As a result, it can't display the source code for this function."]
+                        [rc/p
+                         "To fix this, please examine this application's dependency tree to see how an old version of Highlight.js is being pulled in (probably transitively) and perhaps then use an appropriate exclusion for that dependency."]]])))})))
 
 (defclass clipboard-notification-style
   [_]

@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.tools.reader.edn
   (:require
-    [cljs.tools.reader.edn]))
+   [cljs.tools.reader.edn]))
 
 (def default-readers
   {'uuid (fn default-uuid-reader [form]

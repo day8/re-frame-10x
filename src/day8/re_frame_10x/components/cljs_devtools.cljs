@@ -1,34 +1,34 @@
 (ns day8.re-frame-10x.components.cljs-devtools
   (:require-macros
-    [day8.re-frame-10x.components.cljs-devtools                   :refer [with-cljs-devtools-prefs]])
+   [day8.re-frame-10x.components.cljs-devtools                   :refer [with-cljs-devtools-prefs]])
   (:require
-    [clojure.string :as string]
-    [devtools.prefs]
-    [devtools.formatters.core]
-    [goog.dom]
-    [goog.events]
-    [goog.style]
-    [goog.ui.PopupMenu]
-    [goog.ui.MenuItem]
-    [goog.ui.Component]
-    [goog.object]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core    :refer [style]]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
-    [day8.re-frame-10x.components.re-com                          :as rc]
-    [day8.re-frame-10x.material                                   :as material]
-    [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
-    [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
-    [day8.re-frame-10x.fx.clipboard                               :as clipboard]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as dom]
-    [day8.re-frame-10x.tools.coll                                 :as tools.coll]
-    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs])
+   [clojure.string :as string]
+   [devtools.prefs]
+   [devtools.formatters.core]
+   [goog.dom]
+   [goog.events]
+   [goog.style]
+   [goog.ui.PopupMenu]
+   [goog.ui.MenuItem]
+   [goog.ui.Component]
+   [goog.object]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core    :refer [style]]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
+   [day8.re-frame-10x.components.re-com                          :as rc]
+   [day8.re-frame-10x.material                                   :as material]
+   [day8.re-frame-10x.styles                                     :as styles]
+   [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
+   [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
+   [day8.re-frame-10x.fx.clipboard                               :as clipboard]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as dom]
+   [day8.re-frame-10x.tools.coll                                 :as tools.coll]
+   [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs])
   (:import
-    [goog.dom TagName]))
+   [goog.dom TagName]))
 
 (def default-config @devtools.prefs/default-config)
 
@@ -47,17 +47,12 @@
                                                    :padding     [[0 styles/gs-5 0 styles/gs-5]]
                                                    :margin      [[(px 1 0 0 0)]]})})
 
-
-
-
-
 (def body-style-base
   {:display          :inline-block
    :padding          [[styles/gs-2 styles/gs-12]]
    :border           [[(px 1) :solid styles/nord3]]
    :margin           (px 1)
    :margin-top       0})
-
 
 (def dark-ambiance-config
   {:cljs-land-style (style {:background-color styles/nord0
@@ -74,7 +69,7 @@
 ;; TODO: If we expose ambiance and/or syntax color scheme as settings will need to fix this, maybe by recalculating
 ;; at the time the setting is changed/loaded.
 (def custom-config
-  (merge default-config (base-config ) #_bright-ambiance-config))
+  (merge default-config (base-config) #_bright-ambiance-config))
 
 (defn header [value config & [{:keys [render-paths?]}]]
   (with-cljs-devtools-prefs
@@ -139,15 +134,15 @@
            [material/arrow-right])]]
        (if (and @expanded? (has-body (get-object jsonml) (get-config jsonml)))
          (jsonml->hiccup
-           (body
-             (get-object jsonml)
-             (get-config jsonml))
-           (conj path :body))
+          (body
+           (get-object jsonml)
+           (get-config jsonml))
+          (conj path :body))
          (jsonml->hiccup
-           (header
-             (get-object jsonml)
-             (get-config jsonml))
-           (conj path :header)))])))
+          (header
+           (get-object jsonml)
+           (get-config jsonml))
+          (conj path :header)))])))
 
 (defn data-structure-with-path-annotations [_ _ _ {:keys [path-id]}]
   (let [expand-all?   (rf/subscribe [::app-db.subs/expand-all? path-id]) ;; default is nil, false means that we have collapsed the app-db
@@ -170,20 +165,20 @@
              [material/arrow-right])]]
          (if show-body?
            (jsonml->hiccup-with-path-annotations
-             (body
-               (get-object jsonml)
-               (get-config jsonml)
-               {:render-paths? @render-paths?})
-             (conj indexed-path :body)
-             devtools-path
-             opts)
+            (body
+             (get-object jsonml)
+             (get-config jsonml)
+             {:render-paths? @render-paths?})
+            (conj indexed-path :body)
+            devtools-path
+            opts)
            (jsonml->hiccup-with-path-annotations
-             (header
-               (get-object jsonml)
-               (get-config jsonml))
-             (conj indexed-path :header)
-             devtools-path
-             opts))]))))
+            (header
+             (get-object jsonml)
+             (get-config jsonml))
+            (conj indexed-path :header)
+            devtools-path
+            opts))]))))
 
 (defn string->css
   "This function converts jsonml css-strings to valid css maps for hiccup.
@@ -209,11 +204,11 @@
           tagnames #{"div" "span" "ol" "li" "table" "tr" "td"}]
       (cond
         (contains? tagnames tag-name) (into
-                                        [(keyword tag-name) {:style (-> (js->clj attributes)
-                                                                        (get "style")
-                                                                        (string->css))}]
-                                        (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
-                                        children)
+                                       [(keyword tag-name) {:style (-> (js->clj attributes)
+                                                                       (get "style")
+                                                                       (string->css))}]
+                                       (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
+                                       children)
 
         (= tag-name "object") [data-structure jsonml path]
         (= tag-name "annotation") (into [:span {}]
@@ -237,11 +232,11 @@
           tagnames #{"div" "span" "ol" "li" "table" "tr" "td"}]
       (cond
         (contains? tagnames tag-name) (into
-                                        [(keyword tag-name) {:style (-> (js->clj attributes)
-                                                                        (get "style")
-                                                                        (string->css))}]
-                                        (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) devtools-path opts)))
-                                        children)
+                                       [(keyword tag-name) {:style (-> (js->clj attributes)
+                                                                       (get "style")
+                                                                       (string->css))}]
+                                       (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) devtools-path opts)))
+                                       children)
 
         (= tag-name "object")         [data-structure-with-path-annotations jsonml indexed-path devtools-path opts]
         (= tag-name "annotation")     (let [jsonml-path-index       (-> attributes
@@ -260,16 +255,16 @@
                                                 (number? child-value)
                                                 (keyword? child-value))
                                           [:> (r/create-class
-                                                {:component-did-mount (fn [component]
-                                                                        (let [component (dom/dom-node component)]
-                                                                          (goog.events/listen component "contextmenu" menu-listener)
-                                                                          (goog.events/listen component "dblclick" click-listener)
-                                                                          (goog.events/listen component "mousedown" middle-click-listener)))
-                                                 :reagent-render      (fn []
-                                                                        (into [:span {:id        element-id
-                                                                                      :class     "path-annotation"
-                                                                                      :data-path (str absolute-devtools-path)}]
-                                                                              (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) absolute-devtools-path opts)) children)))})]
+                                               {:component-did-mount (fn [component]
+                                                                       (let [component (dom/dom-node component)]
+                                                                         (goog.events/listen component "contextmenu" menu-listener)
+                                                                         (goog.events/listen component "dblclick" click-listener)
+                                                                         (goog.events/listen component "mousedown" middle-click-listener)))
+                                                :reagent-render      (fn []
+                                                                       (into [:span {:id        element-id
+                                                                                     :class     "path-annotation"
+                                                                                     :data-path (str absolute-devtools-path)}]
+                                                                             (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) absolute-devtools-path opts)) children)))})]
                                           (into [:span {}]
                                                 (map-indexed (fn [i child] (jsonml->hiccup-with-path-annotations child (conj indexed-path i) absolute-devtools-path opts)) children))))
         :else                         jsonml))))
@@ -320,9 +315,9 @@
                                (goog.style.toStyleAttribute))
           create-menu-item (fn [menu-text]
                              (-> (goog.dom.createDom
-                                   TagName.DIV
-                                   #js {}
-                                   (goog.dom.createDom TagName.SPAN #js {} menu-text))
+                                  TagName.DIV
+                                  #js {}
+                                  (goog.dom.createDom TagName.SPAN #js {} menu-text))
                                  (doto (.setAttribute "style" js-menu-style))
                                  goog.ui.MenuItem.))
           copy-path-item   (create-menu-item "Copy path")
@@ -353,40 +348,40 @@
         (.showAt menu-x-pos menu-y-pos)
         (.render (or html-target html-element)))            ;;if menu target is not supplied we render on clicked element
       (goog.object.forEach
-        goog.ui.Component.EventType
-        (fn [type]
-          (goog.events.listen
-            popup-menu
-            type
-            (fn [e]
-              (cond
-                (= (.-type e) "hide")
-                (when (= (peek @event-log) "highlight")
+       goog.ui.Component.EventType
+       (fn [type]
+         (goog.events.listen
+          popup-menu
+          type
+          (fn [e]
+            (cond
+              (= (.-type e) "hide")
+              (when (= (peek @event-log) "highlight")
                   ;; if the last event registered is 'highlight' then we should not close the dialog
                   ;; `highlight` event is dispatched right before `action`. Action would not be dispatched
                   ;; if the preceding `highlight` closes the dialog
-                  (.preventDefault e))
+                (.preventDefault e))
 
                 ;; `action` is thrown after hide
                 ;; `action` is thrown before unhighlight -> hide -> leave
-                (= (.-type e) "action")
-                (let [class-names (-> e .-target .getExtraClassNames js->clj)
-                      object      (tools.coll/get-in-with-lists-and-sets app-db path)]
-                  (swap! event-log conj "action")
-                  (cond
-                    (some (fn [class-name] (= class-name "copy-object")) class-names)
-                    (if (or object (= object false))
-                      (clipboard/copy! object)              ;; note we can't copy nil objects
-                      (js/console.error "Could not copy!"))
+              (= (.-type e) "action")
+              (let [class-names (-> e .-target .getExtraClassNames js->clj)
+                    object      (tools.coll/get-in-with-lists-and-sets app-db path)]
+                (swap! event-log conj "action")
+                (cond
+                  (some (fn [class-name] (= class-name "copy-object")) class-names)
+                  (if (or object (= object false))
+                    (clipboard/copy! object)              ;; note we can't copy nil objects
+                    (js/console.error "Could not copy!"))
 
-                    (some (fn [class-name] (= class-name "copy-path")) class-names)
-                    (clipboard/copy! path)
+                  (some (fn [class-name] (= class-name "copy-path")) class-names)
+                  (clipboard/copy! path)
 
-                    (some (fn [class-name] (= class-name "copy-repl")) class-names)
-                    (clipboard/copy! (str "(simple-render-with-path-annotations " app-db " " ["app-db-path" indexed-path] {} ")"))))
+                  (some (fn [class-name] (= class-name "copy-repl")) class-names)
+                  (clipboard/copy! (str "(simple-render-with-path-annotations " app-db " " ["app-db-path" indexed-path] {} ")"))))
 
-                :else
-                (swap! event-log conj (.-type e)))))))
+              :else
+              (swap! event-log conj (.-type e)))))))
       (swap! popup-menus assoc (.-id html-element) popup-menu))))
 
 (defn simple-render-with-path-annotations
@@ -436,10 +431,10 @@
      (if (prn-str-render? data)
        (prn-str-render data)
        (jsonml->hiccup-with-path-annotations
-         (header data nil {:render-paths? @render-paths?})
-         (conj indexed-path 0)
-         (or input-field-path [])
-         (assoc opts
-           :click-listener        click-listener
-           :middle-click-listener middle-click-listener
-           :menu-listener         menu-listener)))]))
+        (header data nil {:render-paths? @render-paths?})
+        (conj indexed-path 0)
+        (or input-field-path [])
+        (assoc opts
+               :click-listener        click-listener
+               :middle-click-listener middle-click-listener
+               :menu-listener         menu-listener)))]))

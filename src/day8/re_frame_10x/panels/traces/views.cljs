@@ -1,21 +1,21 @@
 (ns day8.re-frame-10x.panels.traces.views
   (:require
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px percent]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
-    [day8.re-frame-10x.components.buttons                         :as buttons]
-    [day8.re-frame-10x.components.inputs                          :as inputs]
-    [day8.re-frame-10x.components.re-com                          :as rc]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
-    [day8.re-frame-10x.panels.traces.events                       :as traces.events]
-    [day8.re-frame-10x.panels.traces.subs                         :as traces.subs]
-    [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]
-    [day8.re-frame-10x.material                                   :as material]
-    [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]
-    [clojure.string                                               :as string]
-    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]))
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px percent]]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
+   [day8.re-frame-10x.components.buttons                         :as buttons]
+   [day8.re-frame-10x.components.inputs                          :as inputs]
+   [day8.re-frame-10x.components.re-com                          :as rc]
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+   [day8.re-frame-10x.panels.traces.events                       :as traces.events]
+   [day8.re-frame-10x.panels.traces.subs                         :as traces.subs]
+   [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]
+   [day8.re-frame-10x.material                                   :as material]
+   [day8.re-frame-10x.styles                                     :as styles]
+   [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]
+   [clojure.string                                               :as string]
+   [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]))
 
 (defclass selected-epoch-style
   [ambiance]
@@ -113,12 +113,11 @@
     [rc/h-box
      :align    :center
      :children
-     [
-      (into
-        [:ul {:class (categories-style)}
-         [rc/label :label "show:"]]
-        (for [m options]
-          [category m]))
+     [(into
+       [:ul {:class (categories-style)}
+        [rc/label :label "show:"]]
+       (for [m options]
+         [category m]))
       [selected-epoch]]]))
 
 (defclass draft-query-error-style
@@ -164,20 +163,19 @@
          :gap      styles/gs-12s
          :children
          (into
-           []
-           (map
-             (fn [{:keys [query type id]}]
-               [rc/h-box
-                :align    :center
-                :children
-                [[:span type ": " query (when (= :slower-than type) " ms")]
-                 [rc/box
-                  :attr  {:on-click #(rf/dispatch [::traces.events/remove-query {:id id}])}
-                  :class (query-clear-button-style)
-                  :child
-                  [material/clear]]]])
-             queries))])]]))
-
+          []
+          (map
+           (fn [{:keys [query type id]}]
+             [rc/h-box
+              :align    :center
+              :children
+              [[:span type ": " query (when (= :slower-than type) " ms")]
+               [rc/box
+                :attr  {:on-click #(rf/dispatch [::traces.events/remove-query {:id id}])}
+                :class (query-clear-button-style)
+                :child
+                [material/clear]]]])
+           queries))])]]))
 
 (defclass table-style
   [ambiance]

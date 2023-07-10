@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.fx.debounce
   (:require
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
 
 (defn now [] (.getTime (js/Date.)))
 
@@ -13,14 +13,14 @@
 
 (defn dispatch-later [{:keys [delay] :as debounce}]
   (js/setTimeout
-    (fn [] (dispatch-if-not-superceded debounce))
-    delay))
+   (fn [] (dispatch-if-not-superceded debounce))
+   delay))
 
 (rf/reg-fx
-  ::dispatch
-  (fn dispatch-debounce [{:keys [key event delay] :as debounce}]
-    (when (not (and (keyword? key) (vector? event) (integer? delay)))
-      (rf/console :error "re-frame-10x ::debounce/dispatch invalid argument"))
-    (let [ts (now)]
-      (swap! registered-keys assoc (:key debounce) ts)
-      (dispatch-later (assoc debounce :time-received ts)))))
+ ::dispatch
+ (fn dispatch-debounce [{:keys [key event delay] :as debounce}]
+   (when (not (and (keyword? key) (vector? event) (integer? delay)))
+     (rf/console :error "re-frame-10x ::debounce/dispatch invalid argument"))
+   (let [ts (now)]
+     (swap! registered-keys assoc (:key debounce) ts)
+     (dispatch-later (assoc debounce :time-received ts)))))

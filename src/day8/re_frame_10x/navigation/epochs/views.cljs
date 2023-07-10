@@ -1,23 +1,22 @@
 (ns day8.re-frame-10x.navigation.epochs.views
   (:require
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
-    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
-    [day8.re-frame-10x.components.buttons                         :as buttons]
-    [day8.re-frame-10x.components.re-com                          :as rc]
-    [day8.re-frame-10x.material                                   :as material]
-    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
-    [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]
-    [day8.re-frame-10x.navigation.epochs.subs                     :as epochs.subs]
-    [day8.re-frame-10x.panels.settings.events                     :as settings.events]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
-    [day8.re-frame-10x.styles                                     :as styles]))
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
+   [day8.re-frame-10x.components.buttons                         :as buttons]
+   [day8.re-frame-10x.components.re-com                          :as rc]
+   [day8.re-frame-10x.material                                   :as material]
+   [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+   [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]
+   [day8.re-frame-10x.navigation.epochs.subs                     :as epochs.subs]
+   [day8.re-frame-10x.panels.settings.events                     :as settings.events]
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+   [day8.re-frame-10x.styles                                     :as styles]))
 
 (defclass epoch-style
   [_ active?]
   {:cursor (if (not active?) :pointer :default)})
-
 
 (defclass epoch-chevron-style
   [_ active? hover?]
@@ -37,37 +36,37 @@
   (let [hover?     (r/atom false)
         active?    (r/atom false)]
     (r/create-class
-      {:component-did-mount
-       (fn [this]
-         (when @active?
-           (rf/dispatch [::epochs.events/scroll-into-view-debounced (rdom/dom-node this)])))
+     {:component-did-mount
+      (fn [this]
+        (when @active?
+          (rf/dispatch [::epochs.events/scroll-into-view-debounced (rdom/dom-node this)])))
 
-       :reagent-render
-       (fn [event id]
-         (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
-               current-id @(rf/subscribe [::epochs.subs/selected-epoch-id])]
-           (reset! active? (= id current-id))
-           [rc/h-box
-            :class      (epoch-style ambiance @active?)
-            :align      :start
-            :min-height styles/gs-19s
-            :attr       {:on-click       #(when-not @active? (rf/dispatch [::epochs.events/load id]))
-                         :on-mouse-enter #(reset! hover? true)
-                         :on-mouse-leave #(reset! hover? false)}
-            :children
-            [[rc/box
-              :class  (epoch-chevron-style ambiance @active? @hover?)
-              :height styles/gs-19s
-              :align  :center
-              :child
-              [material/chevron-right
-               {:size "17px"}]]
-             [rc/gap-f :size styles/gs-2s]
-             [rc/box
-              :class      (epoch-data-style ambiance)
-              :min-height styles/gs-19s
-              :size       "1"
-              :child      [cljs-devtools/simple-render event [id]]]]]))})))
+      :reagent-render
+      (fn [event id]
+        (let [ambiance   @(rf/subscribe [::settings.subs/ambiance])
+              current-id @(rf/subscribe [::epochs.subs/selected-epoch-id])]
+          (reset! active? (= id current-id))
+          [rc/h-box
+           :class      (epoch-style ambiance @active?)
+           :align      :start
+           :min-height styles/gs-19s
+           :attr       {:on-click       #(when-not @active? (rf/dispatch [::epochs.events/load id]))
+                        :on-mouse-enter #(reset! hover? true)
+                        :on-mouse-leave #(reset! hover? false)}
+           :children
+           [[rc/box
+             :class  (epoch-chevron-style ambiance @active? @hover?)
+             :height styles/gs-19s
+             :align  :center
+             :child
+             [material/chevron-right
+              {:size "17px"}]]
+            [rc/gap-f :size styles/gs-2s]
+            [rc/box
+             :class      (epoch-data-style ambiance)
+             :min-height styles/gs-19s
+             :size       "1"
+             :child      [cljs-devtools/simple-render event [id]]]]]))})))
 
 (defclass epochs-style
   [ambiance]
@@ -88,8 +87,6 @@
                         ^{:key id}
                         [epoch event id]
                         [rc/gap-f :size styles/gs-2s]]))]))
-
-
 
 (defn prev-button
   []

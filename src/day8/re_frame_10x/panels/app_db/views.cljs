@@ -1,26 +1,26 @@
 (ns day8.re-frame-10x.panels.app-db.views
   (:require-macros
-    [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
+   [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
   (:require
-    [clojure.data]
-    [devtools.prefs]
-    [devtools.formatters.core]
-    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
-    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-    [day8.re-frame-10x.components.buttons                         :as buttons]
-    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
-    [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
-    [day8.re-frame-10x.components.re-com                          :as rc :refer [css-join]]
-    [day8.re-frame-10x.svgs                                       :as svgs]
-    [day8.re-frame-10x.material                                   :as material]
-    [day8.re-frame-10x.styles                                     :as styles]
-    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
-    [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
-    [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
-    [day8.re-frame-10x.panels.event.events                        :as event.events]
-    [day8.re-frame-10x.tools.coll                                 :as tools.coll]
-    [day8.re-frame-10x.fx.clipboard                               :as clipboard]))
+   [clojure.data]
+   [devtools.prefs]
+   [devtools.formatters.core]
+   [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.components.buttons                         :as buttons]
+   [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
+   [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
+   [day8.re-frame-10x.components.re-com                          :as rc :refer [css-join]]
+   [day8.re-frame-10x.svgs                                       :as svgs]
+   [day8.re-frame-10x.material                                   :as material]
+   [day8.re-frame-10x.styles                                     :as styles]
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+   [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
+   [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
+   [day8.re-frame-10x.panels.event.events                        :as event.events]
+   [day8.re-frame-10x.tools.coll                                 :as tools.coll]
+   [day8.re-frame-10x.fx.clipboard                               :as clipboard]))
 
 (def pod-gap "-1px") ;; Overlap pods by 1px to avoid adjoining borders causing 2px borders
 (def pod-padding "0px")
@@ -276,7 +276,6 @@
              :margin-top "22px"}
      :label "see the values in app-db by adding one or more inspectors"]]])
 
-
 (defn pod-header-column-titles
   []
   [rc/h-box
@@ -317,13 +316,13 @@
      :size     "1"
      :children
      (into
-       [(if (empty? pods)
-          [no-pods]
-          [pod-header-column-titles])]
-       (for [p pods]
-         [:<>
-          [pod p]
-          [rc/gap-f :size styles/gs-12s]]))]))
+      [(if (empty? pods)
+         [no-pods]
+         [pod-header-column-titles])]
+      (for [p pods]
+        [:<>
+         [pod p]
+         [rc/gap-f :size styles/gs-12s]]))]))
 
 (defclass panel-style
   []

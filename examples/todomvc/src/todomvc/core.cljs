@@ -21,7 +21,6 @@
 ;; so that println writes to `console.log`
 (enable-console-print!)
 
-
 ;; Put an initial value into app-db.
 ;; The event handler for `:initialise-db` can be found in `events.cljs`
 ;; Using the sync version of dispatch means that value is in
@@ -41,10 +40,9 @@
 
 (def history
   (doto (History.)
-        (events/listen EventType.NAVIGATE
-                       (fn [^js event] (secretary/dispatch! (.-token event))))
-        (.setEnabled true)))
-
+    (events/listen EventType.NAVIGATE
+                   (fn [^js event] (secretary/dispatch! (.-token event))))
+    (.setEnabled true)))
 
 ;; -- Entry Point -------------------------------------------------------------
 ;; Within ../../resources/public/index.html you'll see this code
@@ -54,10 +52,10 @@
 ;; So this is the entry function that kicks off the app once the HTML is loaded.
 ;;
 (defn main
-      []
+  []
       ;; Render the UI into the HTML's <div id="app" /> element
       ;; The view function `todomvc.views/todo-app` is the
       ;; root view for the entire UI.
-      (rdom/render [todomvc.views/todo-app]
-                   (.getElementById js/document "app")))
+  (rdom/render [todomvc.views/todo-app]
+               (.getElementById js/document "app")))
 

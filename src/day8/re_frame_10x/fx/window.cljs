@@ -1,9 +1,9 @@
 (ns day8.re-frame-10x.fx.window
   (:require
-    [goog.object                                                  :as gobj]
-    [goog.string                                                  :as gstring]
-    [clojure.string                                               :as string]
-    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
+   [goog.object                                                  :as gobj]
+   [goog.string                                                  :as gstring]
+   [clojure.string                                               :as string]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
 
 (defn m->str
   [m]
@@ -24,16 +24,16 @@
                              window-title
                              "</title></head><body style=\"margin: 0px;\"></body>")
         window-features (m->str
-                          {:width       width
-                           :height      height
-                           :left        left
-                           :top         top
-                           :resizable   :yes
-                           :scrollbars  :yes
-                           :status      :no
-                           :directories :no
-                           :toolbar     :no
-                           :menubar     :no})]
+                         {:width       width
+                          :height      height
+                          :left        left
+                          :top         top
+                          :resizable   :yes
+                          :scrollbars  :yes
+                          :status      :no
+                          :directories :no
+                          :toolbar     :no
+                          :menubar     :no})]
     ;; We would like to set the windows left and top positions to match the monitor that it was on previously, but Chrome doesn't give us
     ;; control over this, it will only position it within the same display that it was popped out on.
     (if-let [w (js/window.open "about:blank" "re-frame-10x-popout" window-features)]
@@ -54,5 +54,5 @@
       (rf/dispatch on-failure))))
 
 (rf/reg-fx
-  ::open-debugger-window
-  open-debugger-window)
+ ::open-debugger-window
+ open-debugger-window)
