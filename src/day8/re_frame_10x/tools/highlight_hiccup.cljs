@@ -9,8 +9,10 @@
             [rewrite-clj.node.stringz :refer [StringNode]]
             [rewrite-clj.node.seq :refer [SeqNode]]
             [day8.re-frame-10x.styles :as styles]
+            [day8.re-frame-10x.tools.datafy :as tools.datafy]
             [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
-            [day8.re-frame-10x.panels.event.subs :as event.subs]))
+            [day8.re-frame-10x.panels.event.subs :as event.subs]
+            [day8.re-frame-10x.panels.settings.subs :as settings.subs]))
 
 (def clj-core-macros #{'and 'binding 'case 'catch 'comment 'cond 'cond-> 'cond->> 'condp 'def
                        'defmacro 'defn 'defn- 'defmulti 'defmethod 'defonce 'defprotocol 'deftype
@@ -92,9 +94,10 @@
   [:br])
 
 (defmethod form KeywordNode [{:keys [k] :as node}]
-  [:code.clj__keyword {:class [(styles/clj-keyword)
-                               (selected-style node)]}
-   (str k)])
+  (let [ns->alias (rf/subscribe [::settings.subs/ns->alias])]
+    [:code.clj__keyword {:class [(styles/clj-keyword)
+                                 (selected-style node)]}
+     (str (tools.datafy/alias k @ns->alias))]))
 
 (defmethod form StringNode [{:keys [lines]}]
   [:code.clj__string {:class (styles/clj-string)}

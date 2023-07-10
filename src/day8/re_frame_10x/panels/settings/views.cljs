@@ -32,9 +32,20 @@
     :label    "Done"
     :on-click #(rf/dispatch [::settings.events/toggle])}])
 
-(defn closeable-text-box
-  [& {:keys [model width on-close on-change]}]
+(defn closeable
+  [& {:keys [on-close children]}]
   [rc/h-box
+   :children (conj children
+                   [rc/close-button
+                    :div-size    25
+                    :font-size   25
+                    :top-offset  -4
+                    :left-offset 10
+                    :on-click    on-close])])
+
+(defn closeable-text-box [& {:keys [width model on-change on-close]}]
+  [closeable
+   :on-close on-close
    :children [[rc/input-text
                :width          width
                :style          {:width   width                       ;; TODO: Not needed in standard re-com but caused by :all unset
@@ -42,13 +53,7 @@
                                 :padding (css-join "0px" styles/gs-5s)}
                :model           model
                :change-on-blur? false
-               :on-change       on-change]
-              [rc/close-button
-               :div-size    25
-               :font-size   25
-               :top-offset  -4
-               :left-offset 10
-               :on-click    on-close]]])
+               :on-change       on-change]]])
 
 (defn explanation-text [children]
   [rc/v-box
@@ -272,6 +277,49 @@
                    :label "Pretty-print?"
                    :on-change #(rf/dispatch [::settings.events/log-pretty? %])]]
                  [[:div "How should the log (" [material/print] ") buttons behave?"]]
+                 settings-box-131])
+              [rc/line]
+              (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+                [settings-box
+                 [[rc/h-box
+                   :align :center
+                   :gap horizontal-gap
+                   :children [[rc/label :label "Alias namespaces:"]
+                              [rc/button
+                               :class (styles/button ambiance)
+                               :style {:width styles/gs-81s}
+                               :label [rc/v-box
+                                       :align :center
+                                       :children ["+ ns, alias"]]
+                               :on-click #(rf/dispatch [::settings.events/add-ns-alias])]]]
+                  [rc/v-box
+                   :width comp-section-width
+                   :gap vertical-gap
+                   :children (for [[id {:keys [ns-full ns-alias] :as m} :as s] @(rf/subscribe [::settings.subs/ns-aliases])]
+                               ^{:key id}
+                               [closeable
+                                :on-close #(rf/dispatch [::settings.events/remove-ns-alias id])
+                                :children
+                                [[rc/input-text
+                                  :width "150px"
+                                  :style {:width   "150px"
+                                          :height  "25px"
+                                          :padding (css-join "0px" styles/gs-5s)}
+                                  :model ns-full
+                                  :width "150px"
+                                  :change-on-blur? false
+                                  :on-change #(rf/dispatch [::settings.events/update-ns-alias id % ns-alias])]
+                                 [rc/input-text
+                                  :style {:width   "150px"
+                                          :height  "25px"
+                                          :padding (css-join "0px" styles/gs-5s)}
+                                  :model ns-alias
+                                  :width "150px"
+                                  :change-on-blur? false
+                                  :on-change #(rf/dispatch [::settings.events/update-ns-alias id ns-full %])]]])]]
+                 [(if-let [[_ {:keys [ns-alias ns-full]}] (first @(rf/subscribe [::settings.subs/ns-aliases]))]
+                    [:p "Display " [:code "::" (str ns-alias) "/x"] " when printing " [:code ":" (str ns-full) "/x"]]
+                    "")]
                  settings-box-131])
               [rc/line]
               (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]

@@ -158,3 +158,16 @@
  (fn [{:keys [log-pretty?]} _]
    log-pretty?))
 
+(rf/reg-sub
+ ::ns-aliases
+ :<- [::root]
+ (fn [{:keys [ns-aliases]} _]
+   ns-aliases))
+
+(rf/reg-sub
+ ::ns->alias
+ :<- [::ns-aliases]
+ (fn [ns-aliases]
+   (into {}
+         (map (comp (juxt :ns-full :ns-alias) val)
+              ns-aliases))))

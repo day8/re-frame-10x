@@ -30,3 +30,14 @@
 
 (defn deep-sorted-map [m]
   (walk/postwalk #(cond->> % (map? %) (into (sorted-map))) m))
+
+(defn alias [k ns->alias]
+  (if-let [a (get ns->alias (namespace k))]
+    (keyword (str ":" a) (name k))
+    k))
+
+(defn alias-namespaces [m ns->alias]
+  (->> m
+       (walk/postwalk
+        #(cond-> %
+           (keyword? %) (alias ns->alias)))))
