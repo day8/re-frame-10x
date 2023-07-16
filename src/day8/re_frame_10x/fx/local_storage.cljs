@@ -5,6 +5,7 @@
    [goog.testing.storage.FakeMechanism]
    [cljs.reader                                                  :as reader]
    [clojure.string                                               :as string]
+   [day8.re-frame-10x.tools.datafy                               :as tools.datafy]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
 
 (def storage-mechanism
@@ -53,14 +54,14 @@
   ([key]
    (rf/after
     (fn [db]
-      (.set storage (safe-key key) (pr-str db)))))
+      (.set storage (safe-key key) (tools.datafy/pr-str-safe db)))))
   ([key & ks]
    (rf/after
     (fn [db]
       (run!
        (fn [k]
          (let [v (if (vector? k) (get-in db k) (get db k))]
-           (.set storage (safe-key key) (pr-str v))))
+           (.set storage (safe-key key) (tools.datafy/pr-str-safe v))))
        ks)))))
 
 (rf/reg-cofx
