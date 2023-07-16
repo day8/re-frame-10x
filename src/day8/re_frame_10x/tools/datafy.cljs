@@ -41,3 +41,10 @@
        (walk/postwalk
         #(cond-> %
            (keyword? %) (alias ns->alias)))))
+
+(defn pr-str-safe [value]
+  (pr-str-with-opts [value] {:flush-on-newline true
+                             :print-readably true
+                             :print-meta false
+                             :print-length nil
+                             :print-level nil}))
