@@ -114,7 +114,7 @@
          :model ignore-unchanged-l2-subs?
          :label [:span
                  "Ignore " [:b {:style {:font-weight "700"}} @ignore-unchanged-l2-count] " unchanged" [:br]
-                 [rc/hyperlink
+                 [rc/hyperlink-href
                   :class (styles/hyperlink ambiance)
                   :label (str "layer 2 " (tools.string/pluralize- @ignore-unchanged-l2-count "sub"))
                   :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md"]]
@@ -326,7 +326,7 @@
                :class    (diff-header-style ambiance)
                :justify  :end
                :children
-               [[rc/hyperlink
+               [[rc/hyperlink-href
                  :class  (styles/hyperlink ambiance)
                  :label  "ONLY BEFORE"
                  :style  {:margin-left styles/gs-7s}
@@ -347,7 +347,7 @@
                :class    (diff-header-style ambiance)
                :justify  :end
                :children
-               [[rc/hyperlink
+               [[rc/hyperlink-href
                  :class  (styles/hyperlink ambiance)
                  :label  "ONLY AFTER"
                  :style  {:margin-left      styles/gs-7s}
@@ -461,7 +461,7 @@
            ^{:key "intra-epoch-title"}
            [:h2 {:class "bm-heading-text"
                  :style {:margin "19px 0px"}}
-            [rc/hyperlink
+            [rc/hyperlink-href
              :class (styles/hyperlink ambiance)
              :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
              :label "Intra-Epoch Subscriptions"]]

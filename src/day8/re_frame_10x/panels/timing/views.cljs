@@ -56,7 +56,7 @@
       [tag
        {:label ""
         :time  time}]
-      [rc/hyperlink
+      [rc/hyperlink-href
        :class  (styles/hyperlink ambiance)
        :label  "guide me to greatness"
        :target "_blank"
