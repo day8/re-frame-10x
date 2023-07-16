@@ -297,7 +297,6 @@
      (prn-str-render data)
      (jsonml->hiccup (header data nil) (conj path 0)))])
 
-(def popup-menus (atom {}))                                 ;; stores all the current rendered menus to prevent re-rendering the same menu twice
 (def event-log (atom '()))                                  ;;stores a history of the events, treated as a stack
 
 ;; `html-element` is the html element that has received the right click
@@ -305,10 +304,8 @@
 ;; `path` is the current path at the point where the popup is clicked in `data`
 ;; `html-target`, optional, is the element which the menus will be rendered in
 (defn build-popup
-  [app-db path indexed-path html-element & [html-target]]
-  (if-let [rendered? (get @popup-menus (.-id html-element))]
-    (.setVisible rendered? true)                            ;; we have already rendered the menu, proceed to display it
-    (let [popup-menu       (goog.ui.PopupMenu.)
+  [app-db path indexed-path html-element offset-x offset-y & [html-target]]
+  (let [popup-menu       (goog.ui.PopupMenu.)
           js-menu-style    (-> #js {:text-align "center"
                                     :padding    "10px"
                                     :border     "1px solid #b9bdc6"}
@@ -328,10 +325,11 @@
           target-x-offset  (when target-rect (+ (.-left target-rect) (.-scrollX js/window)))
           element-x-pos    (+ (.-left element-rect) (.-scrollX js/window))
           ;; element-x-pos is relative to window, so we remove offset of element we're rendering in below
-          menu-x-pos       (if target-x-offset
-                             (- element-x-pos target-x-offset)
-                             element-x-pos)
-          menu-y-pos       (+ (.-top element-rect) (.-scrollY js/window))]
+          menu-x-pos       (+ offset-x
+                              (if target-x-offset
+                                (- element-x-pos target-x-offset)
+                                element-x-pos))
+          menu-y-pos       (+ offset-y (.-top element-rect) (.-scrollY js/window))]
       (doto copy-path-item
         (.addClassName "copy-path")
         (.addClassName "10x-menu-item"))
@@ -381,8 +379,7 @@
                   (clipboard/copy! (str "(simple-render-with-path-annotations " app-db " " ["app-db-path" indexed-path] {} ")"))))
 
               :else
-              (swap! event-log conj (.-type e)))))))
-      (swap! popup-menus assoc (.-id html-element) popup-menu))))
+              (swap! event-log conj (.-type e)))))))))
 
 (defn simple-render-with-path-annotations
   [data indexed-path {:keys [object update-path-fn sort?] :as opts} & [class]]
@@ -406,9 +403,11 @@
                                 ;; we have to rely on `current-data` alias `obj`
                                 (let [target   (-> event .-target .-parentElement)
                                       path     (.getAttribute target "data-path")
-                                      path-obj (reader.edn/read-string-maybe path)]
+                                      path-obj (reader.edn/read-string-maybe path)
+                                      offset-x (.-offsetX event)
+                                      offset-y (.-offsetY event)]
                                   (.preventDefault event)
-                                  (build-popup object path-obj indexed-path target menu-html-target)))
+                                  (build-popup object path-obj indexed-path target offset-x offset-y menu-html-target)))
         ;; triggered during `click` event when a path annotation is clicked
         click-listener        (fn [event]
                                 (let [target (-> event .-target .-parentElement)
