@@ -553,3 +553,21 @@
                    [:5% {:margin-left "0px"
                          :opacity     "1"}]
                    [:90% {:opacity "1"}])]))
+
+(defclass clj-symbol [] {:color nord10})
+
+(defclass clj-core-macro [] {:color nord11})
+
+(defclass clj-keyword [] {:color nord15})
+
+(defclass clj-number [] {:color nord12})
+
+(defclass clj-string [] {:color nord14})
+
+(defclass clj-nil [] {:color nord3})
+
+(defclass clj-boolean [] {:color nord3})
+
+(defclass clj-highlighted [] {:background-color nord13})
+
+(defclass clj-seq [] {})

@@ -2,7 +2,6 @@
   (:require-macros
    [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
   (:require
-   [re-highlight.core                                            :as re-highlight]
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px ms]]
    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
    [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
@@ -21,7 +20,7 @@
    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
    [day8.re-frame-10x.fx.clipboard                               :as clipboard]
    [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]
-   [day8.re-frame-10x.tools.datafy                               :as tools.datafy]))
+   [day8.re-frame-10x.tools.highlight-hiccup                     :refer [str->hiccup]]))
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
@@ -79,34 +78,11 @@
               before              (subs form-str 0 start-idx)
               highlight           (subs form-str start-idx end-idx)
               after               (subs form-str end-idx)]
-                         ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
-                         ;; Possibly relevant? https://stackoverflow.com/questions/21926083/failed-to-execute-removechild-on-node
           ^{:key (gensym)}
-                         ;; At some point around March 2021 Highlight.js changed their API significantly (e.g. highlightBlock -> highlightElement).
-                         ;; re-highlight, the wrapper around Highlight.js, depends on a modern version of Highlight.js with highlightElement.
-                         ;; Prior to the below check being added, a transitive dependency or direct project dependency that overrides
-                         ;; the version of Highlight.js with an older release than that reqeusted by re-highlight would cause 10x to crash.
-                         ;; Therefore, we added this check to ensure that prior to attempting to render source code with Highlight.js we check
-                         ;; that a compatible dependency has been loaded.
-          (if (re-highlight/hljs-compatible?)
-            [rc/box
+          [rc/box
              :class (code-style ambiance syntax-color-scheme show-all-code?)
              :attr  {:on-double-click (handler-fn (rf/dispatch [::event.events/set-show-all-code? (not show-all-code?)]))}
-             :child (if (some? highlighted-form)
-                      [#_re-highlight/highlight :span {:language "clojure"}
-                       (list ^{:key "before"} before
-                             ^{:key "hl"} [:span.code-listing--highlighted highlight]
-                             ^{:key "after"} after)]
-                      [#_re-highlight/highlight :span {:language "clojure"}
-                       form-str])]
-            [rc/v-box
-             :class (hljs-error-style ambiance syntax-color-scheme)
-             :children [[rc/p
-                         "re-frame-10x found a version mismatch between the Highlight.js loaded and the one that it expects to use."]
-                        [rc/p
-                         "As a result, it can't display the source code for this function."]
-                        [rc/p
-                         "To fix this, please examine this application's dependency tree to see how an old version of Highlight.js is being pulled in (probably transitively) and perhaps then use an appropriate exclusion for that dependency."]]])))})))
+           :child [str->hiccup form-str]]))})))
 
 (defclass clipboard-notification-style
   [_]

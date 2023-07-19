@@ -152,11 +152,27 @@
 (rf/reg-sub
  ::highlighted-form-bounds
  :<- [::highlighted-form]
- :<- [::form-for-epoch]
+ :<- [::zprint-form-for-epoch]
  (fn [[highlighted-form form] _]
-   (find-bounds (str form)
+   (find-bounds form
                 (:form highlighted-form)
                 (:num-seen highlighted-form))))
+
+(rf/reg-sub
+ ::highlighted?
+ :<- [::zprint-form-for-epoch]
+ :<- [::highlighted-form-bounds]
+ (fn [[zp [left-bound _]] [_ [line char]]]
+   (when (pos? left-bound)
+     (let [line (dec line)
+           char (dec char)
+           line-counts (map (comp inc count)
+                            (clojure.string/split-lines zp))]
+       (->> line-counts
+            (take line)
+            (apply +)
+            (+ char)
+            (= left-bound))))))
 
 (rf/reg-sub
  ::show-all-code?
