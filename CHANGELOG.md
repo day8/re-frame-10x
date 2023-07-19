@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+#### Added
+
+- Added rewrite-clj 1.1.47 dependency
+
+#### Changed
+
+- Removed highlight.js dependency
 - Upgrade clojure & clojurescript to 1.11
 - Upgrade zprint to 1.2.7
 - Upgrade malli to 0.11.0
