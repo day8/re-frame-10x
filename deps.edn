@@ -6,7 +6,7 @@
         org.clojure/clojurescript            {:mvn/version "1.10.879"}
         binaryage/devtools                   {:mvn/version "1.0.6"}
         com.yahoo.platform.yui/yuicompressor {:mvn/version "2.4.8" :exclusions [rhino/js]}
-        zprint/zprint                        {:mvn/version "1.2.1"}
+        zprint/zprint                        {:mvn/version "1.2.7"}
         superstructor/re-highlight           {:mvn/version "2.0.2"}
         cljsjs/highlight                     {:mvn/version "10.3.1-0"}
         org.clojure/tools.logging            {:mvn/version "1.2.4"}}}
