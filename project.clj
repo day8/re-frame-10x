@@ -10,7 +10,7 @@
                  [binaryage/devtools                   "1.0.6"]
                  [com.yahoo.platform.yui/yuicompressor "2.4.8"
                   :exclusions [rhino/js]]
-                 [zprint                               "1.2.5"]
+                 [zprint                               "1.2.7"]
                  [superstructor/re-highlight           "2.0.2"]
                  ;; re-highlight only has a transitive dependency on highlight.js for
                  ;; shadow-cljs builds, so we need to declare a dependency on cljsjs/highlight

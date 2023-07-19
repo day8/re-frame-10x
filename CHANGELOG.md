@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+- Upgrade zprint to 1.2.7
 - Upgrade malli to 0.11.0
 
 ## 1.7.0 (2023-07-03)
