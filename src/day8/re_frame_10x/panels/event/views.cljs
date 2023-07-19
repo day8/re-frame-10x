@@ -2,8 +2,6 @@
   (:require-macros
    [day8.re-frame-10x.components.re-com                          :refer [handler-fn]])
   (:require
-   [clojure.string                                               :as string]
-   [goog.string                                                  :as gstring]
    [re-highlight.core                                            :as re-highlight]
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px ms]]
    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]
@@ -22,83 +20,14 @@
    [day8.re-frame-10x.panels.event.subs                          :as event.subs]
    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
    [day8.re-frame-10x.fx.clipboard                               :as clipboard]
-   [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]))
+   [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]
+   [day8.re-frame-10x.tools.datafy                               :as tools.datafy]))
 
 ;; Terminology:
 ;; Form: a single Clojure form (may have nested children)
 ;; Result: the result of execution of a single form
 ;; Fragment: the combination of a form and result
 ;; Listing: a block of traced Clojure code, e.g. an event handler function
-
-(defn- re-seq-idx
-  "Like re-seq but returns matches and indices"
-  ([re s] (re-seq-idx re s 0))
-  ([re s offset]  ;; copied from re-seq* impl https://github.com/clojure/clojurescript/blob/0efe8fede9e06b8e1aa2fcb3a1c70f66cad6392e/src/main/cljs/cljs/core.cljs#L10014
-   (when-some [matches (.exec re s)]
-     (let [match-str (aget matches 0)
-           match-vals (if (== (.-length matches) 1)
-                        match-str
-                        (vec matches))
-           match-index (.-index matches)]
-       (cons [match-vals, (+ offset match-index)]
-             (lazy-seq
-              (let [post-idx (+ (.-index matches)
-                                (max 1 (.-length match-str)))]
-                (when (<= post-idx (.-length s))
-                  (re-seq-idx re (subs s post-idx) (+ offset post-idx))))))))))
-
-(defn collapse-whitespace-and-index
-  "given a string argument `s` it will return a vector of two values:
-     - a modified version of `s`, call it s'
-     - a vector of indexes, v
-   s' will be a copy of s in which all consecutive whitespace is collapsed to one whitespace
-   v  will be a vector of index for characters in s' back to the original s
-   For example:
-      (collapse-whitespace-and-index \"a b  c\")
-   will return
-       [\"a b c\" [0 1 2 3 5]]     ;; notice that the 4 is not there
-   "
-  [s]
-  (let [s' (clojure.string/replace s #"\s+" " ") ;; generate a new string with whitespace replaced
-        v (loop [v []     ;; Build up an index between the string with and without whitespace
-                 i-s 0
-                 i-s' 0]
-            (cond
-              (= (count s') i-s')           (conj v (count s)) ;; we have reached the end of both strings
-              (= (nth s i-s) (nth s' i-s')) (recur (conj v i-s) (inc i-s) (inc i-s')) ;; when we have a match save the index
-              :else                         (recur v (inc i-s) i-s')))]    ;; no match (whitespace) increment the index on the orignal string
-    [s' v]))
-
-(defn find-bounds
-  "Try and find the bounds of the form we are searching for. Uses some heuristics to
-  try and avoid matching partial forms, e.g. 'default-|weeks| for the form 'weeks."
-  [form-str search-str num-seen]
-  (if (nil? search-str)
-    [0 0]  ;; on mouse out etc
-    (let [[form-str reindex]   (collapse-whitespace-and-index form-str) ;; match without whitespace
-          esc-str    (gstring/regExpEscape search-str)
-          regex      (str "(\\s|\\(|\\[|\\{)" "(" esc-str ")(\\s|\\)|\\]|\\})")
-          re         (re-pattern regex)
-          results    (re-seq-idx re form-str)]
-      ;; (js/console.log "FIND-BOUNDS" form-str  regex reindex results)
-      (if (and search-str num-seen (seq results) (>= (count results)  num-seen))
-        (let [result                              (nth results (dec num-seen))
-              [[_ pre-match matched-form] index]  result
-              index                               (+ index (count pre-match))
-              start                               (nth reindex index)
-              stop                                (nth reindex (+ index (count matched-form)))]
-          [start stop])
-        ;; If the regex fails, fall back to string index just in case.
-        (let [start  (some->> form-str
-                              (string/index-of (pr-str search-str))
-                              (nth reindex))
-              length (if (some? start)
-                       (count (pr-str search-str))
-                       1)
-              end    (some->> start
-                              (+ length)
-                              (nth reindex))]
-          [start end])))))
 
 (defclass code-style
   [ambiance syntax-color-scheme show-all-code?]
@@ -146,10 +75,10 @@
               highlighted-form    @(rf/subscribe [::event.subs/highlighted-form])
               form-str            @(rf/subscribe [::event.subs/zprint-form-for-epoch])
               show-all-code?      @(rf/subscribe [::event.subs/show-all-code?])
-              [start-index end-index] (find-bounds form-str (:form highlighted-form) (:num-seen highlighted-form))
-              before              (subs form-str 0 start-index)
-              highlight           (subs form-str start-index end-index)
-              after               (subs form-str end-index)]
+              [start-idx end-idx] @(rf/subscribe [::event.subs/highlighted-form-bounds])
+              before              (subs form-str 0 start-idx)
+              highlight           (subs form-str start-idx end-idx)
+              after               (subs form-str end-idx)]
                          ; DC: We get lots of React errors if we don't force a creation of a new element when the highlight changes. Not really sure why...
                          ;; Possibly relevant? https://stackoverflow.com/questions/21926083/failed-to-execute-removechild-on-node
           ^{:key (gensym)}
