@@ -35,7 +35,7 @@
   :release-tasks [["deploy" "clojars"]]
 
   :profiles {:dev        {:dependencies [[binaryage/dirac "RELEASE"]
-                                         [metosin/malli   "0.5.1"]
+                                         [metosin/malli   "0.11.0"]
                                          [clj-kondo       "RELEASE"]]
                           :plugins      [[com.github.liquidz/antq "RELEASE"]
                                          [thomasa/mranderson      "0.5.3"]

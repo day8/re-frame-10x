@@ -8,7 +8,7 @@
   [superstructor/re-highlight           "2.0.2"]
   [secretary                            "1.2.3"]
   [binaryage/devtools                   "1.0.6"]
-  [metosin/malli                        "0.5.1"]]
+  [metosin/malli                        "0.11.0"]]
 
  :source-paths ["src" "../../src" "../../gen-src"]
 
