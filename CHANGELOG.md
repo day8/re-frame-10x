@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+- Upgrade clojure & clojurescript to 1.11
 - Upgrade zprint to 1.2.7
 - Upgrade malli to 0.11.0
 
