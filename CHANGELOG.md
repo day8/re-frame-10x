@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## Unreleased
+
+- Upgrade malli to 0.11.0
+
 ## 1.7.0 (2023-07-03)
 
 #### Added
