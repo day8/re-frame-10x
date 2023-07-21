@@ -319,7 +319,7 @@
         {:class    (copy-button-style ambiance)
          :icon     [material/content-copy {:size "14px"}]
          :title    "Copy to the clipboard, an expression that will return this form's value in the cljs repl"
-         :on-click (handler-fn (do (clipboard/copy! (pr-str (list 'day8.re-frame-10x/traced-result trace-id frag)))
+         :on-click (handler-fn (do (clipboard/copy! (pr-str (list 'day8.re-frame-10x/traced-result trace-id id)))
                                    (rf/dispatch [::event.events/repl-msg-state :start])))}]]]]))
 
 (defclass fragment-body-style
