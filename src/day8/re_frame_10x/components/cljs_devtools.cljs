@@ -288,7 +288,7 @@
    (prn-str data)])
 
 (defn simple-render
-  [data path & [class]]
+  [data path & [{:keys [class]}]]
   [rc/box
    :size  "1"
    :class (str (jsonml-style) " " class)

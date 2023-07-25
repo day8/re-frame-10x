@@ -50,7 +50,10 @@
      :size     "1"
      :children
      [[section-header title data]
-      [cljs-devtools/simple-render data [title] (styles/section-data ambiance)]]]))
+      [cljs-devtools/simple-render
+       data
+       [title]
+       {:class (styles/section-data ambiance)}]]]))
 
 (defclass panel-style
   [_]
