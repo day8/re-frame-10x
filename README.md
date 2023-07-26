@@ -315,6 +315,15 @@ You can also control the panel programmatically:
 * Make sure you have followed all the installation steps.
 * Make sure you have checked the [prerequisites](#important-prerequisites)
 
+### Factory reset
+
+re-frame-10x persists its state in local [storage](https://developer.mozilla.org/en-US/docs/Web/API/Storage). If you experience a bug, this mechanism may be reproducing your bug, even after the root cause is fixed. To fully refresh the state:
+
+* Reset the settings to factory defaults in the settings panel
+* If you can't load the settings panel, run `day8.re_frame_10x.trace.factory_reset_BANG_()` in the JavaScript console.
+* If neither of those work, [remove all of the keys](https://stackoverflow.com/questions/9404813/how-to-view-or-edit-localstorage) with the prefix `day8.re-frame.trace`.
+
+
 ### If the re-frame-10x window won't show up when pressing `ctrl-shift-x`
 
 * Make sure that your browser window doesn't have focus in a text-box or something else that is intercepting keyboard events.
@@ -324,19 +333,18 @@ You can also control the panel programmatically:
 
 ### If re-frame-10x throws an exception on startup
 
-* Reset the settings to factory defaults in the settings panel
-* If you can't load the settings panel, run `day8.re_frame_10x.trace.factory_reset_BANG_()` in the JavaScript console.
-* If neither of those work, remove all of the keys with the prefix `day8.re-frame.trace` from your browser's Local Storage.
+* Try a [factory reset](#factory-reset)
 
 ### Some parts of re-frame-10x seem to work but others don't
 
 * Make sure you are using the minimum recommended re-frame version in the [prerequisistes](#important-prerequisites). Some parts of re-frame-10x rely on updated versions of re-frame to capture the information it needs.
 
-### The expansion triangles in the data browsers don't work any more. But they used to.
+### The pop-out doesn't respond to input
 
-* (While running your app), in Chrome, go to `devtools` (F12), choose the `Application` Tab and then select (on the left) `Local Storage` and clear out what's there. Restart your app.  Fixed?   (Warning this removes your `re-frame-10x` settings)
-* If the problem persists, the nuclear option is to open a new Chrome tab and browse to `chrome://settings/resetProfileSettings`. Multiple people have confirmed this works, but it's a bit too destructive.
-* Tell us (in the Clojurians #re-frame slack channel) what you did immediately before the problem showed up. We're still trying to track down the reasons.
+* Make sure your original browser window is open to the tab where your app is running. If you need other tabs, consider visiting them in a different window. 
+* In other words, keeping your app in a single browser window with no other tabs should always work.
+* This is due to a limitation built into modern browsers. We discuss it in depth at [#209](https://github.com/day8/re-frame-10x/issues/209).
+* In rare cases, a [factory reset](#factory-reset) may help.
 
 ## How does it work?
 
