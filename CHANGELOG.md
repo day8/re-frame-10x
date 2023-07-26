@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. This change
 
 #### Changed
 
-- All maps appear sorted. SORT option in pod headers now causes every level of the data to appear sorted. Before, only the pod's top-level map appeared sorted. See #393.u
+- All maps appear sorted. SORT option in pod headers now causes every level of the data to appear sorted. Before, only the pod's top-level map appeared sorted. See #393.
 - Removed highlight.js dependency
 - Upgrade clojure & clojurescript to 1.11
 - Upgrade zprint to 1.2.7
