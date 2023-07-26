@@ -13,6 +13,11 @@
    [day8.re-frame-10x.panels.settings.events                     :as settings.events]
    [day8.re-frame-10x.panels.traces.events                       :as traces.events]))
 
+(defn sortable-uuid-map [vals]
+  (let [entry (fn [id v i]
+                [id (into {:id id :sort i} v)])]
+    (into {} (map entry (repeatedly random-uuid) vals (range)))))
+
 (rf/reg-event-fx
  ::init
  [(rf/inject-cofx ::local-storage/load {:key "panel-width-ratio" :or 0.35})
@@ -21,15 +26,16 @@
   (rf/inject-cofx ::local-storage/load {:key "filter-items" :or []})
   (rf/inject-cofx ::local-storage/load {:key "app-db-json-ml-expansions" :or #{}})
   (rf/inject-cofx ::local-storage/load {:key "external-window?" :or false})
-  (rf/inject-cofx ::local-storage/load {:key "external-window-dimensions" :or {:width 800 :height 800 :top 0 :left 0}})
+  (rf/inject-cofx ::local-storage/load {:key "external-window-dimensions"
+                                        :or {:width 800 :height 800 :top 0 :left 0}})
   (rf/inject-cofx ::local-storage/load {:key "show-epoch-traces?" :or true})
   (rf/inject-cofx ::local-storage/load {:key "using-trace?" :or true})
   (rf/inject-cofx ::local-storage/load {:key "ignored-events" :or {}})
   (rf/inject-cofx ::local-storage/load {:key "low-level-trace" :or {:reagent true :re-frame true}})
-  (rf/inject-cofx ::local-storage/load {:key "filtered-view-trace" :or (let [id1 (random-uuid)
-                                                                             id2  (random-uuid)]
-                                                                         {id1 {:id id1 :ns-str "re-com.box" :ns 're-com.box :sort 0}
-                                                                          id2 {:id id2 :ns-str "re-com.input-text" :ns 're-com.input-text :sort 1}})})
+  (rf/inject-cofx ::local-storage/load {:key "filtered-view-trace"
+                                        :or (sortable-uuid-map
+                                             [{:ns 're-com.box :ns-str "re-com.box"}
+                                              {:ns 're-com.input-text :ns-str "re-com.input-text"}])})
   (rf/inject-cofx ::local-storage/load {:key "retained-epochs" :or 25})
   (rf/inject-cofx ::local-storage/load {:key "app-db-paths" :or {}})
   (rf/inject-cofx ::local-storage/load {:key "app-db-follows-events?" :or true})
@@ -47,9 +53,8 @@
                                                                               :shiftKey true}}})
   (rf/inject-cofx ::local-storage/load {:key "log-outputs" :or [:day8.re-frame-10x.fx.log/console]})
   (rf/inject-cofx ::local-storage/load {:key "log-pretty?" :or true})
-  (rf/inject-cofx ::local-storage/load {:key "ns-aliases" :or
-                                        (let [id (random-uuid)]
-                                          {id {:id id :ns-full "long-namespace" :ns-alias "ln"}})})
+  (rf/inject-cofx ::local-storage/load {:key "ns-aliases"
+                                        :or (sortable-uuid-map [{:ns-full "long-namespace" :ns-alias "ln"}])})
   rf/unwrap]
  (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
               external-window? external-window-dimensions show-epoch-traces? using-trace?
