@@ -29,13 +29,10 @@
 
 (defn load
   "Loads a re-frame-10x value from local storage."
-  ([key]
-   (load key nil))
-  ([key not-found]
-   (let [value (.get storage (safe-key key))]
-     (if (undefined? value)
-       not-found
-       (reader/read-string value)))))
+  [key]
+  (let [value (.get storage (safe-key key))]
+    (when-not (undefined? value)
+      (reader/read-string value))))
 
 (defn- all-keys []
   (try
@@ -66,7 +63,10 @@
 
 (rf/reg-cofx
  ::load
- (fn [coeffects {:keys [key or]}]
-   (assoc coeffects
-          (keyword key)
-          (load key or))))
+ (fn [coeffects {storage-key :key fallback :or}]
+   (let [k (keyword storage-key)
+         v (load storage-key)]
+     (cond-> coeffects
+       :do (assoc k (or v fallback))
+       v (assoc-in [::stored k] v)
+       fallback (assoc-in [::fallback k] fallback)))))
