@@ -64,3 +64,14 @@
         rf (fn [ct _] (if (>= ct limit) (reduced nil) (inc ct)))
         result (reduce rf 0 (tree-seq coll? children data))]
     (when (number? result) result)))
+
+(defn sortable-uuid-map [ms]
+  (let [entry (fn [id v i]
+                [id (into {:id id :sort i} v)])]
+    (into {} (map entry (repeatedly random-uuid) ms (range)))))
+
+(defn pred-map [ks possible-ks]
+  (let [ks (set ks)]
+    (into {}
+          (map #(do [% (contains? ks %)]))
+          possible-ks)))

@@ -252,6 +252,36 @@ Reagent Versions  | React Versions      | re-frame-10x Artifact | Status |
 
 re-frame-10x includes an experimental code tracing feature for tracing the code in your event handlers. See [day8/re-frame-debux](https://github.com/day8/re-frame-debux) for instructions on how to set it up.
 
+### Project configuration
+
+For some settings, re-frame-10x supports project-level configuration via additional [closure-defines](https://clojurescript.org/reference/compiler-options#closure-defines). This way, some default behavior of 10x can be version-controlled alongside your project. Example:
+
+```cljs
+{:closure-defines
+      {re-frame.trace.trace-enabled?        true
+       day8.re-frame.tracing.trace-enabled? true
+       day8.re-frame-10x.hidden-namespaces "[com.me.uninteresting re-com.box]"}}
+```
+
+- Settings which are already stored take precedence. Be sure to [clear your localStorage](#factory-reset) for your project-level config to take effect.
+
+- Keys always begin with `day8.re-frame-10x.`
+
+- Any value which is a collection must appear stringified, due to [limitations in the closure compiler](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler#define-type-description)
+
+Supported keys:
+
+name              | description              | type           | example
+------------------|--------------|----------------|-------
+...`history-size`   | how many epochs to retain | integer        | `25`
+...`ignored-events` | ignore events of this type | seq of keywords | `"[:init :event-B]"`
+...`hidden-namespaces` | hide trace from these namespaces | seq of symbols | `"[re-com.box re-com.input-text]"`
+...`time-travel?` | selecting an event reverts your app-db | boolean | `true`
+...`ignored-libs` | ignore low-level trace | seq of keywords | `"[:reagent :re-frame]"`
+...`ns-aliases` | display aliased keywords in data inspectors | map of symbol->symbol | `"{long-namespace ln}"`
+
+
+
 ## Usage
 
 - **Make sure you have followed all of the installation instructions above.**

@@ -21,7 +21,7 @@
 
 (re-frame-10x/patch!)
 
-(rf/dispatch-sync [::events/init {:debug? re-frame-10x/debug?}])
+(rf/dispatch-sync [::events/init re-frame-10x/project-config])
 
 (re-frame.core/reg-event-db :day8.re-frame-10x/init (fn [db _] db))
 

@@ -11,12 +11,8 @@
    [day8.re-frame-10x.navigation.views                           :as navigation.views]
    [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
    [day8.re-frame-10x.panels.settings.events                     :as settings.events]
-   [day8.re-frame-10x.panels.traces.events                       :as traces.events]))
-
-(defn sortable-uuid-map [vals]
-  (let [entry (fn [id v i]
-                [id (into {:id id :sort i} v)])]
-    (into {} (map entry (repeatedly random-uuid) vals (range)))))
+   [day8.re-frame-10x.panels.traces.events                       :as traces.events]
+   [day8.re-frame-10x.tools.coll                                 :refer [sortable-uuid-map]]))
 
 (rf/reg-event-fx
  ::init
@@ -58,47 +54,49 @@
                                         :or (sortable-uuid-map [{:ns-full "long-namespace" :ns-alias "ln"}])})
   (rf/inject-cofx ::local-storage/load {:key "alias-namespaces?"})
   rf/unwrap]
- (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
-              external-window? external-window-dimensions show-epoch-traces? using-trace?
-              ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
-              app-db-follows-events? ambiance syntax-color-scheme categories data-path-annotations?
-              show-event-history open-new-inspectors? handle-keys? key-bindings log-outputs log-pretty?
-              expansion-limit ns-aliases alias-namespaces?]}
-      {:keys [debug?]}]
-   {:fx [(when using-trace?
-           [:dispatch [::settings.events/enable-tracing]])
-         [:dispatch [::settings.events/panel-width% panel-width-ratio]]
-         [:dispatch [::settings.events/show-panel? show-panel]]
-         [:dispatch [::settings.events/selected-tab selected-tab]]
-         [:dispatch [::settings.events/set-ignored-events ignored-events]]
-         [:dispatch [::settings.events/set-filtered-view-trace filtered-view-trace]]
-         [:dispatch [::settings.events/set-low-level-trace low-level-trace]]
-         [:dispatch [::settings.events/set-number-of-retained-epochs retained-epochs]]
-         [:dispatch [::settings.events/app-db-follows-events? app-db-follows-events?]]
-         [:dispatch [::settings.events/set-ambiance ambiance]]
-         [:dispatch [::settings.events/set-syntax-color-scheme syntax-color-scheme]]
-         [:dispatch [::settings.events/debug? debug?]]
-          ;; Important that window dimensions are set before we open an external window.
-         [:dispatch [::settings.events/external-window-dimensions external-window-dimensions]]
-         [:dispatch [::app-db.events/set-data-path-annotations? data-path-annotations?]]
-         (when external-window?
-           [:dispatch [::navigation.events/launch-external navigation.views/mount]])
-         [:dispatch [::traces.events/set-queries filter-items]]
-         [:dispatch [::traces.events/set-categories categories]]
-         [:dispatch [::traces.events/set-filter-by-selected-epoch? show-epoch-traces?]]
-         [:dispatch [::app-db.events/paths (into (sorted-map) app-db-paths)]]
-         [:dispatch [::app-db.events/set-json-ml-paths app-db-json-ml-expansions]]
-         [:dispatch [:global/add-unload-hook]]
-         [:dispatch [::app-db.events/reagent-id]]
-         [:dispatch [::settings.events/show-event-history? show-event-history]]
-         [:dispatch [::settings.events/open-new-inspectors? open-new-inspectors?]]
-         [:dispatch [::settings.events/handle-keys? handle-keys?]]
-         [:dispatch [::settings.events/key-bindings key-bindings]]
-         [:dispatch [::settings.events/log-outputs log-outputs]]
-         [:dispatch [::settings.events/log-pretty? log-pretty?]]
-         [:dispatch [::settings.events/expansion-limit expansion-limit]]
-         [:dispatch [::settings.events/ns-aliases ns-aliases]]
-         [:dispatch [::settings.events/alias-namespaces? alias-namespaces?]]]}))
+ (fn [{::local-storage/keys [stored fallback]} project-config]
+   (let [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
+                 external-window? external-window-dimensions show-epoch-traces? using-trace?
+                 ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
+                 app-db-follows-events? ambiance syntax-color-scheme categories data-path-annotations?
+                 show-event-history open-new-inspectors? handle-keys? key-bindings log-outputs log-pretty?
+                 expansion-limit ns-aliases alias-namespaces?
+                 debug?]}
+         (merge fallback project-config stored)]
+     {:fx [(when using-trace?
+             [:dispatch [::settings.events/enable-tracing]])
+           [:dispatch [::settings.events/panel-width% panel-width-ratio]]
+           [:dispatch [::settings.events/show-panel? show-panel]]
+           [:dispatch [::settings.events/selected-tab selected-tab]]
+           [:dispatch [::settings.events/set-ignored-events ignored-events]]
+           [:dispatch [::settings.events/set-filtered-view-trace filtered-view-trace]]
+           [:dispatch [::settings.events/set-low-level-trace low-level-trace]]
+           [:dispatch [::settings.events/set-number-of-retained-epochs retained-epochs]]
+           [:dispatch [::settings.events/app-db-follows-events? app-db-follows-events?]]
+           [:dispatch [::settings.events/set-ambiance ambiance]]
+           [:dispatch [::settings.events/set-syntax-color-scheme syntax-color-scheme]]
+           [:dispatch [::settings.events/debug? debug?]]
+           ;; Important that window dimensions are set before we open an external window.
+           [:dispatch [::settings.events/external-window-dimensions external-window-dimensions]]
+           [:dispatch [::app-db.events/set-data-path-annotations? data-path-annotations?]]
+           (when external-window?
+             [:dispatch [::navigation.events/launch-external navigation.views/mount]])
+           [:dispatch [::traces.events/set-queries filter-items]]
+           [:dispatch [::traces.events/set-categories categories]]
+           [:dispatch [::traces.events/set-filter-by-selected-epoch? show-epoch-traces?]]
+           [:dispatch [::app-db.events/paths (into (sorted-map) app-db-paths)]]
+           [:dispatch [::app-db.events/set-json-ml-paths app-db-json-ml-expansions]]
+           [:dispatch [:global/add-unload-hook]]
+           [:dispatch [::app-db.events/reagent-id]]
+           [:dispatch [::settings.events/show-event-history? show-event-history]]
+           [:dispatch [::settings.events/open-new-inspectors? open-new-inspectors?]]
+           [:dispatch [::settings.events/handle-keys? handle-keys?]]
+           [:dispatch [::settings.events/key-bindings key-bindings]]
+           [:dispatch [::settings.events/log-outputs log-outputs]]
+           [:dispatch [::settings.events/log-pretty? log-pretty?]]
+           [:dispatch [::settings.events/expansion-limit expansion-limit]]
+           [:dispatch [::settings.events/ns-aliases ns-aliases]]
+           [:dispatch [::settings.events/alias-namespaces? alias-namespaces?]]]})))
 
 ;; Global
 
