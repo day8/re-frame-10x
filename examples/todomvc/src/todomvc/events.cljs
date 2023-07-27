@@ -7,6 +7,8 @@
    [malli.generator :as mg]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
 
+(reg-event-db :bad-event (fn [db _] db))
+
 ;; -- Interceptors --------------------------------------------------------------
 ;;
 ;; Interceptors are a more advanced topic. So, we're plunging into the deep

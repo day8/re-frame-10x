@@ -146,6 +146,14 @@
   (patch-wrap-funs)
   (patch-next-tick))
 
+(defn fix-db-noop []
+  (re-frame.core/reg-global-interceptor
+   (re-frame.core/->interceptor
+    :id :day8.re-frame-10x/internal
+    :after #(assoc-in % [:effects :db :day8.re-frame-10x/internal] (gensym)))))
+
+(fix-db-noop)
+
 (defn init!
   []
   (patch!)
