@@ -8,7 +8,9 @@
    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
    [day8.reagent.impl.batching                                           :refer [patch-next-tick]]
    [day8.reagent.impl.component                                          :refer [patch-wrap-funs patch-custom-wrapper]]
+   [day8.re-frame-10x.tools.coll                                         :refer [sortable-uuid-map pred-map]]
    [day8.re-frame-10x.tools.datafy                                       :as tools.datafy]
+   [day8.re-frame-10x.tools.reader.edn                                   :as reader.edn]
    [day8.re-frame-10x.tools.shadow-dom                                   :as tools.shadow-dom]
    [day8.re-frame-10x.events                                             :as events]
    [day8.re-frame-10x.components.re-com                                  :as rc]
@@ -146,8 +148,29 @@
   (patch-wrap-funs)
   (patch-next-tick))
 
+(goog-define history-size 25)
+(goog-define ignored-events "{}")
+(goog-define hidden-namespaces "[re-com.box re-com.input-text]")
+(goog-define time-travel? true)
+(goog-define ignored-libs "[:reagent :re-frame]")
+(goog-define ns-aliases "{long-namespace ln}")
+
+(def project-config
+  (let [read      reader.edn/read-string-maybe
+        keep-vals (remove (comp nil? second))
+        view      #(do {:ns % :ns-str (str %)})
+        alias     (fn [[k v]] {:ns-full (str k) :ns-alias (str v)})]
+    (->> {:debug?                 debug?
+          :retained-epochs        history-size
+          :ignored-events         (some-> ignored-events read sortable-uuid-map)
+          :filtered-view-trace    (some->> hidden-namespaces read (map view) sortable-uuid-map)
+          :app-db-follows-events? time-travel?
+          :low-level-trace        (some-> ignored-libs read (pred-map #{:re-frame :reagent}))
+          :ns-aliases             (some->> ns-aliases read (map alias) sortable-uuid-map)}
+         (into {} keep-vals))))
+
 (defn init!
   []
   (patch!)
-  (rf/dispatch-sync [::events/init {:debug? debug?}])
+  (rf/dispatch-sync [::events/init project-config])
   (inject!))
