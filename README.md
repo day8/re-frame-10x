@@ -319,8 +319,8 @@ You can also control the panel programmatically:
 
 re-frame-10x persists its state in local [storage](https://developer.mozilla.org/en-US/docs/Web/API/Storage). If you experience a bug, this mechanism may be reproducing your bug, even after the root cause is fixed. To fully refresh the state:
 
-* Reset the settings to factory defaults in the settings panel
-* If you can't load the settings panel, run `day8.re_frame_10x.trace.factory_reset_BANG_()` in the JavaScript console.
+* Click "Factory Reset" at the bottom of the settings panel.
+* If you can't load the settings panel, run `day8.re_frame_10x.factory_reset_BANG_()` in the JavaScript console.
 * If neither of those work, [remove all of the keys](https://stackoverflow.com/questions/9404813/how-to-view-or-edit-localstorage) with the prefix `day8.re-frame.trace`.
 
 
@@ -328,7 +328,7 @@ re-frame-10x persists its state in local [storage](https://developer.mozilla.org
 
 * Make sure that your browser window doesn't have focus in a text-box or something else that is intercepting keyboard events.
 * Make sure that the re-frame-10x div has been created. Run `document.querySelector('#--re-frame-10x--')` in your browser's console to check if an element is returned. If this returns `null` then something else isn't working correctly.
-* Try [clearing your localStore](https://superuser.com/questions/519628/clear-html5-local-storage-on-a-specific-page) and refreshing. This should restore the default key bindings.
+* Try a [factory reset](#factory-reset). This should restore the default key bindings.
 * You can also [open it programmatically](#controlling-the-trace-panel).
 
 ### If re-frame-10x throws an exception on startup
