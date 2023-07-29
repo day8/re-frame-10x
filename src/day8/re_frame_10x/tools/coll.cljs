@@ -55,3 +55,14 @@
        (get ret k)))
    m
    ks))
+
+(defn sortable-uuid-map [ms]
+  (let [entry (fn [id v i]
+                [id (into {:id id :sort i} v)])]
+    (into {} (map entry (repeatedly random-uuid) ms (range)))))
+
+(defn pred-map [ks possible-ks]
+  (let [ks (set ks)]
+    (into {}
+          (map #(do [% (contains? ks %)]))
+          possible-ks)))
