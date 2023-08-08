@@ -50,13 +50,14 @@
   (rf/inject-cofx ::local-storage/load {:key "ns-aliases" :or
                                         (let [id (random-uuid)]
                                           {id {:id id :ns-full "long-namespace" :ns-alias "ln"}})})
+  (rf/inject-cofx ::local-storage/load {:key "alias-namespaces?"})
   rf/unwrap]
  (fn [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
               external-window? external-window-dimensions show-epoch-traces? using-trace?
               ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
               app-db-follows-events? ambiance syntax-color-scheme categories data-path-annotations?
               show-event-history open-new-inspectors? handle-keys? key-bindings log-outputs log-pretty?
-              ns-aliases]}
+              ns-aliases alias-namespaces?]}
       {:keys [debug?]}]
    {:fx [(when using-trace?
            [:dispatch [::settings.events/enable-tracing]])
@@ -89,7 +90,8 @@
          [:dispatch [::settings.events/key-bindings key-bindings]]
          [:dispatch [::settings.events/log-outputs log-outputs]]
          [:dispatch [::settings.events/log-pretty? log-pretty?]]
-         [:dispatch [::settings.events/ns-aliases ns-aliases]]]}))
+         [:dispatch [::settings.events/ns-aliases ns-aliases]]
+         [:dispatch [::settings.events/alias-namespaces? alias-namespaces?]]]}))
 
 ;; Global
 

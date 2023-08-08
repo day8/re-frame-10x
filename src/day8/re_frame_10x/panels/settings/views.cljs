@@ -279,12 +279,16 @@
                  [[:div "How should the log (" [material/print] ") buttons behave?"]]
                  settings-box-131])
               [rc/line]
-              (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+              (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
+                    alias-namespaces? @(rf/subscribe [::settings.subs/alias-namespaces?])]
                 [settings-box
                  [[rc/h-box
                    :align :center
                    :gap horizontal-gap
-                   :children [[rc/label :label "Alias namespaces:"]
+                   :children [[rc/checkbox
+                               :model alias-namespaces?
+                               :label "Alias namespaces:"
+                               :on-change #(rf/dispatch [::settings.events/alias-namespaces? %])]
                               [rc/button
                                :class (styles/button ambiance)
                                :style {:width styles/gs-81s}

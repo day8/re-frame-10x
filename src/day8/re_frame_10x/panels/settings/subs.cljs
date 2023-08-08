@@ -159,6 +159,12 @@
    log-pretty?))
 
 (rf/reg-sub
+ ::alias-namespaces?
+ :<- [::root]
+ (fn [{:keys [alias-namespaces?]} _]
+   alias-namespaces?))
+
+(rf/reg-sub
  ::ns-aliases
  :<- [::root]
  (fn [{:keys [ns-aliases]} _]

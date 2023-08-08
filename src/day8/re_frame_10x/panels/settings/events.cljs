@@ -270,6 +270,14 @@
    (local-storage/save "ns-aliases")])
 
 (rf/reg-event-db
+ ::alias-namespaces?
+ [(rf/path [:settings :alias-namespaces?])
+  rf/trim-v
+  (local-storage/save "alias-namespaces?")]
+ (fn [_ [b]]
+   b))
+
+(rf/reg-event-db
  ::ns-aliases
  ns-aliases-interceptors
  (fn [_ [ns-aliases]]
