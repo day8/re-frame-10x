@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## Unreleased
+
+#### Changed
+
+- Namespace aliasing can be toggled in the settings.
+- Namespace aliasing is more performant, especially when turned off.
+
 ## 1.8.1 (2023-07-26)
 
 #### Fixed
