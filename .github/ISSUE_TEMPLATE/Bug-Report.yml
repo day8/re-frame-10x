@@ -16,6 +16,13 @@ body:
       value: "A bug happened!"
     validations:
       required: true
+  - type: checkboxes
+    id: factory-reset
+    attributes:
+      label: Factory Reset
+      description: Have you tried a [factory reset](https://github.com/day8/re-frame-10x#factory-reset)?
+      options:
+        - label: "yes"
   - type: input
     id: re-frame-10x-version
     attributes:
