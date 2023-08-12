@@ -131,7 +131,7 @@ If you are using leiningen, modify `project.clj` in the following ways. When puz
 
 ### IMPORTANT PREREQUISITES
 
-* You **must** have a [`:main`](https://clojurescript.org/reference/compiler-options#main) specified in your `:compiler` config or a `:module` (shadow-cljs) for the `:preloads` and `:closure-defines` to take effect
+* You **must** have a [`:main`](https://clojurescript.org/reference/compiler-options#main) specified in your `:compiler` config or an entry in `:modules` (shadow-cljs) for the `:preloads` and `:closure-defines` to take effect
 * You **must** be running with the Closure define `goog.DEBUG` as `true`. This is the default under `:optimizations :none`.
 * You **must** be using `:optimizations :none`.
 * You **should** be using re-frame 1.2.0 or later. Earlier versions may work, but are not supported.
