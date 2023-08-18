@@ -27,6 +27,9 @@
 ;; place before we go onto the next step.
 (dispatch-sync [:initialise-db])
 
+;; This causes the bug not to happen:
+;;(dispatch [:initialise-db])
+
 ;; -- Routes and History ------------------------------------------------------
 ;; Although we use the secretary library below, that's mostly a historical
 ;; accident. You might also consider using:
@@ -34,7 +37,7 @@
 ;;   - https://github.com/juxt/bidi
 ;; We don't have a strong opinion.
 ;;
-(defroute "/" [] (dispatch [:set-showing :all]))
+(defroute "/" [] )
 
 (defroute #"/([a-z]+)" [filter] (dispatch [:set-showing (keyword filter)]))
 
