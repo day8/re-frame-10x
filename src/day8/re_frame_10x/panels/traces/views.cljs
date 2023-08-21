@@ -223,6 +223,7 @@
         syntax-color-scheme @(rf/subscribe [::settings.subs/syntax-color-scheme])
         debug?              @(rf/subscribe [::settings.subs/debug?])
         expansions          @(rf/subscribe [::traces.subs/expansions])
+        log-any?            @(rf/subscribe [::settings.subs/any-log-outputs?])
         expanded?           (get-in expansions [:overrides id] (:show-all? expansions))
         op-name             (if (vector? operation)
                               (second operation)
@@ -276,8 +277,9 @@
         :justify :center
         :size    styles/gs-31s
         :child
-        [buttons/icon {:icon [material/print]
-                       :on-click #(rf/dispatch [:global/log tags])}]]]]
+        (when log-any?
+          [buttons/icon {:icon [material/print]
+                         :on-click #(rf/dispatch [:global/log tags])}])]]]
      (when expanded?
        [rc/h-box
         :class    (table-row-expanded-style ambiance syntax-color-scheme)

@@ -26,7 +26,8 @@
 
 (defn section-header
   [title data]
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
+        log-any? @(rf/subscribe [::settings.subs/any-log-outputs?])]
     [rc/h-box
      :class    (section-header-style ambiance)
      :align    :center
@@ -36,8 +37,9 @@
                  :style {:margin       "auto"
                          :margin-right "1px"}
                  :child
-                 [buttons/icon {:icon [material/print]
-                                :on-click #(rf/dispatch [:global/log data])}]]]]))
+                 (when log-any?
+                   [buttons/icon {:icon [material/print]
+                                  :on-click #(rf/dispatch [:global/log data])}])]]]))
 
 (defclass section-style
   [ambiance]

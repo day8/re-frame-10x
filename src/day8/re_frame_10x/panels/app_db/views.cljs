@@ -88,7 +88,8 @@
 
 (defn pod-header [{:keys [id path path-str open? diff? sort?]} data]
   (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])
-        expand-all? @(rf/subscribe [::app-db.subs/expand-all? id])]
+        expand-all? @(rf/subscribe [::app-db.subs/expand-all? id])
+        log-any?    @(rf/subscribe [::settings.subs/any-log-outputs?])]
     [rc/h-box
      :class    (styles/section-header ambiance)
      :align    :center
@@ -187,9 +188,10 @@
        [[rc/box
          :style {:margin "auto"}
          :child
-         [buttons/icon {:icon [material/print]
-                        :title    "Dump inspector data into DevTools"
-                        :on-click #(rf/dispatch [:global/log data])}]]]]]]))
+         (when log-any?
+           [buttons/icon {:icon [material/print]
+                          :title    "Dump inspector data into DevTools"
+                          :on-click #(rf/dispatch [:global/log data])}])]]]]]))
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 

@@ -142,7 +142,8 @@
 
 (defn pod-header [{:keys [id layer path open? diff? pin? order value]}]
   ;; TODO: highlight when pin? is true
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
+  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
+        log-any? @(rf/subscribe [::settings.subs/any-log-outputs?])]
     [rc/h-box
      :class    (styles/section-header ambiance)
      :align    :center
@@ -244,8 +245,9 @@
        [[rc/box
          :style {:margin "auto"}
          :child
-         [buttons/icon {:icon [material/print]
-                        :on-click #()}]]]]]]))
+         (when log-any?
+           [buttons/icon {:icon [material/print]
+                          :on-click #()}])]]]]]))
 
 (defclass sub-message-style
   []

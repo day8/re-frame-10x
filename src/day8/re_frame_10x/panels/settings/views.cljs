@@ -257,7 +257,8 @@
 
               [rc/line]
               (let [log-outputs @(rf/subscribe [::settings.subs/log-outputs])
-                    log-pretty? @(rf/subscribe [::settings.subs/log-pretty?])]
+                    log-pretty? @(rf/subscribe [::settings.subs/log-pretty?])
+                    log-any?    @(rf/subscribe [::settings.subs/any-log-outputs?])]
                 [settings-box
                  [[rc/label :label [:span "Dump data to:"]]
                   [rc/checkbox
@@ -276,7 +277,9 @@
                    :model log-pretty?
                    :label "Pretty-print?"
                    :on-change #(rf/dispatch [::settings.events/log-pretty? %])]]
-                 [[:div "How should the log (" [material/print] ") buttons behave?"]]
+                 [[:div (if log-any?
+                          [:<> "How should the log (" [material/print] ") buttons behave?"]
+                          "Logging is disabled!")]]
                  settings-box-131])
               [rc/line]
               (let [ambiance @(rf/subscribe [::settings.subs/ambiance])

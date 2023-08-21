@@ -153,6 +153,12 @@
      log-outputs)))
 
 (rf/reg-sub
+ ::any-log-outputs?
+ :<- [::log-outputs]
+ (fn [log-outputs _]
+   (some? (seq log-outputs))))
+
+(rf/reg-sub
  ::log-pretty?
  :<- [::root]
  (fn [{:keys [log-pretty?]} _]
