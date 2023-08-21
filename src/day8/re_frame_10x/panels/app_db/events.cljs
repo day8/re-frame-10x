@@ -2,6 +2,7 @@
   (:require
    [re-frame.db]
    [re-frame.interop]
+   [re-frame.core]
    [clojure.string                                               :as string]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
    [day8.re-frame-10x.fx.local-storage                           :as local-storage]
@@ -147,3 +148,64 @@
  [(rf/path [:app-db :expand-all?]) rf/trim-v]
  (fn [db [path-id expand?]]
    (assoc db path-id expand?)))
+
+(rf/reg-event-db
+ ::start-edit
+ paths-interceptors
+ (fn [paths [id]]
+   (assoc-in paths [id :editing?] true)))
+
+(rf/reg-event-db
+ ::finish-edit
+ paths-interceptors
+ (fn [paths [id]]
+   (assoc-in paths [id :editing?] false)))
+
+(rf/reg-event-db
+ ::set-edit-str
+ paths-interceptors
+ (fn [paths [id s]]
+   (assoc-in paths [id :edit-str] s)))
+
+(re-frame.core/reg-event-db
+ ::edit
+ (fn [db [_ path s]]
+   (let [new-data (reader.edn/read-string-maybe s)]
+     (if-not (seq path)
+       new-data
+       (assoc-in db path new-data)))))
+
+(defn read-file [file callback]
+  (let [file-reader (js/FileReader.)]
+    (set! (.-onload ^js file-reader)
+          #(callback (.-name ^js file) (.-result (.-target %))))
+    (.readAsText ^js file-reader file)))
+
+(rf/reg-fx :read-file
+           (fn [params]
+             (let [{:keys [file on-read]} params]
+               (read-file file (fn [_ content]
+                                 (rf/dispatch (conj on-read content)))))))
+
+(rf/reg-event-fx
+ ::open-file
+ (fn [_ [_ file on-read]]
+   {:read-file {:file file
+                :on-read on-read}}))
+
+(rf/reg-fx
+ ::save-to-file
+ (fn [s]
+   (let [blob (js/Blob. #js [s] #js {:type "text/plain"})
+         url (str (.createObjectURL js/URL blob))
+         link (js/document.createElement "a")]
+     (set! (.-href link) url)
+     (set! (.-download link) "re-frame-10x-db.edn")
+     (.appendChild js/document.body link)
+     (.click link)
+     (.remove link))))
+
+(rf/reg-event-fx
+ ::save-to-file
+ (fn [_ [_ s]]
+   {::save-to-file s}))

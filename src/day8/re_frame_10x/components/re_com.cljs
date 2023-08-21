@@ -392,6 +392,10 @@
   [& args]
   (apply input-text-base :input-type :input args))
 
+(defn input-textarea
+  [& args]
+  (apply input-text-base :input-type :textarea args))
+
 (defn label
   "Returns markup for a basic label"
   [& {:keys [label on-click width class style attr]}]
