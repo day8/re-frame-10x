@@ -98,7 +98,22 @@
     [:a
      {:on-click #(dispatch [:flood])
       :style {:cursor "pointer"}}
-     "Flood Events & app-db"]]
+     "Flood Events & app-db"]
+    " | "
+    [:a
+     {:on-click #(dispatch [:bad-event])
+      :style {:cursor "pointer"}}
+     "Dispatch Test Event"]
+    [:br]
+    [:a
+     {:on-click #(re-frame.core/clear-global-interceptor :day8.re-frame-10x/internal)
+      :style {:cursor "pointer"}}
+     "Break Event"]
+    " | "
+    [:a
+     {:on-click #(do (day8.re-frame-10x/fix-db-noop))
+      :style {:cursor "pointer"}}
+     "Fix Event"]]
    [:section#todoapp
     [task-entry]
     (when (seq @(subscribe [:todos]))

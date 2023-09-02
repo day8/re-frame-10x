@@ -220,6 +220,13 @@
      (let [current-match  (:current-match state)
            previous-event (:previous-event state)
            no-match?      (nil? current-match)]
+       (let [m (zipmap [:no-match? :quiescent? :start? :run? :state]
+                       (map boolean [no-match?
+                                     (quiescent? event)
+                                     (start-of-epoch-and-prev-end? event state)
+                                     (event-run? event)
+                                     :else]))]
+         (println (first (first (filter (comp boolean second) m)))))
        (-> (cond
 
               ;; No current match yet, check if this is the start of an epoch

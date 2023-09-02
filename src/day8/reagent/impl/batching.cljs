@@ -16,7 +16,9 @@
        {:op-type :raf}
        (f)
        (trace/with-trace {:op-type :raf-end})
+       (println "scheduled.")
        (when (false? (.-scheduled? reagent.impl.batching/render-queue))
+         (println "attained quiescience.")
          (trace/with-trace {:op-type :reagent/quiescent}))))))
 
 (defn patch-next-tick
