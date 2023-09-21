@@ -1,6 +1,6 @@
 {:dependencies
  [[reagent                              "1.1.0"]
-  [re-frame                             "1.2.0"]
+  [re-frame                             "1.3.0"]
   [zprint/zprint                        "1.2.7"]
   [day8.re-frame/tracing                "0.6.2"]
   [com.yahoo.platform.yui/yuicompressor "2.4.8"

@@ -1,6 +1,6 @@
 (ns todomvc.views
   (:require [reagent.core :as reagent]
-            [re-frame.core :refer [subscribe dispatch]]
+            [re-frame.core :refer [subscribe dispatch reg-event-db reg-sub]]
             [clojure.string :as str]))
 
 (defn todo-input [{:keys [title on-save on-stop]}]
@@ -91,18 +91,36 @@
      :on-save     #(when (seq %)
                      (dispatch [:add-todo %]))}]])
 
+(reg-event-db :do-nothing (fn [db _] db))
+(def should-i-subscribe? (reagent/atom false))
+(def not-buggy-run-ct (atom 0))
+(reg-sub :NOT-BUGGY #(swap! not-buggy-run-ct inc))
+
+(defn not-buggy-component []
+  [:div
+   [:button {:on-click #(do (dispatch [:do-nothing]) ;; for tracing purposes
+                            (swap! should-i-subscribe? not))}
+    "Click Me, I'm normal!"]
+   [:div
+    (when @should-i-subscribe?
+      @(subscribe [:NOT-BUGGY]))]])
+
+(reg-event-db :swap-sub #(update %1 :should-i-subscribe? not))
+(reg-sub :should-i-subscribe? :-> :should-i-subscribe?)
+(def buggy-run-ct (atom 0))
+(reg-sub :BUGGY #(swap! buggy-run-ct inc))
+
+(defn buggy-component []
+  [:div
+   [:button {:on-click #(dispatch [:swap-sub])}
+    "Click Me, I'm buggy!"]
+   [:div
+   (when @(subscribe [:should-i-subscribe?])
+     @(subscribe [:BUGGY]))]])
+
 (defn todo-app
   []
-  [:div
-   [:section#10x-dev
-    [:a
-     {:on-click #(dispatch [:flood])
-      :style {:cursor "pointer"}}
-     "Flood Events & app-db"]]
-   [:section#todoapp
-    [task-entry]
-    (when (seq @(subscribe [:todos]))
-      [task-list])
-    [footer-controls]]
-   [:footer#info
-    [:p "Double-click to edit a todo"]]])
+  [:div {:style {:display "flex"}}
+   [not-buggy-component]
+   [:div {:style {:width 50}}]
+   [buggy-component]])
