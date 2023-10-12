@@ -2,7 +2,7 @@
   (:require-macros [secretary.core :refer [defroute]])
   (:require [goog.events :as events]
             [reagent.core :as reagent]
-            [reagent.dom :as rdom]
+            [reagent.dom.client :as rdc]
             [re-frame.core :refer [dispatch dispatch-sync]]
             [secretary.core :as secretary]
     ;; These two are only required to make the compiler
@@ -51,11 +51,13 @@
 ;;    }
 ;; So this is the entry function that kicks off the app once the HTML is loaded.
 ;;
+
+(defonce react-root
+  (rdc/create-root (.getElementById js/document "app")))
+
 (defn main
   []
       ;; Render the UI into the HTML's <div id="app" /> element
       ;; The view function `todomvc.views/todo-app` is the
       ;; root view for the entire UI.
-  (rdom/render [todomvc.views/todo-app]
-               (.getElementById js/document "app")))
-
+  (rdc/render react-root [todomvc.views/todo-app]))
