@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+#### Added
+
+- New preload namespace, compatible with React 18: `day8.re-frame-10x.preload.react-18`. See #367
+
 #### Changed
 
 - Upgrade re-frame to 1.3.0

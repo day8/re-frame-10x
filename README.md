@@ -235,11 +235,14 @@ If you don't meet those pre-requisites, see the docs on [advanced setups](/docs/
 
 Reagent Versions  | React Versions      | re-frame-10x Artifact | Status |
 ----------------- | ------------------- | --------------------- | ------ | 
-`1.0.x`           | `17.x`              | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x?style=for-the-badge&logo=clojure&logoColor=fff)](https://clojars.org/day8.re-frame/re-frame-10x) | [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) |
+`1.2.x`           | `17.x` - `18.x`     | [![clojars](https://img.shields.io/clojars/v/day8.re-frame/re-frame-10x?style=for-the-badge&logo=clojure&logoColor=fff)](https://clojars.org/day8.re-frame/re-frame-10x) | [![ci](https://github.com/day8/re-frame-10x/workflows/ci/badge.svg)](https://github.com/day8/re-frame-10x/actions?workflow=ci) |
+`1.0.x`           | `17.x`              | `[day8.re-frame/re-frame-10x "1.8.1"]` | Frozen |
 `0.10.x`          | `16.13.x`           | `[day8.re-frame/re-frame-10x "0.7.0"]` | Frozen |
 `0.9.x`           | `16.9.x`            |  `[day8.re-frame/re-frame-10x "0.5.2"]` | Frozen |
 `0.8.x`           | `16.x.x` - `16.8.6` | `[day8.re-frame/re-frame-10x "0.4.3"]` | Frozen |
 `0.6.x` - `0.7.x` | `15.x`              | `[day8.re-frame/re-frame-10x "0.3.7"]` | Frozen |
+
+**For React 18:** Consider using `{:preloads [day8.re-frame-10x.preload.react-18]}`. This will use [React's new render API](https://react.dev/blog/2022/03/29/react-v18#react-dom-client). Otherwise, expect deprecation warnings from React.
 
 **For versions < 0.4.0:** If your project uses React 16 and Reagent 0.8.0-alpha2 (or higher) then you will need to add the qualifier `-react16` to the version, e.g. `[day8.re-frame/re-frame-10x "VERSION-react16"]`.
 

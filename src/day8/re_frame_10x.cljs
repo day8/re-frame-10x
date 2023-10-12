@@ -1,7 +1,6 @@
 (ns day8.re-frame-10x
   (:require
    [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.core           :as r]
-   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.dom            :as rdom]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core         :as rf]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db]
    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom   :as spade.dom]
@@ -10,7 +9,6 @@
    [day8.reagent.impl.component                                          :refer [patch-wrap-funs patch-custom-wrapper]]
    [day8.re-frame-10x.tools.datafy                                       :as tools.datafy]
    [day8.re-frame-10x.tools.shadow-dom                                   :as tools.shadow-dom]
-   [day8.re-frame-10x.events                                             :as events]
    [day8.re-frame-10x.components.re-com                                  :as rc]
    [day8.re-frame-10x.navigation.views                                   :as container]
    [day8.re-frame-10x.panels.settings.subs                               :as settings.subs]
@@ -134,21 +132,9 @@
     {:panel-type :inline
      :debug?     debug?}]])
 
-(defn inject!
-  []
-  (rf/clear-subscription-cache!)
-  (let [shadow-root (create-shadow-root)]
-    (rdom/render (create-style-container shadow-root) shadow-root)))
-
 (defn patch!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."
   []
   (patch-custom-wrapper)
   (patch-wrap-funs)
   (patch-next-tick))
-
-(defn init!
-  []
-  (patch!)
-  (rf/dispatch-sync [::events/init {:debug? debug?}])
-  (inject!))
