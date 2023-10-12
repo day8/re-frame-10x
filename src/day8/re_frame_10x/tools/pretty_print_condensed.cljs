@@ -4,7 +4,7 @@
   (:refer-clojure :exclude [pr-seq-writer string-print pr-str-with-opts pr-opts pr])
   (:require [clojure.string :as str]
             [goog.string    :as gstring]
-            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db])
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db])
   (:import [goog.string StringBuffer]))
 
 (defprotocol ILimited
@@ -271,5 +271,5 @@
 (comment (defn testit []
            (dotimes [_ 5]
              (time
-              (pr-str-truncated 200 @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db)))
-           (pr-str-truncated 200 "=>" @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db)))
+              (pr-str-truncated 200 @day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db/app-db)))
+           (pr-str-truncated 200 "=>" @day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db/app-db)))

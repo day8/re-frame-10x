@@ -34,7 +34,7 @@
                                          [metosin/malli   "0.11.0"]
                                          [clj-kondo       "RELEASE"]]
                           :plugins      [[com.github.liquidz/antq "RELEASE"]
-                                         [thomasa/mranderson      "0.5.3"]
+                                         [thomasa/mranderson      "0.5.4-fix76"]
                                          [lein-count              "1.0.9"]
                                          [lein-pprint             "1.3.2"]]
                           :antq         {}
@@ -46,11 +46,11 @@
                                                  "--parallel"
                                                  "--copy-configs"]}}
              :mranderson {:mranderson {:project-prefix "day8.re-frame-10x.inlined-deps"}
-                          :dependencies ^:replace [^:source-dep [re-frame "1.1.2"
+                          :dependencies ^:replace [^:source-dep [re-frame "1.3.0"
                                                                  :exclusions [reagent
                                                                               net.cgrand/macrovich
                                                                               org.clojure/tools.logging]]
-                                                   ^:source-dep [reagent "1.0.0"
+                                                   ^:source-dep [reagent "1.2.0"
                                                                  :exclusions [cljsjs/react
                                                                               cljsjs/react-dom
                                                                               cljsjs/react-dom-server]]

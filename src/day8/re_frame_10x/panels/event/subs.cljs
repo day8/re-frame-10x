@@ -3,7 +3,7 @@
    [zprint.core                                                  :as zp]
    [clojure.string                                               :as string]
    [goog.string                                                  :as gstring]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.panels.settings.subs                              :as settings.subs]
    [day8.re-frame-10x.panels.traces.subs                                :as traces.subs]))
 

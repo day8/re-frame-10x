@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.panels.app-db.subs
   (:require
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.navigation.epochs.subs                     :as epochs]))
 
 (rf/reg-sub

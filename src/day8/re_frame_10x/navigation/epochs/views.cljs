@@ -1,8 +1,8 @@
 (ns day8.re-frame-10x.navigation.epochs.views
   (:require
-   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core   :as r]
-   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom    :as rdom]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.core   :as r]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.dom    :as rdom]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
    [day8.re-frame-10x.components.buttons                         :as buttons]
    [day8.re-frame-10x.components.re-com                          :as rc]

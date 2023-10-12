@@ -1,9 +1,9 @@
 (ns day8.re-frame-10x
   (:require
-   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.core           :as r]
-   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.dom            :as rdom]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core         :as rf]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.core           :as r]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.dom            :as rdom]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core         :as rf]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db]
    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom   :as spade.dom]
    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react           :as spade.react]
    [day8.reagent.impl.batching                                           :refer [patch-next-tick]]
@@ -112,7 +112,7 @@
 
 (defn traced-result [trace-id fragment-id]
   ;; TODO: this is not terribly efficient, figure out how to get the index of the trace directly.
-  (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.db/app-db [:traces :all])))]
+  (let [trace (first (filter #(= trace-id (:id %)) (get-in @day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db/app-db [:traces :all])))]
     (get-in trace [:tags :code fragment-id :result])))
 
 (defn ^:export factory-reset! []

@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file. This change
 
 #### Changed
 
+- Upgrade re-frame to 1.3.0
+- Upgrade reagent to 1.2.0
 - Namespace aliasing can be toggled in the settings.
 - Namespace aliasing is more performant, especially when turned off.
 
