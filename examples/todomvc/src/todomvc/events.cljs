@@ -5,7 +5,7 @@
    [cljs.spec.alpha :as s]
    [day8.re-frame.tracing :refer-macros [fn-traced]]
    [malli.generator :as mg]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]))
 
 ;; -- Interceptors --------------------------------------------------------------
 ;;

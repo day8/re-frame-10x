@@ -1,6 +1,6 @@
 (ns day8.re-frame-10x.panels.event.events
   (:require
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]))
 
 (rf/reg-event-db
  ::set-code-visibility

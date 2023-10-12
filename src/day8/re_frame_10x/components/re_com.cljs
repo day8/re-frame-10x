@@ -5,7 +5,7 @@
   (:require
    [goog.object                                                 :as    gobj]
    [clojure.string                                              :as string]
-   [day8.re-frame-10x.inlined-deps.reagent.v1v0v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.ratom :as reagent :refer [RAtom Reaction RCursor Track Wrapper]]
    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core   :refer [defclass]]
    [reagent.impl.component                                      :as    component]
    [reagent.core                                                :as    r]))

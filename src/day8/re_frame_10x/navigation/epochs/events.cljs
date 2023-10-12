@@ -3,7 +3,7 @@
    [re-frame.core]
    [re-frame.db]
    [re-frame.trace]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.fx.debounce                                :as debounce]
    [day8.re-frame-10x.fx.scroll                                  :as scroll]
    [day8.re-frame-10x.tools.metamorphic                          :as metam]

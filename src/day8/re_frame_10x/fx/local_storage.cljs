@@ -6,7 +6,7 @@
    [cljs.reader                                                  :as reader]
    [clojure.string                                               :as string]
    [day8.re-frame-10x.tools.datafy                               :as tools.datafy]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :as rf]))
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]))
 
 (def storage-mechanism
   "LocalStorage is not available in sandboxed iframes, so check
