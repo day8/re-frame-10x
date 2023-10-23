@@ -17,7 +17,7 @@
                      react-major-version
                      "is loaded. This causes deprecation warnings."
                      (when (= "18" react-major-version)
-                       "To fix this, try declaring `day8.re-frame-10x.preload.react-18` in your shadow-cljs.edn (instead of `day8.re-frame-10x.preload`). See https://github.com/day8/re-frame-10x/README.md#compatibility-matrix"))))
+                       "To fix this, try declaring `day8.re-frame-10x.preload.react-18` in your shadow-cljs.edn (instead of `day8.re-frame-10x.preload`). See https://github.com/day8/re-frame-10x/#compatibility-matrix"))))
 
 (re-frame-10x/patch!)
 
