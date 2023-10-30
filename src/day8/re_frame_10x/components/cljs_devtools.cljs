@@ -270,10 +270,11 @@
                                                     (keyword? child-value))
                                           {}
                                           {:id        element-id
-                                           :ref       #(doto %
-                                                         (goog.events/listen "contextmenu" menu-listener)
-                                                         (goog.events/listen "dblclick" click-listener)
-                                                         (goog.events/listen "mousedown" middle-click-listener))
+                                           :ref       #(when %
+                                                         (doto %
+                                                           (goog.events/listen "contextmenu" menu-listener)
+                                                           (goog.events/listen "dblclick" click-listener)
+                                                           (goog.events/listen "mousedown" middle-click-listener)))
                                            :class     "path-annotation"
                                            :data-path (str absolute-devtools-path)})]
                                  (map-indexed child-component children)))
@@ -414,36 +415,34 @@
         root-div              (-> (filter (fn [element]     ;; root re-frame-10x parent div
                                             (= (.-tagName element) "DIV")) shadow-root)
                                   first)
-        menu-html-target      (when root-div
-                                (.-firstChild root-div))
-        menu-html-target      (when (= (.-childElementCount menu-html-target) 2) ;; we will render menus on this element
+        menu-html-target      (some-> root-div .-firstChild)
+        menu-html-target      (when (and menu-html-target
+                                         (= (.-childElementCount menu-html-target) 2)) ;; we will render menus on this element
                                 (.-lastChild menu-html-target))
         ;; triggered during `contextmenu` event when a path annotation is right-clicked
         menu-listener         (fn [event]
                                 ;; at this stage `data` might have changed
                                 ;; we have to rely on `current-data` alias `obj`
-                                (let [target   (-> event .-target .-parentElement)
-                                      path     (.getAttribute target "data-path")
-                                      path-obj (reader.edn/read-string-maybe path)
-                                      offset-x (.-offsetX event)
-                                      offset-y (.-offsetY event)]
-                                  (.preventDefault event)
-                                  (build-popup object path-obj indexed-path target offset-x offset-y menu-html-target)))
+                                (when-let [target   (some-> event .-target .-parentElement)]
+                                  (let [path     (.getAttribute target "data-path")
+                                        path-obj (reader.edn/read-string-maybe path)
+                                        offset-x (.-offsetX event)
+                                        offset-y (.-offsetY event)]
+                                    (.preventDefault event)
+                                    (when menu-html-target (build-popup object path-obj indexed-path target offset-x offset-y menu-html-target)))))
         ;; triggered during `click` event when a path annotation is clicked
         click-listener        (fn [event]
-                                (let [target (-> event .-target .-parentElement)
-                                      path   (.getAttribute target "data-path")
-                                      btn    (.-button event)]
-                                  (when (= btn 0)           ;;left click btn
+                                (when-let [path (some-> event .-target .-parentElement (.getAttribute "data-path"))]
+                                  (when (= (.-button event) 0)           ;;left click btn
                                     (rf/dispatch (conj update-path-fn path)))))
         ;; triggered during `mousedown` event when an element is clicked.
         middle-click-listener (fn [event]
-                                (let [target (-> event .-target .-parentElement)
-                                      path   (.getAttribute target "data-path")
-                                      btn    (.-button event)]
-                                  (.preventDefault event)
-                                  (when (= btn 1)           ;;middle click btn
-                                    (rf/dispatch [::app-db.events/create-path-and-skip-to path open-new-inspectors?]))))]
+                                (when-let [target (some-> event .-target .-parentElement)]
+                                  (let [path   (.getAttribute target "data-path")
+                                        btn    (.-button event)]
+                                    (.preventDefault event)
+                                    (when (= btn 1)           ;;middle click btn
+                                      (rf/dispatch [::app-db.events/create-path-and-skip-to path open-new-inspectors?])))))]
     [rc/box
      :size "1"
      :class (str (jsonml-style) " " class)
