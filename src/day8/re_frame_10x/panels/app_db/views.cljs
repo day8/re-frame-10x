@@ -20,7 +20,7 @@
    [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
    [day8.re-frame-10x.panels.event.events                        :as event.events]
    [day8.re-frame-10x.tools.coll                                 :as tools.coll]
-   [day8.re-frame-10x.tools.datafy                               :refer [pr-str-safe]]
+   [day8.re-frame-10x.tools.datafy                               :refer [pr-str-safe serialize-special-types]]
    [day8.re-frame-10x.fx.clipboard                               :as clipboard]))
 
 (def pod-gap "-1px") ;; Overlap pods by 1px to avoid adjoining borders causing 2px borders
@@ -219,11 +219,11 @@
           [buttons/icon
            {:icon [material/arrow-drop-down]
             :title "Save data to EDN"
-            :on-click #(rf/dispatch [::app-db.events/save-to-file (pr-str-safe data)])}]
+            :on-click #(rf/dispatch [::app-db.events/save-to-file (serialize-special-types data)])}]
           [buttons/icon
            {:icon [material/refresh]
             :title "Copy data"
-            :on-click #(rf/dispatch [::app-db.events/set-edit-str id (pr-str-safe data)])}]
+            :on-click #(rf/dispatch [::app-db.events/set-edit-str id (serialize-special-types data)])}]
           [buttons/icon
            {:icon [material/check-circle-outline]
             :title "Edit data"

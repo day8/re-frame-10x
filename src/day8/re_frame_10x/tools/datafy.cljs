@@ -52,3 +52,20 @@
                              :readably true
                              :meta false
                              :print-length nil}))
+
+(defrecord WrappedSortedMap [data])
+
+(extend-protocol cljs.core/IPrintWithWriter
+  WrappedSortedMap
+  (-pr-writer [o writer _]
+    (write-all writer "#re-frame-10x/sorted-map " (into {} (:data o)))))
+
+(defn wrap-sorted-map [x]
+  (if-not (instance? cljs.core.PersistentTreeMap x)
+    x
+    (->WrappedSortedMap x)))
+
+(defn serialize-special-types [db]
+  (->> db
+       (walk/postwalk wrap-sorted-map)
+       pr-str-safe))
