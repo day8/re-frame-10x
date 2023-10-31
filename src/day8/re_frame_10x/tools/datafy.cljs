@@ -1,6 +1,7 @@
 (ns day8.re-frame-10x.tools.datafy
   (:require [clojure.string :as str]
-            [clojure.walk :as walk]))
+            [clojure.walk :as walk]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.loggers :refer [console]]))
 
 (defn keyboard-event [e]
   {:key (.-key e)
@@ -29,7 +30,13 @@
     (str/join "-" (conj mods key-str))))
 
 (defn deep-sorted-map [m]
-  (walk/postwalk #(cond->> % (map? %) (into (sorted-map))) m))
+  (walk/postwalk
+   #(if (map? %)
+      (try (into (sorted-map) %)
+           (catch :default _
+             (do (console :warn "Warning: map has unsortable keys: " %) %)))
+      %)
+   m))
 
 (defn alias [k ns->alias]
   (if-let [a (get ns->alias (namespace k))]
