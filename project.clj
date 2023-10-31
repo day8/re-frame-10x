@@ -11,6 +11,7 @@
                  [com.yahoo.platform.yui/yuicompressor "2.4.8"
                   :exclusions [rhino/js]]
                  [zprint                               "1.2.7"]
+                 [mvxcvi/arrangement "2.1.0"]
                  [org.clojure/tools.logging "1.2.4"]
                  [rewrite-clj/rewrite-clj "1.1.47"]]
 
