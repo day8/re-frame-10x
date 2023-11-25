@@ -322,6 +322,7 @@
         internal-model (reagent/atom (if (nil? @external-model) "" @external-model))] ;; Create a new atom from the model to be used internally (avoid nil)
     (fn
       [& {:keys [model on-change on-submit status status-icon? placeholder width height rows change-on-blur? validation-regex disabled? class style attr]
+          {react-key :key} :args
           :or   {change-on-blur? true}}]
       (let [latest-ext-model (deref-or-value model)
             disabled?        (deref-or-value disabled?)
@@ -357,7 +358,8 @@
                                        :padding-right "12px"} ;; override for when icon exists
                                       style)
                         :placeholder placeholder
-                        :value       @internal-model
+                        :default-value @internal-model
+                        :key         react-key
                         :disabled    disabled?
                         :on-change   (fn [event]
                                        (let [new-val (-> event .-target .-value)]

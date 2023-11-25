@@ -95,17 +95,17 @@
        :align    :center
        :children
        [[material/search]
-        [:input {:type        "text"
-                 :value       @val
-                 :auto-focus  true
-                 :placeholder placeholder
-                 :size        (if (> 20 (count (str @val)))
-                                25
-                                (count (str @val)))
-                 :on-change   #(do (reset! val (-> % .-target .-value))
-                                   (on-change %))
-                 :on-key-down #(case (.-which %)
-                                 13 (do
-                                      (save)
-                                      (reset! val ""))
-                                 nil)}]]])))
+        [:input {:type          "text"
+                 :default-value @val
+                 :auto-focus    true
+                 :placeholder   placeholder
+                 :size          (if (> 20 (count (str @val)))
+                                  25
+                                  (count (str @val)))
+                 :on-change     #(do (reset! val (-> % .-target .-value))
+                                     (on-change %))
+                 :on-key-down   #(case (.-which %)
+                                   13 (do
+                                        (save)
+                                        (reset! val ""))
+                                   nil)}]]])))

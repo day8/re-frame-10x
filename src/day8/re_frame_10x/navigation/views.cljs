@@ -243,7 +243,7 @@
        :align    :center
        :children [[material/search]
                   [:input {:type        "text"
-                           :value       @filter-str
+                           :default-value       @filter-str
                            :auto-focus  true
                            :placeholder "filter event history"
                            :size        (if (> 20 (count (str @filter-str)))
