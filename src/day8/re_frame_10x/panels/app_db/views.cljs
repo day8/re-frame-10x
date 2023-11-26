@@ -209,35 +209,56 @@
              [buttons/icon {:icon [material/print]
                             :title    "Dump inspector data into DevTools"
                             :on-click #(rf/dispatch [:global/log data])}])]]]]]
-      (when editing?
-        [rc/h-box
+      (when (and open? editing?)
+        [rc/v-box
          :width "100%"
          :children
-         [[rc/input-textarea
-           :change-on-blur? false
-           :model edit-str
-           :attr {:key @(rf/subscribe [::app-db.events/editor-key id])}
-           :on-change #(rf/dispatch [::app-db.events/set-edit-str
-                                     {:id id :value %}])]
-          [:input {:type "file"
-                   :on-change #(do (rf/dispatch [::app-db.events/open-file
-                                                 (first (.-files (.-target %)))
-                                                 [::app-db.events/set-edit-str
-                                                  {:id id :refresh? true}]])
-                                   (set! (.-value (.-target %)) ""))}]
-          [buttons/icon
-           {:icon [material/arrow-drop-down]
-            :title "Save data to EDN"
-            :on-click #(rf/dispatch [::app-db.events/save-to-file (serialize-special-types data)])}]
-          [buttons/icon
-           {:icon [material/refresh]
-            :title "Copy data"
-            :on-click refresh-editor}]
-          [buttons/icon
-           {:icon [material/check-circle-outline]
-            :title "Edit data"
-            :on-click #(re-frame.core/dispatch
-                        [::app-db.events/edit path edit-str])}]]])]]))
+         [[rc/h-box
+           :width "100%"
+           :children
+           [[:input {:type "file"
+                     :accept ".edn"
+                     :id (str "editor-file-" id)
+                     :placeholder "Upload a file"
+                     :style {:display "none" :width 0}
+                     :on-change #(do (rf/dispatch [::app-db.events/open-file
+                                                   (first (.-files (.-target %)))
+                                                   [::app-db.events/set-edit-str
+                                                    {:id id :refresh? true}]])
+                                     (set! (.-value (.-target %)) ""))}]
+            [:label {:for (str "editor-file-" id)}
+             [:div {:style {:pointer-events "none"}}
+              [buttons/icon
+               {:title "Import an EDN file from disk"
+                :label "Import"
+                :icon [material/arrow-drop-up]}]]]
+
+            [buttons/icon
+             {:icon [material/arrow-drop-down]
+              :title "Export an EDN file for download"
+              :label "Export"
+              :on-click #(rf/dispatch [::app-db.events/save-to-file
+                                       (serialize-special-types data)])}]
+            [buttons/icon
+             {:icon [material/refresh]
+              :label "Refresh"
+              :title "Synchronize with the current value in app-db"
+              :on-click refresh-editor}]
+            [buttons/icon
+             {:icon [material/check-circle-outline]
+              :title "Set the value of app-db to the editor value."
+              :label "Set!"
+              :on-click #(re-frame.core/dispatch
+                          [::app-db.events/edit path edit-str])}]]]
+          [:textarea
+           {:default-value edit-str
+            :style {:height 100
+                    :width "100%"
+                    :white-space "pre"
+                    :font-family "monospace"}
+            :key @(rf/subscribe [::app-db.events/editor-key id])
+            :on-change #(rf/dispatch [::app-db.events/set-edit-str
+                                      {:id id :value (.-value (.-target %))}])}]]])]]))
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
