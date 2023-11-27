@@ -4,6 +4,7 @@
    [re-frame.interop]
    [re-frame.core]
    [clojure.string                                               :as string]
+   [zprint.core                                                  :as zp]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.fx.local-storage                           :as local-storage]
    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]))
@@ -164,8 +165,15 @@
 (rf/reg-event-db
  ::set-edit-str
  paths-interceptors
- (fn [paths [id s]]
-   (assoc-in paths [id :edit-str] s)))
+ (fn [paths [{:keys [id value refresh?]}]]
+   (cond-> paths
+     :do (update id assoc :edit-str (zp/zprint-str value {:parse-string? true}))
+     refresh? (update-in [id :editor-key] inc))))
+
+(rf/reg-sub
+ ::editor-key
+ (fn [db [_ id]]
+   (get-in db [:app-db :paths id :editor-key])))
 
 (re-frame.core/reg-event-db
  ::edit
@@ -178,14 +186,13 @@
 (defn read-file [file callback]
   (let [file-reader (js/FileReader.)]
     (set! (.-onload ^js file-reader)
-          #(callback (.-name ^js file) (.-result (.-target %))))
+          #(callback (.-result (.-target %))))
     (.readAsText ^js file-reader file)))
 
-(rf/reg-fx :read-file
-           (fn [params]
-             (let [{:keys [file on-read]} params]
-               (read-file file (fn [_ content]
-                                 (rf/dispatch (conj on-read content)))))))
+(rf/reg-fx
+ :read-file
+ (fn [{:keys [file] [id m] :on-read}]
+   (read-file file #(rf/dispatch [id (assoc m :value %)]))))
 
 (rf/reg-event-fx
  ::open-file

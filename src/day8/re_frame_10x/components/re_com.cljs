@@ -322,7 +322,7 @@
         internal-model (reagent/atom (if (nil? @external-model) "" @external-model))] ;; Create a new atom from the model to be used internally (avoid nil)
     (fn
       [& {:keys [model on-change on-submit status status-icon? placeholder width height rows change-on-blur? validation-regex disabled? class style attr]
-          {react-key :key} :args
+          {react-key :key} :attr
           :or   {change-on-blur? true}}]
       (let [latest-ext-model (deref-or-value model)
             disabled?        (deref-or-value disabled?)

@@ -5,7 +5,6 @@
    [clojure.data]
    [devtools.prefs]
    [devtools.formatters.core]
-   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.core   :as reagent]
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
    [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
@@ -89,153 +88,156 @@
      :children   children]))
 
 (defn pod-header [{:keys [id path path-str open? diff? sort? editing? edit-str]} data]
-  (let [editor-key (reagent/atom (gensym))
-        refresh-input! #(reset! editor-key (gensym))]
-    (fn [{:keys [id path path-str open? diff? sort? editing? edit-str]} data]
-      (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])
-            expand-all? @(rf/subscribe [::app-db.subs/expand-all? id])
-            log-any?    @(rf/subscribe [::settings.subs/any-log-outputs?])]
-        [rc/v-box
+  (let [ambiance       @(rf/subscribe [::settings.subs/ambiance])
+        expand-all?    @(rf/subscribe [::app-db.subs/expand-all? id])
+        log-any?       @(rf/subscribe [::settings.subs/any-log-outputs?])
+        refresh-editor #(rf/dispatch-sync [::app-db.events/set-edit-str
+                                           {:id       id
+                                            :value    (serialize-special-types data)
+                                            :refresh? true}])]
+    [rc/v-box
+     :children
+     [[rc/h-box
+       :class    (styles/section-header ambiance)
+       :align    :center
+       :height   styles/gs-31s
+       :children
+       [[pod-header-section
          :children
-         [[rc/h-box
-           :class    (styles/section-header ambiance)
-           :align    :center
-           :height   styles/gs-31s
-           :children
-           [[pod-header-section
-             :children
-             [[rc/box
-               :width  "30px"
-               :height styles/gs-31s
-               :justify :center
-               :align :center
-               :class  (styles/no-select)
-               :style  {:cursor "pointer"}
-               :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
-                        :on-click (handler-fn (rf/dispatch [::app-db.events/set-path-visibility id (not open?)]))}
-               :child  [buttons/expansion {:open? open?
-                                           :size styles/gs-31s}]]]]
+         [[rc/box
+           :width  "30px"
+           :height styles/gs-31s
+           :justify :center
+           :align :center
+           :class  (styles/no-select)
+           :style  {:cursor "pointer"}
+           :attr   {:title    (str (if open? "Close" "Open") " the pod bay doors, HAL")
+                    :on-click (handler-fn (rf/dispatch [::app-db.events/set-path-visibility id (not open?)]))}
+           :child  [buttons/expansion {:open? open?
+                                       :size styles/gs-31s}]]]]
 
-            [rc/h-box
-             :class (styles/path-header-style ambiance)
-             :size  "auto"
-             :style {:height       styles/gs-31s
-                     :border-right pod-border-edge}
-             :align :center
-             :children
-             [[rc/input-text
-               :class           (styles/path-text-input-style ambiance)
-               :attr            {:on-blur #(rf/dispatch [::app-db.events/update-path-blur id])}
-               :width           "100%"
-               :model           path-str
-               :on-change       #(rf/dispatch [::app-db.events/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
-               :on-submit       #()                   ;; #(rf/dispatch [::app-db.events/add-path %])
-               :change-on-blur? false
-               :placeholder     "enter an app-db path like [:todos 1]"]]]
+        [rc/h-box
+         :class (styles/path-header-style ambiance)
+         :size  "auto"
+         :style {:height       styles/gs-31s
+                 :border-right pod-border-edge}
+         :align :center
+         :children
+         [[rc/input-text
+           :class           (styles/path-text-input-style ambiance)
+           :attr            {:on-blur #(rf/dispatch [::app-db.events/update-path-blur id])}
+           :width           "100%"
+           :model           path-str
+           :on-change       #(rf/dispatch [::app-db.events/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+           :on-submit       #()                   ;; #(rf/dispatch [::app-db.events/add-path %])
+           :change-on-blur? false
+           :placeholder     "enter an app-db path like [:todos 1]"]]]
 
-            (when (> (count path) 0)
-              [buttons/icon
-               {:icon     [material/clear]
-                :title    "Clear path in current inspector"
-                :on-click #(rf/dispatch [::app-db.events/update-path id ""])}])
+        (when (> (count path) 0)
+          [buttons/icon
+           {:icon     [material/clear]
+            :title    "Clear path in current inspector"
+            :on-click #(rf/dispatch [::app-db.events/update-path id ""])}])
 
-            (when (> (count path) 0)
-              [rc/gap-f :size styles/gs-7s])
+        (when (> (count path) 0)
+          [rc/gap-f :size styles/gs-7s])
 
-            (when (> (count path) 0)
-              [buttons/icon
-               {:icon     [material/arrow-drop-up]
-                :title    "Open parent path in current inspector"
-                :on-click #(rf/dispatch [::app-db.events/update-path id (str (if (> (count path) 1) (pop path) ""))])}])
+        (when (> (count path) 0)
+          [buttons/icon
+           {:icon     [material/arrow-drop-up]
+            :title    "Open parent path in current inspector"
+            :on-click #(rf/dispatch [::app-db.events/update-path id (str (if (> (count path) 1) (pop path) ""))])}])
 
-            [pod-header-section
-             :width    "49px"
-             :justify  :center
-             :align    :center
-             :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)]))}
-             :children
-             [[rc/checkbox
-               :model diff?
-               :label ""
-               #_#_:style {:margin-left "6px"
-                           :margin-top  "1px"}
-               :on-change #(rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)])]]]
-            [pod-header-section
-             :width    "49px"
-             :justify  :center
-             :align    :center
-             :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-sort-form? id (not sort?)]))}
-             :children
-             [[rc/checkbox
-               :model sort?
-               :label ""
-               :on-change #(rf/dispatch [::app-db.events/set-sort-form? id (not sort?)])]]]
-            [pod-header-section
-             :width    "49px"
-             :justify  :center
-             :align    :center
-             :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)]))}
-             :children
-             [[buttons/icon {:icon     [(if expand-all? material/unfold-less material/unfold-more)]
-                             :title    (str (if expand-all? "Close" "Expand") " all nodes in this inspector")
-                             :on-click #(rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)])}]]]
-            [pod-header-section
-             :width    styles/gs-50s
-             :justify  :center
-             :children
-             [[buttons/icon
-               {:icon     [material/close]
-                :title    "Remove this inspector"
-                :on-click #(rf/dispatch [::app-db.events/remove-path id])}]]]
-            [pod-header-section
-             :width styles/gs-50s
-             :justify :center
-             :children
-             [[buttons/icon {:icon     [(if editing? material/unfold-less material/unfold-more)]
-                             :title    (str (if expand-all? "Close" "Expand") " the node editor")
-                             :on-click (if editing?
-                                         #(rf/dispatch [::app-db.events/finish-edit id])
-                                         #(rf/dispatch [::app-db.events/start-edit id]))}]]]
-            [pod-header-section
-             :width    styles/gs-31s
-             :justify  :center
-             :last?    true
-             :children
-             [[rc/box
-               :style {:margin "auto"}
-               :child
-               (when log-any?
-                 [buttons/icon {:icon [material/print]
-                                :title    "Dump inspector data into DevTools"
-                                :on-click #(rf/dispatch [:global/log data])}])]]]]]
-          (when editing?
-            [rc/h-box
-             :width "100%"
-             :children
-             [[rc/input-textarea
-               :change-on-blur? false
-               :model edit-str
-               :args {:key @editor-key}
-               :on-change #(rf/dispatch [::app-db.events/set-edit-str id %])]
-              [:input {:type "file"
-                       :on-change #(do (refresh-input!)
-                                       (rf/dispatch [::app-db.events/open-file
-                                                     (first (.-files (.-target %)))
-                                                     [::app-db.events/set-edit-str id]]))}]
-              [buttons/icon
-               {:icon [material/arrow-drop-down]
-                :title "Save data to EDN"
-                :on-click #(rf/dispatch [::app-db.events/save-to-file (serialize-special-types data)])}]
-              [buttons/icon
-               {:icon [material/refresh]
-                :title "Copy data"
-                :on-click #(do (refresh-input!)
-                               (rf/dispatch [::app-db.events/set-edit-str id (serialize-special-types data)]))}]
-              [buttons/icon
-               {:icon [material/check-circle-outline]
-                :title "Edit data"
-                :on-click #(re-frame.core/dispatch
-                            [::app-db.events/edit path edit-str])}]]])]]))))
+        [pod-header-section
+         :width    "49px"
+         :justify  :center
+         :align    :center
+         :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)]))}
+         :children
+         [[rc/checkbox
+           :model diff?
+           :label ""
+           #_#_:style {:margin-left "6px"
+                       :margin-top  "1px"}
+           :on-change #(rf/dispatch [::app-db.events/set-diff-visibility id (not diff?)])]]]
+        [pod-header-section
+         :width    "49px"
+         :justify  :center
+         :align    :center
+         :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-sort-form? id (not sort?)]))}
+         :children
+         [[rc/checkbox
+           :model sort?
+           :label ""
+           :on-change #(rf/dispatch [::app-db.events/set-sort-form? id (not sort?)])]]]
+        [pod-header-section
+         :width    "49px"
+         :justify  :center
+         :align    :center
+         :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)]))}
+         :children
+         [[buttons/icon {:icon     [(if expand-all? material/unfold-less material/unfold-more)]
+                         :title    (str (if expand-all? "Close" "Expand") " all nodes in this inspector")
+                         :on-click #(rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)])}]]]
+        [pod-header-section
+         :width    styles/gs-50s
+         :justify  :center
+         :children
+         [[buttons/icon
+           {:icon     [material/close]
+            :title    "Remove this inspector"
+            :on-click #(rf/dispatch [::app-db.events/remove-path id])}]]]
+        [pod-header-section
+         :width styles/gs-50s
+         :justify :center
+         :children
+         [[buttons/icon {:icon     [(if editing? material/unfold-less material/unfold-more)]
+                         :title    (str (if expand-all? "Close" "Expand") " the node editor")
+                         :on-click (if editing?
+                                     #(rf/dispatch [::app-db.events/finish-edit id])
+                                     #(do (rf/dispatch [::app-db.events/start-edit id])
+                                          (refresh-editor)))}]]]
+        [pod-header-section
+         :width    styles/gs-31s
+         :justify  :center
+         :last?    true
+         :children
+         [[rc/box
+           :style {:margin "auto"}
+           :child
+           (when log-any?
+             [buttons/icon {:icon [material/print]
+                            :title    "Dump inspector data into DevTools"
+                            :on-click #(rf/dispatch [:global/log data])}])]]]]]
+      (when editing?
+        [rc/h-box
+         :width "100%"
+         :children
+         [[rc/input-textarea
+           :change-on-blur? false
+           :model edit-str
+           :attr {:key @(rf/subscribe [::app-db.events/editor-key id])}
+           :on-change #(rf/dispatch [::app-db.events/set-edit-str
+                                     {:id id :value %}])]
+          [:input {:type "file"
+                   :on-change #(do (rf/dispatch [::app-db.events/open-file
+                                                 (first (.-files (.-target %)))
+                                                 [::app-db.events/set-edit-str
+                                                  {:id id :refresh? true}]])
+                                   (set! (.-value (.-target %)) ""))}]
+          [buttons/icon
+           {:icon [material/arrow-drop-down]
+            :title "Save data to EDN"
+            :on-click #(rf/dispatch [::app-db.events/save-to-file (serialize-special-types data)])}]
+          [buttons/icon
+           {:icon [material/refresh]
+            :title "Copy data"
+            :on-click refresh-editor}]
+          [buttons/icon
+           {:icon [material/check-circle-outline]
+            :title "Edit data"
+            :on-click #(re-frame.core/dispatch
+                        [::app-db.events/edit path edit-str])}]]])]]))
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
