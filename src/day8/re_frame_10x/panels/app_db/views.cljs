@@ -238,6 +238,7 @@
               :title "Export an EDN file for download"
               :label "Export"
               :on-click #(rf/dispatch [::app-db.events/save-to-file
+                                       (cond-> "re-frame-db" path (str "__" path))
                                        (serialize-special-types data)])}]
             [buttons/icon
              {:icon [material/refresh]

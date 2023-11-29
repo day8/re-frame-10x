@@ -202,12 +202,12 @@
 
 (rf/reg-fx
  ::save-to-file
- (fn [s]
-   (let [blob (js/Blob. #js [s] #js {:type "text/plain"})
+ (fn [filename contents]
+   (let [blob (js/Blob. #js [contents] #js {:type "text/plain"})
          url (str (.createObjectURL js/URL blob))
          link (js/document.createElement "a")]
      (set! (.-href link) url)
-     (set! (.-download link) "re-frame-10x-db.edn")
+     (set! (.-download link) filename)
      (.appendChild js/document.body link)
      (.click link)
      (.remove link))))
