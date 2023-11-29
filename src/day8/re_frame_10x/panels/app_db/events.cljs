@@ -48,21 +48,19 @@
                         :path        nil
                         :path-str    ""
                         :valid-path? true})
-      :dispatch [::update-path path-id skip-to-path]})))
+      :dispatch [::update-path {:id path-id :path-str skip-to-path}]})))
 
 (rf/reg-event-db
  ::update-path
  paths-interceptors
- (fn [paths [path-id path-str]]
+ (fn [paths [{:keys [id path-str]}]]
    (let [path  (reader.edn/read-string-maybe path-str)
-         paths (assoc-in paths [path-id :path-str] path-str)]
-     (if (or (and (some? path)
-                  (sequential? path))
-             (string/blank? path-str))
-       (-> paths
-           (assoc-in [path-id :path] path)
-           (assoc-in [path-id :valid-path?] true))
-       (assoc-in paths [path-id :valid-path?] false)))))
+         valid? (or (and (some? path) (sequential? path))
+                    (string/blank? path-str))]
+     (-> paths
+         (assoc-in [id :path-str] path-str)
+         (assoc-in [id :valid-path?] valid?)
+         (cond-> valid? (assoc-in [id :path] path))))))
 
 (rf/reg-event-db
  ::update-path-blur

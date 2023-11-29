@@ -128,7 +128,8 @@
            :attr            {:on-blur #(rf/dispatch [::app-db.events/update-path-blur id])}
            :width           "100%"
            :model           path-str
-           :on-change       #(rf/dispatch [::app-db.events/update-path id %]) ;;(fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+           ;;:on-change     (fn [input-string] (rf/dispatch [:app-db/search-string input-string]))
+           :on-change       #(rf/dispatch [::app-db.events/update-path {:path-str % :id id}])
            :on-submit       #()                   ;; #(rf/dispatch [::app-db.events/add-path %])
            :change-on-blur? false
            :placeholder     "enter an app-db path like [:todos 1]"]]]
@@ -137,7 +138,7 @@
           [buttons/icon
            {:icon     [material/clear]
             :title    "Clear path in current inspector"
-            :on-click #(rf/dispatch [::app-db.events/update-path id ""])}])
+            :on-click #(rf/dispatch [::app-db.events/update-path {:id id :path ""}])}])
 
         (when (> (count path) 0)
           [rc/gap-f :size styles/gs-7s])
@@ -146,7 +147,8 @@
           [buttons/icon
            {:icon     [material/arrow-drop-up]
             :title    "Open parent path in current inspector"
-            :on-click #(rf/dispatch [::app-db.events/update-path id (str (if (> (count path) 1) (pop path) ""))])}])
+            :on-click #(rf/dispatch [::app-db.events/update-path
+                                     {:id id :path (str (if (> (count path) 1) (pop path) ""))}])}])
 
         [pod-header-section
          :width    "49px"
@@ -285,7 +287,6 @@
              data
              ["app-db-path" path]
              {:path-id        id
-              :update-path-fn [::app-db.events/update-path id]
               :sort?          sort?
               :object         @app-db-after}]]])
         (when render-diff?

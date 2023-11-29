@@ -399,7 +399,7 @@
             (swap! event-log conj (.-type e)))))))))
 
 (defn simple-render-with-path-annotations
-  [data indexed-path {:keys [object update-path-fn sort?] :as opts} & [class]]
+  [data indexed-path {:keys [object path-id sort?] :as opts} & [class]]
   (let [render-paths?         (rf/subscribe [::app-db.subs/data-path-annotations?])
         open-new-inspectors?  @(rf/subscribe [::settings.subs/open-new-inspectors?])
         ns->alias             @(rf/subscribe [::settings.subs/ns->alias])
@@ -434,7 +434,7 @@
         click-listener        (fn [event]
                                 (when-let [path (some-> event .-target .-parentElement (.getAttribute "data-path"))]
                                   (when (= (.-button event) 0)           ;;left click btn
-                                    (rf/dispatch (conj update-path-fn path)))))
+                                    (rf/dispatch [::app-db.events/update-path {:id path-id :path path}]))))
         ;; triggered during `mousedown` event when an element is clicked.
         middle-click-listener (fn [event]
                                 (when-let [target (some-> event .-target .-parentElement)]
