@@ -191,7 +191,7 @@
          :width styles/gs-50s
          :justify :center
          :children
-         [[buttons/icon {:icon     [(if editing? material/unfold-less material/unfold-more)]
+         [[buttons/icon {:icon     [(if editing? material/unfold-less material/edit)]
                          :title    (str (if expand-all? "Close" "Expand") " the node editor")
                          :on-click (if editing?
                                      #(rf/dispatch [::app-db.events/finish-edit id])
@@ -231,10 +231,10 @@
               [buttons/icon
                {:title "Import an EDN file from disk"
                 :label "Import"
-                :icon [material/arrow-drop-up]}]]]
+                :icon [material/upload]}]]]
 
             [buttons/icon
-             {:icon [material/arrow-drop-down]
+             {:icon [material/download]
               :title "Export an EDN file for download"
               :label "Export"
               :on-click #(rf/dispatch [::app-db.events/save-to-file

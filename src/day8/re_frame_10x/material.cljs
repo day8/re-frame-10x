@@ -13,6 +13,28 @@
          :width   size}
    [:path {:d "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"}]])
 
+(defn edit
+  [{:keys [size]
+    :or   {size styles/gs-19s}}]
+  [:svg {:height size
+         :viewBox "0 0 24 24"
+         :width size}
+   [:path {:d "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"}]])
+
+(defn upload
+  [{:keys [size]}]
+  [:svg {:height "19px"
+         :viewBox "0 0 24 24"
+         :width "19px"}
+   [:path {:d "M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"}]])
+
+(defn download
+  [{:keys [size]}]
+  [:svg {:height "19px"
+         :viewBox "0 0 24 24"
+         :width "19px"}
+   [:path {:d "M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"}]])
+
 (defn arrow-drop-down
   [{:keys [size]
     :or   {size styles/gs-19s}}]
