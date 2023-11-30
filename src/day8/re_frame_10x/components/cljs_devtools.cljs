@@ -150,7 +150,7 @@
          {:class (jsonml-style)}
          [:span {:class    (toggle-style :bright)
                  :on-click #(do (rf/dispatch [::app-db.events/toggle-expansion indexed-path])
-                                (rf/dispatch [::app-db.events/expand path-id false]))}
+                                (rf/dispatch [::app-db.events/expand {:id path-id :expand? false}]))}
           [:button
            (if show-body?
              [material/arrow-drop-down]

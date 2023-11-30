@@ -278,9 +278,32 @@
                    :label "Pretty-print?"
                    :on-change #(rf/dispatch [::settings.events/log-pretty? %])]]
                  [[:div (if log-any?
-                          [:<> "How should the log (" [material/print] ") buttons behave?"]
+                          [:<> "How should the " [material/print] [:strong "log"] " buttons behave?"]
                           "Logging is disabled!")]]
                  settings-box-131])
+              [rc/line]
+              [settings-box
+               [[rc/h-box
+                 :align :center
+                 :gap horizontal-gap
+                 :children [[rc/label :label "Expand data smaller than"]
+                            [rc/input-text
+                             :width styles/gs-31s
+                             :style {:width   "50px"      ;; TODO: Not needed in standard re-com but caused by :all unset
+                                     :height  "25px"
+                                     :padding (css-join "0px" styles/gs-5s)}
+                             :model (rf/subscribe [::settings.subs/expansion-limit])
+                             :change-on-blur? true
+                             :on-change #(rf/dispatch [::settings.events/expansion-limit %])]
+                            [rc/label :label "nodes"
+                             :style {:margin-left "20px"}]
+                            [rc/gap-f :size styles/gs-31s]]]]
+               [[:p "App-db path inspectors will offer to "
+                 [material/unfold-more]
+                 [:strong "expand"]
+                 " the full data structure, as long as it contains fewer than "
+                 [:code @(rf/subscribe [::settings.subs/expansion-limit])] " nodes."]]
+               settings-box-81]
               [rc/line]
               (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
                     alias-namespaces? @(rf/subscribe [::settings.subs/alias-namespaces?])]

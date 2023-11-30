@@ -55,3 +55,12 @@
        (get ret k)))
    m
    ks))
+
+(defn nodes-fewer-than?
+  "Counts the nodes in a nested data structure, until the count reaches a limit.
+  Returns nil if the limit is reached, or the count if it is not."
+  [data limit]
+  (let [children #(if (coll? %) (seq %) nil)
+        rf (fn [ct _] (if (>= ct limit) (reduced nil) (inc ct)))
+        result (reduce rf 0 (tree-seq coll? children data))]
+    (when (number? result) result)))

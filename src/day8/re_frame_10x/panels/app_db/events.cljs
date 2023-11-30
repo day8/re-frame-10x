@@ -6,6 +6,7 @@
    [clojure.string                                               :as string]
    [zprint.core                                                  :as zp]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
+   [day8.re-frame-10x.tools.coll                                 :as tools.coll]
    [day8.re-frame-10x.fx.window                                  :refer [popout-window]]
    [day8.re-frame-10x.fx.local-storage                           :as local-storage]
    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]))
@@ -146,11 +147,11 @@
 (rf/reg-event-db
  ::expand
  paths-interceptors
- (fn [paths [id value]]
-   (let [{:keys [expand?]} (get paths id)]
-     (assoc-in paths [id :expand?] (if-not (nil? value)
-                                     value
-                                     (not expand?))))))
+ (fn [paths [{:keys [id expand?]}]]
+   (let [{was-expanded? :expand?} (get paths id)]
+     (assoc-in paths [id :expand?] (if (some? expand?)
+                                     expand?
+                                     (not was-expanded?))))))
 
 (rf/reg-event-db
  ::start-edit

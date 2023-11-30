@@ -19,7 +19,6 @@
    [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
    [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
    [day8.re-frame-10x.panels.event.events                        :as event.events]
-   [day8.re-frame-10x.tools.coll                                 :as tools.coll]
    [day8.re-frame-10x.tools.datafy                               :refer [pr-str-safe serialize-special-types]]
    [day8.re-frame-10x.fx.clipboard                               :as clipboard]))
 
@@ -93,7 +92,8 @@
         refresh-editor #(rf/dispatch-sync [::app-db.events/set-edit-str
                                            {:id       id
                                             :value    (serialize-special-types data)
-                                            :refresh? true}])]
+                                            :refresh? true}])
+        big-data?      (not @(rf/subscribe [::app-db.subs/small-data? {:id id}]))]
     [rc/v-box
      :children
      [[rc/h-box
@@ -176,9 +176,10 @@
          :justify  :center
          :align    :center
          :children
-         [[buttons/icon {:icon     [(if expand? material/unfold-less material/unfold-more)]
-                         :title    (str (if expand? "Close" "Expand") " all nodes in this inspector")
-                         :on-click #(rf/dispatch [::app-db.events/expand id])}]]]
+         [(when (or (not big-data?) expand?)
+            [buttons/icon {:icon     [(if expand? material/unfold-less material/unfold-more)]
+                           :title    (str (if expand? "Close" "Expand") " all nodes in this inspector")
+                           :on-click #(rf/dispatch [::app-db.events/expand {:id id}])}])]]
         [pod-header-section
          :width    styles/gs-50s
          :justify  :center
@@ -196,7 +197,7 @@
                          :on-click (if editing?
                                      #(rf/dispatch [::app-db.events/finish-edit id])
                                      #(do (rf/dispatch [::app-db.events/start-edit id])
-                                          (refresh-editor)))}]]]
+                                          (when-not big-data? (refresh-editor))))}]]]
         [pod-header-section
          :width    styles/gs-31s
          :justify  :center
@@ -267,7 +268,7 @@
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])
-        data         (tools.coll/get-in-with-lists-and-sets @app-db-after path)]
+        data         @(rf/subscribe [::app-db.subs/path-data {:id id}])]
     [rc/v-box
      :children
      [[pod-header pod-info data]

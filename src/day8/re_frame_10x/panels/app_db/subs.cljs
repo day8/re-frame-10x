@@ -1,7 +1,9 @@
 (ns day8.re-frame-10x.panels.app-db.subs
   (:require
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
-   [day8.re-frame-10x.navigation.epochs.subs                     :as epochs]))
+   [day8.re-frame-10x.navigation.epochs.subs                     :as epochs]
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+   [day8.re-frame-10x.tools.coll                                 :as tools.coll]))
 
 (rf/reg-sub
  ::root
@@ -27,6 +29,24 @@
    (reverse
     (map #(assoc (val %) :id (key %))
          paths))))
+
+(rf/reg-sub
+ ::path-data
+ :<- [::root]
+ :<- [::current-epoch-app-db-after]
+ (fn [[{:keys [paths]} db-after] [_ {:keys [id]}]]
+   (tools.coll/get-in-with-lists-and-sets db-after (:path (get paths id)))))
+
+(rf/reg-sub
+ ::small-data?
+ (fn [[_ {:keys [id]}] _]
+   [(rf/subscribe [::path-data {:id id}])
+    (rf/subscribe [::settings.subs/expansion-limit])])
+ (fn [[data limit] _]
+   (println data)
+   (println limit)
+   (println (tools.coll/nodes-fewer-than? data limit))
+   (tools.coll/nodes-fewer-than? data limit)))
 
 ;; [IJ] TODO: This doesn't appear to be used anywhere:
 (rf/reg-sub

@@ -305,3 +305,8 @@
  (fn [ns-aliases [id ns-full ns-alias]]
    (update ns-aliases id merge {:ns-full (str ns-full)
                                 :ns-alias (str ns-alias)})))
+
+(rf/reg-event-db
+ ::expansion-limit
+ [(rf/path [:settings :expansion-limit]) rf/trim-v (local-storage/save "expansion-limit")]
+ (fn [_ [limit]] limit))

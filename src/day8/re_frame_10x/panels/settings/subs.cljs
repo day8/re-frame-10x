@@ -183,3 +183,8 @@
    (into {}
          (map (comp (juxt :ns-full :ns-alias) val)
               ns-aliases))))
+
+(rf/reg-sub
+ ::expansion-limit
+ :<- [::root]
+ :-> :expansion-limit)
