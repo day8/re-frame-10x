@@ -87,9 +87,8 @@
      :attr       attr
      :children   children]))
 
-(defn pod-header [{:keys [id path path-str open? diff? sort? editing? edit-str]} data]
+(defn pod-header [{:keys [id path path-str open? diff? sort? editing? edit-str expand?]} data]
   (let [ambiance       @(rf/subscribe [::settings.subs/ambiance])
-        expand-all?    @(rf/subscribe [::app-db.subs/expand-all? id])
         log-any?       @(rf/subscribe [::settings.subs/any-log-outputs?])
         refresh-editor #(rf/dispatch-sync [::app-db.events/set-edit-str
                                            {:id       id
@@ -176,11 +175,10 @@
          :width    "49px"
          :justify  :center
          :align    :center
-         :attr     {:on-click (handler-fn (rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)]))}
          :children
-         [[buttons/icon {:icon     [(if expand-all? material/unfold-less material/unfold-more)]
-                         :title    (str (if expand-all? "Close" "Expand") " all nodes in this inspector")
-                         :on-click #(rf/dispatch [::app-db.events/set-expand-all? id (not expand-all?)])}]]]
+         [[buttons/icon {:icon     [(if expand? material/unfold-less material/unfold-more)]
+                         :title    (str (if expand? "Close" "Expand") " all nodes in this inspector")
+                         :on-click #(rf/dispatch [::app-db.events/expand id])}]]]
         [pod-header-section
          :width    styles/gs-50s
          :justify  :center
@@ -194,7 +192,7 @@
          :justify :center
          :children
          [[buttons/icon {:icon     [(if editing? material/unfold-less material/edit)]
-                         :title    (str (if expand-all? "Close" "Expand") " the node editor")
+                         :title    (str (if expand? "Close" "Expand") " the node editor")
                          :on-click (if editing?
                                      #(rf/dispatch [::app-db.events/finish-edit id])
                                      #(do (rf/dispatch [::app-db.events/start-edit id])
@@ -265,7 +263,7 @@
 
 (def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
 
-(defn pod [{:keys [id path open? diff? sort?] :as pod-info}]
+(defn pod [{:keys [id path open? diff? sort? expand?] :as pod-info}]
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
         app-db-after (rf/subscribe [::app-db.subs/current-epoch-app-db-after])
@@ -285,6 +283,7 @@
            :children
            [[cljs-devtools/simple-render-with-path-annotations
              {:data         data
+              :expand?      expand?
               :path         path
               :path-id      id
               :sort?        sort?

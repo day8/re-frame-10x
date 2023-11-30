@@ -144,10 +144,13 @@
    data-path-annotations?))
 
 (rf/reg-event-db
- ::set-expand-all?
- [(rf/path [:app-db :expand-all?]) rf/trim-v]
- (fn [db [path-id expand?]]
-   (assoc db path-id expand?)))
+ ::expand
+ paths-interceptors
+ (fn [paths [id value]]
+   (let [{:keys [expand?]} (get paths id)]
+     (assoc-in paths [id :expand?] (if-not (nil? value)
+                                     value
+                                     (not expand?))))))
 
 (rf/reg-event-db
  ::start-edit

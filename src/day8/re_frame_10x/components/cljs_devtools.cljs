@@ -139,21 +139,18 @@
            (get-config jsonml))
           (conj path :header)))])))
 
-(defn data-structure-with-path-annotations [_ _ _ {:keys [path-id]}]
-  (let [expand-all?   (rf/subscribe [::app-db.subs/expand-all? path-id]) ;; default is nil, false means that we have collapsed the app-db
-        ;; true means we have expanded the whole db
-        render-paths? (rf/subscribe [::app-db.subs/data-path-annotations?])]
-    (fn [jsonml indexed-path devtools-path opts]
-      (let [expanded?  (rf/subscribe [::app-db.subs/node-expanded? indexed-path])
+(defn data-structure-with-path-annotations [_ _ _ _]
+  (let [render-paths? (rf/subscribe [::app-db.subs/data-path-annotations?])]
+    (fn [jsonml indexed-path devtools-path {:keys [expand? path-id] :as opts}]
+      (let [node-expanded?  @(rf/subscribe [::app-db.subs/node-expanded? indexed-path])
             show-body? (and (has-body (get-object jsonml) (get-config jsonml))
-                            (cond
-                              @expand-all? true
-                              (and @expanded? (not= @expand-all? false)) true))]
+                            (or (and node-expanded? (not (nil? expand?)))
+                                expand?))]
         [:span
          {:class (jsonml-style)}
          [:span {:class    (toggle-style :bright)
                  :on-click #(do (rf/dispatch [::app-db.events/toggle-expansion indexed-path])
-                                (rf/dispatch [::app-db.events/set-expand-all? path-id nil]))}
+                                (rf/dispatch [::app-db.events/expand path-id false]))}
           [:button
            (if show-body?
              [material/arrow-drop-down]
