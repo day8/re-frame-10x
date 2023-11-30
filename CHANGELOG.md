@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file. This change
 #### Fixed
 
 - Right-click popup menu is positioned more accurately. See #348.
+- Right-click popup menu now works in the popout window.
 
 ## 1.8.1 (2023-07-26)
 
