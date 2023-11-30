@@ -43,6 +43,6 @@
                         :label    "Copy REPL Cmd"
                         :on-click #(do (clipboard/copy!
                                         (str
-                                         `(simple-render-with-path-annotations
-                                           ~{:data data :path path})))
+                                         `(day8.re-frame-10x.components.cljs-devtools/simple-render-with-path-annotations
+                                           {:data @re-frame.db/app-db :path ~path})))
                                        (rf/dispatch [::app-db.events/close-popup-menu]))}]]]])))
