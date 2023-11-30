@@ -6,6 +6,7 @@
    [clojure.string                                               :as string]
    [zprint.core                                                  :as zp]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
+   [day8.re-frame-10x.fx.window                                  :refer [popout-window]]
    [day8.re-frame-10x.fx.local-storage                           :as local-storage]
    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]))
 
@@ -214,3 +215,28 @@
  ::save-to-file
  (fn [_ [_ s]]
    {::save-to-file s}))
+
+(rf/reg-cofx
+ ::window-bounds
+ (fn [cofx]
+   (let [rect (-> (or (some-> @popout-window .-document) js/document)
+                  (.getElementById "--re-frame-10x--")
+                  .-shadowRoot
+                  (.getElementById "re-frame-10x__ui-container")
+                  .getBoundingClientRect)]
+     (into cofx {::window-bounds [(.-x rect) (.-y rect)]}))))
+
+(rf/reg-event-fx
+ ::open-popup-menu
+ [(rf/inject-cofx ::window-bounds)]
+ (fn [{:keys [db] [wx wy] ::window-bounds}
+      [_ {:keys [path data data-path] [mx my] :mouse-position}]]
+   {:db (assoc db :popup-menu {:showing? true
+                               :position [(- mx wx) (- my wy)]
+                               :path     path
+                               :data     data
+                               :data-path data-path})}))
+
+(rf/reg-event-db
+ ::close-popup-menu
+ (fn [db _] (assoc db :popup-menu {:showing? false})))

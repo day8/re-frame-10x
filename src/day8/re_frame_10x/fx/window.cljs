@@ -3,7 +3,10 @@
    [goog.object                                                  :as gobj]
    [goog.string                                                  :as gstring]
    [clojure.string                                               :as string]
+   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.core   :as r]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]))
+
+(def popout-window (r/atom nil))
 
 (defn m->str
   [m]
@@ -50,9 +53,14 @@
         (.write d window-html)
         (gobj/set w "onload" (partial on-load w d))
         (.close d)
-        (rf/dispatch on-success))
+        (rf/dispatch on-success)
+        (reset! popout-window w))
       (rf/dispatch on-failure))))
 
 (rf/reg-fx
  ::open-debugger-window
  open-debugger-window)
+
+(rf/reg-fx
+ ::close-debugger-window
+ (fn [] (reset! popout-window nil)))

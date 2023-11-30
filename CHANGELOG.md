@@ -13,6 +13,12 @@ All notable changes to this project will be documented in this file. This change
 - Upgrade reagent to 1.2.0
 - Namespace aliasing can be toggled in the settings.
 - Namespace aliasing is more performant, especially when turned off.
+- Right-click popup menu "Copy Object" replaced with "Copy Subtree."
+  - Copies parent subtree of the clicked item.
+
+#### Fixed
+
+- Right-click popup menu is positioned more accurately. See #348.
 
 ## 1.8.1 (2023-07-26)
 

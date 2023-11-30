@@ -21,15 +21,9 @@
    [day8.re-frame-10x.styles                                     :as styles]
    [day8.re-frame-10x.panels.app-db.events                       :as app-db.events]
    [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
-   [day8.re-frame-10x.fx.clipboard                               :as clipboard]
-   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.core   :as r]
-   [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.dom    :as dom]
-   [day8.re-frame-10x.tools.coll                                 :as tools.coll]
    [day8.re-frame-10x.tools.datafy                               :as tools.datafy]
    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]
-   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs])
-  (:import
-   [goog.dom TagName]))
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]))
 
 (def default-config @devtools.prefs/default-config)
 
@@ -314,146 +308,46 @@
        (prn-str-render data)
        (jsonml->hiccup (header data nil) (conj path 0)))]))
 
-(def event-log (atom '()))                                  ;;stores a history of the events, treated as a stack
-
-;; `html-element` is the html element that has received the right click
-;; `app-db` is the full app db
-;; `path` is the current path at the point where the popup is clicked in `data`
-;; `html-target`, optional, is the element which the menus will be rendered in
-(defn build-popup
-  [app-db path indexed-path html-element offset-x offset-y & [html-target]]
-  (let [popup-menu       (goog.ui.PopupMenu.)
-        js-menu-style    (-> #js {:text-align "center"
-                                  :padding    "10px"
-                                  :border     "1px solid #b9bdc6"}
-                             (goog.style.toStyleAttribute))
-        create-menu-item (fn [menu-text]
-                           (-> (goog.dom.createDom
-                                TagName.DIV
-                                #js {}
-                                (goog.dom.createDom TagName.SPAN #js {} menu-text))
-                               (doto (.setAttribute "style" js-menu-style))
-                               goog.ui.MenuItem.))
-        copy-path-item   (create-menu-item "Copy path")
-        copy-obj-item    (create-menu-item "Copy object")
-        copy-repl-item   (create-menu-item "Copy REPL command")
-        element-rect     (.getBoundingClientRect html-element)
-        target-rect      (when html-target (.getBoundingClientRect html-target))
-        target-x-offset  (when target-rect (+ (.-left target-rect) (.-scrollX js/window)))
-        element-x-pos    (+ (.-left element-rect) (.-scrollX js/window))
-          ;; element-x-pos is relative to window, so we remove offset of element we're rendering in below
-        menu-x-pos       (+ offset-x
-                            (if target-x-offset
-                              (- element-x-pos target-x-offset)
-                              element-x-pos))
-        menu-y-pos       (+ offset-y (.-top element-rect) (.-scrollY js/window))]
-    (doto copy-path-item
-      (.addClassName "copy-path")
-      (.addClassName "10x-menu-item"))
-    (doto copy-obj-item
-      (.addClassName "copy-object")
-      (.addClassName "10x-menu-item"))
-    (doto copy-repl-item
-      (.addClassName "copy-repl")
-      (.addClassName "10x-menu-item"))
-    (doto popup-menu
-      (.addItem copy-path-item)
-      (.addItem copy-obj-item)
-      (.addItem copy-repl-item)
-      (.showAt menu-x-pos menu-y-pos)
-      (.render (or html-target html-element)))            ;;if menu target is not supplied we render on clicked element
-    (goog.object.forEach
-     goog.ui.Component.EventType
-     (fn [type]
-       (goog.events.listen
-        popup-menu
-        type
-        (fn [e]
-          (cond
-            (= (.-type e) "hide")
-            (when (= (peek @event-log) "highlight")
-                  ;; if the last event registered is 'highlight' then we should not close the dialog
-                  ;; `highlight` event is dispatched right before `action`. Action would not be dispatched
-                  ;; if the preceding `highlight` closes the dialog
-              (.preventDefault e))
-
-                ;; `action` is thrown after hide
-                ;; `action` is thrown before unhighlight -> hide -> leave
-            (= (.-type e) "action")
-            (let [class-names (-> e .-target .getExtraClassNames js->clj)
-                  object      (tools.coll/get-in-with-lists-and-sets app-db path)]
-              (swap! event-log conj "action")
-              (cond
-                (some (fn [class-name] (= class-name "copy-object")) class-names)
-                (if (or object (= object false))
-                  (clipboard/copy! object)              ;; note we can't copy nil objects
-                  (js/console.error "Could not copy!"))
-
-                (some (fn [class-name] (= class-name "copy-path")) class-names)
-                (clipboard/copy! path)
-
-                (some (fn [class-name] (= class-name "copy-repl")) class-names)
-                (clipboard/copy! (str "(simple-render-with-path-annotations " app-db " " ["app-db-path" indexed-path] {} ")"))))
-
-            :else
-            (swap! event-log conj (.-type e)))))))))
-
 (defn simple-render-with-path-annotations
-  [data indexed-path {:keys [object path-id sort?] :as opts} & [class]]
-  (let [render-paths?         (rf/subscribe [::app-db.subs/data-path-annotations?])
+  [{:keys [data path path-id sort?] :as opts}]
+  (let [render-paths?         @(rf/subscribe [::app-db.subs/data-path-annotations?])
         open-new-inspectors?  @(rf/subscribe [::settings.subs/open-new-inspectors?])
         ns->alias             @(rf/subscribe [::settings.subs/ns->alias])
         alias?                (and (seq ns->alias)
                                    @(rf/subscribe [::settings.subs/alias-namespaces?]))
         data                  (cond-> data
                                 alias? (tools.datafy/alias-namespaces ns->alias)
-                                sort? tools.datafy/deep-sorted-map)
-        input-field-path      (second indexed-path)              ;;path typed in input-box
-        shadow-root           (-> (.getElementById js/document "--re-frame-10x--") ;;main shadow-root html component
-                                  .-shadowRoot
-                                  .-children)
-        root-div              (-> (filter (fn [element]     ;; root re-frame-10x parent div
-                                            (= (.-tagName element) "DIV")) shadow-root)
-                                  first)
-        menu-html-target      (some-> root-div .-firstChild)
-        menu-html-target      (when (and menu-html-target
-                                         (= (.-childElementCount menu-html-target) 2)) ;; we will render menus on this element
-                                (.-lastChild menu-html-target))
-        ;; triggered during `contextmenu` event when a path annotation is right-clicked
-        menu-listener         (fn [event]
-                                ;; at this stage `data` might have changed
-                                ;; we have to rely on `current-data` alias `obj`
-                                (when-let [target   (some-> event .-target .-parentElement)]
-                                  (let [path     (.getAttribute target "data-path")
-                                        path-obj (reader.edn/read-string-maybe path)
-                                        offset-x (.-offsetX event)
-                                        offset-y (.-offsetY event)]
-                                    (.preventDefault event)
-                                    (when menu-html-target (build-popup object path-obj indexed-path target offset-x offset-y menu-html-target)))))
-        ;; triggered during `click` event when a path annotation is clicked
-        click-listener        (fn [event]
-                                (when-let [path (some-> event .-target .-parentElement (.getAttribute "data-path"))]
-                                  (when (= (.-button event) 0)           ;;left click btn
-                                    (rf/dispatch [::app-db.events/update-path {:id path-id :path path}]))))
-        ;; triggered during `mousedown` event when an element is clicked.
-        middle-click-listener (fn [event]
-                                (when-let [target (some-> event .-target .-parentElement)]
-                                  (let [path   (.getAttribute target "data-path")
-                                        btn    (.-button event)]
-                                    (.preventDefault event)
-                                    (when (= btn 1)           ;;middle click btn
-                                      (rf/dispatch [::app-db.events/create-path-and-skip-to path open-new-inspectors?])))))]
+                                sort? tools.datafy/deep-sorted-map)]
     [rc/box
      :size "1"
-     :class (str (jsonml-style) " " class)
+     :class (jsonml-style)
      :child
      (if (prn-str-render? data)
        (prn-str-render data)
        (jsonml->hiccup-with-path-annotations
-        (header data nil {:render-paths? @render-paths?})
-        (conj indexed-path 0)
-        (or input-field-path [])
-        (assoc opts
-               :click-listener        click-listener
-               :middle-click-listener middle-click-listener
-               :menu-listener         menu-listener)))]))
+        (header data nil {:render-paths? render-paths?})
+        ["app-db-path" path]
+        (or path [])
+        (merge
+         opts
+         {:click-listener        #(when-let [path (some-> % .-target .-parentElement (.getAttribute "data-path"))]
+                                    (when (= (.-button %) 0)
+                                      (rf/dispatch [::app-db.events/update-path {:id path-id :path path}])))
+          :middle-click-listener #(when-let [target (some-> % .-target .-parentElement)]
+                                    (let [path (.getAttribute target "data-path")
+                                          btn  (.-button %)]
+                                      (.preventDefault %)
+                                      (when (= btn 1)
+                                        (rf/dispatch
+                                         [::app-db.events/create-path-and-skip-to path open-new-inspectors?]))))
+          :menu-listener         #(do (.preventDefault %)
+                                      (rf/dispatch
+                                       [::app-db.events/open-popup-menu
+                                        {:data data
+                                         :mouse-position [(.-clientX %) (.-clientY %)]
+                                         :path path
+                                         :data-path (some-> %
+                                                            .-target
+                                                            .-parentElement
+                                                            (.getAttribute "data-path")
+                                                            reader.edn/read-string-maybe)}]))})))]))

@@ -284,11 +284,11 @@
                    :overflow-y "hidden"}
            :children
            [[cljs-devtools/simple-render-with-path-annotations
-             data
-             ["app-db-path" path]
-             {:path-id        id
-              :sort?          sort?
-              :object         @app-db-after}]]])
+             {:data         data
+              :path         path
+              :path-id      id
+              :sort?        sort?
+              :db           @app-db-after}]]])
         (when render-diff?
           (let [app-db-before (rf/subscribe [::app-db.subs/current-epoch-app-db-before])
                 [diff-before diff-after _] (when render-diff?

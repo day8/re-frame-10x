@@ -65,3 +65,5 @@
  :<- [::root]
  (fn [{:keys [expand-all?]} [_ path-id]]
    (get expand-all? path-id)))
+
+(rf/reg-sub ::popup-menu :-> :popup-menu)

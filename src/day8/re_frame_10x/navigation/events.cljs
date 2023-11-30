@@ -36,7 +36,8 @@
  [(rf/path [:settings :external-window?]) (local-storage/save "external-window?")]
  (fn [_ _]
    {:db false
-    :fx [[:dispatch-later {:ms 400 :dispatch [::settings.events/show-panel? true]}]]}))
+    :fx [[:dispatch-later {:ms 400 :dispatch [::settings.events/show-panel? true]}]
+         [::window/close-debugger-window]]}))
 
 (rf/reg-event-db
  ::dismiss-popup-failed

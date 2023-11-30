@@ -33,7 +33,8 @@
    [day8.re-frame-10x.panels.traces.views                        :as traces.views]
    [day8.re-frame-10x.material                                   :as material]
    [day8.re-frame-10x.styles                                     :as styles]
-   [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]))
+   [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]
+   [day8.re-frame-10x.popup :as popup]))
 
 #_(defglobal container-styles
     [:#--re-frame-10x--
@@ -333,50 +334,58 @@
                                         [warnings external-window?]
                                         [errors external-window?]
                                         [tab-content]]]]
-    (if-not showing-settings?
-      [rc/v-split
-       :class         (str (styles/normalize) " " (devtools-inner-style ambiance) " " (path-annotations-menu-style))
-       :height        "100%"
-       :width         "100%"
-       :debug?        debug?
-       :initial-split "10%"
-       :margin        "0px"
-       :panel-1       [rc/v-box
-                       :height "100%"
-                       :width "100%"
-                       :style {:overflow :auto}
-                       :children
-                       [[rc/h-box
-                         :class  (navigation-style ambiance)
-                         :align  :center
-                         :height styles/gs-31s
-                         :width  "100%"
-                         :gap    styles/gs-19s
+    [rc/box
+     :style {:position "relative"
+             :width "100%"
+             :height "100%"}
+     :attr {:id "re-frame-10x__ui-container"}
+     :child
+     [:<>
+      (if-not showing-settings?
+        [rc/v-split
+         :class         (str (styles/normalize) " " (devtools-inner-style ambiance) " " (path-annotations-menu-style))
+         :height        "100%"
+         :width         "100%"
+         :debug?        debug?
+         :initial-split "10%"
+         :margin        "0px"
+         :panel-1       [rc/v-box
+                         :height "100%"
+                         :width "100%"
+                         :style {:overflow :auto}
                          :children
-                         [(when-not (= @show-event-history? false)
-                            [rc/label :label "Event History"])
+                         [[rc/h-box
+                           :class  (navigation-style ambiance)
+                           :align  :center
+                           :height styles/gs-31s
+                           :width  "100%"
+                           :gap    styles/gs-19s
+                           :children
+                           [(when-not (= @show-event-history? false)
+                              [rc/label :label "Event History"])
+                            (if-not (= @show-event-history? false)
+                              [epochs.views/left-buttons]
+                              [rc/box
+                               :size  "1"
+                               :child [:div]])
+                            [epoch-filtering]
+                            [show-history-button]
+                            [rc/h-box
+                             :gap      styles/gs-12s
+                             :style    {:margin-right styles/gs-5s}
+                             :children [[settings-button]
+                                        [popout-button external-window?]
+                                        [hide-panel-button external-window?]]]]]
                           (if-not (= @show-event-history? false)
-                            [epochs.views/left-buttons]
-                            [rc/box
-                             :size  "1"
-                             :child [:div]])
-                          [epoch-filtering]
-                          [show-history-button]
-                          [rc/h-box
-                           :gap      styles/gs-12s
-                           :style    {:margin-right styles/gs-5s}
-                           :children [[settings-button]
-                                      [popout-button external-window?]
-                                      [hide-panel-button external-window?]]]]]
-                        (if-not (= @show-event-history? false)
-                          [epochs.views/epochs]
-                          [rc/line])]]
-       :panel-2 panel-2]
-      [rc/box
-       :class  (str (styles/normalize) " " (devtools-inner-style ambiance) " " (path-annotations-menu-style))
-       :height "100%"
-       :width  "100%"
-       :child  panel-2])))
+                            [epochs.views/epochs]
+                            [rc/line])]]
+         :panel-2 panel-2]
+        [rc/box
+         :class  (str (styles/normalize) " " (devtools-inner-style ambiance) " " (path-annotations-menu-style))
+         :height "100%"
+         :width  "100%"
+         :child  panel-2])
+      [popup/menu]]]))
 
 (defn mount [popup-window popup-document]
   ;; When programming here, we need to be careful about which document and window
