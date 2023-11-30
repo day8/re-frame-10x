@@ -20,7 +20,9 @@
    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
    [day8.re-frame-10x.panels.subs.events                         :as subs.events]
    [day8.re-frame-10x.panels.subs.subs                           :as subs.subs]
-   [day8.re-frame-10x.tools.string                               :as tools.string]))
+   [day8.re-frame-10x.navigation.epochs.subs                     :as epochs.subs]
+   [day8.re-frame-10x.tools.string                               :as tools.string]
+   [day8.re-frame-10x.fx.clipboard                               :as clipboard]))
 
 (def tag-types
   {:sub/create  {:long "CREATED"  :short "C"}
@@ -143,7 +145,8 @@
 (defn pod-header [{:keys [id layer path open? diff? pin? order value]}]
   ;; TODO: highlight when pin? is true
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
-        log-any? @(rf/subscribe [::settings.subs/any-log-outputs?])]
+        log-any? @(rf/subscribe [::settings.subs/any-log-outputs?])
+        epoch-id @(rf/subscribe [::epochs.subs/selected-epoch-id])]
     [rc/h-box
      :class    (styles/section-header ambiance)
      :align    :center
@@ -247,7 +250,23 @@
          :child
          (when log-any?
            [buttons/icon {:icon [material/print]
-                          :on-click #()}])]]]]]))
+                          :on-click #()
+                          :title "Log value to the console"}])]]]
+
+      [pod-header-section
+       :width    styles/gs-31s
+       :attr     {:on-click #(clipboard/copy! (pr-str `(day8.re-frame-10x/traced-sub
+                                                ~epoch-id
+                                                ~id)))}
+       :last?    true
+       :children
+       [[rc/box
+         :style {:margin "auto"}
+         :child
+         (when log-any?
+           [buttons/icon {:icon [material/content-copy]
+                          :on-click #()
+                          :title "Copy a REPL command to fetch the value"}])]]]]]))
 
 (defclass sub-message-style
   []
@@ -436,7 +455,10 @@
         sub-expansions   @(rf/subscribe [::subs.subs/sub-expansions])
         sub-pins         @(rf/subscribe [::subs.subs/sub-pins])
         all-subs         (if @(rf/subscribe [::settings.subs/debug?])
-                           (cons {:path [::subs.subs/current-epoch-sub-state] :id "debug" :value @(rf/subscribe [::subs.subs/current-epoch-sub-state])} visible-subs)
+                           (cons {:path [::subs.subs/current-epoch-sub-state]
+                                  :id "debug"
+                                  :value @(rf/subscribe [::subs.subs/current-epoch-sub-state])}
+                                 visible-subs)
                            visible-subs)]
     [rc/v-box
      :size     "1"

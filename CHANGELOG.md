@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This change
 #### Added
 
 - New preload namespace, compatible with React 18: `day8.re-frame-10x.preload.react-18`. See #367
+- "Copy repl command" for subscriptions. This lets you reliably get a specific subscription value for a specific epoch. See #205
 
 #### Changed
 
