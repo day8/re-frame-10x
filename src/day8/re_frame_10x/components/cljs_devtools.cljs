@@ -332,7 +332,8 @@
          opts
          {:click-listener        #(when-let [path (some-> % .-target .-parentElement (.getAttribute "data-path"))]
                                     (when (= (.-button %) 0)
-                                      (rf/dispatch [::app-db.events/update-path {:id path-id :path path}])))
+                                      (rf/dispatch [::app-db.events/update-path {:id path-id
+                                                                                 :path-str path}])))
           :middle-click-listener #(when-let [target (some-> % .-target .-parentElement)]
                                     (let [path (.getAttribute target "data-path")
                                           btn  (.-button %)]
