@@ -43,9 +43,6 @@
    [(rf/subscribe [::path-data {:id id}])
     (rf/subscribe [::settings.subs/expansion-limit])])
  (fn [[data limit] _]
-   (println data)
-   (println limit)
-   (println (tools.coll/nodes-fewer-than? data limit))
    (tools.coll/nodes-fewer-than? data limit)))
 
 ;; [IJ] TODO: This doesn't appear to be used anywhere:

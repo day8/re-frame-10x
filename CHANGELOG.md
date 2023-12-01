@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.9.1 (2023-12-1)
+
+#### Fixed
+
+- Removed unnecessary debug messages
+
 ## 1.9.0 (2023-11-30)
 
 #### Added
