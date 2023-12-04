@@ -279,7 +279,7 @@ name              | description              | type           | example
 ...`time-travel?` | selecting an event reverts your app-db | boolean | `true`
 ...`ignored-libs` | ignore low-level trace | seq of keywords | `"[:reagent :re-frame]"`
 ...`ns-aliases` | display aliased keywords in data inspectors | map of symbol->symbol | `"{long-namespace ln}"`
-...`ns-aliases` | lets 10x dispatch its own init event in your client re-frame (this fixes some [quirks](https://github.com/day8/re-frame-10x/issues/263)) | boolean | `false`
+...`init-event?` | lets 10x dispatch its own init event in your client re-frame (this fixes some [quirks](https://github.com/day8/re-frame-10x/issues/263)) | boolean | `false`
 
 
 
