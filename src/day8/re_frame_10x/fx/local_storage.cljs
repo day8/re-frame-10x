@@ -67,6 +67,7 @@
    (let [k (keyword storage-key)
          v (load storage-key)]
      (cond-> coeffects
-       :do (assoc k (or v fallback))
-       v (assoc-in [::stored k] v)
-       fallback (assoc-in [::fallback k] fallback)))))
+       (some? fallback) (-> (assoc k fallback)
+                            (assoc-in [::fallback k] fallback))
+       (some? v) (-> (assoc k v)
+                     (assoc-in [::stored k] v))))))

@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.9.2 (2023-12-6)
+
+#### Fixed
+
+- Fixed restoration of falsy local-store values. Now states like panel open/closed are persistent again.
+
 ## 1.9.1 (2023-12-1)
 
 #### Fixed
