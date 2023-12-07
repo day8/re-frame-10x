@@ -23,10 +23,6 @@
 
 (rf/dispatch-sync [::events/init re-frame-10x/project-config])
 
-(when re-frame-10x/init-event?
-  (re-frame.core/reg-event-db :day8.re-frame-10x/init (fn [db _] db))
-  (re-frame.fx/dispatch-later {:ms 500 :dispatch [:day8.re-frame-10x/init]}))
-
 (rf/clear-subscription-cache!)
 
 (def shadow-root (re-frame-10x/create-shadow-root))

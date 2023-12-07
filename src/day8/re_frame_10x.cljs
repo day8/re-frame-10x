@@ -151,7 +151,6 @@
 (goog-define time-travel? true)
 (goog-define ignored-libs "[:reagent :re-frame]")
 (goog-define ns-aliases "{long-namespace ln}")
-(goog-define init-event? false)
 
 (def project-config
   (let [read      reader.edn/read-string-maybe
@@ -164,6 +163,5 @@
           :filtered-view-trace    (some->> hidden-namespaces read (map view) sortable-uuid-map)
           :app-db-follows-events? time-travel?
           :low-level-trace        (some-> ignored-libs read (pred-map #{:re-frame :reagent}))
-          :ns-aliases             (some->> ns-aliases read (map alias) sortable-uuid-map)
-          :init-event?            init-event?}
+          :ns-aliases             (some->> ns-aliases read (map alias) sortable-uuid-map)}
          (into {} keep-vals))))

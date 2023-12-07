@@ -16,8 +16,7 @@
      :closure-defines
      {re-frame.trace.trace-enabled? true
       day8.re-frame-10x.debug? true
-      day8.re-frame.tracing.trace-enabled? true
-      day8.re-frame-10x.init-event? true}
+      day8.re-frame.tracing.trace-enabled? true}
      :external-config
      {:devtools/config
       {:features-to-install
