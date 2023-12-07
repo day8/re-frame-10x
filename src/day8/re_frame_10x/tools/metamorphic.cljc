@@ -201,8 +201,7 @@
       (and (event-run? event)
            (not (run-queue? (:previous-event state))))))
 
-(defn quiescent? [event]
-  (= :reagent/quiescent (:op-type event)))
+(def end-of-match? (comp #{:reagent/quiescent :sync} :op-type))
 
 (def initial-parse-state
   {:current-match  nil
@@ -229,7 +228,7 @@
                state)
 
               ;; We are in an epoch match, and reagent has gone to a quiescent state
-             (quiescent? event)
+             (end-of-match? event)
              (-> state
                  (update :partitions conj (conj current-match event))
                  (assoc :current-match nil))

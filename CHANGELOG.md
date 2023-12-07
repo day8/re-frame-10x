@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.9.3 (2023-12-7)
+
+#### Fixed
+
+- Fixed empty trace information when first opening the 10x panel after the first event was a dispatch-sync.
+  Requires re-frame 1.4.1 or higher. See #263.
+
 ## 1.9.2 (2023-12-6)
 
 #### Fixed

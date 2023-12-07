@@ -79,11 +79,11 @@
                                                                     :sub-state  sub-match
                                                                     :timing     t})
                                            new-matches subscription-matches timing)
-            ;; If there are new matches found, then by definition, a quiescent trace must have been received
+            ;; If there are new matches found, a match must have terminated.
             ;; However in cases where we reset the db in a replay, we won't get an event match.
             ;; We short circuit here to avoid iterating over the traces when it's unnecessary.
-           quiescent?                 (or (seq new-matches)
-                                          (filter metam/quiescent? sorted-traces))
+           end-of-match?                 (or (seq new-matches)
+                                             (filter metam/end-of-match? sorted-traces))
            all-matches                (into previous-matches new-matches)
            retained-matches           (into [] (take-last number-of-epochs-to-retain all-matches))
            first-id-to-retain         (first-match-id (first retained-matches))
@@ -106,7 +106,7 @@
                               :sub-state new-sub-state
                               :subscription-info subscription-info)
                       (cond-> select-latest? (assoc-in [:epochs :selected-epoch-id] (last match-ids))))
-        :dispatch (when quiescent? [::quiescent])})
+        :dispatch (when end-of-match? [::quiescent])})
       ;; Else
      {:db db})))
 
