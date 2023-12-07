@@ -9,4 +9,5 @@
         zprint/zprint                        {:mvn/version "1.2.7"}
         superstructor/re-highlight           {:mvn/version "2.0.2"}
         cljsjs/highlight                     {:mvn/version "10.3.1-0"}
-        org.clojure/tools.logging            {:mvn/version "1.2.4"}}}
+        org.clojure/tools.logging            {:mvn/version "1.2.4"}
+        mvxcvi/arrangement                   {:mvn/version "2.1.0"}}}

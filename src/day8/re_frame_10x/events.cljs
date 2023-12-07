@@ -26,6 +26,7 @@
                                         :or {:width 800 :height 800 :top 0 :left 0}})
   (rf/inject-cofx ::local-storage/load {:key "show-epoch-traces?" :or true})
   (rf/inject-cofx ::local-storage/load {:key "using-trace?" :or true})
+  (rf/inject-cofx ::local-storage/load {:key "trace-when" :or :panel})
   (rf/inject-cofx ::local-storage/load {:key "ignored-events" :or {}})
   (rf/inject-cofx ::local-storage/load {:key "low-level-trace" :or {:reagent true :re-frame true}})
   (rf/inject-cofx ::local-storage/load {:key "filtered-view-trace"
@@ -60,16 +61,17 @@
                  ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
                  app-db-follows-events? ambiance syntax-color-scheme categories data-path-annotations?
                  show-event-history open-new-inspectors? handle-keys? key-bindings log-outputs log-pretty?
-                 expansion-limit ns-aliases alias-namespaces?
+                 expansion-limit ns-aliases alias-namespaces? trace-when
                  debug?]}
          (merge fallback project-config stored)]
-     {:fx [(when using-trace?
+     {:fx [(when (or using-trace? (= :always trace-when))
              [:dispatch [::settings.events/enable-tracing]])
            [:dispatch [::settings.events/panel-width% panel-width-ratio]]
            [:dispatch [::settings.events/show-panel? show-panel]]
            [:dispatch [::settings.events/selected-tab selected-tab]]
            [:dispatch [::settings.events/set-ignored-events ignored-events]]
            [:dispatch [::settings.events/set-filtered-view-trace filtered-view-trace]]
+           [:dispatch [::settings.events/trace-when trace-when]]
            [:dispatch [::settings.events/set-low-level-trace low-level-trace]]
            [:dispatch [::settings.events/set-number-of-retained-epochs retained-epochs]]
            [:dispatch [::settings.events/app-db-follows-events? app-db-follows-events?]]

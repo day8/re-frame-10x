@@ -3,7 +3,8 @@
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.fx.local-storage                           :as local-storage]
    [day8.re-frame-10x.fx.trace                                   :as trace]
-   [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]))
+   [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]))
 
 (rf/reg-event-db
  ::panel-width%
@@ -193,15 +194,17 @@
  (fn [{settings :db} _]
    (let [now-showing?    (not (get settings :show-panel?))
          external-panel? (get settings :external-window?)
-         using-trace?    (or external-panel? now-showing?)]
+         trace-when      (get settings :trace-when)
+         using-trace?    (or external-panel? now-showing? (= :always trace-when))]
      (merge
       {:db (-> settings
                (assoc :using-trace? using-trace?)
                (assoc :show-panel? now-showing?))}
-      (if now-showing?
-        {::trace/enable {:key ::cb}}
-        (when-not external-panel?
-          {::trace/disable {:key ::cb}}))))))
+      (when (= :panel trace-when)
+        (if now-showing?
+          {::trace/enable {:key ::cb}}
+          (when-not external-panel?
+            {::trace/disable {:key ::cb}})))))))
 
 (rf/reg-event-fx
  ::enable-tracing
@@ -310,3 +313,12 @@
  ::expansion-limit
  [(rf/path [:settings :expansion-limit]) rf/trim-v (local-storage/save "expansion-limit")]
  (fn [_ [limit]] limit))
+
+(rf/reg-event-fx
+ ::trace-when
+ [(rf/path [:settings :trace-when]) rf/trim-v (local-storage/save "trace-when")]
+ (fn [{trace-when :db} [k]]
+   (into {:db k}
+         (cond
+           (and (not= :never trace-when) (= :never k)) {::trace/disable {:key ::cb}}
+           (and (= :never trace-when) (not= :never k)) {::trace/enable {:key ::cb}}))))

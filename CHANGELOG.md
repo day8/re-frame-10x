@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file. This change
 - Fixed empty trace information when first opening the 10x panel after the first event was a dispatch-sync.
   Requires re-frame 1.4.1 or higher. See #263.
 
+#### Added
+
+- New setting: trace epochs always, never, or just when panel is open. See #264
+
 ## 1.9.2 (2023-12-6)
 
 #### Fixed

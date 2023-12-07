@@ -279,6 +279,7 @@ name              | description              | type           | example
 ...`time-travel?` | selecting an event reverts your app-db | boolean | `true`
 ...`ignored-libs` | ignore low-level trace | seq of keywords | `"[:reagent :re-frame]"`
 ...`ns-aliases` | display aliased keywords in data inspectors | map of symbol->symbol | `"{long-namespace ln}"`
+...`trace-when` | trace your app's events always, never, or only when the panel is open (default) | `:panel`, `:always` or `:never` | `:always`
 
 
 

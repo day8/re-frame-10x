@@ -188,3 +188,8 @@
  ::expansion-limit
  :<- [::root]
  :-> :expansion-limit)
+
+(rf/reg-sub
+ ::trace-when
+ :<- [::root]
+ :-> :trace-when)

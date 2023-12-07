@@ -5,6 +5,7 @@
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.compiler :refer [render-css]]
    [day8.re-frame-10x.components.buttons                          :as buttons]
    [day8.re-frame-10x.components.re-com                           :as rc :refer [css-join]]
+   [day8.re-frame-10x.components.inputs                           :as inputs]
    [day8.re-frame-10x.navigation.epochs.events                    :as epochs.events]
    [day8.re-frame-10x.navigation.epochs.subs                      :as epochs.subs]
    [day8.re-frame-10x.panels.settings.events                      :as settings.events]
@@ -116,6 +117,32 @@
                    :label "sync app-db with epoch navigation"
                    :on-change #(rf/dispatch [::settings.events/app-db-follows-events? %])]]
                  [[:p "When you navigate to an epoch, update app-db to match. Causes UI to \"time travel\"."]]
+                 settings-box-81])
+
+              [rc/line]
+
+              (let [trace-when @(rf/subscribe [::settings.subs/trace-when])
+                    set-trace-when #(rf/dispatch [::settings.events/trace-when %])]
+                [settings-box
+                 [[rc/v-box
+                   :children
+                   [[rc/label :label "Enable trace:"]
+                    [inputs/radio-button
+                     {:label     "when the re-frame-10x panel is open"
+                      :model     trace-when
+                      :value     :panel
+                      :on-change set-trace-when}]
+                    [inputs/radio-button
+                     {:label     "always"
+                      :model     trace-when
+                      :value     :always
+                      :on-change set-trace-when}]
+                    [inputs/radio-button
+                     {:label     "never"
+                      :model     trace-when
+                      :value     :never
+                      :on-change set-trace-when}]]]]
+                 [[:p "10x can turn off tracing, letting your app run at close to full speed."]]
                  settings-box-81])
 
               [rc/line]
