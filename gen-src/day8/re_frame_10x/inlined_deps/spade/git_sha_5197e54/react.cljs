@@ -1,9 +1,9 @@
-(ns day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.react
+(ns day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.react
   (:require [react :as react]
-            [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container :refer [IStyleContainer]]
-            [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.alternate :refer [->AlternateStyleContainer]]
-            [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container.dom :as dom]
-            [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime :refer [*style-container*]]))
+            [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.container :refer [IStyleContainer]]
+            [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.container.alternate :refer [->AlternateStyleContainer]]
+            [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.container.dom :as dom]
+            [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime :refer [*style-container*]]))
 
 (defonce context (react/createContext nil))
 (defonce Provider (.-Provider context))

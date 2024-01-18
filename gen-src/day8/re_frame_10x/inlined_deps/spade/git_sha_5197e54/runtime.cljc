@@ -1,13 +1,15 @@
-(ns day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime
+(ns day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime
   (:require [clojure.string :as str]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.core :as garden]
             [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.types :refer [->CSSFunction]]
-            [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.container :as sc]
-            [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime.defaults :as defaults]))
+            [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.container :as sc]
+            [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime.defaults :as defaults]))
 
 (defonce ^:dynamic *css-compile-flags*
   {:pretty-print? #? (:cljs goog.DEBUG
-                      :clj false)})
+                      :clj false)
+   :always-compile-css? #? (:cljs goog.DEBUG
+                            :clj false)})
 
 (defonce ^:dynamic *style-container* (defaults/create-container))
 
@@ -21,8 +23,8 @@
   (if-not composed
     style-name
 
-    (->> (if (seq? composed)
-           (into composed style-name)
+    (->> (if (sequential? composed)
+           (conj composed style-name)
            [composed style-name])
          (map (fn [item]
                 (cond
@@ -41,10 +43,24 @@
                             :value item})))))
          (str/join " "))))
 
-(defn ensure-style! [mode base-style-name factory params]
-  (let [{css :css style-name :name :as info} (apply factory base-style-name params params)]
+(defn ensure-style! [mode metadata name-factory style-factory params]
+  (let [style-name (name-factory params)
+        always-compile? (or (:always-compile-css metadata)
+                            (:always-compile-css? *css-compile-flags*))
 
-    (sc/mount-style! *style-container* style-name css)
+        ; NOTE: If we've been instructed to always compile css, then always
+        ; assume it's unmounted. The container can update a mounted style
+        mounted-info (when-not always-compile?
+                       (sc/mounted-info *style-container* style-name))
+
+        {css :css :as info} (or
+                              mounted-info
+
+                              ; Not mounted *or* we always want to compile
+                              (style-factory style-name params))]
+
+    (when-not mounted-info
+      (sc/mount-style! *style-container* style-name css info))
 
     (case mode
       :attrs {:class (compose-names info)}

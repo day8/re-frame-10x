@@ -1,4 +1,4 @@
-(ns ^:no-doc day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.util
+(ns ^:no-doc day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.util
   (:require [clojure.string :as str]))
 
 (defn factory->name

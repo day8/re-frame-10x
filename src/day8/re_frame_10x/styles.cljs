@@ -8,7 +8,7 @@
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color      :as color :refer [rgb rgba transparentize]]
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.selectors  :as s]
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet :refer [at-keyframes]] ;;(at-import at-media at-keyframes)
-   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core       :refer [defclass]]))
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.core       :refer [defclass]]))
 
 ;; ====
 ;; https://www.nordtheme.com/docs/colors-and-palettes

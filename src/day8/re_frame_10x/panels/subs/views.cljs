@@ -4,7 +4,7 @@
   (:require
    [clojure.data]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
-   [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core    :refer [defclass]]
+   [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.core    :refer [defclass]]
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px percent]]
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]
    [day8.re-frame-10x.components.buttons                         :as buttons]
@@ -256,8 +256,8 @@
       [pod-header-section
        :width    styles/gs-31s
        :attr     {:on-click #(clipboard/copy! (pr-str `(day8.re-frame-10x/traced-sub
-                                                ~epoch-id
-                                                ~id)))}
+                                                        ~epoch-id
+                                                        ~id)))}
        :last?    true
        :children
        [[rc/box

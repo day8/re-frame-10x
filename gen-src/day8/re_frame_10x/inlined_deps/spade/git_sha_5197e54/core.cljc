@@ -1,26 +1,33 @@
-(ns day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.core
+(ns day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.core
   #?(:cljs (:require-macros [net.cgrand.macrovich :as macros]))
   (:require [clojure.string :as str]
             [clojure.walk :refer [postwalk prewalk]]
             #?@(:clj [[net.cgrand.macrovich :as macros]
-                      [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime]])
-            [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.util :refer [factory->name build-style-name]]))
+                      [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime]])
+            [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.util :refer [factory->name build-style-name]]))
 
 (defn- extract-key [style]
   (:key (meta (first style))))
 
 (defn- find-key-meta [style]
-  (postwalk
-    (fn [form]
-      (if (and (map? form)
-               (::key form))
-        form
+  (->> style
 
-        (if-let [k (:key (meta form))]
-          {::key k}
+       (postwalk
+         (fn [form]
+           (if (and (map? form)
+                    (::key form))
+             form
 
-          form)))
-    style))
+             (if-let [k (:key (meta form))]
+               {::key k}
+
+               (if-let [k (when (sequential? form)
+                            (some ::key form))]
+                 {::key k}
+
+                 form)))))
+
+       ::key))
 
 (def ^:private auto-imported-at-form?
   #{'at-font-face
@@ -58,7 +65,7 @@
                     (subs n 1 (dec (count n))))))))
 
 (defn- varify-val [element]
-  `(day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/->css-var ~(varify-key element)))
+  `(day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/->css-var ~(varify-key element)))
 
 (defn- rename-vars [style]
   (prewalk
@@ -92,39 +99,43 @@
 
     [nil style]))
 
-(defn- with-composition [composition name-var style-var]
-  (let [base {:css `(day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/compile-css ~style-var)
-              :name name-var}]
+(defn- with-composition [composition name-var key-var style-var]
+  (let [base (cond->
+               {:css `(when ~name-var
+                        (day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/compile-css ~style-var))
+                :name name-var}
+
+               key-var (assoc ::key key-var))]
     (if composition
       (assoc base :composes composition)
       base)))
 
 (defn- build-style-naming-let
-  [style params original-style-name-var params-var]
-  (let [has-key-meta? (find-key-meta style)
+  [style params name-var]
+  (let [has-key-meta? (some? (find-key-meta style))
         static-key (extract-key style)
-        name-var (gensym "name")]
+        key-var (gensym "key")]
     (cond
       ; easiest case: no params? no need to call build-style-name
       (nil? (seq params))
-      [nil original-style-name-var nil]
+      [nil name-var nil nil]
 
-      (or static-key
-          (not has-key-meta?))
-      ; if we can extract the key statically, that's better
-      [nil name-var `[~name-var (#'build-style-name
-                                  ~original-style-name-var
-                                  ~static-key
-                                  ~params-var)]]
+      ; typical case: no custom key
+      (not has-key-meta?)
+      [nil name-var nil nil]
 
+      ; okay case: a (nearly) static key that we can pull out and compute
+      ; directly, without building the rest of the style form
+      static-key
+      [nil name-var key-var
+       `[~key-var ~static-key]]
+
+      ; fancy case: custom :key
       :else
       (let [base-style-var (gensym "base-style")]
-        [base-style-var name-var `[~base-style-var ~(vec style)
-                                   key# (:key (meta (first ~base-style-var)))
-                                   ~name-var (#'build-style-name
-                                               ~original-style-name-var
-                                               key#
-                                               ~params-var)]]))))
+        [base-style-var name-var key-var
+         `[~base-style-var ~(vec style)
+           ~key-var (:key (meta (first ~base-style-var)))]]))))
 
 (defn- prefix-at-media [style]
   (postwalk
@@ -138,31 +149,32 @@
         form))
     style))
 
-(defn- transform-named-style [style params style-name-var params-var]
+(defn- transform-named-style [style params style-name-var]
   (let [[composition style] (extract-composes style)
         style-var (gensym "style")
         style (->> style prefix-at-media rename-vars)
-        [base-style-var name-var name-let] (build-style-naming-let
-                                             style params style-name-var
-                                             params-var)
+        [base-style-var name-var key-var style-naming-let] (build-style-naming-let
+                                                             style params style-name-var)
         style-decl (if base-style-var
                      `(into [(str "." ~name-var)] ~base-style-var)
                      (into [`(str "." ~name-var)] style))]
-    `(let ~(vec (concat name-let
+    `(let ~(vec (concat style-naming-let
                         [style-var style-decl]))
-       ~(with-composition composition name-var style-var))))
+       ~(with-composition composition name-var key-var style-var))))
 
-(defn- transform-keyframes-style [style params style-name-var params-var]
+(defn- transform-keyframes-style [style params style-name-var]
   (let [style (->> style prefix-at-media rename-vars)
-        [style-var name-var style-naming-let] (build-style-naming-let
-                                                style params style-name-var
-                                                params-var)
-        info-map `{:css (day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/compile-css
-                          (day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.stylesheet/at-keyframes
-                            ~name-var
-                            ~(or style-var
-                                 (vec style))))
-                   :name ~name-var}]
+        [base-style-var name-var key-var style-naming-let] (build-style-naming-let
+                                                             style params style-name-var)
+        info-map (cond->
+                   `{:css (when ~name-var
+                            (day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/compile-css
+                              (garden.stylesheet/at-keyframes
+                                ~name-var
+                                ~(or base-style-var (vec style)))))
+                     :name ~name-var}
+
+                   key-var (assoc ::key key-var))]
 
     ; this (let) might get compiled out in advanced mode anyway, but
     ; let's just generate simpler code instead of having a redundant
@@ -171,22 +183,46 @@
       `(let ~style-naming-let ~info-map)
       info-map)))
 
-(defn- transform-style [mode style params style-name-var params-var]
+(defn- transform-style [mode style params style-name-var]
   (let [style (replace-at-forms style)]
     (cond
       (#{:global} mode)
-      `{:css (day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/compile-css ~(vec (rename-vars style)))
-        :name ~style-name-var}
+      `{:css (day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/compile-css ~(vec (rename-vars style)))}
 
       ; keyframes are a bit of a special case
       (#{:keyframes} mode)
-      (transform-keyframes-style style params style-name-var params-var)
+      (transform-keyframes-style style params style-name-var)
 
       :else
-      (transform-named-style style params style-name-var params-var))))
+      (transform-named-style style params style-name-var))))
+
+(defn- generate-style-name-fn [factory-fn-name factory-name-var style params]
+  (cond
+    (empty? params)
+    `(clojure.core/constantly ~factory-name-var)
+
+    ; Custom :key meta; we need to generate the form to extract that.
+    ; TODO: Ideally we can invoke the factory but *skip* CSS compilation,
+    ; but since this is memoized (and :key isn't much used anyway) this is
+    ; probably not a big deal for now. Would be a nice optimization, however.
+    (some? (find-key-meta style))
+    `(clojure.core/memoize
+       (fn [params#]
+         (let [dry-run# (~factory-fn-name nil params#)]
+           (#'build-style-name
+             ~factory-name-var
+             (::key dry-run#)
+             params#))))
+
+    :else
+    `(clojure.core/memoize
+       (partial
+         #'build-style-name
+         ~factory-name-var
+         nil))))
 
 (defmulti ^:private declare-style
-  (fn [mode _class-name params _factory-name-var _factory-fn-name]
+  (fn [mode _class-name params _name-fn-name _factory-fn-name]
     (case mode
       :global :static
       (cond
@@ -194,22 +230,24 @@
         (every? symbol? params) :default
         :else :destructured))))
 (defmethod declare-style :static
-  [mode class-name _ factory-name-var factory-fn-name]
-  `(def ~class-name (day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/ensure-style!
+  [mode class-name _ name-fn-name factory-fn-name]
+  `(def ~class-name (day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/ensure-style!
                       ~mode
-                      ~factory-name-var
+                      (meta (var ~class-name))
+                      ~name-fn-name
                       ~factory-fn-name
                       nil)))
 (defmethod declare-style :no-args
-  [mode class-name _ factory-name-var factory-fn-name]
+  [mode class-name _ name-fn-name factory-fn-name]
   `(defn ~class-name []
-     (day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/ensure-style!
+     (day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/ensure-style!
        ~mode
-       ~factory-name-var
+       (meta (var ~class-name))
+       ~name-fn-name
        ~factory-fn-name
        nil)))
 (defmethod declare-style :destructured
-  [mode class-name params factory-name-var factory-fn-name]
+  [mode class-name params name-fn-name factory-fn-name]
   ; good case; since there's no variadic args, we can generate an :arglists
   ; meta and a simplified params list that we can forward simply
   (let [raw-params (->> (range (count params))
@@ -219,29 +257,32 @@
     `(defn ~class-name
        {:arglists (quote ~(list params))}
        ~raw-params
-       (day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/ensure-style!
+       (day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/ensure-style!
          ~mode
-         ~factory-name-var
+         (meta (var ~class-name))
+         ~name-fn-name
          ~factory-fn-name
          ~raw-params))))
 (defmethod declare-style :variadic
-  [mode class-name _params factory-name-var factory-fn-name]
+  [mode class-name _params name-fn-name factory-fn-name]
   ; dumb case; with a variadic params vector, any :arglists we
   ; provide gets ignored, so we just simply collect them all
   ; and pass the list as-is
   `(defn ~class-name [& params#]
-     (day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/ensure-style!
+     (day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/ensure-style!
        ~mode
-       ~factory-name-var
+       (meta (var ~class-name))
+       ~name-fn-name
        ~factory-fn-name
        params#)))
 (defmethod declare-style :default
-  [mode class-name params factory-name-var factory-fn-name]
+  [mode class-name params name-fn-name factory-fn-name]
   ; best case; simple params means we can use them directly
   `(defn ~class-name ~params
-     (day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/ensure-style!
+     (day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/ensure-style!
        ~mode
-       ~factory-name-var
+       (meta (var ~class-name))
+       ~name-fn-name
        ~factory-fn-name
        ~params)))
 
@@ -250,19 +291,27 @@
          (or (vector? params)
              (nil? params))]}
   (let [factory-fn-name (symbol (str (name class-name) "-factory$"))
+        style-name-fn-name (symbol (str (name class-name) "-name$"))
+
         style-name-var (gensym "style-name")
         params-var (gensym "params")
-        factory-params (vec (concat [style-name-var params-var] params))
         factory-name-var (gensym "factory-name")]
     `(do
-       (defn ~factory-fn-name ~factory-params
-         ~(transform-style mode style params style-name-var params-var))
+       (defn ~factory-fn-name [~style-name-var ~params-var]
+         ~(if params
+            `(let [~params ~params-var]
+               ~(transform-style mode style params style-name-var))
+            (transform-style mode style nil style-name-var)))
 
        (let [~factory-name-var (factory->name
                                  (macros/case
                                    :cljs ~factory-fn-name
-                                   :clj (var ~factory-fn-name)))]
-         ~(declare-style mode class-name params factory-name-var factory-fn-name)))))
+                                   :clj (var ~factory-fn-name)))
+
+             ~style-name-fn-name ~(generate-style-name-fn
+                                    factory-fn-name factory-name-var style params)]
+
+         ~(declare-style mode class-name params style-name-fn-name factory-fn-name)))))
 
 (defmacro defclass
   "Define a CSS module function named `class-name` and accepting a vector
@@ -330,7 +379,7 @@
 
 (defmacro with-styles-container [container & body]
   (macros/case
-    :cljs `(binding [day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/*style-container* ~container]
+    :cljs `(binding [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/*style-container* ~container]
              ~@body)
-    :clj `(with-bindings {#'day8.re-frame-10x.inlined-deps.spade.git-sha-93ef290.runtime/*style-container* ~container}
+    :clj `(with-bindings {#'day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.runtime/*style-container* ~container}
             ~@body)))
