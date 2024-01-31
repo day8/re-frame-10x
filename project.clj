@@ -27,7 +27,7 @@
                                     :username      :env/CLOJARS_USERNAME
                                     :password      :env/CLOJARS_TOKEN}]]
 
-  :source-paths ["src" "gen-src"]
+  :source-paths ["src" "gen-src" "resources"]
 
   :release-tasks [["deploy" "clojars"]]
 

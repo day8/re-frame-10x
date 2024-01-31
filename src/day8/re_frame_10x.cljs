@@ -128,8 +128,8 @@
 (defn ^:export handle-keys! [handle-keys?]
   (rf/dispatch [::settings.events/handle-keys? handle-keys?]))
 
-(defn create-shadow-root []
-  (tools.shadow-dom/shadow-root js/document "--re-frame-10x--"))
+(defn create-shadow-root [css-str]
+  (tools.shadow-dom/shadow-root js/document "--re-frame-10x--" css-str))
 
 (defn create-style-container [shadow-root]
   [spade.react/with-style-container

@@ -1,7 +1,7 @@
 
 ;; Allows users of deps.edn to more conveniently fork / make PRs to re-frame
 
-{:paths ["src" "gen-src"]
+{:paths ["src" "gen-src" "resources"]
  :deps {org.clojure/clojure                  {:mvn/version "1.10.3"}
         org.clojure/clojurescript            {:mvn/version "1.10.879"}
         binaryage/devtools                   {:mvn/version "1.0.6"}

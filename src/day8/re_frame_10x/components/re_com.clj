@@ -1,4 +1,5 @@
-(ns day8.re-frame-10x.components.re-com)
+(ns day8.re-frame-10x.components.re-com
+  (:require [clojure.java.io :as io]))
 
 ;; There is a trap when writing DOM event handlers.  This looks innocent enough:
 ;;
@@ -31,3 +32,8 @@
 (defmacro handler-fn
   ([& body]
    `(fn [~'event] ~@body nil)))  ;; force return nil
+
+(defmacro inline-resource
+  "https://clojureverse.org/t/best-practices-for-importing-raw-text-files-into-clojurescript-projects/2569/2"
+  [resource-path]
+  (slurp (io/resource resource-path)))

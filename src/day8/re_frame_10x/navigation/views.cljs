@@ -34,7 +34,8 @@
    [day8.re-frame-10x.material                                   :as material]
    [day8.re-frame-10x.styles                                     :as styles]
    [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]
-   [day8.re-frame-10x.popup :as popup]))
+   [day8.re-frame-10x.popup :as popup])
+  (:require-macros [day8.re-frame-10x.components.re-com :refer [inline-resource]]))
 
 #_(defglobal container-styles
     [:#--re-frame-10x--
@@ -391,7 +392,7 @@
   ;; When programming here, we need to be careful about which document and window
   ;; we are operating on, and keep in mind that the window can close without going
   ;; through standard react lifecycle, so we hook the beforeunload event.
-  (let [shadow-root              (tools.shadow-dom/shadow-root popup-document "--re-frame-10x--")
+  (let [shadow-root              (tools.shadow-dom/shadow-root popup-document "--re-frame-10x--" (inline-resource "day8/re_frame_10x.css"))
         spade-container          (spade.dom/create-container shadow-root)
         resize-update-scheduled? (atom false)
         handle-window-resize     (fn [_]
