@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## unreleased
+
+#### Fixed
+
+- Editor now exports edn files, not txt.
+
 ## 1.9.3 (2023-12-7)
 
 #### Fixed
