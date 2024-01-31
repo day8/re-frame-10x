@@ -54,14 +54,6 @@
     (apply merge-with deep-merge vals)
     (last vals)))
 
-(defclass flex-style
-  []
-  {:display :flex})
-
-(defclass inline-flex-style
-  []
-  {:display :flex})
-
 (defn flex-flow-style
   "A cross-browser helper function to output flex-flow with all it's potential browser prefixes"
   [flex-flow]
@@ -113,10 +105,6 @@
                           size)]
     {:-webkit-flex flex
      :flex         flex}))
-
-(defn display-flex-style
-  []
-  {:display :flex})
 
 (defn justify-style
   "Determines the value for the flex 'justify-content' attribute.
@@ -191,7 +179,7 @@
                    children)]
     (into [:div
            (merge
-            {:class (str "rc-h-box " (flex-style) " " class) :style s}
+            {:class (str "rc-h-box flex-style " class) :style s}
             attr)]
           children)))
 
@@ -224,7 +212,7 @@
                    children)]
     (into [:div
            (merge
-            {:class (str "rc-v-box " (flex-style) " " class) :style s}
+            {:class (str "rc-v-box flex-style " class) :style s}
             attr)]
           children)))
 
@@ -271,7 +259,7 @@
            style)]
     [:div
      (merge
-      {:class (str class-name " " (flex-style) " " class) :style s}
+      {:class (str class-name " flex-style " class) :style s}
       attr)
      child]))
 
@@ -402,7 +390,7 @@
   "Returns markup for a basic label"
   [& {:keys [label on-click width class style attr]}]
   [box
-   :class (str "rc-label-wrapper " (inline-flex-style))
+   :class "rc-label-wrapper flex-style"
    :width width
    :align :start
    :child [:span
@@ -462,7 +450,7 @@
         (when disabled?
           (reset! showing? false))
         [box ;; Wrapper box is unnecessary but keeps the same structure as the re-com button
-         :class (str "rc-button-wrapper " (inline-flex-style))
+         :class "rc-button-wrapper flex-style"
          :align :start
          :child the-button]))))
 
@@ -489,7 +477,7 @@
                              attr)
                             label]]]
     [box
-     :class (str "rc-hyperlink-wrapper " (inline-flex-style))
+     :class "rc-hyperlink-wrapper flex-style"
      :align :start
      :child the-button]))
 
@@ -518,7 +506,7 @@
                         label]]
 
         [box
-         :class (str "rc-hyperlink-href-wrapper " (inline-flex-style))
+         :class "rc-hyperlink-href-wrapper flex-style"
          :align :start
          :child the-button]))))
 
@@ -727,10 +715,9 @@
         mouseout-split       #(reset! over? false)
 
         make-container-attrs (fn [class style attr in-drag?]
-                               (merge {:class (str "rc-v-split 10x-v-split " class)
+                               (merge {:class (str "rc-v-split 10x-v-split flex-style " class)
                                        :id    container-id
-                                       :style (merge (display-flex-style)
-                                                     (flex-child-style size)
+                                       :style (merge (flex-child-style size)
                                                      (flex-flow-style "column nowrap")
                                                      {:margin margin
                                                       :width  width
@@ -744,9 +731,8 @@
 
         make-panel-attrs     (fn [class style attr in-drag? percentage]
                                (merge
-                                {:class class
-                                 :style (merge (display-flex-style)
-                                               (scroll-style :overflow :off)
+                                {:class (str "flex-style " class)
+                                 :style (merge (scroll-style :overflow :off)
                                                (flex-child-style (if split-is-px?
                                                                    (if (pos? percentage)
                                                                      (str "0 0 " percentage "px") ;; flex for panel-1
@@ -758,12 +744,11 @@
 
         make-splitter-attrs  (fn [class style attr]
                                (merge
-                                {:class         class
+                                {:class         (str "flex-style " class)
                                  :on-mouse-down (handler-fn (mousedown event))
                                  :on-mouse-over (handler-fn (mouseover-split))
                                  :on-mouse-out  (handler-fn (mouseout-split))
-                                 :style         (merge (display-flex-style)
-                                                       (flex-child-style (str "0 0 " splitter-size))
+                                 :style         (merge (flex-child-style (str "0 0 " splitter-size))
                                                        {:cursor  "row-resize"}
                                                        (when @over? {:background-color "#f8f8f8"})
                                                        style)}
