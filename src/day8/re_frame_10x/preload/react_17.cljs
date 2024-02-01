@@ -9,7 +9,8 @@
    [day8.re-frame-10x                                            :as re-frame-10x]
    [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.dom    :as rdom]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
-   [day8.re-frame-10x.events                                     :as events]))
+   [day8.re-frame-10x.events                                     :as events])
+  (:require-macros [day8.re-frame-10x.components.re-com :refer [inline-resource]]))
 
 (let [react-major-version (first (str/split react/version #"\."))]
   (when-not (= "17" react-major-version)
@@ -25,7 +26,7 @@
 
 (rf/clear-subscription-cache!)
 
-(def shadow-root (re-frame-10x/create-shadow-root))
+(def shadow-root (re-frame-10x/create-shadow-root (inline-resource "day8/re_frame_10x.css")))
 
 (rdom/render (re-frame-10x/create-style-container shadow-root)
              shadow-root)
