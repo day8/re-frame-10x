@@ -1,3 +1,16 @@
 /* day8/re-frame-10x */
 
 .flex-style {display: flex;}
+
+.data-tag {width: 50px;
+           height: 19px;
+           font-size: 10px;
+           font-weight: bold;
+           border-radius: 2px;}
+
+.data-tag span {margin: auto;}
+
+.timing-tag {color: #fff;
+             background-color: #B48EAD;}
+
+.sub-create-tag {color: blue;}

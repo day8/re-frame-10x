@@ -46,20 +46,12 @@
     :sub/not-run styles/nord9
     styles/nord5))
 
-(defclass sub-tag-style
-  [_ type]
-  {:color            :#fff
-   :background-color (sub-type->color type)
-   :border           [[(px 1) :solid (color/darken (sub-type->color type) 10)]]})
-
-(defclass sub-tag-short-style
-  [ambiance type]
-  {:composes (sub-tag-style ambiance type)
-   :width    styles/gs-19})
-
 (defn short-sub-tag [type label]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
-    [data/tag (sub-tag-short-style ambiance type) label]))
+    [data/tag {:style {:width styles/gs-19
+                       :background-color (sub-type->color type)
+                       :color "#fff"}
+               :label label}]))
 
 (defn title-tag [type title label]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
@@ -68,7 +60,10 @@
      :gap      styles/gs-2s
      :children
      [[:span {:style {:font-size "9px"}} title]
-      [data/tag (sub-tag-style ambiance type) label]]]))
+      [data/tag {:style {:width styles/gs-19
+                         :background-color (sub-type->color type)
+                         :color "#fff"}
+                 :label label}]]]))
 
 (defclass panel-header-style
   [_]

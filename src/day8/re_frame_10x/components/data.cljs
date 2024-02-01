@@ -5,17 +5,8 @@
    [day8.re-frame-10x.components.re-com                        :as rc]
    [day8.re-frame-10x.styles                                   :as styles]))
 
-(defclass tag-style
-  []
-  {:width         styles/gs-50
-   :height        styles/gs-19
-   :font-size     (px 10)
-   :font-weight   :bold
-   :border-radius styles/gs-2}
-  [:span
-   {:margin :auto}])
-
-(defn tag [class label]
+(defn tag [{:keys [class style label]}]
   [rc/box
-   :class (str (tag-style) " " class)
+   :style style
+   :class (str "data-tag " class)
    :child [:span label]])

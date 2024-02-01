@@ -137,17 +137,6 @@
    :border        (border-2 ambiance)
    :border-radius gs-2})
 
-(defclass colors-uncommon
-  [_]
-  {:color            :#fff
-   :background-color nord15})
-
-(defclass frame-uncommon
-  [ambiance]
-  {:composes      (colors-uncommon ambiance)
-   :border        [[(px 1) :solid (color/darken nord15 10)]]
-   :border-radius gs-2})
-
 (defclass control-2
   [ambiance active?]
   {:composes (frame-2 ambiance)

@@ -17,10 +17,6 @@
     (< ms 1) (str (.toFixed ms 1) "ms")
     (some? ms) (str (js/Math.round ms) "ms")))
 
-(defclass tag-style
-  [ambiance]
-  {:composes (styles/frame-uncommon ambiance)})
-
 (defn tag
   [{:keys [label time]}]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
@@ -29,7 +25,7 @@
      :gap      styles/gs-5s
      :children
      [[rc/label :label label]
-      [data/tag (tag-style ambiance) (ms->str time)]]]))
+      [data/tag {:class "timing-tag" :label (ms->str time)}]]]))
 
 (defclass section-style
   [ambiance]
