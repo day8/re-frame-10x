@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## unreleased
 
+#### Changed
+
+- Moved some heavy spade classes to plain css. Rendering should be faster, especially in the subs tab. See #409.
+
 #### Fixed
 
 - Editor now exports edn files, not txt.
