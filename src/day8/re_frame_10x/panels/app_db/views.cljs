@@ -65,17 +65,12 @@
 
 (def pod-border-edge (str "1px solid " styles/nord4))
 
-(defclass pod-header-section-style
-  [_ last?]
-  {:border-right (when-not last? [[(px 1) :solid styles/nord4]])
-   #_#_:padding-left (px 3)})
-
 (defn pod-header-section
   [& {:keys [size justify align gap width min-width children attr last?]
       :or   {size "none" justify :start align :center}}]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
-     :class      (pod-header-section-style ambiance last?)
+     :class      "pod-header-section"
      :size       size
      :justify    justify
      :align      align

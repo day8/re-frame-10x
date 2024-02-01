@@ -434,10 +434,6 @@
                [rc/label :class (column-title-label-style) :label ""]]
               [rc/gap-f :size "6px"]]])                     ;; Add extra space to look better when there is/aren't scrollbars
 
-(defclass pod-section-style
-  [_]
-  {:overflow-y :auto})
-
 (defn pod-section []
   (let [ambiance         @(rf/subscribe [::settings.subs/ambiance])
         visible-subs     @(rf/subscribe [::subs.subs/visible-subs])
@@ -452,7 +448,7 @@
                            visible-subs)]
     [rc/v-box
      :size     "1"
-     :class    (pod-section-style ambiance)
+     :class    "pod-section"
      :children
      [(if (empty? all-subs)
         [no-pods]

@@ -1,7 +1,22 @@
 /* day8/re-frame-10x */
+/* https://www.nordtheme.com/docs/colors-and-palettes */
 
-:root {--nord4: #d8dee9;
+:root {--nord0: #2E3440;
+       --nord1: #3B4252;
+       --nord2: #434C5E;
        --nord3: #4C566A;
+       --nord4: #D8DEE9;
+       --nord5: #E5E9F0;
+       --nord6: #ECEFF4;
+       --nord7: #8FBCBB;
+       --nord8: #88C0D0;
+       --nord9: #81A1C1;
+       --nord10: #5E81AC;
+       --nord11: #BF616A;
+       --nord12: #D08770;
+       --nord13: #EBCB8B;
+       --nord14: #A3BE8C;
+       --nord15: #B48EAD;
        --nord-ghost-white #f8f9fb;
        --border-1: 1px solid var(--nord4);
        --color-1 var(--nord3);
@@ -34,3 +49,24 @@
                background-color: var(--background-color-1);}
 
 .search input:focus-visible {outline: none;}
+
+.icon {cursor: default;
+       border-radius: 3px;
+       background-color: var(--nord2);
+       border: 1px solid var(--nord1);
+       padding: 2px;
+       font-weight: 400;}
+
+.icon.disabled {cursor: pointer;
+                background-color: var(--nord5);
+                border: 1px solid var(--nord4);}
+
+.icon svg path {fill: var(--nord0);}
+
+.icon.enabled:hover {background-color: var(--nord6);}
+
+.icon.enabled:hover svg path {fill: var(--nord1);}
+
+.pod-header-section {border-right: 1px solid var(--nord4);}
+
+.pod-section {overflow-y: auto;}

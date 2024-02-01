@@ -6,27 +6,11 @@
    [day8.re-frame-10x.material                                 :as material]
    [day8.re-frame-10x.styles                                   :as styles]))
 
-(defclass icon-style
-  [disabled?]
-  {:cursor           (if disabled? :default :pointer)
-   :border-radius    (px 3)
-   :background-color (if disabled? styles/nord2 styles/nord5)
-   :border           [[(px 1) :solid (if disabled? styles/nord1 styles/nord4)]]
-   :padding          styles/gs-2s
-   :font-weight      400}
-  [:svg :path
-   {:fill styles/nord0}]
-  (when-not disabled?
-    [:&:hover
-     {:background-color styles/nord6}
-     [:svg :path
-      {:fill styles/nord1}]]))
-
 (defn icon
   [{:keys [icon label title on-click disabled? class]}]
   (let [disabled? (rc/deref-or-value disabled?)]
     [rc/button
-     :class    (str (icon-style disabled?) " " class)
+     :class    (str "icon " " " (if disabled? "disabled" "enabled") " " class)
      :attr     {:title title}
      :label    [rc/h-box
                 :align    :center
