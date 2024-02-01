@@ -1,7 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## unreleased
+## 1.9.5 (2024-02-02)
+
+#### Fixed
+
+- Styles now work again when using the default & react-17 preloads.
+
+## 1.9.4 (2024-02-02)
 
 #### Changed
 
