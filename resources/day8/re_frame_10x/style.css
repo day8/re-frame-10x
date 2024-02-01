@@ -1,7 +1,7 @@
 /* day8/re-frame-10x */
 /* https://www.nordtheme.com/docs/colors-and-palettes */
 
-:root {--nord0: #2E3440;
+:host {--nord0: #2E3440;
        --nord1: #3B4252;
        --nord2: #434C5E;
        --nord3: #4C566A;
@@ -17,10 +17,9 @@
        --nord13: #EBCB8B;
        --nord14: #A3BE8C;
        --nord15: #B48EAD;
-       --nord-ghost-white #f8f9fb;
-       --border-1: 1px solid var(--nord4);
-       --color-1 var(--nord3);
-       --background-color-1 var(--nord-ghost-white);}
+       --nord-ghost-white: #f8f9fb;
+       --color-1: var(--nord3);
+       --background-color-1: var(--nord-ghost-white);}
 
 .flex-style {display: flex;}
 
@@ -41,7 +40,7 @@
            color: var(--color-1);}
 
 .summary {padding: 0 19px;
-          border: var(--border-1);
+          border: 1px solid var(--nord4);
           border-radius: 2px;}
 
 .search {border-bottom: var(--border-2);}
@@ -52,14 +51,14 @@
 
 .icon {cursor: default;
        border-radius: 3px;
-       background-color: var(--nord2);
-       border: 1px solid var(--nord1);
+       background-color: var(--nord5);
+       border: 1px solid var(--nord4);
        padding: 2px;
        font-weight: 400;}
 
 .icon.disabled {cursor: pointer;
-                background-color: var(--nord5);
-                border: 1px solid var(--nord4);}
+                background-color: var(--nord2);
+                border: 1px solid var(--nord1);}
 
 .icon svg path {fill: var(--nord0);}
 

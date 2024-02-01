@@ -392,7 +392,7 @@
   ;; When programming here, we need to be careful about which document and window
   ;; we are operating on, and keep in mind that the window can close without going
   ;; through standard react lifecycle, so we hook the beforeunload event.
-  (let [shadow-root              (tools.shadow-dom/shadow-root popup-document "--re-frame-10x--" (inline-resource "day8/re_frame_10x.css"))
+  (let [shadow-root              (tools.shadow-dom/shadow-root popup-document "--re-frame-10x--" (inline-resource "day8/re_frame_10x/style.css"))
         spade-container          (spade.dom/create-container shadow-root)
         resize-update-scheduled? (atom false)
         handle-window-resize     (fn [_]

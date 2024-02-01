@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.9.6 (2024-02-02)
+
+#### Fixed
+
+- Elements using the new stylesheet are properly themed again.
+
 ## 1.9.5 (2024-02-02)
 
 #### Fixed
