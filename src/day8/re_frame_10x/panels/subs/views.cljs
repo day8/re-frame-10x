@@ -70,11 +70,6 @@
   {:margin-bottom styles/gs-19
    :flex-flow     [[:row :wrap]]})
 
-(defclass summary-style
-  [ambiance]
-  {:composes (styles/frame-1 ambiance)
-   :padding  [[0 styles/gs-19]]})
-
 (defn panel-header []
   (let [ambiance                  @(rf/subscribe [::settings.subs/ambiance])
         created-count             (rf/subscribe [::subs.subs/created-count])
@@ -92,7 +87,7 @@
        :align   :center
        :gap     styles/gs-19s
        :height  styles/gs-50s
-       :class   (summary-style ambiance)
+       :class   "summary colors-1"
        :children
        [[:span {:style {:font-size   "18px"
                         :font-weight "lighter"}}
@@ -105,7 +100,7 @@
        :align    :center
        :gap      styles/gs-19s
        :height   styles/gs-50s
-       :class    (summary-style ambiance)
+       :class    "summary colors-1"
        :children
        [[rc/checkbox
          :model ignore-unchanged-l2-subs?

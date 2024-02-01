@@ -1,5 +1,12 @@
 /* day8/re-frame-10x */
 
+:root {--nord4: #d8dee9;
+       --nord3: #4C566A;
+       --nord-ghost-white #f8f9fb;
+       --border-1: 1px solid var(--nord4);
+       --color-1 var(--nord3);
+       --background-color-1 var(--nord-ghost-white);}
+
 .flex-style {display: flex;}
 
 .data-tag {width: 50px;
@@ -14,3 +21,16 @@
              background-color: #B48EAD;}
 
 .sub-create-tag {color: blue;}
+
+.colors-1 {background-color: var(--background-color-1);
+           color: var(--color-1);}
+
+.summary {padding: 0 19px;
+          border: var(--border-1);
+          border-radius: 2px;}
+
+.search {border-bottom: var(--border-2);}
+.search input {border: none;
+               background-color: var(--background-color-1);}
+
+.search input:focus-visible {outline: none;}

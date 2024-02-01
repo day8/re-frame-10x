@@ -241,7 +241,7 @@
         filter-str          (rf/subscribe [::epochs.subs/filter-str])]
     (when-not (= @show-event-history? false)
       [rc/h-box
-       :class    (inputs/search-style @ambiance)
+       :class    "search colors-1"
        :align    :center
        :children [[material/search]
                   [:input {:type        "text"

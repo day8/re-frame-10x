@@ -73,16 +73,6 @@
       [rc/label
        :label label]]]))
 
-(defclass search-style
-  [ambiance]
-  {:composes      (styles/colors-1 ambiance)
-   :border-bottom (styles/border-2 ambiance)}
-  [:input
-   {:border :none
-    :background-color (styles/background-color-1 ambiance)}
-   [:&:focus-visible
-    {:outline :none}]])
-
 (defn search [{:keys [title placeholder on-save on-change]}]
   (let [ambiance (rf/subscribe [::settings.subs/ambiance])
         val  (r/atom title)
@@ -91,7 +81,7 @@
                   (on-save v)))]
     (fn []
       [rc/h-box
-       :class    (search-style @ambiance)
+       :class    "colors-1 search"
        :align    :center
        :children
        [[material/search]
