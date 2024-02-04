@@ -20,7 +20,7 @@
 
 (rf/clear-subscription-cache!)
 
-(def shadow-root (re-frame-10x/create-shadow-root (inline-resource "day8/re_frame_10x/style.css")))
+(def shadow-root (re-frame-10x/create-shadow-root))
 
 (rdc/render (rdc/create-root shadow-root)
             (re-frame-10x/create-style-container shadow-root))

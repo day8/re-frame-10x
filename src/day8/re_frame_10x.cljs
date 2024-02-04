@@ -14,7 +14,8 @@
    [day8.re-frame-10x.components.re-com                                  :as rc]
    [day8.re-frame-10x.navigation.views                                   :as container]
    [day8.re-frame-10x.panels.settings.subs                               :as settings.subs]
-   [day8.re-frame-10x.panels.settings.events                             :as settings.events]))
+   [day8.re-frame-10x.panels.settings.events                             :as settings.events])
+  (:require-macros [day8.re-frame-10x.components.re-com :refer [inline-resource]]))
 
 (goog-define debug? false)
 
@@ -128,15 +129,17 @@
 (defn ^:export handle-keys! [handle-keys?]
   (rf/dispatch [::settings.events/handle-keys? handle-keys?]))
 
-(defn create-shadow-root [css-str]
-  (tools.shadow-dom/shadow-root js/document "--re-frame-10x--" css-str))
+(defn create-shadow-root []
+  (tools.shadow-dom/shadow-root js/document "--re-frame-10x--"))
 
 (defn create-style-container [shadow-root]
   [spade.react/with-style-container
    (spade.dom/create-container shadow-root)
-   [devtools-outer
-    {:panel-type :inline
-     :debug?     debug?}]])
+   [:<>
+    [:style (inline-resource "day8/re_frame_10x/style.css")]
+    [devtools-outer
+     {:panel-type :inline
+      :debug?     debug?}]]])
 
 (defn patch!
   "Sets up any initial state that needs to be there for tracing. Does not enable tracing."

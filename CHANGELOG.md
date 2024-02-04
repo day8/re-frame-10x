@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.9.7 (2024-02-02)
+
+#### Fixed
+
+- Pop-out window no longer crashes. See #410.
+
 ## 1.9.6 (2024-02-02)
 
 #### Fixed

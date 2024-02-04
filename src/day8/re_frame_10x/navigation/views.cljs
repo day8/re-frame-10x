@@ -434,5 +434,7 @@
         :component-will-unmount unmount
         :reagent-render         (fn []
                                   [spade.react/with-style-container spade-container
-                                   [devtools-inner {:panel-type :popup}]])})]
+                                   [:<>
+                                    [:style (inline-resource "day8/re_frame_10x/style.css")]
+                                    [devtools-inner {:panel-type :popup}]]])})]
      shadow-root)))
