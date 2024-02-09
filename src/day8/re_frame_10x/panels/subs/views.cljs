@@ -458,26 +458,30 @@
        :style {:overflow-x "hidden"
                :overflow-y "auto"}
        :children
-       [(for [p all-subs]
-          ^{:key (:id p)}
-          [pod (merge p
-                      (get sub-expansions (:id p))
-                      (get sub-pins (:id p)))])
+       [[rc/v-box
+         :children
+         (for [p all-subs]
+           ^{:key (:id p)}
+           [pod (merge p
+                       (get sub-expansions (:id p))
+                       (get sub-pins (:id p)))])]
         (when (seq intra-epoch-subs)
-          (list
-           ^{:key "intra-epoch-line"}
-           [rc/line :size styles/gs-2s
-            :style {:margin "19px 0px"}]
-           ^{:key "intra-epoch-title"}
-           [:h2 {:class "bm-heading-text"
-                 :style {:margin "19px 0px"}}
-            [rc/hyperlink-href
-             :class (styles/hyperlink ambiance)
-             :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
-             :label "Intra-Epoch Subscriptions"]]
-           (for [p intra-epoch-subs]
-             ^{:key (:id p)}
-             [pod (merge p (get sub-expansions (:id p)))])))]]]]))
+          [rc/v-box
+           :children
+           (list
+            ^{:key "intra-epoch-line"}
+            [rc/line :size styles/gs-2s
+             :style {:margin "19px 0px"}]
+            ^{:key "intra-epoch-title"}
+            [:h2 {:class "bm-heading-text"
+                  :style {:margin "19px 0px"}}
+             [rc/hyperlink-href
+              :class (styles/hyperlink ambiance)
+              :href  "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/IntraEpoch.md"
+              :label "Intra-Epoch Subscriptions"]]
+            (for [p intra-epoch-subs]
+              ^{:key (:id p)}
+              [pod (merge p (get sub-expansions (:id p)))]))])]]]]))
 
 (defn filter-section []
   [inputs/search
