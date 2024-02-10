@@ -85,10 +85,10 @@
     (devtools.formatters.core/has-body-api-call value config)))
 
 (defn get-object [jsonml]
-  (.-object (get jsonml 1)))
+  (.-object ^js (get jsonml 1)))
 
 (defn get-config [jsonml]
-  (.-config (get jsonml 1)))
+  (.-config ^js (get jsonml 1)))
 
 (declare jsonml->hiccup)
 (declare jsonml->hiccup-with-path-annotations)
