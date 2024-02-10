@@ -1,13 +1,14 @@
-
 ;; Allows users of deps.edn to more conveniently fork / make PRs to re-frame
 
 {:paths ["src" "gen-src" "resources"]
- :deps {org.clojure/clojure                  {:mvn/version "1.10.3"}
-        org.clojure/clojurescript            {:mvn/version "1.10.879"}
-        binaryage/devtools                   {:mvn/version "1.0.6"}
-        com.yahoo.platform.yui/yuicompressor {:mvn/version "2.4.8" :exclusions [rhino/js]}
-        zprint/zprint                        {:mvn/version "1.2.7"}
-        superstructor/re-highlight           {:mvn/version "2.0.2"}
-        cljsjs/highlight                     {:mvn/version "10.3.1-0"}
-        org.clojure/tools.logging            {:mvn/version "1.2.4"}
-        mvxcvi/arrangement                   {:mvn/version "2.1.0"}}}
+ :deps  {org.clojure/clojure                  {:mvn/version "1.11.1"}
+         org.clojure/clojurescript            {:mvn/version "1.11.132"}
+         binaryage/devtools                   {:mvn/version "1.0.6"}
+         com.yahoo.platform.yui/yuicompressor {:mvn/version "2.4.8" :exclusions [rhino/js]}
+         zprint/zprint                        {:mvn/version "1.2.7"}
+         superstructor/re-highlight           {:mvn/version "2.0.2"}
+         cljsjs/highlight                     {:mvn/version "10.3.1-0"}
+         org.clojure/tools.logging            {:mvn/version "1.2.4"}
+         mvxcvi/arrangement                   {:mvn/version "2.1.0"}
+         thheller/shadow-cljs                 {:mvn/version "2.27.2"}
+         day8/re-fine                         {:local/root  "/home/kk/fine"}}}
