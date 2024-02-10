@@ -115,7 +115,7 @@
   {:composes     (styles/navigation-border-top ambiance)
    :padding-left styles/gs-19})
 
-(defn tab-buttons-left
+(defn panel-tabs
   [debug?]
   [rc/h-box
    :align    :end
@@ -133,7 +133,7 @@
   [_]
   {:padding [[0 styles/gs-5 0 0]]})
 
-(defn tab-buttons-right
+(defn replay-controls
   []
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
@@ -145,14 +145,14 @@
                 ;; TODO: help smaller than what is currently to indicate Reply button is more important/relationship. e.g. just question mark, no button.
                 [replay-help-button]]]))
 
-(defn tab-buttons
+(defn panel-header
   [{:keys [debug?]}]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
      :class    (tab-buttons-style ambiance)
      :justify  :between
-     :children [[tab-buttons-left debug?]
-                [tab-buttons-right]]]))
+     :children [[panel-tabs debug?]
+                [replay-controls]]]))
 
 (defclass warning-style
   [_]
@@ -330,7 +330,7 @@
                                               [popout-button external-window?]]]]]
                                           [:div])
                                         (if-not showing-settings?
-                                          [tab-buttons {:debug? debug?}]
+                                          [panel-header {:debug? debug?}]
                                           [:div])
                                         [warnings external-window?]
                                         [errors external-window?]
