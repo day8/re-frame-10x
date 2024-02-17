@@ -34,7 +34,10 @@
    [day8.re-frame-10x.material                                   :as material]
    [day8.re-frame-10x.styles                                     :as styles]
    [day8.re-frame-10x.tools.shadow-dom                           :as tools.shadow-dom]
-   [day8.re-frame-10x.popup :as popup])
+   [day8.re-frame-10x.popup :as popup]
+   [day8.re-frame-10x.component :as rfc]
+   [re-fine.theme :as theme]
+   [day8.re-frame-10x.theme :as tenx.theme])
   (:require-macros [day8.re-frame-10x.components.re-com :refer [inline-resource]]))
 
 #_(defglobal container-styles
@@ -110,7 +113,7 @@
                  :label    title
                  :on-click #(rf/dispatch [::settings.events/selected-tab panel-id])]]]))
 
-(defclass tab-buttons-style
+(defclass panel-header-style
   [ambiance]
   {:composes     (styles/navigation-border-top ambiance)
    :padding-left styles/gs-19})
@@ -145,13 +148,82 @@
                 ;; TODO: help smaller than what is currently to indicate Reply button is more important/relationship. e.g. just question mark, no button.
                 [replay-help-button]]]))
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  (theme/clear-global)
+  (theme/reg-global tenx.theme/base tenx.theme/light)
+
+(defn panel-header-tabs [{:keys [debug?]}]
+  [rfc/horizontal-tabs
+   {:theme [rfc/reset-theme! tenx.theme/gruvbox]
+    #_#_:theme (fn [attr _ _] (update attr :style merge {:color "red"}))
+    :tabs      (cond-> [{:id :event :label "event"}
+                        {:id :fx    :label "fx"}
+                        {:id :app-db :label "app-db"}
+                        {:id :subs :label "subs"}
+                        {:id :traces :label "traces"}
+                        {:id :timing :label "timing"}]
+                 debug? (conj {:id :debug :label "debug"}))
+    :on-change #(rf/dispatch [::settings.events/selected-tab %])}])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 (defn panel-header
   [{:keys [debug?]}]
   (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
     [rc/h-box
-     :class    (tab-buttons-style ambiance)
+     :class    (panel-header-style ambiance)
      :justify  :between
-     :children [[panel-tabs debug?]
+     :children [[rc/h-box
+                 :align :end
+                 :height "31px"
+                 :children
+                 [[panel-header-tabs {:debug? debug?}]]]
+                #_[panel-tabs debug?]
                 [replay-controls]]]))
 
 (defclass warning-style

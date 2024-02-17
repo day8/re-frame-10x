@@ -336,7 +336,7 @@
 
 (defclass navigation
   [_]
-  {:background-color nord0}
+  {:background-color nord4}
   [:.rc-label
    {:color       nord5
     :font-weight :bold
