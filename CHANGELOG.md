@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.9.9 (2024-04-13)
+
+#### Changed
+
+- Data viewers are now configurable via [cljs-devtools compiler options](https://github.com/binaryage/cljs-devtools/blob/master/docs/configuration.md#configuration-via-compiler-options). See #416
+
+## 1.9.8 (2024-02-08)
+
+#### Fixed
+
+- Init errors. See #411.
+
 ## 1.9.7 (2024-02-02)
 
 #### Fixed
