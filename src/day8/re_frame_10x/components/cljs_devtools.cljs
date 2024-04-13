@@ -25,7 +25,7 @@
    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]
    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]))
 
-(def default-config @devtools.prefs/default-config)
+(def initial-config @devtools.prefs/initial-config)
 
 (defn base-config
   []
@@ -64,7 +64,7 @@
 ;; TODO: If we expose ambiance and/or syntax color scheme as settings will need to fix this, maybe by recalculating
 ;; at the time the setting is changed/loaded.
 (def custom-config
-  (merge default-config (base-config) #_bright-ambiance-config))
+  (merge initial-config (base-config) #_bright-ambiance-config))
 
 (defn header [value config & [{:keys [render-paths?]}]]
   (with-cljs-devtools-prefs
