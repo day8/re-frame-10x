@@ -12,7 +12,7 @@
    [day8.re-frame-10x.tools.reader.edn                                   :as reader.edn]
    [day8.re-frame-10x.tools.shadow-dom                                   :as tools.shadow-dom]
    [day8.re-frame-10x.components.re-com                                  :as rc]
-   [day8.re-frame-10x.navigation.views                                   :as container]
+   [day8.re-frame-10x.navigation.views                                   :as navigation.views]
    [day8.re-frame-10x.panels.settings.subs                               :as settings.subs]
    [day8.re-frame-10x.panels.settings.events                             :as settings.events])
   (:require-macros [day8.re-frame-10x.components.re-com :refer [inline-resource]]))
@@ -109,7 +109,7 @@
                                                    :transition transition}
                                            :children [[:div.panel-resizer (when @showing? {:style         (resizer-style draggable-area)
                                                                                            :on-mouse-down #(reset! dragging? true)})]
-                                                      [container/devtools-inner opts]]]]))})))
+                                                      [navigation.views/devtools-inner opts]]]]))})))
 
 (defn traced-sub [epoch-id reaction-id]
   (get-in @db/app-db
