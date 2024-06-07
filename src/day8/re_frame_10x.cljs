@@ -159,11 +159,12 @@
 (def project-config
   (let [read      reader.edn/read-string-maybe
         keep-vals (remove (comp nil? second))
+        ignore    #(do {:event-id % :event-str (str %)})
         view      #(do {:ns % :ns-str (str %)})
         alias     (fn [[k v]] {:ns-full (str k) :ns-alias (str v)})]
     (->> {:debug?                 debug?
           :retained-epochs        history-size
-          :ignored-events         (some-> ignored-events read sortable-uuid-map)
+          :ignored-events         (some->> ignored-events read (map ignore) sortable-uuid-map)
           :filtered-view-trace    (some->> hidden-namespaces read (map view) sortable-uuid-map)
           :app-db-follows-events? time-travel?
           :low-level-trace        (some-> ignored-libs read (pred-map #{:re-frame :reagent}))
