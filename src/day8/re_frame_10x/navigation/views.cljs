@@ -348,7 +348,7 @@
          :height        "100%"
          :width         "100%"
          :debug?        debug?
-         :initial-split "10%"
+         :initial-split "38%"
          :margin        "0px"
          :panel-1       [rc/v-box
                          :height "100%"

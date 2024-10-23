@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file. This change
 
 ## Unreleased
 
+
+#### Changed
+
+- Adjust epoch list height. See #415
+
 #### Fixed
 
 - The epoch list header now stays visible when scrolling. See #415
