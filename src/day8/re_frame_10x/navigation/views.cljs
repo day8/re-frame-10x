@@ -360,6 +360,9 @@
                            :align  :center
                            :height styles/gs-31s
                            :width  "100%"
+                           :style {:position :sticky
+                                   :top 0
+                                   :left 0}
                            :gap    styles/gs-19s
                            :children
                            [(when-not (= @show-event-history? false)
