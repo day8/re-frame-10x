@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## Unreleased
+
+#### Fixed
+
+- Subscriptions from re-frame.alpha are now listed correctly in the "subs" tab
+
 ## 1.9.9 (2024-04-13)
 
 #### Changed

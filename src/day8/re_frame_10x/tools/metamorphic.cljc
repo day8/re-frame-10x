@@ -308,12 +308,16 @@
                                                     ;; In a perfect world we could provide this only in the :sub/create branch, but we have
                                                     ;; zombie reactions roaming the DOM, so we re-add it on every trace in case a sub was
                                                     ;; disposed of previously (and removed from the sub state).
-                                                    (assoc-in [reaction-id :subscription] (:query-v tags)))
+                                                    (assoc-in [reaction-id :subscription]
+                                                              (or (:query tags)
+                                                                  (:query-v tags))))
                                     new-state
                                     (case (:op-type trace)
                                       :sub/create (-> state
                                                       (assoc-in [reaction-id :created?] true)
-                                                      (assoc-in [reaction-id :subscription] (:query-v tags)))
+                                                      (assoc-in [reaction-id :subscription]
+                                                                (or (:query tags)
+                                                                    (:query-v tags))))
                                       :sub/run (update state reaction-id (fn [sub-state]
                                                                                        ;; TODO: should we keep track of subscriptions that have been disposed
                                                                                        ;; so we can detect zombies?
