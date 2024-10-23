@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. This change
 
 #### Fixed
 
+- `:ignored-events` in project configs now work. See #414. Thanks @lsenjov
 - The epoch list header now stays visible when scrolling. See #415
 - Clicking an expander within an epoch no longer selects the epoch. See #418
 - Subscriptions from re-frame.alpha are now listed correctly in the "subs" tab
