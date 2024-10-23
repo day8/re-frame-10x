@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 
 #### Fixed
 
+- Clicking an expander within an epoch no longer selects the epoch. See #418
 - Subscriptions from re-frame.alpha are now listed correctly in the "subs" tab
 
 ## 1.9.9 (2024-04-13)

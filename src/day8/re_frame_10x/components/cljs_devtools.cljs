@@ -122,7 +122,9 @@
       [:span
        {:class (jsonml-style)}
        [:span {:class    (toggle-style :bright)
-               :on-click #(rf/dispatch [::app-db.events/toggle-expansion path])}
+               :on-click (fn [e]
+                           (.stopPropagation e)
+                           (rf/dispatch [::app-db.events/toggle-expansion path]))}
         [:button
          (if @expanded?
            [material/arrow-drop-down]
