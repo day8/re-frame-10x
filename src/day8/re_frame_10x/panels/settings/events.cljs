@@ -322,3 +322,8 @@
          (cond
            (and (not= :never trace-when) (= :never k)) {::trace/disable {:key ::cb}}
            (and (= :never trace-when) (not= :never k)) {::trace/enable {:key ::cb}}))))
+
+(rf/reg-event-db
+ ::display-uuids-as
+ [(rf/path [:settings :display-uuids-as]) rf/trim-v (local-storage/save "display-uuids-as")]
+ (fn [_ [method]] method))

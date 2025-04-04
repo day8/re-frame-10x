@@ -11,3 +11,4 @@
         cljsjs/highlight                     {:mvn/version "10.3.1-0"}
         org.clojure/tools.logging            {:mvn/version "1.2.4"}
         mvxcvi/arrangement                   {:mvn/version "2.1.0"}}}
+ ;; Removed :npm-deps {identicon.js ...}

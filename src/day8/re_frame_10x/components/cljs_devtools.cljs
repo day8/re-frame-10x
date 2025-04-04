@@ -23,7 +23,8 @@
    [day8.re-frame-10x.panels.app-db.subs                         :as app-db.subs]
    [day8.re-frame-10x.tools.datafy                               :as tools.datafy]
    [day8.re-frame-10x.tools.reader.edn                           :as reader.edn]
-   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]))
+   [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
+   [day8.re-frame-10x.tools.identicon                            :as identicon]))
 
 (def initial-config @devtools.prefs/initial-config)
 
@@ -184,6 +185,17 @@
        (reduce (fn [acc [property value]]
                  (assoc acc (keyword property) value)) {})))
 
+(defn uuid-string? [jsonml]
+  (and (string? jsonml)
+       (.startsWith jsonml "#uuid ")))
+
+(defn uuid->hiccup [jsonml]
+  [:span {:style {:display "inline-flex" :align-items "center"}
+          :title (pr-str jsonml)}
+   "#uuid " [identicon/svg jsonml]])
+
+clojure.string/trim
+
 (defn jsonml->hiccup
   "JSONML is the format used by Chrome's Custom Object Formatters.
   The spec is at https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview.
@@ -192,10 +204,18 @@
   be found at https://cs.chromium.org/chromium/src/third_party/WebKit/Source/devtools/front_end/object_ui/CustomPreviewComponent.js
   "
   [jsonml path]
-  (if (number? jsonml)
-    jsonml
+  (cond
+    (number? jsonml)      jsonml
+    (uuid-string? jsonml) (case @(rf/subscribe [::settings.subs/display-uuids-as])
+                            :last-4-chars (str "#uuid " (.substring jsonml
+                                                                    (- (count jsonml) 5)
+                                                                    (- (count jsonml) 1)))
+                            :identicons   [uuid->hiccup jsonml]
+                            jsonml)
+    (string? jsonml)      jsonml ;; Handle non-UUID strings
+    :else
     (let [[tag-name attributes & children] jsonml
-          tagnames #{"div" "span" "ol" "li" "table" "tr" "td"}]
+          tagnames                         #{"div" "span" "ol" "li" "table" "tr" "td"}]
       (cond
         (contains? tagnames tag-name) (into
                                        [(keyword tag-name) {:style (-> (js->clj attributes)
@@ -204,11 +224,11 @@
                                        (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
                                        children)
 
-        (= tag-name "object") [data-structure jsonml path]
+        (= tag-name "object")     [data-structure jsonml path]
         (= tag-name "annotation") (into [:span {}]
                                         (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
                                         children)
-        :else jsonml))))
+        :else                     jsonml))))
 
 (defn jsonml->hiccup-with-path-annotations
   "JSONML is the format used by Chrome's Custom Object Formatters.
@@ -221,8 +241,16 @@
                                       :as   opts}]
   ;; indexed-path is updated on every html element such as `tagnames`
   ;; while devtools-path is updated only when we encounter an element that contains the `:path` attribute.
-  (if (number? jsonml)
-    jsonml
+  (cond
+    (number? jsonml)      jsonml
+    (uuid-string? jsonml) (case @(rf/subscribe [::settings.subs/display-uuids-as])
+                            :last-4-chars (str "#uuid " (.substring jsonml
+                                                                    (- (count jsonml) 5)
+                                                                    (- (count jsonml) 1)))
+                            :identicons   [uuid->hiccup jsonml]
+                            jsonml)
+    (string? jsonml)      jsonml
+    :else
     (let [[tag-name attributes & children] jsonml
           tagnames                         #{"div" "span" "ol" "li" "table" "tr" "td"}]
       (cond

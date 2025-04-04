@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 1.10.0 (2021-04-05)
+
+#### Added
+
+- "display-uuid-as" setting.
+  UUIDs can be displayed as an identicon, or as the last 4 characters.
+
 ## 1.9.10 (2024-10-23)
 
 #### Changed

@@ -193,3 +193,8 @@
  ::trace-when
  :<- [::root]
  :-> :trace-when)
+
+(rf/reg-sub
+ ::display-uuids-as
+ :<- [::root]
+ :-> :display-uuids-as)

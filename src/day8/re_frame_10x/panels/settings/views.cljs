@@ -14,7 +14,8 @@
    [day8.re-frame-10x.material                                    :as material]
    [day8.re-frame-10x.styles                                      :as styles]
    [day8.re-frame-10x.tools.datafy                                :as tools.datafy]
-   [day8.re-frame-10x.fx.log                                      :as log]))
+   [day8.re-frame-10x.fx.log                                      :as log]
+   [day8.re-frame-10x.tools.identicon                             :as identicon]))
 
 (def comp-section-width "400px")
 (def instruction--section-width "190px")
@@ -121,7 +122,7 @@
 
               [rc/line]
 
-              (let [trace-when @(rf/subscribe [::settings.subs/trace-when])
+              (let [trace-when     @(rf/subscribe [::settings.subs/trace-when])
                     set-trace-when #(rf/dispatch [::settings.events/trace-when %])]
                 [settings-box
                  [[rc/v-box
@@ -264,9 +265,9 @@
                    :on-change #(rf/dispatch [::settings.events/handle-keys? %])]]
                  [[:p "Should 10x respond to key-press events?"]]
                  settings-box-81])
-              (let [ready? @(rf/subscribe [::settings.subs/ready-to-bind-key])
+              (let [ready?    @(rf/subscribe [::settings.subs/ready-to-bind-key])
                     panel-key (rf/subscribe [::settings.subs/key-bindings :show-panel])
-                    ambiance @(rf/subscribe [::settings.subs/ambiance])]
+                    ambiance  @(rf/subscribe [::settings.subs/ambiance])]
                 [settings-box
                  [[rc/button
                    :class (styles/button ambiance)
@@ -332,7 +333,7 @@
                  [:code @(rf/subscribe [::settings.subs/expansion-limit])] " nodes."]]
                settings-box-81]
               [rc/line]
-              (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
+              (let [ambiance          @(rf/subscribe [::settings.subs/ambiance])
                     alias-namespaces? @(rf/subscribe [::settings.subs/alias-namespaces?])]
                 [settings-box
                  [[rc/h-box
@@ -378,6 +379,39 @@
                     [:p "Display " [:code "::" (str ns-alias) "/x"] " when printing " [:code ":" (str ns-full) "/x"]]
                     "")]
                  settings-box-131])
+
+              [rc/line]
+              (let [method       @(rf/subscribe [::settings.subs/display-uuids-as])
+                    set-method   #(rf/dispatch [::settings.events/display-uuids-as %])
+                    example-uuid (random-uuid)]
+                [settings-box
+                 [[rc/v-box
+                   :children
+                   [[rc/label :label "Display UUIDs as:"]
+                    [inputs/radio-button
+                     {:label     "Plaintext"
+                      :model     method
+                      :value     nil
+                      :on-change set-method}]
+                    [inputs/radio-button
+                     {:label     "Identicons"
+                      :model     method
+                      :value     :identicons
+                      :on-change set-method}]
+                    [inputs/radio-button
+                     {:label     "Last 4 chars"
+                      :model     method
+                      :value     :last-4-chars
+                      :on-change set-method}]]]]
+                 [[:p "Display " [:code (pr-str example-uuid)] " as "
+                   (case method
+                     :last-4-chars (str "#uuid " (.slice (str example-uuid) -4))
+                     :identicons     [:span {:style {:display "inline-flex" :align-items "center"}
+                                             :title (pr-str example-uuid)}
+                                      "#uuid " [identicon/svg (str "#uuid " example-uuid)]]
+                     example-uuid)]]
+                 settings-box-81])
+
               [rc/line]
               (let [ambiance @(rf/subscribe [::settings.subs/ambiance])]
                 [settings-box

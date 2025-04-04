@@ -54,6 +54,7 @@
   (rf/inject-cofx ::local-storage/load {:key "ns-aliases"
                                         :or (sortable-uuid-map [{:ns-full "long-namespace" :ns-alias "ln"}])})
   (rf/inject-cofx ::local-storage/load {:key "alias-namespaces?"})
+  (rf/inject-cofx ::local-storage/load {:key "display-uuids-as"})
   rf/unwrap]
  (fn [{::local-storage/keys [stored fallback]} project-config]
    (let [{:keys [panel-width-ratio show-panel selected-tab filter-items app-db-json-ml-expansions
@@ -61,7 +62,7 @@
                  ignored-events low-level-trace filtered-view-trace retained-epochs app-db-paths
                  app-db-follows-events? ambiance syntax-color-scheme categories data-path-annotations?
                  show-event-history open-new-inspectors? handle-keys? key-bindings log-outputs log-pretty?
-                 expansion-limit ns-aliases alias-namespaces? trace-when
+                 expansion-limit ns-aliases alias-namespaces? trace-when display-uuids-as
                  debug?]}
          (merge fallback project-config stored)]
      {:fx [(when (or using-trace? (= :always trace-when))
@@ -98,7 +99,8 @@
            [:dispatch [::settings.events/log-pretty? log-pretty?]]
            [:dispatch [::settings.events/expansion-limit expansion-limit]]
            [:dispatch [::settings.events/ns-aliases ns-aliases]]
-           [:dispatch [::settings.events/alias-namespaces? alias-namespaces?]]]})))
+           [:dispatch [::settings.events/alias-namespaces? alias-namespaces?]]
+           [:dispatch [::settings.events/display-uuids-as display-uuids-as]]]})))
 
 ;; Global
 
