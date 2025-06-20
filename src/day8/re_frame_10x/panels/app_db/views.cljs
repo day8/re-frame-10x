@@ -5,6 +5,7 @@
    [clojure.data]
    [devtools.prefs]
    [devtools.formatters.core]
+   [re-frame.core :as userland.re-frame]
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.units   :refer [px]]
    [day8.re-frame-10x.inlined-deps.spade.git-sha-5197e54.core    :refer [defclass]]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
@@ -245,7 +246,7 @@
              {:icon [material/check-circle-outline]
               :title "Set the value of app-db to the editor value."
               :label "Set!"
-              :on-click #(re-frame.core/dispatch
+              :on-click #(userland.re-frame/dispatch
                           [::app-db.events/edit path edit-str])}]]]
           [:textarea
            {:default-value edit-str

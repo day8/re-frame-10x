@@ -1,7 +1,7 @@
 (ns day8.re-frame-10x.navigation.epochs.events
   (:require
-   [re-frame.core]
-   [re-frame.db]
+   [re-frame.core :as userland.re-frame]
+   [re-frame.db :as userland.re-frame.db]
    [re-frame.trace]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.fx.debounce                                :as debounce]
@@ -153,7 +153,7 @@
                               (metam/matched-event))
          app-db-before    (metam/app-db-before event-trace)
          event            (get-in event-trace [:tags :event])]
-     (reset! re-frame.db/app-db app-db-before)
+     (reset! userland.re-frame.db/app-db app-db-before)
       ;; Wait for quiescence
      (assoc epochs :replay event))))
 
@@ -162,7 +162,7 @@
  [(rf/path [:epochs])]
  (fn [db _]
    (if-some [event-to-replay (:replay db)]
-     (do (re-frame.core/dispatch event-to-replay)
+     (do (userland.re-frame/dispatch event-to-replay)
          (dissoc db :replay))
      db)))
 
@@ -187,7 +187,7 @@
            event    (metam/matched-event (:match-info match))]
         ;; Don't mess up the users app if there is a problem getting app-db-after.
        (when-some [new-db (metam/app-db-after event)]
-         (reset! re-frame.db/app-db new-db))))
+         (reset! userland.re-frame.db/app-db new-db))))
    db))
 
 (rf/reg-event-db
