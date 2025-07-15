@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+
+## 1.10.1 (2025-07-15)
+
+#### Fixed
+
+- Crashes and warnings related to the app-db edit mode.
+
 ## 1.10.0 (2025-04-05)
 
 #### Added
