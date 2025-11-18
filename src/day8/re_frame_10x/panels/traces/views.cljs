@@ -55,6 +55,7 @@
       :event                       (color/lighten styles/nord12 lighten-amount)
       :render                      (color/lighten styles/nord8  lighten-amount)
       :re-frame.router/fsm-trigger (color/lighten styles/nord10 lighten-amount)
+      :flow                        (color/lighten styles/nord13 lighten-amount)
       nil)))
 
 (defclass category-style
@@ -109,7 +110,9 @@
                   {:label "reagent"
                    :keys  #{:render}}
                   {:label "internals"
-                   :keys  #{:re-frame.router/fsm-trigger :componentWillUnmount}}]]
+                   :keys  #{:re-frame.router/fsm-trigger :componentWillUnmount}}
+                  {:label "flows"
+                   :keys  #{:flow}}]]
     [rc/h-box
      :align    :center
      :children

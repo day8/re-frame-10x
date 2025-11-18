@@ -38,7 +38,7 @@
   (rf/inject-cofx ::local-storage/load {:key "app-db-follows-events?" :or true})
   (rf/inject-cofx ::local-storage/load {:key "ambiance" :or :bright})
   (rf/inject-cofx ::local-storage/load {:key "syntax-color-scheme" :or :cljs-devtools})
-  (rf/inject-cofx ::local-storage/load {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose}})
+  (rf/inject-cofx ::local-storage/load {:key "categories" :or #{:event :sub/run :sub/create :sub/dispose :flow}})
   (rf/inject-cofx ::local-storage/load {:key "data-path-annotations?" :or false})
   (rf/inject-cofx ::local-storage/load {:key "show-event-history" :or true})
   (rf/inject-cofx ::local-storage/load {:key "open-new-inspectors?" :or true})
