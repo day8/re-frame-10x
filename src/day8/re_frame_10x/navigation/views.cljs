@@ -25,6 +25,7 @@
    [day8.re-frame-10x.panels.debug.views                         :as debug.views]
    [day8.re-frame-10x.panels.event.views                         :as event.views]
    [day8.re-frame-10x.panels.fx.views                            :as fx.views]
+   [day8.re-frame-10x.panels.flow.views                          :as flow.views]
    [day8.re-frame-10x.panels.settings.events                     :as settings.events]
    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
    [day8.re-frame-10x.panels.settings.views                      :as settings.views]
@@ -124,6 +125,7 @@
               [tab-button :fx     "fx"]
               [tab-button :app-db "app-db"]
               [tab-button :subs   "subs"]
+              [tab-button :flow  "flows"]
               [tab-button :traces "traces"]
               [tab-button :timing "timing"]
               (when debug?
@@ -216,6 +218,7 @@
                   :fx       [fx.views/panel]
                   :app-db   [app-db.views/panel db/app-db]
                   :subs     [subs.views/panel]
+                  :flow     [flow.views/panel]
                   :timing   [timing.views/panel]
                   :traces   [traces.views/panel]
                   :debug    [debug.views/render]
