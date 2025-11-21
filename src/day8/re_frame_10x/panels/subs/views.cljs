@@ -337,13 +337,7 @@
                :class    (diff-header-style ambiance)
                :justify  :end
                :children
-               [[rc/hyperlink-href
-                 :class  (styles/hyperlink ambiance)
-                 :label  "ONLY BEFORE"
-                 :style  {:margin-left styles/gs-7s}
-                 :attr   {:rel "noopener noreferrer"}
-                 :target "_blank"
-                 :href   app-db.views/diff-url]]]
+               [[data/diff-label :before]]]
               [rc/v-box
                :class    (diff-data-style ambiance)
                :children
@@ -358,13 +352,7 @@
                :class    (diff-header-style ambiance)
                :justify  :end
                :children
-               [[rc/hyperlink-href
-                 :class  (styles/hyperlink ambiance)
-                 :label  "ONLY AFTER"
-                 :style  {:margin-left      styles/gs-7s}
-                 :attr   {:rel "noopener noreferrer"}
-                 :target "_blank"
-                 :href   app-db.views/diff-url]]]
+               [[data/diff-label :after]]]
               [rc/v-box
                :class    (diff-data-style ambiance)
                :children

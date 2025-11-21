@@ -13,6 +13,7 @@
    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]
    [day8.re-frame-10x.components.hyperlinks                      :as hyperlinks]
    [day8.re-frame-10x.components.re-com                          :as rc :refer [css-join]]
+   [day8.re-frame-10x.components.data                            :as data]
    [day8.re-frame-10x.svgs                                       :as svgs]
    [day8.re-frame-10x.material                                   :as material]
    [day8.re-frame-10x.styles                                     :as styles]
@@ -258,8 +259,6 @@
             :on-change #(rf/dispatch [::app-db.events/set-edit-str
                                       {:id id :value (.-value (.-target %))}])}]]])]]))
 
-(def diff-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
-
 (defn pod [{:keys [id path open? diff? sort? expand?] :as pod-info}]
   (let [ambiance     @(rf/subscribe [::settings.subs/ambiance])
         render-diff? (and open? diff?)
@@ -296,12 +295,7 @@
                :class    (styles/app-db-inspector-link ambiance)
                :justify  :end
                :children
-               [[rc/hyperlink-href
-                 :label "ONLY BEFORE"
-                 :style {:margin-left styles/gs-7s}
-                 :attr {:rel "noopener noreferrer"}
-                 :target "_blank"
-                 :href diff-url]]]
+               [[data/diff-label :before]]]
               [rc/v-box
                :style {:overflow-x "auto"
                        :overflow-y "hidden"}
@@ -314,13 +308,7 @@
                :class    (styles/app-db-inspector-link ambiance)
                :justify  :end
                :children
-               [[rc/hyperlink-href
-                 ;:class  "app-db-path--label"
-                 :label "ONLY AFTER"
-                 :style {:margin-left styles/gs-7s}
-                 :attr {:rel "noopener noreferrer"}
-                 :target "_blank"
-                 :href diff-url]]]
+               [[data/diff-label :after]]]
               [rc/v-box
                :style {:overflow-x "auto"
                        :overflow-y "hidden"}

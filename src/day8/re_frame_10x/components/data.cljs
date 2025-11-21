@@ -10,3 +10,15 @@
    :style style
    :class (str "data-tag " class)
    :child [:span label]])
+
+(def diff-doc-url "https://github.com/day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/Diffs.md")
+
+(defn diff-label [role]
+  [rc/hyperlink-href {:label  (str "ONLY "
+                                   (case role
+                                     :before "BEFORE"
+                                     :after "AFTER"))
+                      :style  {:margin-left styles/gs-7s}
+                      :attr   {:rel "noopener noreferrer"}
+                      :target "_blank"
+                      :href   diff-doc-url}])
