@@ -9,26 +9,29 @@
    [day8.re-frame-10x.components.inputs                          :as inputs]
    [day8.re-frame-10x.styles                                     :as styles]
    [day8.re-frame-10x.tools.datafy                               :as tools.datafy]
+   [day8.re-frame-10x.panels.app-db.views                        :as app-db.views :refer [pod-gap pod-padding pod-border-edge
+                                                                                          pod-header-section]]
+   [day8.re-frame-10x.panels.flow.subs                           :as flow.subs]
+   [day8.re-frame-10x.panels.flow.events                         :as flow.events]
    [day8.re-frame-10x.panels.settings.subs                       :as settings.subs]
    [day8.re-frame-10x.panels.traces.events                       :as traces.events]
    [day8.re-frame-10x.panels.traces.subs                         :as traces.subs]
+   [day8.re-frame-10x.panels.subs.views                          :as subs.views]
    [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]
    [day8.re-frame-10x.panels.traces.views                        :as traces.views]
    [day8.re-frame-10x.tools.pretty-print-condensed               :as pp]
    [day8.re-frame-10x.inlined-deps.garden.v1v3v10.garden.color   :as color]
    [day8.re-frame-10x.components.cljs-devtools                   :as cljs-devtools]))
 
-(rf/reg-sub
- ::root
- (fn [{:keys [traces]} _]
-   traces))
-
-@(rf/subscribe [::root])
+(defn filter-section []
+  [inputs/search
+   {:placeholder "filter subs"
+    :on-change   #(rf/dispatch [::flow.events/set-filter (-> % .-target .-value)])}])
 
 (defn table-header
   []
   (let [ambiance            @(rf/subscribe [::settings.subs/ambiance])
-        traces              @(rf/subscribe [::traces.subs/sorted])
+        flow-traces         @(rf/subscribe [::flow.subs/visible-flows])
         {:keys [show-all?]} @(rf/subscribe [::traces.subs/expansions])]
     [rc/h-box
      :height   styles/gs-31s
@@ -43,21 +46,13 @@
        (if show-all?
          [material/unfold-less]
          [material/unfold-more])]
-      [rc/box
-      :class     (traces.views/table-header-style ambiance)
-       :align     :center
-       :justify   :center
-       :width     styles/gs-81s
-       :height    styles/gs-31s
-       :child
-       [rc/label :label "operations"]]
       [rc/h-box
        :class     (traces.views/table-header-style ambiance)
        :align     :center
        :justify   :center
        :size      "1"
        :children
-       [[rc/label :label (str (count traces) " traces")]
+       [[rc/label :label (str (count flow-traces) " flows")]
         [rc/gap-f :size styles/gs-5s]
         [rc/label
          :class    (styles/hyperlink ambiance)
@@ -73,10 +68,10 @@
       [rc/box
        :width styles/gs-31s
        :class (traces.views/table-header-style ambiance)]
-       [rc/box
+      [rc/box
        :class (traces.views/table-header-style ambiance)
-        :width "17px" ;; y scrollbar width
-        :child ""]]]))
+       :width "17px" ;; y scrollbar width
+       :child ""]]]))
 
 (defn alias-tree [m]
   (let [ns->alias @(rf/subscribe [::settings.subs/ns->alias])
@@ -101,7 +96,13 @@
         debug?              @(rf/subscribe [::settings.subs/debug?])
         expansions          @(rf/subscribe [::traces.subs/expansions])
         log-any?            @(rf/subscribe [::settings.subs/any-log-outputs?])
-        expanded?           (get-in expansions [:overrides id] (:show-all? expansions))]
+        expanded?           (get-in expansions [:overrides {:type      ::flow
+                                                            :operation operation}]
+                                    (:show-all? expansions))
+        diff-inputs?        (get-in expansions [:overrides {:type      ::diff-inputs
+                                                            :operation operation}])
+        diff-live-inputs?   (get-in expansions [:overrides {:type      ::diff-live-inputs
+                                                            :operation operation}])]
     [:<>
      [rc/h-box
       :class    (traces.views/table-row-style op-type)
@@ -110,21 +111,14 @@
       [[rc/box
         :width   styles/gs-31s
         :class   (traces.views/table-row-expansion-style ambiance)
-        :attr    {:on-click #(rf/dispatch [::traces.events/toggle-expansion id])}
+        :attr    {:on-click #(rf/dispatch [::traces.events/toggle-expansion
+                                           {:type      ::flow
+                                            :operation operation}])}
         :justify :center
         :child
         (if expanded?
           [material/arrow-drop-down]
           [material/arrow-right])]
-       [rc/box
-        :class (traces.views/clickable-table-cell-style op-type)
-        :width styles/gs-81s
-        :attr  {:on-click
-                (fn [ev]
-                  (rf/dispatch [::traces.events/add-query {:query (name op-type) :type :contains}])
-                  (.stopPropagation ev))}
-        :child
-        [:span (str op-type)]]
        [rc/h-box
         :size      "1"
         :class     (traces.views/clickable-table-cell-style op-type)
@@ -160,26 +154,62 @@
                          :on-click #(rf/dispatch [:global/log tags])}])]]]
      (when expanded?
        [rc/h-box
-        :class    (traces.views/table-row-expanded-style ambiance syntax-color-scheme)
         :children
-        [[rc/box
-          :width styles/gs-31s
-          :child ""]
-         [rc/box
-          :size  "1"
-          :child
-          [cljs-devtools/simple-render tags []]]]])]))
+        [[rc/gap-f :size styles/gs-31s]
+         [rc/v-box :size  "1"
+          :children
+          ["Value"
+           [rc/box :class (traces.views/table-row-expanded-style ambiance syntax-color-scheme)
+            :child [cljs-devtools/simple-render (-> tags :new-db (get-in (:path (:flow-spec tags)))) []]]
+           [rc/h-box :children
+            ["Input values"
+             [rc/gap-f :size styles/gs-31s]
+             [:input.toggle
+              {:type      "checkbox"
+               :checked   diff-inputs?
+               :on-change #(rf/dispatch [::traces.events/toggle-expansion
+                                         {:type      ::diff-inputs
+                                          :operation operation}])}]
+             [rc/label :label "diff?"]]]
+           [rc/box :class (traces.views/table-row-expanded-style ambiance syntax-color-scheme)
+            :child [cljs-devtools/simple-render (-> tags :id->in) []]]
+           (when diff-inputs?
+             (let [[before after _] @(rf/subscribe [::flow.subs/inputs-diff id])]
+               [:<>
+                [data/diff-label :before]
+                [cljs-devtools/simple-render before]
+                [data/diff-label :after]
+                [cljs-devtools/simple-render after]]))
+           [rc/h-box :children
+            ["Live-input values"
+             [rc/gap-f :size styles/gs-31s]
+             [:input.toggle
+              {:type      "checkbox"
+               :checked   diff-live-inputs?
+               :on-change #(rf/dispatch [::traces.events/toggle-expansion
+                                         {:type      ::diff-live-inputs
+                                          :operation operation}])}]
+             [rc/label :label "diff?"]]]
+           [rc/box :class (traces.views/table-row-expanded-style ambiance syntax-color-scheme)
+            :child [cljs-devtools/simple-render (-> tags :id->live-in) []]]
+           (when diff-live-inputs?
+             (let [[before after _] @(rf/subscribe [::flow.subs/live-inputs-diff id])]
+               [:<>
+                [data/diff-label :before]
+                [cljs-devtools/simple-render before]
+                [data/diff-label :after]
+                [cljs-devtools/simple-render after]]))]]]])]))
 
 (defn panel []
-  (let [ambiance @(rf/subscribe [::settings.subs/ambiance])
-        traces   (filterv (comp #{:flow} :op-type)
-                          @(rf/subscribe [::traces.subs/filtered-by-epoch]))]
+  (let [ambiance    @(rf/subscribe [::settings.subs/ambiance])
+        flow-traces @(rf/subscribe [::flow.subs/visible-flows])]
     [rc/v-box
      :size     "1"
      :class    (traces.views/table-style ambiance)
      :children
-     [[table-header]
+     [[filter-section]
+      [table-header]
       [rc/v-box
        :size     "1"
        :class    (traces.views/table-body-style ambiance)
-       :children (into [] (->> traces (map (fn [trace] [table-row trace]))))]]]))
+       :children (into [] (->> flow-traces (map (fn [trace] [table-row trace]))))]]]))
