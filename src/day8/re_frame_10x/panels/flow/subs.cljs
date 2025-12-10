@@ -28,7 +28,7 @@
 
 (rf/reg-sub
  ::all-flows
- :<- [::traces.subs/filtered-by-epoch]
+ :<- [::traces.subs/filtered-by-epoch-always]
  #(filterv (comp #{:flow} :op-type) %))
 
 (rf/reg-sub ::filter-str :<- [::root] :-> :filter-str)
