@@ -1,5 +1,5 @@
 (ns day8.re-frame-10x.tools.coll-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is]]
             [day8.re-frame-10x.tools.coll :as tools.coll]))
 
 (deftest last-in-vec-test

@@ -1,0 +1,25 @@
+;; Root-level shadow-cljs config for re-frame-10x. The library build
+;; is still driven by lein/project.clj — this file exists ONLY to give
+;; the .cljs test suite a runnable target so CI can gate on it.
+;;
+;; See DEVELOPERS.md "Running tests" for the dual-path (lein test for
+;; the JVM-side suite; npx shadow-cljs compile test for the cljs side).
+;;
+;; The :dependencies declared here are the *real* (userland) re-frame
+;; and reagent that live next to the inlined-deps copies in gen-src.
+;; navigation/epochs/events.cljs requires re-frame.core / re-frame.db /
+;; re-frame.trace under their userland names; the test build needs
+;; those resolvable, even though the production build inherits them
+;; from the host application's classpath.
+
+{:source-paths ["src" "gen-src" "test"]
+
+ :dependencies [[reagent "1.2.0"]
+                [re-frame "1.4.5"]]
+
+ :builds
+ {:test
+  {:target    :node-test
+   :output-to "out/node-tests.js"
+   :ns-regexp "-test$"
+   :autorun   true}}}

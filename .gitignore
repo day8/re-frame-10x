@@ -19,6 +19,7 @@ misc/
 .floo
 .flooignore
 node_modules/
+.shadow-cljs/
 examples/todomvc/.idea/
 .clj-kondo/
 .cpcache/

@@ -67,6 +67,37 @@ We are using CSS preprocessing to isolate the panel styles, by namespacing the p
 
 - Try clearing your browser cache/hard-reloading.
 
+### Running tests
+
+re-frame-10x has tests on two surfaces, gated independently in CI:
+
+1. **JVM-side suite** — `.clj` test files under `test/`, run via leiningen.
+   ```console
+   $ lein test
+   ```
+   Covers anything that can be exercised on the JVM without a JS runtime
+   (e.g. static reads of preload sources, export-metadata checks,
+   `tools.metamorphic`).
+
+2. **ClojureScript suite** — `.cljs` test files under `test/`, run via
+   shadow-cljs's `:node-test` target. The build config lives in the
+   root `shadow-cljs.edn` and the npm deps (shadow-cljs + react +
+   react-dom) live in the root `package.json`. The library itself
+   still ships via Clojars / leiningen — `package.json` exists only
+   to give the test runner a place to resolve `react`.
+
+   ```console
+   $ npm install
+   $ npx shadow-cljs compile test
+   ```
+
+   Covers the public surface (`day8.re-frame-10x.public`),
+   navigation event semantics, and any other cljs-only logic.
+
+CI runs both paths on every push (see
+`.github/workflows/continuous-integration-workflow.yml`); a regression
+in either surface will fail the gate.
+
 ### Updating the internal version of re-frame used
 
 We want to use re-frame, but we don't want to use the re-frame that the host is using, or tracing will get very messy. Instead, we use [mranderson](https://github.com/benedekfazekas/mranderson) to create source dependencies of re-frame and reagent.

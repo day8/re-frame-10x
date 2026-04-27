@@ -48,7 +48,18 @@ jobs:
           key: ${{ runner.os }}-shadow-cljs-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-shadow-cljs-
+      - name: Root shadow-cljs test compiler cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .shadow-cljs
+          key: ${{ runner.os }}-shadow-cljs-test-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-shadow-cljs-test-
       - run: lein test
+      - name: Compile and run cljs tests
+        run: |
+          npm install
+          npx shadow-cljs compile test
       - name: Compile Sample Project
         run: |
           npm install

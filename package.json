@@ -1,0 +1,12 @@
+{
+  "name": "re-frame-10x",
+  "description": "npm config for the re-frame-10x cljs test runner. The library itself ships via Clojars, not npm.",
+  "private": true,
+  "devDependencies": {
+    "shadow-cljs": "^3.4.5"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
