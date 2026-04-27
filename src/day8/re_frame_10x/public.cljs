@@ -236,7 +236,12 @@
 
 (def ^:export ^:const replay-event
   "Public event keyword. Dispatch via `(dispatch! [replay-event])` to
-   re-fire the focused epoch's event against the current app-db.
+   replay the focused epoch's event against the app-db state captured
+   BEFORE that event originally fired (the epoch's `:app-db-before`).
+   Equivalent to time-travelling to the epoch and re-firing — the
+   resulting userland app-db is the post-event state of that epoch,
+   regardless of any subsequent dispatches. Idempotent: repeated
+   replays of the same epoch produce the same post-event state.
    Equivalent to clicking 10x's 'replay' button."
   ::replay)
 

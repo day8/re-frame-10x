@@ -1,6 +1,7 @@
 (ns day8.re-frame-10x.public-navigation-test
   (:require
    [clojure.test :refer [deftest is testing]]
+   [re-frame.db                                                  :as userland.re-frame.db]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db   :as rf.db]
    [day8.re-frame-10x.public                                     :as public]))
@@ -52,3 +53,31 @@
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/next])
         (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
         (finally (reset! rf.db/app-db snapshot))))))
+
+(deftest replay-event-resets-userland-app-db-to-before
+  (testing "[replay-event] resets userland app-db to the focused epoch's :app-db-before, ignoring whatever state was current — confirms the idempotent time-travel semantic the docstring promises"
+    (let [rf-snapshot       @rf.db/app-db
+          userland-snapshot @userland.re-frame.db/app-db
+          before-state      {:counter 0  :marker :before}
+          current-state     {:counter 99 :marker :diverged}
+          replay-evt        [::test-replay-noop]
+          stub-event-trace  {:op-type :event
+                             :tags    {:app-db-before before-state
+                                       :app-db-after  {:counter 1 :marker :after}
+                                       :event         replay-evt}}]
+      (try
+        (reset! rf.db/app-db
+                {:epochs   {:match-ids         [42]
+                            :selected-epoch-id 42
+                            :matches-by-id     {42 {:match-info [stub-event-trace]}}}
+                 :settings {:app-db-follows-events? false}})
+        (reset! userland.re-frame.db/app-db current-state)
+        (rf/dispatch-sync [public/replay-event])
+        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/replay])
+        (is (= before-state @userland.re-frame.db/app-db)
+            "userland app-db must be reset to :app-db-before, not retain the diverged current-state")
+        (is (= replay-evt (get-in @rf.db/app-db [:epochs :replay]))
+            "the event vector must be staged for ::quiescent to re-fire after the reset")
+        (finally
+          (reset! rf.db/app-db rf-snapshot)
+          (reset! userland.re-frame.db/app-db userland-snapshot))))))
