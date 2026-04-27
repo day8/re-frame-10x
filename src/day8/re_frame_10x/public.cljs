@@ -10,8 +10,9 @@
 
    - Q2 (mutation API shape): event-keyword API. The mutation
      surface is exposed as keyword constants (see `load-epoch`,
-     `most-recent-epoch`, `reset!-event`, `replay-event` below)
-     plus a `dispatch!` fn that routes through 10x's *inlined*
+     `most-recent-epoch`, `previous-epoch`, `next-epoch`,
+     `reset!-event`, `replay-event` below) plus a `dispatch!`
+     fn that routes through 10x's *inlined*
      re-frame router. Rationale: 10x events are registered against
      the inlined `day8.re-frame-10x.inlined-deps.re-frame.v1v3v0`
      re-frame core, NOT the user's re-frame; a consumer's plain
@@ -210,6 +211,22 @@
    after a programmatic load-epoch to return control to the user."
   ::most-recent-epoch)
 
+(def ^:const previous-epoch
+  "Public event keyword. Dispatch via `(dispatch! [previous-epoch])`
+   to step the 10x UI cursor one match backwards from the currently
+   focused epoch. No-op when already at the oldest retained match.
+   When `app-db-follows-events?` is true, the user's app-db resets
+   to the new epoch's `:app-db-after`."
+  ::previous-epoch)
+
+(def ^:const next-epoch
+  "Public event keyword. Dispatch via `(dispatch! [next-epoch])` to
+   step the 10x UI cursor one match forwards from the currently
+   focused epoch. When no epoch is focused, jumps to the live tail.
+   When `app-db-follows-events?` is true, the user's app-db resets
+   to the new epoch's `:app-db-after`."
+  ::next-epoch)
+
 (def ^:const reset-event
   "Public event keyword. Dispatch via `(dispatch! [reset-event])` to
    clear 10x's epoch buffer and reset re-frame.trace's id counter.
@@ -232,6 +249,16 @@
  ::most-recent-epoch
  (fn [_ _]
    {:dispatch [::nav.events/most-recent]}))
+
+(rf/reg-event-fx
+ ::previous-epoch
+ (fn [_ _]
+   {:dispatch [::nav.events/previous]}))
+
+(rf/reg-event-fx
+ ::next-epoch
+ (fn [_ _]
+   {:dispatch [::nav.events/next]}))
 
 (rf/reg-event-fx
  ::reset
