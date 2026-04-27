@@ -69,7 +69,7 @@
 ;; Versioning + feature detection
 ;; ---------------------------------------------------------------------------
 
-(def ^:export ^:const api-version
+(def ^:export api-version
   "Integer that bumps with each backwards-incompatible change to the
    shape of the read API or the meaning of an event keyword. Consumers
    can branch on it via `(capabilities)` or read it directly via
@@ -199,20 +199,20 @@
 ;; Mutation API — event keywords + dispatch! bridge
 ;; ---------------------------------------------------------------------------
 
-(def ^:export ^:const load-epoch
+(def ^:export load-epoch
   "Public event keyword. Dispatch via `(dispatch! [load-epoch <id>])`
    to make 10x focus on the epoch with the given match id. When
    `app-db-follows-events?` is true (the default), the user's app-db
    resets to that epoch's `:app-db-after`."
   ::load-epoch)
 
-(def ^:export ^:const most-recent-epoch
+(def ^:export most-recent-epoch
   "Public event keyword. Dispatch via `(dispatch! [most-recent-epoch])`
    to make 10x focus on the newest match (the 'live tail'). Useful
    after a programmatic load-epoch to return control to the user."
   ::most-recent-epoch)
 
-(def ^:export ^:const previous-epoch
+(def ^:export previous-epoch
   "Public event keyword. Dispatch via `(dispatch! [previous-epoch])`
    to step the 10x UI cursor one match backwards from the currently
    focused epoch. No-op when already at the oldest retained match.
@@ -222,7 +222,7 @@
    app-db resets to the new epoch's `:app-db-after`."
   ::previous-epoch)
 
-(def ^:export ^:const next-epoch
+(def ^:export next-epoch
   "Public event keyword. Dispatch via `(dispatch! [next-epoch])` to
    step the 10x UI cursor one match forwards from the currently
    focused epoch. When no epoch is focused, jumps to the live tail.
@@ -230,13 +230,13 @@
    to the new epoch's `:app-db-after`."
   ::next-epoch)
 
-(def ^:export ^:const reset-event
+(def ^:export reset-event
   "Public event keyword. Dispatch via `(dispatch! [reset-event])` to
    clear 10x's epoch buffer and reset re-frame.trace's id counter.
    Equivalent to clicking the 'reset' button in 10x's UI."
   ::reset)
 
-(def ^:export ^:const replay-event
+(def ^:export replay-event
   "Public event keyword. Dispatch via `(dispatch! [replay-event])` to
    replay the focused epoch's event against the app-db state captured
    BEFORE that event originally fired (the epoch's `:app-db-before`).
