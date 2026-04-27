@@ -9,7 +9,8 @@
    [day8.re-frame-10x                                            :as re-frame-10x]
    [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.dom    :as rdom]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
-   [day8.re-frame-10x.events                                     :as events]))
+   [day8.re-frame-10x.events                                     :as events]
+   [day8.re-frame-10x.public]))
 
 (let [react-major-version (first (str/split react/version #"\."))]
   (when-not (= "17" react-major-version)

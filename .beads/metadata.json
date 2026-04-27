@@ -1,7 +1,7 @@
 {
-  "database": "dolt",
   "backend": "dolt",
-  "dolt_mode": "embedded",
+  "database": "dolt",
   "dolt_database": "rf1",
+  "dolt_mode": "server",
   "project_id": "gc-local-5723ebca74ff5944eb6bacdde9a14768"
 }

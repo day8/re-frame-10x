@@ -3,4 +3,5 @@
    re-frame-10x; e.g.
 
        {:compiler {:preloads [day8.re-frame-10x.preload] ...}}"
-  (:require [day8.re-frame-10x.preload.react-17]))
+  (:require [day8.re-frame-10x.preload.react-17]
+            [day8.re-frame-10x.public]))
