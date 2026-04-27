@@ -70,6 +70,19 @@
     (is (= 7 (public/selected-epoch-id)))
     (is (true? (public/app-db-follows-events?)))))
 
+(deftest latest-epoch-id-returns-newest
+  ;; 10x stores epochs oldest-first; latest-epoch-id must return the tail
+  ;; (newest dispatch), not the head (oldest). A first/last swap in the
+  ;; implementation would silently flip the semantic — guard against that
+  ;; by priming :match-ids with multiple distinct ids.
+  (with-redefs [rf.db/app-db (atom {:epochs {:match-ids [1 2 3 7 11]}})]
+    (is (= 11 (public/latest-epoch-id))
+        "latest-epoch-id must return the last (newest) match-id, not the first")
+    (is (not= 1 (public/latest-epoch-id))
+        "latest-epoch-id must not return the head (oldest) of :match-ids")
+    (is (some? (public/latest-epoch-id))
+        "latest-epoch-id must not return nil when :match-ids is non-empty")))
+
 (deftest read-api-cold-start
   (with-redefs [rf.db/app-db (atom {})]
     (is (= [] (public/epochs)))

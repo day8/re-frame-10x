@@ -146,8 +146,9 @@
   (count (some-> rf.db/app-db deref :epochs :match-ids)))
 
 (defn ^:export latest-epoch-id
-  "Id of the newest match in the buffer, or nil if empty.
-   Cheap — reads `:match-ids` head."
+  "Id of the newest (most-recent) match in the buffer, or nil if
+   empty. Cheap — reads `:match-ids`' last element. 10x stores
+   epochs oldest-first, so the newest dispatch is at the tail."
   []
   (some-> rf.db/app-db deref :epochs :match-ids last))
 
