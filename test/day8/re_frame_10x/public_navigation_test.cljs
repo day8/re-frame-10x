@@ -66,10 +66,10 @@
   (testing "[next-epoch] with no :selected-epoch-id lands on the newest match"
     (let [snapshot @rf.db/app-db]
       (try
-        (prime-app-db! [:a :b :c] nil)
+        (prime-app-db! [:a :b :c :d :e] nil)
         (rf/dispatch-sync [public/next-epoch])
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/next])
-        (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
+        (is (= :e (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
         (finally (reset! rf.db/app-db snapshot))))))
 
 (deftest replay-event-resets-userland-app-db-to-before
