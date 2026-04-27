@@ -34,6 +34,24 @@
         (is (= :a (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
         (finally (reset! rf.db/app-db snapshot))))))
 
+(deftest previous-epoch-fx-honours-no-op-at-oldest
+  ;; Why test the pure helper instead of dispatch-syncing public/previous-epoch:
+  ;; the internal ::nav.events/previous clobbers :selected-epoch-id to nil at
+  ;; the oldest match and from live-tail, and a behavioural test that flushes
+  ;; the inner re-fires that clobber regardless of what the forwarder did.
+  (testing "at the oldest match — empty fx map (no-op)"
+    (is (= {} (#'public/previous-epoch-fx {:match-ids [:a :b :c] :selected-epoch-id :a}))))
+  (testing "live tail with multiple matches — load second-newest"
+    (is (= {:dispatch [:day8.re-frame-10x.navigation.epochs.events/load :b]}
+           (#'public/previous-epoch-fx {:match-ids [:a :b :c] :selected-epoch-id nil}))))
+  (testing "live tail with a single match — no-op (no second-newest exists)"
+    (is (= {} (#'public/previous-epoch-fx {:match-ids [:a] :selected-epoch-id nil}))))
+  (testing "empty match-ids — no-op"
+    (is (= {} (#'public/previous-epoch-fx {:match-ids [] :selected-epoch-id nil}))))
+  (testing "middle of the list — defer to internal ::previous"
+    (is (= {:dispatch [:day8.re-frame-10x.navigation.epochs.events/previous]}
+           (#'public/previous-epoch-fx {:match-ids [:a :b :c] :selected-epoch-id :b})))))
+
 (deftest next-epoch-event-steps-cursor-forward
   (testing "[next-epoch] from :b lands the cursor on :c"
     (let [snapshot @rf.db/app-db]

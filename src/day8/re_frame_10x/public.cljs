@@ -216,8 +216,10 @@
   "Public event keyword. Dispatch via `(dispatch! [previous-epoch])`
    to step the 10x UI cursor one match backwards from the currently
    focused epoch. No-op when already at the oldest retained match.
-   When `app-db-follows-events?` is true, the user's app-db resets
-   to the new epoch's `:app-db-after`."
+   When no epoch is focused (the 'live tail'), steps to the
+   second-newest retained match; no-op if fewer than two matches
+   are retained. When `app-db-follows-events?` is true, the user's
+   app-db resets to the new epoch's `:app-db-after`."
   ::previous-epoch)
 
 (def ^:export ^:const next-epoch
@@ -256,10 +258,26 @@
  (fn [_ _]
    {:dispatch [::nav.events/most-recent]}))
 
+(defn- previous-epoch-fx
+  "Compute the re-frame effect map for the `::previous-epoch` forwarder
+   given the `:epochs` substate. Extracted so the no-op-at-oldest and
+   live-tail contracts can be unit-tested without flushing the async
+   fx queue. The internal `::nav.events/previous` handler clobbers
+   `:selected-epoch-id` to nil at both boundaries, so the public
+   forwarder gates those entry conditions itself instead of delegating."
+  [{:keys [match-ids selected-epoch-id]}]
+  (cond
+    (empty? match-ids)                      {}
+    (= selected-epoch-id (first match-ids)) {}
+    (nil? selected-epoch-id)                (if-let [target (last (butlast match-ids))]
+                                              {:dispatch [::nav.events/load target]}
+                                              {})
+    :else                                   {:dispatch [::nav.events/previous]}))
+
 (rf/reg-event-fx
  ::previous-epoch
- (fn [_ _]
-   {:dispatch [::nav.events/previous]}))
+ (fn [{:keys [db]} _]
+   (previous-epoch-fx (:epochs db))))
 
 (rf/reg-event-fx
  ::next-epoch
