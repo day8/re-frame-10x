@@ -69,14 +69,14 @@
 ;; Versioning + feature detection
 ;; ---------------------------------------------------------------------------
 
-(def ^:const api-version
+(def ^:export ^:const api-version
   "Integer that bumps with each backwards-incompatible change to the
    shape of the read API or the meaning of an event keyword. Consumers
    can branch on it via `(capabilities)` or read it directly via
    `goog.global.day8.re_frame_10x.public.api_version`."
   1)
 
-(defn ^boolean loaded?
+(defn ^:export ^boolean loaded?
   "True when this namespace is loaded — i.e. when the public surface
    is available in the runtime. Stable feature-detection hook for
    downstream tooling. The presence of the var IS the contract;
@@ -88,7 +88,7 @@
   []
   true)
 
-(defn version
+(defn ^:export version
   "Returns `{:api <int>}` describing the public-surface version the
    currently-loaded 10x build implements. Bumps with backwards-
    incompatible changes to read-API shape or event-kw semantics.
@@ -97,7 +97,7 @@
   []
   {:api api-version})
 
-(defn capabilities
+(defn ^:export capabilities
   "Set of feature keywords this build supports. Reserved for
    future growth — today returns the baseline set. Consumers
    should treat unknown keywords as 'not supported'."
@@ -125,7 +125,7 @@
      :sub-state-raw (:sub-state match)
      :timings       (:timing match)}))
 
-(defn epochs
+(defn ^:export epochs
   "Vec of every retained epoch in 10x's ring buffer, in the order
    10x stored them (oldest first; `last` is newest). Each element is
    a public-epoch record (see `match->public-epoch`).
@@ -137,7 +137,7 @@
   (mapv match->public-epoch
         (some-> rf.db/app-db deref :epochs :matches)))
 
-(defn epoch-count
+(defn ^:export epoch-count
   "Number of retained epochs. Cheap — reads the `:match-ids` vec
    length without rebuilding the full coerced epoch maps. Suitable
    for poll-cadence callers (e.g. re-frame-pair's
@@ -145,13 +145,13 @@
   []
   (count (some-> rf.db/app-db deref :epochs :match-ids)))
 
-(defn latest-epoch-id
+(defn ^:export latest-epoch-id
   "Id of the newest match in the buffer, or nil if empty.
    Cheap — reads `:match-ids` head."
   []
   (some-> rf.db/app-db deref :epochs :match-ids last))
 
-(defn selected-epoch-id
+(defn ^:export selected-epoch-id
   "Id of the epoch the 10x UI is currently focused on, or nil if
    the user is on the live tail. Different from `latest-epoch-id`:
    when the user navigates back through history, `selected-epoch-id`
@@ -159,7 +159,7 @@
   []
   (some-> rf.db/app-db deref :epochs :selected-epoch-id))
 
-(defn epoch-by-id
+(defn ^:export epoch-by-id
   "Public-epoch record for the given match id, or nil if unknown
    (id never existed, or aged out of the buffer)."
   [id]
@@ -170,7 +170,7 @@
 ;; Read API — traces (the underlying re-frame.trace stream)
 ;; ---------------------------------------------------------------------------
 
-(defn all-traces
+(defn ^:export all-traces
   "The full retained trace stream — every `:event :sub/run :sub/create
    :render :raf` etc. trace, in order. Vec; empty when 10x hasn't
    initialised. Consumers that want to slice differently than 10x's
@@ -183,7 +183,7 @@
 ;; Read API — settings
 ;; ---------------------------------------------------------------------------
 
-(defn ^boolean app-db-follows-events?
+(defn ^:export ^boolean app-db-follows-events?
   "True iff 10x is currently configured to reset the user's app-db
    to the focused epoch's `:app-db-after` snapshot when navigation
    events fire (the default). When false, navigation events update
@@ -198,20 +198,20 @@
 ;; Mutation API — event keywords + dispatch! bridge
 ;; ---------------------------------------------------------------------------
 
-(def ^:const load-epoch
+(def ^:export ^:const load-epoch
   "Public event keyword. Dispatch via `(dispatch! [load-epoch <id>])`
    to make 10x focus on the epoch with the given match id. When
    `app-db-follows-events?` is true (the default), the user's app-db
    resets to that epoch's `:app-db-after`."
   ::load-epoch)
 
-(def ^:const most-recent-epoch
+(def ^:export ^:const most-recent-epoch
   "Public event keyword. Dispatch via `(dispatch! [most-recent-epoch])`
    to make 10x focus on the newest match (the 'live tail'). Useful
    after a programmatic load-epoch to return control to the user."
   ::most-recent-epoch)
 
-(def ^:const previous-epoch
+(def ^:export ^:const previous-epoch
   "Public event keyword. Dispatch via `(dispatch! [previous-epoch])`
    to step the 10x UI cursor one match backwards from the currently
    focused epoch. No-op when already at the oldest retained match.
@@ -219,7 +219,7 @@
    to the new epoch's `:app-db-after`."
   ::previous-epoch)
 
-(def ^:const next-epoch
+(def ^:export ^:const next-epoch
   "Public event keyword. Dispatch via `(dispatch! [next-epoch])` to
    step the 10x UI cursor one match forwards from the currently
    focused epoch. When no epoch is focused, jumps to the live tail.
@@ -227,13 +227,13 @@
    to the new epoch's `:app-db-after`."
   ::next-epoch)
 
-(def ^:const reset-event
+(def ^:export ^:const reset-event
   "Public event keyword. Dispatch via `(dispatch! [reset-event])` to
    clear 10x's epoch buffer and reset re-frame.trace's id counter.
    Equivalent to clicking the 'reset' button in 10x's UI."
   ::reset)
 
-(def ^:const replay-event
+(def ^:export ^:const replay-event
   "Public event keyword. Dispatch via `(dispatch! [replay-event])` to
    re-fire the focused epoch's event against the current app-db.
    Equivalent to clicking 10x's 'replay' button."
@@ -270,7 +270,7 @@
  (fn [_ _]
    {:dispatch [::nav.events/replay]}))
 
-(defn dispatch!
+(defn ^:export dispatch!
   "Mutation-API bridge: routes `event-vec` (e.g.
    `[load-epoch 42]`) through 10x's *inlined* re-frame router.
    Necessary because 10x events register against the inlined
