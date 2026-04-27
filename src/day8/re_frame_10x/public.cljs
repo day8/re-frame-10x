@@ -289,10 +289,11 @@
  (fn [_ _]
    {:dispatch [::nav.events/reset]}))
 
-(rf/reg-event-fx
+(rf/reg-event-db
  ::replay
- (fn [_ _]
-   {:dispatch [::nav.events/replay]}))
+ [(rf/path [:epochs])]
+ (fn [epochs _]
+   (nav.events/replay-epochs epochs)))
 
 (defn ^:export dispatch!
   "Mutation-API bridge: routes `event-vec` (e.g.

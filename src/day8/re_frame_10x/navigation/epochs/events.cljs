@@ -143,19 +143,23 @@
    {:db       (assoc db :selected-epoch-id new-id)
     :dispatch [::reset-current-epoch-app-db new-id]}))
 
+(defn replay-epochs
+  [epochs]
+  (let [selected-epoch-id (or (get epochs :selected-epoch-id)
+                              (tools.coll/last-in-vec (get epochs :match-ids)))
+        event-trace      (-> (get-in epochs [:matches-by-id selected-epoch-id :match-info])
+                             (metam/matched-event))
+        app-db-before    (metam/app-db-before event-trace)
+        event            (get-in event-trace [:tags :event])]
+    (reset! userland.re-frame.db/app-db app-db-before)
+    ;; Wait for quiescence
+    (assoc epochs :replay event)))
+
 (rf/reg-event-db
  ::replay
  [(rf/path [:epochs])]
  (fn [epochs _]
-   (let [selected-epoch-id (or (get epochs :selected-epoch-id)
-                               (tools.coll/last-in-vec (get epochs :match-ids)))
-         event-trace      (-> (get-in epochs [:matches-by-id selected-epoch-id :match-info])
-                              (metam/matched-event))
-         app-db-before    (metam/app-db-before event-trace)
-         event            (get-in event-trace [:tags :event])]
-     (reset! userland.re-frame.db/app-db app-db-before)
-      ;; Wait for quiescence
-     (assoc epochs :replay event))))
+   (replay-epochs epochs)))
 
 (rf/reg-event-db
  ::quiescent

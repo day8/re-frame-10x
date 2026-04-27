@@ -91,7 +91,6 @@
                  :settings {:app-db-follows-events? false}})
         (reset! userland.re-frame.db/app-db current-state)
         (rf/dispatch-sync [public/replay-event])
-        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/replay])
         (is (= before-state @userland.re-frame.db/app-db)
             "userland app-db must be reset to :app-db-before, not retain the diverged current-state")
         (is (= replay-evt (get-in @rf.db/app-db [:epochs :replay]))
