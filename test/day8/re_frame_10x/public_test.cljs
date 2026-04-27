@@ -3,6 +3,7 @@
    [clojure.string :as str]
    [clojure.test :refer [deftest is]]
    [clojure.walk :as walk]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db :as rf.db]
    [day8.re-frame-10x.public :as public]))
 
@@ -92,6 +93,28 @@
     (is (nil? (public/epoch-by-id 1)))
     (is (= [] (public/all-traces)))
     (is (false? (public/app-db-follows-events?)))))
+
+(deftest dispatch-bang-coerces-js-array
+  ;; Pure-JS callers reach dispatch! via goog.global as
+  ;; day8.re_frame_10x.public.dispatch_BANG_(["evt", arg]) and pass a
+  ;; JS Array. The inlined re-frame router's first-in-vector predicate
+  ;; uses (vector? v), which is false for JS arrays, so re-frame logs
+  ;; an error and drops the dispatch. dispatch! must coerce.
+  (let [captured (atom nil)]
+    (with-redefs [rf/dispatch (fn [event-v] (reset! captured event-v))]
+      (public/dispatch! #js ["my-event" 42])
+      (is (vector? @captured)
+          "dispatch! must convert a JS Array to a CLJS vector before forwarding")
+      (is (= ["my-event" 42] @captured)
+          "the coerced vector must preserve element order and values")))
+  ;; CLJS-vector callers (cross-build CLJS consumers, REPL use) must
+  ;; still pass through — no re-allocation when input is already a vector.
+  (let [captured (atom nil)
+        v        [::foo 1 2]]
+    (with-redefs [rf/dispatch (fn [event-v] (reset! captured event-v))]
+      (public/dispatch! v)
+      (is (identical? v @captured)
+          "a CLJS vector argument must be passed through unchanged"))))
 
 (deftest no-version-slug-leak
   (with-redefs [rf.db/app-db (atom stub-db)]

@@ -302,6 +302,11 @@
    — a consumer's plain `(re-frame.core/dispatch ...)` would never
    reach them. Use the keyword constants exported from this
    namespace as the first element of `event-vec`; the keywords are
-   the durable contract."
+   the durable contract.
+
+   Coerces JS-array arguments to CLJS vectors, so pure-JS callers
+   via `goog.global.day8.re_frame_10x.public.dispatch_BANG_(['evt', arg])`
+   work — the inlined router validates events with `(vector? ...)`,
+   which JS arrays fail."
   [event-vec]
-  (rf/dispatch event-vec))
+  (rf/dispatch (if (vector? event-vec) event-vec (vec (js->clj event-vec)))))
