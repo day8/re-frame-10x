@@ -287,9 +287,10 @@
 (def ^:export next-epoch
   "Public event identifier. Dispatch via `(dispatch! [next-epoch])` to
    step the 10x UI cursor one match forwards from the currently
-   focused epoch. When no epoch is focused, jumps to the live tail.
-   When `app-db-follows-events?` is true, the user's app-db resets
-   to the new epoch's `:app-db-after`.
+   focused epoch. No-op when already at the newest retained match.
+   When no epoch is focused, jumps to the live tail. When
+   `app-db-follows-events?` is true, the user's app-db resets to the
+   new epoch's `:app-db-after`.
 
    Value is the fully-qualified string
    `\"day8.re-frame-10x.public/next-epoch\"`."
