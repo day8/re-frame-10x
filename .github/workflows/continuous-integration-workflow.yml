@@ -42,7 +42,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Prepare Maven repository
-        run: mkdir -p "$HOME/.m2/repository/thheller/shadow-cljs/3.4.5"
+        run: |
+          mkdir -p "$HOME/.m2/repository/thheller/shadow-cljs/3.4.5"
+          chmod -R ugo+rwX "$HOME/.m2"
       - name: npm cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
