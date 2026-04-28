@@ -77,7 +77,8 @@
   (:require
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db   :as rf.db]
-   [day8.re-frame-10x.navigation.epochs.events                   :as nav.events]))
+   [day8.re-frame-10x.navigation.epochs.events                   :as nav.events]
+   [day8.re-frame-10x.tools.coll                                 :as tools.coll]))
 
 ;; ---------------------------------------------------------------------------
 ;; Versioning + feature detection
@@ -301,7 +302,8 @@
   (cond
     (empty? match-ids)                      {}
     (= selected-epoch-id (first match-ids)) {}
-    (nil? selected-epoch-id)                (if-let [target (last (butlast match-ids))]
+    (nil? selected-epoch-id)                (if-let [target (when (> (count match-ids) 1)
+                                                              (tools.coll/last-in-vec (pop match-ids)))]
                                               {:dispatch [::nav.events/load target]}
                                               {})
     :else                                   {:dispatch [::nav.events/previous]}))
