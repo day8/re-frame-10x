@@ -131,7 +131,7 @@ values when called from CLJS-land, and JS arrays / objects when called via
 | `(epochs)`               | Vec of every retained epoch, oldest-first.       |
 | `(epoch-count)`          | Integer; cheap (reads `:match-ids` length).      |
 | `(latest-epoch-id)`      | Id of newest match, or nil.                      |
-| `(selected-epoch-id)`    | Id of UI-focused epoch, or nil if on live tail.  |
+| `(selected-epoch-id)`    | Id of UI-focused epoch, or nil before selection. |
 | `(epoch-by-id id)`       | Single public-epoch record, or nil.              |
 | `(all-traces)`           | Full retained trace stream as a vec.             |
 | `(app-db-follows-events?)` | Boolean for the eponymous setting.             |
@@ -140,6 +140,11 @@ A public-epoch record carries `{:id :match-info :sub-state-raw :timings}`.
 Public keys (`:sub-state-raw`, `:timings`) intentionally differ from
 internal ones (`:sub-state`, `:timing`) so the public shape can evolve
 independently.
+
+On the live tail, `selected-epoch-id` normally equals `latest-epoch-id`.
+Consumers that need to know whether 10x is following the newest retained
+epoch should compare those two values rather than treating `nil` as the
+only live-tail signal.
 
 ## Mutation API
 

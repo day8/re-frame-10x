@@ -264,9 +264,11 @@
   (some-> rf.db/app-db deref :epochs :match-ids tools.coll/last-in-vec))
 
 (defn ^:export ^:experimental selected-epoch-id
-  "Id of the epoch the 10x UI is currently focused on, or nil if
-   the user is on the live tail. Different from `latest-epoch-id`:
-   when the user navigates back through history, `selected-epoch-id`
+  "Id of the epoch the 10x UI is currently focused on, or nil before
+   an epoch has been selected. On the live tail this is normally the
+   newest retained id, so consumers should compare it with
+   `latest-epoch-id` to detect whether 10x is following the tail.
+   When the user navigates back through history, `selected-epoch-id`
    stays put while `latest-epoch-id` advances with new dispatches."
   []
   (some-> rf.db/app-db deref :epochs :selected-epoch-id))
