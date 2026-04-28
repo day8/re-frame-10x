@@ -79,7 +79,23 @@
    load time, so the documented contract above is the path consumers
    actually read in both :none and :advanced builds. The
    :public-advanced shadow-cljs build + the public-advanced-probe
-   in test/ gate this in CI."
+   in test/ gate this in CI.
+
+   NAMESPACE DISCIPLINE (for contributors)
+
+   Every top-level form in this namespace is part of the public
+   contract — new entries must carry `^:export` and be covered by
+   public_test.cljs's surface-presence and version-slug-leak checks.
+
+   Side-effecting handler registrations live in
+   `day8.re-frame-10x.public.events`, required below so registrations
+   fire at namespace-load time; consumers must NOT reach into that
+   namespace. Helpers used only here (e.g. `match->public-epoch`) are
+   `defn-`. Default to behavioural testing through the public
+   surface; reach for a private helper via `#'` from a test only when
+   behavioural testing would obscure the contract under test (e.g.
+   when an inner re-fire clobbers the very state being asserted on).
+   Such reach-arounds must comment why."
   (:require
    ;; The two inlined-rf requires below are intentional, not cleanup
    ;; targets: 10x's events register against the inlined re-frame
@@ -89,7 +105,9 @@
    ;; re-frame.core would silently break every mutation event.
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db   :as rf.db]
-   [day8.re-frame-10x.navigation.epochs.events                   :as nav.events]
+   ;; Side-effect-only require: registers the public mutation-API
+   ;; handlers against the inlined router. See NAMESPACE DISCIPLINE.
+   [day8.re-frame-10x.public.events]
    [day8.re-frame-10x.tools.coll                                 :as tools.coll]))
 
 ;; ---------------------------------------------------------------------------
@@ -348,69 +366,6 @@
    Value is the fully-qualified string
    `\"day8.re-frame-10x.public/reset-app-db\"`."
   "day8.re-frame-10x.public/reset-app-db")
-
-(rf/reg-event-fx
- ::load-epoch
- [rf/trim-v]
- (fn [_ [id]]
-   {:dispatch [::nav.events/load id]}))
-
-(rf/reg-event-fx
- ::most-recent-epoch
- (fn [_ _]
-   {:dispatch [::nav.events/most-recent]}))
-
-(defn- no-op-fx
-  "Return a re-frame effect map that intentionally dispatches no effects."
-  []
-  {})
-
-(defn- second-newest-match-id
-  "Return the match id immediately before the live tail, or nil when absent."
-  [match-ids]
-  (when (> (count match-ids) 1)
-    (nth match-ids (- (count match-ids) 2))))
-
-(defn- previous-epoch-fx
-  "Decide the fx for the `::previous-epoch` forwarder, gating no-op cases
-   the internal handler does not."
-  [{:keys [match-ids selected-epoch-id]}]
-  (let [oldest-match-id  (first match-ids)
-        at-oldest?       (= selected-epoch-id oldest-match-id)
-        at-live-tail?    (nil? selected-epoch-id)
-        previous-tail-id (second-newest-match-id match-ids)]
-    (cond
-      (or (empty? match-ids) at-oldest?) (no-op-fx)
-      (and at-live-tail? previous-tail-id) {:dispatch [::nav.events/load previous-tail-id]}
-      at-live-tail? (no-op-fx)
-      :else {:dispatch [::nav.events/previous]})))
-
-(rf/reg-event-fx
- ::previous-epoch
- (fn [{:keys [db]} _]
-   (previous-epoch-fx (:epochs db))))
-
-(rf/reg-event-fx
- ::next-epoch
- (fn [_ _]
-   {:dispatch [::nav.events/next]}))
-
-(rf/reg-event-fx
- ::reset-epochs
- (fn [_ _]
-   {:dispatch [::nav.events/reset]}))
-
-(rf/reg-event-db
- ::replay-epoch
- [(rf/path [:epochs])]
- (fn [epochs _]
-   (nav.events/replay-epochs epochs)))
-
-(rf/reg-event-fx
- ::reset-app-db
- [rf/trim-v]
- (fn [_ [id]]
-   {:dispatch [::nav.events/reset-current-epoch-app-db id]}))
 
 (defn ^:export dispatch!
   "Mutation-API bridge: routes `event-vec` (e.g.

@@ -5,7 +5,8 @@
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core           :as rf]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db             :as rf.db]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.registrar      :as rf.registrar]
-   [day8.re-frame-10x.public                                               :as public]))
+   [day8.re-frame-10x.public                                               :as public]
+   [day8.re-frame-10x.public.events                                        :as public.events]))
 
 (deftest previous-epoch-identifier-is-stable
   (testing "previous-epoch resolves to the public namespaced string identifier"
@@ -94,17 +95,17 @@
   ;; the oldest match and from live-tail, and a behavioural test that flushes
   ;; the inner re-fires that clobber regardless of what the forwarder did.
   (testing "at the oldest match — empty fx map (no-op)"
-    (is (= {} (#'public/previous-epoch-fx {:match-ids [:a :b :c] :selected-epoch-id :a}))))
+    (is (= {} (public.events/previous-epoch-fx {:match-ids [:a :b :c] :selected-epoch-id :a}))))
   (testing "live tail with multiple matches — load second-newest"
     (is (= {:dispatch [:day8.re-frame-10x.navigation.epochs.events/load :b]}
-           (#'public/previous-epoch-fx {:match-ids [:a :b :c] :selected-epoch-id nil}))))
+           (public.events/previous-epoch-fx {:match-ids [:a :b :c] :selected-epoch-id nil}))))
   (testing "live tail with a single match — no-op (no second-newest exists)"
-    (is (= {} (#'public/previous-epoch-fx {:match-ids [:a] :selected-epoch-id nil}))))
+    (is (= {} (public.events/previous-epoch-fx {:match-ids [:a] :selected-epoch-id nil}))))
   (testing "empty match-ids — no-op"
-    (is (= {} (#'public/previous-epoch-fx {:match-ids [] :selected-epoch-id nil}))))
+    (is (= {} (public.events/previous-epoch-fx {:match-ids [] :selected-epoch-id nil}))))
   (testing "middle of the list — defer to internal ::previous"
     (is (= {:dispatch [:day8.re-frame-10x.navigation.epochs.events/previous]}
-           (#'public/previous-epoch-fx {:match-ids [:a :b :c] :selected-epoch-id :b})))))
+           (public.events/previous-epoch-fx {:match-ids [:a :b :c] :selected-epoch-id :b})))))
 
 (deftest next-epoch-event-steps-cursor-forward
   (testing "[next-epoch] from :b lands the cursor on :c"
