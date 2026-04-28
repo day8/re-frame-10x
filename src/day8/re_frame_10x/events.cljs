@@ -1,9 +1,5 @@
 (ns day8.re-frame-10x.events
   (:require
-   [re-frame.core]
-   [re-frame.db]
-   [re-frame.trace]
-   [re-frame.interop]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.fx.local-storage                           :as local-storage]
    [day8.re-frame-10x.fx.log                                     :as log]
