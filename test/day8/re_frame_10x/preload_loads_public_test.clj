@@ -1,8 +1,16 @@
 (ns day8.re-frame-10x.preload-loads-public-test
   "Regression test for the preload → public-ns require chain.
 
-   Static structural check: reads each preload source and asserts that
-   `day8.re-frame-10x.public` appears in its `(:require ...)` clause.
+   Static structural check: discovers every preload source under
+   src/day8/re_frame_10x/preload (plus the parent preload.cljs) and
+   asserts that `day8.re-frame-10x.public` appears in its `(:require ...)`
+   clause. Also asserts the public.cljs require target itself resolves
+   on disk, so deletion of the file is caught here rather than as an
+   opaque shadow-cljs compile failure.
+
+   Discovery is dynamic (file-seq) rather than a hardcoded list so that
+   any future preload variant — preload/react_19.cljs, preload/react_native.cljs,
+   etc. — is automatically gated by this test the moment it lands.
 
    Why static rather than runtime: requiring a preload at test time
    triggers DOM-touching side effects (`patch!`, `render`, `dispatch-sync`)
@@ -40,23 +48,57 @@
              (= 'day8.re-frame-10x.public sym)))
          require-body)))
 
-(def ^:private preload-sources
-  ["src/day8/re_frame_10x/preload.cljs"
-   "src/day8/re_frame_10x/preload/react_17.cljs"
-   "src/day8/re_frame_10x/preload/react_18.cljs"])
+(def ^:private preload-root
+  (io/file "src/day8/re_frame_10x/preload.cljs"))
+
+(def ^:private preload-variants-dir
+  (io/file "src/day8/re_frame_10x/preload"))
+
+(def ^:private public-source
+  (io/file "src/day8/re_frame_10x/public.cljs"))
+
+(defn- discover-preload-sources
+  "Every `.cljs` preload entry-point: the parent preload.cljs plus any
+   `.cljs` file under preload-variants-dir. Sorted for stable test order."
+  []
+  (->> (cons preload-root
+             (when (.isDirectory preload-variants-dir)
+               (file-seq preload-variants-dir)))
+       (filter (fn [^java.io.File f]
+                 (and (.isFile f)
+                      (.endsWith (.getName f) ".cljs"))))
+       (map (fn [^java.io.File f] (.getPath f)))
+       sort))
+
+(deftest public-source-resolves
+  (testing
+   (str "Require target " (.getPath public-source) " exists on disk")
+    (is (.exists public-source)
+        (str (.getPath public-source) " is missing — preload entry-points "
+             "require day8.re-frame-10x.public, so deletion of the file "
+             "while the require survives breaks the public-surface "
+             "contract. shadow-cljs would fail at compile time; this "
+             "JVM-test catches the regression before a build runs."))))
 
 (deftest preloads-require-public-ns
   (testing "Every preload entry-point requires day8.re-frame-10x.public"
-    (doseq [path preload-sources]
-      (testing path
-        (let [ns-form  (read-ns-form path)
-              required (require-clause ns-form)]
-          (is (some? required)
-              (str path " has no :require clause"))
-          (is (requires-public? required)
-              (str path
-                   " does not require day8.re-frame-10x.public — "
-                   "consumers using only the preload will not see "
-                   "the public surface, and downstream tooling that "
-                   "probes goog.global.day8.re_frame_10x.public.* "
-                   "will fall back to brittle internal-path walking.")))))))
+    (let [paths (discover-preload-sources)]
+      (is (seq paths)
+          (str "no preload sources discovered under "
+               (.getPath preload-variants-dir) " or at "
+               (.getPath preload-root)
+               " — running from the wrong working directory, or the "
+               "preload sources have moved."))
+      (doseq [path paths]
+        (testing path
+          (let [ns-form  (read-ns-form path)
+                required (require-clause ns-form)]
+            (is (some? required)
+                (str path " has no :require clause"))
+            (is (requires-public? required)
+                (str path
+                     " does not require day8.re-frame-10x.public — "
+                     "consumers using only the preload will not see "
+                     "the public surface, and downstream tooling that "
+                     "probes goog.global.day8.re_frame_10x.public.* "
+                     "will fall back to brittle internal-path walking."))))))))
