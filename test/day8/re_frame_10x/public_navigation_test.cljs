@@ -211,12 +211,15 @@
                             :selected-epoch-id :only
                             :matches-by-id     {:only {:match-info []}}}
                  :settings {:app-db-follows-events? false}})
+        (reset! userland.re-frame.db/app-db userland-snapshot)
         ;; If dispatch-sync throws, the assertion below is never reached
         ;; and the test fails. If it returns cleanly, we record the
         ;; positive observation.
         (with-redefs [rf/dispatch rf/dispatch-sync]
           (public/dispatch! [public/replay-epoch]))
         (is true "replay-epoch with empty :match-info returned without throwing")
+        (is (= userland-snapshot @userland.re-frame.db/app-db)
+            "replay-epoch with no matched event must preserve userland app-db")
         (finally
           (rf/purge-event-queue)
           (reset! rf.db/app-db rf-snapshot)

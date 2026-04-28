@@ -151,9 +151,12 @@
                              (metam/matched-event))
         app-db-before    (metam/app-db-before event-trace)
         event            (get-in event-trace [:tags :event])]
-    (reset! userland.re-frame.db/app-db app-db-before)
-    ;; Wait for quiescence
-    (assoc epochs :replay event)))
+    (if (and (some? app-db-before) event)
+      (do
+        (reset! userland.re-frame.db/app-db app-db-before)
+        ;; Wait for quiescence.
+        (assoc epochs :replay event))
+      epochs)))
 
 (rf/reg-event-db
  ::replay
