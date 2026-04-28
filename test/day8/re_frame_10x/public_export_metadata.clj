@@ -46,7 +46,9 @@
 
 (defn public-defs
   "Return top-level public defining forms from `source` as
-   `{:head :name :line :metadata}` maps."
+   `{:head :name :line :metadata}` maps. `^:private` def-form variants
+   are skipped — they're not on the goog.global path, so the
+   `^:export` contract does not apply."
   [source]
   (->> (read-forms source)
        (keep (fn [form]
@@ -55,10 +57,12 @@
                        var-sym (second form)]
                    (when (and (contains? public-defining-heads head)
                               (symbol? var-sym))
-                     {:head     (name head)
-                      :name     (name var-sym)
-                      :line     (:line (meta form))
-                      :metadata (var-metadata head form var-sym)})))))))
+                     (let [metadata (var-metadata head form var-sym)]
+                       (when-not (:private metadata)
+                         {:head     (name head)
+                          :name     (name var-sym)
+                          :line     (:line (meta form))
+                          :metadata metadata})))))))))
 
 (defn exported?
   [{:keys [metadata]}]

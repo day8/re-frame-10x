@@ -4,10 +4,9 @@
    [clojure.string :as str]
    [clojure.test :refer [deftest is]]
    [clojure.walk :as walk]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core      :as rf]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db        :as rf.db]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.registrar :as rf.registrar]
-   [day8.re-frame-10x.public :as public]))
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db   :as rf.db]
+   [day8.re-frame-10x.public                                     :as public]))
 
 (def ^:private stub-match
   {:match-info [{:id 7 :event [:user/save 42]}]
@@ -249,62 +248,55 @@
   ;; Close the loop end-to-end: drive a real load-epoch via
   ;; (public/dispatch! [public/load-epoch :c]) — the same shape a
   ;; consumer would use — and assert the *inlined* router's
-  ;; :selected-epoch-id moves all the way through forwarder + captured
-  ;; inner ::nav.events/load. The bridge dispatch is forced sync, while
-  ;; the forwarder's :dispatch effect is captured and flushed after the
-  ;; public handler returns; this avoids re-frame's nested dispatch-sync
-  ;; guard. Both hooks target inlined-rf state, so an alias regression
-  ;; that re-pointed public.cljs at userland would bypass them and the
-  ;; assertion below would catch the regression: userland has no
-  ;; ::load-epoch handler, so no inner event would be captured.
-  (let [restore!   (rf/make-restore-fn)
-        dispatched (atom nil)]
+  ;; :selected-epoch-id moves through public->internal translation
+  ;; into ::nav.events/load. An alias regression that re-pointed
+  ;; public.cljs at userland would dispatch to userland's
+  ;; ::nav.events/load — which doesn't exist there — and the
+  ;; :selected-epoch-id would not move, failing the assertion.
+  (let [restore! (rf/make-restore-fn)]
     (try
       (reset! rf.db/app-db
               {:epochs   {:match-ids         [:a :b :c]
                           :selected-epoch-id :a
                           :matches-by-id     (zipmap [:a :b :c] (repeat nil))}
                :settings {:app-db-follows-events? false}})
-      (swap! rf.registrar/kind->id->handler assoc-in [:fx :dispatch] #(reset! dispatched %))
       (with-redefs [rf/dispatch rf/dispatch-sync]
         (public/dispatch! [public/load-epoch :c]))
-      (let [inner-event @dispatched]
-        (is (= [:day8.re-frame-10x.navigation.epochs.events/load :c] inner-event)
-            "dispatch! must drive the public load-epoch forwarder on the inlined router")
-        (rf/dispatch-sync inner-event))
       (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id]))
-          "dispatch! → public/load-epoch → ::nav.events/load must move :selected-epoch-id from :a to :c on the inlined router")
+          "dispatch! → ::nav.events/load must move :selected-epoch-id from :a to :c on the inlined router")
       (finally
         (rf/purge-event-queue)
         (restore!)))))
 
 (deftest dispatch-bang-end-to-end-reset-app-db-event
-  (let [restore!   (rf/make-restore-fn)
-        dispatched (atom nil)]
-    (try
-      (swap! rf.registrar/kind->id->handler assoc-in [:fx :dispatch] #(reset! dispatched %))
-      (with-redefs [rf/dispatch rf/dispatch-sync]
-        (public/dispatch! [public/reset-app-db-event :epoch-42]))
-      (is (= [:day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db :epoch-42]
-             @dispatched)
-          "dispatch! must drive reset-app-db-event through the public forwarder to the internal reset primitive")
-      (finally
-        (rf/purge-event-queue)
-        (restore!)))))
+  ;; Pin the public->internal translation for reset-app-db-event so a
+  ;; map-entry rename or accidental drop is caught. The load-epoch
+  ;; end-to-end test above closes the alias-repointing loop end-to-end;
+  ;; here we only need translation correctness for this specific id.
+  (let [captured (atom nil)]
+    (with-redefs [rf/dispatch (fn [event-v] (reset! captured event-v))]
+      (public/dispatch! [public/reset-app-db-event :epoch-42]))
+    (is (= [:day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db :epoch-42]
+           @captured)
+        "dispatch! must translate public reset-app-db-event to the internal reset primitive kw")))
 
-(deftest dispatch-bang-coerces-string-head-to-keyword
+(deftest dispatch-bang-coerces-string-head-to-keyword-and-translates
   ;; Event identifiers are exported as fully-qualified strings, so a
   ;; CLJS caller using `(public/dispatch! [public/load-epoch 42])` and
   ;; a pure-JS caller using
   ;; `dispatch_BANG_(["day8.re-frame-10x.public/load-epoch", 42])` both
   ;; arrive here with a string head. The inlined router's handler-lookup
-  ;; keys are keywords, so dispatch! must keywordise the head before
-  ;; forwarding. Without this, the dispatch silently no-ops.
+  ;; keys are keywords, so dispatch! must keywordise the head — and
+  ;; then translate that public kw to the internal kw the handler is
+  ;; registered under. Without keywordising, the dispatch silently
+  ;; no-ops; without translating, it hits a non-existent
+  ;; `:public/load-epoch` handler (no public-side forwarder is
+  ;; registered for the map-routed events post-rf1-4zb).
   (let [captured (atom nil)]
     (with-redefs [rf/dispatch (fn [event-v] (reset! captured event-v))]
       (public/dispatch! [public/load-epoch 42])
-      (is (= [:day8.re-frame-10x.public/load-epoch 42] @captured)
-          "the head string must be keywordised so it matches the registered handler key"))))
+      (is (= [:day8.re-frame-10x.navigation.epochs.events/load 42] @captured)
+          "the head string must be keywordised AND translated to the internal handler kw"))))
 
 (deftest no-version-slug-leak-canary
   (let [leaked (version-slug-leaks {:k :day8.re-frame-10x.inlined-deps.foo/bar

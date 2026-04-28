@@ -35,6 +35,7 @@
                       "(defrecord ^:export ExportedRecord [])\n"
                       "(deftype ^:export ExportedType [])\n"
                       "(defmulti unexported-multi identity)\n"
+                      "(def ^:private private-via-meta nil)\n"
                       "(defn- private-fn [] nil)\n"
                       "(def- private-def nil)\n"
                       "(comment\n"
@@ -53,7 +54,8 @@
               ["defrecord" "ExportedRecord" 10]
               ["deftype" "ExportedType" 11]
               ["defmulti" "unexported-multi" 12]]
-             (mapv (juxt :head :name :line) forms)))
+             (mapv (juxt :head :name :line) forms))
+          "^:private defs are filtered out — they're not on the goog.global path")
       (is (= [["unexported-multi" 12]]
              (mapv (juxt :name :line)
                    (remove export-metadata/exported? forms)))))))

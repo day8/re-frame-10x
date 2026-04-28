@@ -1,12 +1,11 @@
 (ns day8.re-frame-10x.public-navigation-test
   (:require
    [clojure.test :refer [deftest is testing]]
-   [re-frame.db                                                            :as userland.re-frame.db]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core           :as rf]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db             :as rf.db]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.registrar      :as rf.registrar]
-   [day8.re-frame-10x.public                                               :as public]
-   [day8.re-frame-10x.public.events                                        :as public.events]))
+   [re-frame.db                                                  :as userland.re-frame.db]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db   :as rf.db]
+   [day8.re-frame-10x.public                                     :as public]
+   [day8.re-frame-10x.public.events                              :as public.events]))
 
 (deftest previous-epoch-identifier-is-stable
   (testing "previous-epoch resolves to the public namespaced string identifier"
@@ -40,20 +39,21 @@
     (let [snapshot @rf.db/app-db]
       (try
         (prime-app-db! [:a :b :c] :b)
-        ;; The exported identifier is a string; the inlined router's
-        ;; handler-lookup keys are keywords, so coerce when bypassing
-        ;; dispatch! (which would normally do this for us).
-        (rf/dispatch-sync [(keyword public/previous-epoch)])
-        ;; NOTE: this does not exercise the forwarder→internal :dispatch edge.
-        ;; dispatch-sync runs the forwarder synchronously but its :dispatch fx
-        ;; queues the internal event for the next tick, so we fire
-        ;; ::nav.events/previous directly to drive the cursor. The forwarder
-        ;; edge itself is covered by
-        ;; reset-app-db-event-resets-userland-app-db-without-moving-cursor,
-        ;; which intercepts the :fx :dispatch handler.
+        ;; previous-epoch is the one public mutation event still routed
+        ;; through a public.events forwarder (its no-op cond logic
+        ;; can't fold into the public->internal map). Driving via
+        ;; dispatch! exercises the forwarder under sync; its :dispatch
+        ;; fx queues for the next tick, so we fire
+        ;; ::nav.events/previous directly to drive the cursor. The
+        ;; forwarder's fx outputs themselves are unit-tested in
+        ;; previous-epoch-fx-honours-no-op-at-oldest below.
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/previous-epoch]))
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/previous])
         (is (= :a (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
-        (finally (reset! rf.db/app-db snapshot))))))
+        (finally
+          (rf/purge-event-queue)
+          (reset! rf.db/app-db snapshot))))))
 
 (deftest previous-epoch-event-resets-userland-app-db-to-after-when-following-events
   (testing "[previous-epoch] resets userland app-db to the previous epoch's :app-db-after when app-db follows events"
@@ -73,13 +73,11 @@
                                                 :current  {:match-info []}}}
                  :settings {:app-db-follows-events? true}})
         (reset! userland.re-frame.db/app-db current-state)
-        (rf/dispatch-sync [(keyword public/previous-epoch)])
-        ;; NOTE: this does not exercise the forwarder→internal :dispatch edge.
-        ;; dispatch-sync runs the forwarder but neither its :dispatch fx nor
-        ;; the cascaded ::reset-current-epoch-app-db it would produce drain
-        ;; under dispatch-sync, so we fire both directly to drive the reset.
-        ;; The forwarder edge is covered by
-        ;; reset-app-db-event-resets-userland-app-db-without-moving-cursor.
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/previous-epoch]))
+        ;; Under dispatch-sync, the forwarder's :dispatch fx and the
+        ;; cascaded ::reset-current-epoch-app-db it would produce don't
+        ;; drain, so fire both directly to drive the reset.
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/previous])
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db :previous])
         (is (= previous-state @userland.re-frame.db/app-db)
@@ -112,41 +110,41 @@
     (let [snapshot @rf.db/app-db]
       (try
         (prime-app-db! [:a :b :c] :b)
-        (rf/dispatch-sync [(keyword public/next-epoch)])
-        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/next])
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/next-epoch]))
         (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
-        (finally (reset! rf.db/app-db snapshot))))))
+        (finally
+          (rf/purge-event-queue)
+          (reset! rf.db/app-db snapshot))))))
 
 (deftest next-epoch-event-from-no-selection-jumps-to-tail
   (testing "[next-epoch] with no :selected-epoch-id lands on the newest match"
     (let [snapshot @rf.db/app-db]
       (try
         (prime-app-db! [:a :b :c :d :e] nil)
-        (rf/dispatch-sync [(keyword public/next-epoch)])
-        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/next])
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/next-epoch]))
         (is (= :e (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
-        (finally (reset! rf.db/app-db snapshot))))))
+        (finally
+          (rf/purge-event-queue)
+          (reset! rf.db/app-db snapshot))))))
 
 (deftest load-epoch-event-loads-target
   (testing "[load-epoch <id>] from :a lands the cursor on :c"
     (let [snapshot @rf.db/app-db]
       (try
         (prime-app-db! [:a :b :c] :a)
-        (rf/dispatch-sync [(keyword public/load-epoch) :c])
-        ;; NOTE: this does not exercise the forwarder→internal :dispatch edge
-        ;; (same gap as previous-epoch-event-steps-cursor-back); the forwarder
-        ;; edge is covered by
-        ;; reset-app-db-event-resets-userland-app-db-without-moving-cursor.
-        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/load :c])
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/load-epoch :c]))
         (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
-        (finally (reset! rf.db/app-db snapshot))))))
+        (finally
+          (rf/purge-event-queue)
+          (reset! rf.db/app-db snapshot))))))
 
 (deftest reset-app-db-event-resets-userland-app-db-without-moving-cursor
   (testing "[reset-app-db-event <id>] resets app-db to a target epoch without moving 10x's cursor"
     (let [rf-snapshot       @rf.db/app-db
           userland-snapshot @userland.re-frame.db/app-db
-          restore!          (rf/make-restore-fn)
-          captured-dispatch (atom nil)
           target-state      {:counter 1 :marker :target}
           current-state     {:counter 99 :marker :current}
           target-trace      {:op-type :event
@@ -161,19 +159,14 @@
                                                 :current {:match-info []}}}
                  :settings {:app-db-follows-events? true}})
         (reset! userland.re-frame.db/app-db current-state)
-        (swap! rf.registrar/kind->id->handler assoc-in [:fx :dispatch] #(reset! captured-dispatch %))
-        (rf/dispatch-sync [(keyword public/reset-app-db-event) :target])
-        (is (= [:day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db :target]
-               @captured-dispatch)
-            "public reset-app-db-event must dispatch the internal app-db reset primitive")
-        (rf/dispatch-sync @captured-dispatch)
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/reset-app-db-event :target]))
         (is (= target-state @userland.re-frame.db/app-db)
             "userland app-db must reset to the target epoch's :app-db-after")
         (is (= :current (get-in @rf.db/app-db [:epochs :selected-epoch-id]))
             "reset-app-db-event must not move 10x's selected epoch cursor")
         (finally
           (rf/purge-event-queue)
-          (restore!)
           (reset! rf.db/app-db rf-snapshot)
           (reset! userland.re-frame.db/app-db userland-snapshot))))))
 
@@ -182,10 +175,12 @@
     (let [snapshot @rf.db/app-db]
       (try
         (prime-app-db! [:a :b :c] :a)
-        (rf/dispatch-sync [(keyword public/most-recent-epoch)])
-        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/most-recent])
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/most-recent-epoch]))
         (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
-        (finally (reset! rf.db/app-db snapshot))))))
+        (finally
+          (rf/purge-event-queue)
+          (reset! rf.db/app-db snapshot))))))
 
 (deftest reset-epochs-clears-epochs-and-traces
   (testing "[reset-epochs] clears :epochs and :traces/:all"
@@ -196,13 +191,15 @@
                           :selected-epoch-id :a
                           :matches-by-id     {:a {:match-info []}}}
                  :traces {:all [{:op-type :event :id 1}]}})
-        (rf/dispatch-sync [(keyword public/reset-epochs)])
-        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/reset])
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/reset-epochs]))
         (is (nil? (:epochs @rf.db/app-db))
             ":epochs must be removed after reset")
         (is (nil? (get-in @rf.db/app-db [:traces :all]))
             ":traces/:all must be cleared after reset (dissoc-in)")
-        (finally (reset! rf.db/app-db snapshot))))))
+        (finally
+          (rf/purge-event-queue)
+          (reset! rf.db/app-db snapshot))))))
 
 (deftest replay-epoch-empty-match-info-does-not-throw
   ;; Guard against a NPE-style regression in replay-epochs when the
@@ -223,9 +220,11 @@
         ;; If dispatch-sync throws, the assertion below is never reached
         ;; and the test fails. If it returns cleanly, we record the
         ;; positive observation.
-        (rf/dispatch-sync [(keyword public/replay-epoch)])
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/replay-epoch]))
         (is true "replay-epoch with empty :match-info returned without throwing")
         (finally
+          (rf/purge-event-queue)
           (reset! rf.db/app-db rf-snapshot)
           (reset! userland.re-frame.db/app-db userland-snapshot))))))
 
@@ -247,9 +246,11 @@
                             :matches-by-id     {42 {:match-info [stub-event-trace]}}}
                  :settings {:app-db-follows-events? false}})
         (reset! userland.re-frame.db/app-db current-state)
-        (rf/dispatch-sync [(keyword public/replay-epoch)])
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/replay-epoch]))
         (is (= before-state @userland.re-frame.db/app-db)
             "userland app-db must be reset to :app-db-before, not retain the diverged current-state")
         (finally
+          (rf/purge-event-queue)
           (reset! rf.db/app-db rf-snapshot)
           (reset! userland.re-frame.db/app-db userland-snapshot))))))

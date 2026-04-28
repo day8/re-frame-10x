@@ -93,11 +93,14 @@
 
    NAMESPACE DISCIPLINE (for contributors)
 
-   Every top-level form in this namespace is part of the public
+   Every public top-level form in this namespace is part of the public
    contract — new entries must carry `^:export ^:experimental` and be
    covered by public_test.cljs's surface-presence and
    version-slug-leak checks. The `^:experimental` markers come off in
    one sweep when the spec's gate is met (see STABILITY above).
+   `^:private` defs (e.g. `public->internal`) are exempt from the
+   `^:export` contract — they're not on the goog.global path and
+   public_export_metadata_test.clj filters them out by metadata.
 
    Side-effecting handler registrations live in
    `day8.re-frame-10x.public.events`, required below so registrations
@@ -379,6 +382,25 @@
    `\"day8.re-frame-10x.public/reset-app-db\"`."
   "day8.re-frame-10x.public/reset-app-db")
 
+(def ^:private public->internal
+  "Translation table from public mutation event identifiers (kw form
+   of the exported strings) to the internal inlined-rf event keywords
+   they fan out to. `dispatch!` consults this on every call; entries
+   not in the map (e.g. `::previous-epoch`, whose load-bearing cond
+   logic lives in a public.events forwarder) pass through unchanged
+   so the registered forwarder can still pick them up.
+
+   This is the contract boundary: public string identifiers are the
+   durable LHS, internal kws are the volatile RHS. A future internal
+   rename touches only this map — the public string consts above stay
+   put."
+  {:day8.re-frame-10x.public/load-epoch        :day8.re-frame-10x.navigation.epochs.events/load
+   :day8.re-frame-10x.public/most-recent-epoch :day8.re-frame-10x.navigation.epochs.events/most-recent
+   :day8.re-frame-10x.public/next-epoch        :day8.re-frame-10x.navigation.epochs.events/next
+   :day8.re-frame-10x.public/reset-epochs      :day8.re-frame-10x.navigation.epochs.events/reset
+   :day8.re-frame-10x.public/replay-epoch      :day8.re-frame-10x.navigation.epochs.events/replay
+   :day8.re-frame-10x.public/reset-app-db      :day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db})
+
 (defn ^:export ^:experimental dispatch!
   "Mutation-API bridge: routes `event-vec` (e.g.
    `[load-epoch 42]`) through 10x's *inlined* re-frame router.
@@ -397,11 +419,25 @@
    Coerces a string head to a keyword before forwarding, since
    re-frame's handler-lookup keys are keywords. Pure-JS callers
    that don't have access to `cljs.core.keyword` can therefore pass
-   the exported string identifiers directly."
+   the exported string identifiers directly.
+
+   Translates public mutation kws to their internal counterparts via
+   `public->internal` so the public surface and the internal handlers
+   need not share names — the public strings are durable, the internal
+   kws can rename freely. Heads not in the map pass through unchanged
+   so direct dispatches (e.g. the `::previous-epoch` forwarder, or
+   ad-hoc internal kws routed through this bridge by tooling) still
+   resolve."
   [event-vec]
-  (let [v (if (vector? event-vec) event-vec (vec (js->clj event-vec)))
-        h (first v)]
-    (rf/dispatch (if (string? h) (assoc v 0 (keyword h)) v))))
+  (let [v          (if (vector? event-vec) event-vec (vec (js->clj event-vec)))
+        h          (first v)
+        kw         (if (string? h) (keyword h) h)
+        translated (get public->internal kw)]
+    (rf/dispatch
+     (cond
+       (some? translated) (assoc v 0 translated)
+       (string? h)        (assoc v 0 kw)
+       :else              v))))
 
 ;; ---------------------------------------------------------------------------
 ;; goog.global path mirror — see ns docstring "IMPLEMENTATION NOTE".

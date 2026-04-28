@@ -1,13 +1,25 @@
 (ns day8.re-frame-10x.public.events
-  "Internal: re-frame handler registrations for the public mutation API.
+  "Internal: re-frame handler registration for public mutation events
+   that need cond logic the public->internal translation map in
+   `public/dispatch!` can't express.
 
-   Required from `day8.re-frame-10x.public` so registrations fire at
-   namespace-load time. Consumers MUST NOT reach into this namespace —
-   the public contract is the keyword event identifiers exposed as
-   strings from `day8.re-frame-10x.public`, dispatched via
-   `public/dispatch!`. Handler-key keywords here are the keyword form
-   of those public string identifiers; drift between the two is gated
-   end-to-end by tests in public_test.cljs and public_navigation_test.cljs."
+   Most public mutation events are routed directly by
+   `public/dispatch!`'s translation map — no forwarder ns hop. This
+   ns retains only the ::previous-epoch forwarder, whose no-op gating
+   around the live-tail and oldest-match cases is load-bearing. The
+   gating lives here rather than inside ::nav.events/previous because
+   the internal handler clobbers :selected-epoch-id to nil in those
+   edge cases (rf1-p1v tracks moving the gating into the internal
+   handler once the clobber is fixed).
+
+   Required from `day8.re-frame-10x.public` so the registration fires
+   at namespace-load time. Consumers MUST NOT reach into this
+   namespace — the public contract is the keyword event identifiers
+   exposed as strings from `day8.re-frame-10x.public`, dispatched via
+   `public/dispatch!`. The single handler-key keyword here is the
+   keyword form of the public previous-epoch string identifier; drift
+   between the two is gated end-to-end by tests in public_test.cljs
+   and public_navigation_test.cljs."
   (:require
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.navigation.epochs.events                   :as nav.events]))
@@ -44,39 +56,6 @@
       :else {:dispatch [::nav.events/previous]})))
 
 (rf/reg-event-fx
- :day8.re-frame-10x.public/load-epoch
- [rf/trim-v]
- (fn [_ [id]]
-   {:dispatch [::nav.events/load id]}))
-
-(rf/reg-event-fx
- :day8.re-frame-10x.public/most-recent-epoch
- (fn [_ _]
-   {:dispatch [::nav.events/most-recent]}))
-
-(rf/reg-event-fx
  :day8.re-frame-10x.public/previous-epoch
  (fn [{:keys [db]} _]
    (previous-epoch-fx (:epochs db))))
-
-(rf/reg-event-fx
- :day8.re-frame-10x.public/next-epoch
- (fn [_ _]
-   {:dispatch [::nav.events/next]}))
-
-(rf/reg-event-fx
- :day8.re-frame-10x.public/reset-epochs
- (fn [_ _]
-   {:dispatch [::nav.events/reset]}))
-
-(rf/reg-event-db
- :day8.re-frame-10x.public/replay-epoch
- [(rf/path [:epochs])]
- (fn [epochs _]
-   (nav.events/replay-epochs epochs)))
-
-(rf/reg-event-fx
- :day8.re-frame-10x.public/reset-app-db
- [rf/trim-v]
- (fn [_ [id]]
-   {:dispatch [::nav.events/reset-current-epoch-app-db id]}))
