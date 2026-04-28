@@ -344,22 +344,30 @@
  (fn [_ _]
    {:dispatch [::nav.events/most-recent]}))
 
+(defn- no-op-fx
+  "Return a re-frame effect map that intentionally dispatches no effects."
+  []
+  {})
+
+(defn- second-newest-match-id
+  "Return the match id immediately before the live tail, or nil when absent."
+  [match-ids]
+  (when (> (count match-ids) 1)
+    (nth match-ids (- (count match-ids) 2))))
+
 (defn- previous-epoch-fx
-  "Compute the re-frame effect map for the `::previous-epoch` forwarder
-   given the `:epochs` substate. Extracted so the no-op-at-oldest and
-   live-tail contracts can be unit-tested without flushing the async
-   fx queue. The internal `::nav.events/previous` handler clobbers
-   `:selected-epoch-id` to nil at both boundaries, so the public
-   forwarder gates those entry conditions itself instead of delegating."
+  "Decide the fx for the `::previous-epoch` forwarder, gating no-op cases
+   the internal handler does not."
   [{:keys [match-ids selected-epoch-id]}]
-  (cond
-    (empty? match-ids)                      {}
-    (= selected-epoch-id (first match-ids)) {}
-    (nil? selected-epoch-id)                (if-let [target (when (> (count match-ids) 1)
-                                                              (tools.coll/last-in-vec (pop match-ids)))]
-                                              {:dispatch [::nav.events/load target]}
-                                              {})
-    :else                                   {:dispatch [::nav.events/previous]}))
+  (let [oldest-match-id  (first match-ids)
+        at-oldest?       (= selected-epoch-id oldest-match-id)
+        at-live-tail?    (nil? selected-epoch-id)
+        previous-tail-id (second-newest-match-id match-ids)]
+    (cond
+      (or (empty? match-ids) at-oldest?) (no-op-fx)
+      (and at-live-tail? previous-tail-id) {:dispatch [::nav.events/load previous-tail-id]}
+      at-live-tail? (no-op-fx)
+      :else {:dispatch [::nav.events/previous]})))
 
 (rf/reg-event-fx
  ::previous-epoch
