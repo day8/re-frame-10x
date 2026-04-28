@@ -16,6 +16,8 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-24.04
+    env:
+      MAVEN_OPTS: -Daether.connector.basic.threads=1
     container:
       # Source: https://github.com/day8/dockerfiles-for-dev-ci-images
       image: ghcr.io/day8/chrome-56:2 
