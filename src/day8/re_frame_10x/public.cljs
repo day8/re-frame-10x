@@ -100,13 +100,31 @@
 (defn ^:export capabilities
   "Set of feature keywords this build supports. Reserved for
    future growth — today returns the baseline set. Consumers
-   should treat unknown keywords as 'not supported'."
+   should treat unknown keywords as 'not supported'.
+
+   Read API flags use a `:resource/action` shape — `:epochs/read`,
+   `:traces/read`, `:settings/app-db-follows-events`. The
+   `:events/...` family flags the mutation API: `:events/navigate`,
+   `:events/reset`, `:events/replay` mark the corresponding event
+   keyword constants, and `:events/dispatch!` marks the bridge fn
+   that routes event vectors into 10x's inlined re-frame router.
+
+   `:epochs/navigate` and `:events/navigate` are synonyms — the
+   former predates the `:events/...` family and is retained for
+   compatibility. New consumers should prefer the `:events/...`
+   namespace when branching on the mutation surface, since it
+   keeps reset / replay / dispatch! / navigate flags in one
+   semantic family."
   []
   #{:public/v1
     :epochs/read
     :epochs/navigate
     :traces/read
-    :settings/app-db-follows-events})
+    :settings/app-db-follows-events
+    :events/navigate
+    :events/reset
+    :events/replay
+    :events/dispatch!})
 
 ;; ---------------------------------------------------------------------------
 ;; Read API — epochs

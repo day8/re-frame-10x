@@ -30,7 +30,19 @@
     (is (contains? caps :epochs/read))
     (is (contains? caps :epochs/navigate))
     (is (contains? caps :traces/read))
-    (is (contains? caps :settings/app-db-follows-events))))
+    (is (contains? caps :settings/app-db-follows-events))
+    ;; The mutation-API flags exposed under the :events/... namespace
+    ;; let consumers branch on whether reset / replay / dispatch! /
+    ;; navigation event keywords are wired up. Without them, a future
+    ;; read-only inspect mode (mutation API stripped for security)
+    ;; would be undetectable, and consumers that want to test for the
+    ;; bridge fn would have to fall back to (boolean public/dispatch!),
+    ;; which fights the var-presence-is-the-contract pattern used by
+    ;; loaded?.
+    (is (contains? caps :events/navigate))
+    (is (contains? caps :events/reset))
+    (is (contains? caps :events/replay))
+    (is (contains? caps :events/dispatch!))))
 
 (deftest public-surface-presence
   (is (fn? public/loaded?))
