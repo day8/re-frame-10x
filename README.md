@@ -303,6 +303,73 @@ You can also control the panel programmatically:
 - At the browser console: `day8.re_frame_10x.show_panel_BANG_(true)`
 - With a re-frame event: `(re-frame.core/dispatch [:day8.re-frame-10x.panels.settings.events/show-panel? true])`
 
+### Public API for tooling
+
+Downstream tooling should integrate through `day8.re-frame-10x.public`.
+This namespace is loaded by the 10x preloads and is the stable entry point for
+tools that need to inspect or drive 10x without depending on internal
+navigation namespaces or the inlined re-frame version path. The namespace is
+marked `^:experimental` until the first external consumer ships against it;
+the namespace name, feature probes, version contract, and capabilities set are
+the supported way to branch as the surface evolves.
+
+Feature-detect the surface before using it:
+
+```clojure
+(require '[day8.re-frame-10x.public :as tenx])
+
+(when (tenx/loaded?)
+  (tenx/version)      ;; => {:api 2}
+  (tenx/capabilities) ;; => #{:public/v1 :public/v2 ...}
+  tenx/api-version)   ;; => 2
+```
+
+Pure JavaScript tooling can probe the same exported surface through
+`goog.global.day8.re_frame_10x.public`:
+
+```javascript
+const api = goog.global.day8.re_frame_10x.public;
+
+if (api && api.loaded_QMARK_()) {
+  api.version();
+  api.capabilities();
+  api.api_version;
+}
+```
+
+`api-version` is an integer contract revision. It bumps when the public
+contract changes, including new stable event identifiers, read API shape
+changes, or event-identifier semantic changes. `(version)` returns the same
+contract as a map so callers can support several 10x releases side by side.
+`(capabilities)` is the preferred feature gate for optional behavior; unknown
+capabilities should be treated as unsupported.
+
+The read API exposes the retained epoch buffer and trace stream:
+
+- `(epochs)` returns public epoch maps with `:id`, `:match-info`,
+  `:sub-state-raw`, and `:timings`.
+- `(epoch-count)`, `(latest-epoch-id)`, `(selected-epoch-id)`, and
+  `(epoch-by-id id)` are cheaper epoch lookup helpers.
+- `(all-traces)` returns the retained trace stream.
+- `(app-db-follows-events?)` tells tools whether navigation events also reset
+  the user's app-db to the selected epoch's `:app-db-after` snapshot.
+
+The mutation API exports fully-qualified string event identifiers:
+`load-epoch`, `most-recent-epoch`, `previous-epoch`, `next-epoch`,
+`reset-epochs`, `replay-epoch`, and `reset-app-db-event`. Dispatch them through
+`dispatch!`, not through your application's `re-frame.core/dispatch`, because
+10x handlers are registered with 10x's inlined re-frame router:
+
+```clojure
+(tenx/dispatch! [tenx/load-epoch 42])
+(tenx/dispatch! [tenx/most-recent-epoch])
+```
+
+```javascript
+api.dispatch_BANG_([api.load_epoch, 42]);
+api.dispatch_BANG_([api.most_recent_epoch]);
+```
+
 ## Use Cases
 
 ### app-db

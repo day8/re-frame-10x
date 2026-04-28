@@ -1,4 +1,4 @@
-(ns day8.re-frame-10x.public
+(ns ^:experimental day8.re-frame-10x.public
   "Stable public surface for downstream tooling — re-frame-pair,
    custom devtools, performance dashboards.
 
