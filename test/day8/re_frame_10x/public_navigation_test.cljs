@@ -42,6 +42,9 @@
   (dotimes [_ 3]
     (router/-fsm-trigger router/event-queue :run-queue nil)))
 
+(defn- drain-queued-dispatch! []
+  (router/-fsm-trigger router/event-queue :run-queue nil))
+
 (deftest previous-epoch-event-steps-cursor-back
   (testing "[previous-epoch] from :b lands the cursor on :a"
     (let [snapshot @rf.db/app-db]
@@ -163,6 +166,36 @@
           (rf/purge-event-queue)
           (reset! rf.db/app-db snapshot))))))
 
+(deftest load-epoch-event-resets-userland-app-db-when-following-events
+  (testing "[load-epoch <id>] resets userland app-db to the target epoch's :app-db-after when app-db follows events"
+    (let [rf-snapshot       @rf.db/app-db
+          userland-snapshot @userland.re-frame.db/app-db
+          target-state      {:counter 3  :marker :target}
+          current-state     {:counter 99 :marker :current}
+          target-trace      {:op-type :event
+                             :tags    {:app-db-after target-state
+                                       :event        [::target-event]}}]
+      (try
+        (reset! rf.db/app-db
+                {:epochs   {:match-ids         [:a :b :c]
+                            :selected-epoch-id :a
+                            :matches-by-id     {:a {:match-info []}
+                                                :b {:match-info []}
+                                                :c {:match-info [target-trace]}}}
+                 :settings {:app-db-follows-events? true}})
+        (reset! userland.re-frame.db/app-db current-state)
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/load-epoch :c]))
+        (drain-queued-dispatch!)
+        (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id]))
+            "10x cursor moves to the requested epoch")
+        (is (= target-state @userland.re-frame.db/app-db)
+            "userland app-db follows the requested epoch's :app-db-after")
+        (finally
+          (rf/purge-event-queue)
+          (reset! rf.db/app-db rf-snapshot)
+          (reset! userland.re-frame.db/app-db userland-snapshot))))))
+
 (deftest reset-app-db-event-resets-userland-app-db-without-moving-cursor
   (testing "[reset-app-db-event <id>] resets app-db to a target epoch without moving 10x's cursor"
     (let [rf-snapshot       @rf.db/app-db
@@ -203,6 +236,36 @@
         (finally
           (rf/purge-event-queue)
           (reset! rf.db/app-db snapshot))))))
+
+(deftest most-recent-epoch-event-resets-userland-app-db-when-following-events
+  (testing "[most-recent-epoch] resets userland app-db to the newest epoch's :app-db-after when app-db follows events"
+    (let [rf-snapshot       @rf.db/app-db
+          userland-snapshot @userland.re-frame.db/app-db
+          newest-state      {:counter 3  :marker :newest}
+          current-state     {:counter 99 :marker :current}
+          newest-trace      {:op-type :event
+                             :tags    {:app-db-after newest-state
+                                       :event        [::newest-event]}}]
+      (try
+        (reset! rf.db/app-db
+                {:epochs   {:match-ids         [:a :b :c]
+                            :selected-epoch-id :a
+                            :matches-by-id     {:a {:match-info []}
+                                                :b {:match-info []}
+                                                :c {:match-info [newest-trace]}}}
+                 :settings {:app-db-follows-events? true}})
+        (reset! userland.re-frame.db/app-db current-state)
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/most-recent-epoch]))
+        (drain-queued-dispatch!)
+        (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id]))
+            "10x cursor moves to the newest retained epoch")
+        (is (= newest-state @userland.re-frame.db/app-db)
+            "userland app-db follows the newest epoch's :app-db-after")
+        (finally
+          (rf/purge-event-queue)
+          (reset! rf.db/app-db rf-snapshot)
+          (reset! userland.re-frame.db/app-db userland-snapshot))))))
 
 (deftest reset-epochs-clears-epochs-and-traces
   (testing "[reset-epochs] clears :epochs and :traces/:all"
