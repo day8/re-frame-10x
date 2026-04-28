@@ -183,7 +183,7 @@
    empty. Cheap — reads `:match-ids`' last element. 10x stores
    epochs oldest-first, so the newest dispatch is at the tail."
   []
-  (some-> rf.db/app-db deref :epochs :match-ids last))
+  (some-> rf.db/app-db deref :epochs :match-ids tools.coll/last-in-vec))
 
 (defn ^:export selected-epoch-id
   "Id of the epoch the 10x UI is currently focused on, or nil if
