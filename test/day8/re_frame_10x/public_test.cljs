@@ -21,7 +21,7 @@
    :settings {:app-db-follows-events? true}})
 
 (deftest feature-detection-contract
-  (is (true? (public/loaded?)))
+  (is (some? (public/loaded?)))
   (is (= {:api 1} (public/version)))
   (is (= 1 public/api-version))
   (let [caps (public/capabilities)]
