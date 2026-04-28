@@ -7,10 +7,26 @@
 ;;
 ;; The :dependencies declared here are the *real* (userland) re-frame
 ;; and reagent that live next to the inlined-deps copies in gen-src.
-;; navigation/epochs/events.cljs requires re-frame.core / re-frame.db /
-;; re-frame.trace under their userland names; the test build needs
-;; those resolvable, even though the production build inherits them
-;; from the host application's classpath.
+;; They are NOT 10x's own pipeline — 10x runs against the inlined
+;; v1v3v0 copy under day8.re-frame-10x.inlined-deps. They are the
+;; deliberate integration boundary: a handful of 10x source files reach
+;; into userland to register handlers users can dispatch, intercept the
+;; userland trace stream, and reset the userland app-db for time-travel.
+;; In production these resolve via the host application's classpath; in
+;; this test build they resolve via the deps below.
+;;
+;; Every such crossing in 10x's source is aliased under the
+;; `userland.re-frame[.X]` prefix at its `:require` site (see e.g.
+;; navigation/epochs/events.cljs, navigation/views.cljs, fx/trace.cljs,
+;; panels/app-db/events.cljs, panels/app-db/views.cljs) so the boundary
+;; is visible from the call site without cross-referencing require
+;; lists. Files under src/day8/reagent/impl/ are 10x's reagent monkey-
+;; patches and reach into userland reagent by definition; the require
+;; aliases there (`:as batching`, `:as trace`) are file-local and don't
+;; follow the `userland.*` convention because every require in those
+;; files is userland by construction. New crossings — userland-aimed
+;; requires in src/day8/re_frame_10x/* — should adopt the
+;; `userland.re-frame[.X]` aliasing for grep-ability.
 
 {:source-paths ["src" "gen-src" "test"]
 
