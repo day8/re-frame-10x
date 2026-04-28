@@ -105,6 +105,70 @@
         (is (= :e (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
         (finally (reset! rf.db/app-db snapshot))))))
 
+(deftest load-epoch-event-loads-target
+  (testing "[load-epoch <id>] from :a lands the cursor on :c"
+    (let [snapshot @rf.db/app-db]
+      (try
+        (prime-app-db! [:a :b :c] :a)
+        (rf/dispatch-sync [(keyword public/load-epoch) :c])
+        ;; Forwarder's :dispatch fx queues the internal nav event async
+        ;; (same flush pattern as previous-epoch-event-steps-cursor-back).
+        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/load :c])
+        (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
+        (finally (reset! rf.db/app-db snapshot))))))
+
+(deftest most-recent-epoch-event-jumps-to-tail
+  (testing "[most-recent-epoch] from :a jumps to the tail :c"
+    (let [snapshot @rf.db/app-db]
+      (try
+        (prime-app-db! [:a :b :c] :a)
+        (rf/dispatch-sync [(keyword public/most-recent-epoch)])
+        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/most-recent])
+        (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
+        (finally (reset! rf.db/app-db snapshot))))))
+
+(deftest reset-event-clears-epochs-and-traces
+  (testing "[reset-event] clears :epochs and :traces/:all"
+    (let [snapshot @rf.db/app-db]
+      (try
+        (reset! rf.db/app-db
+                {:epochs {:match-ids         [:a]
+                          :selected-epoch-id :a
+                          :matches-by-id     {:a {:match-info []}}}
+                 :traces {:all [{:op-type :event :id 1}]}})
+        (rf/dispatch-sync [(keyword public/reset-event)])
+        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/reset])
+        (is (nil? (:epochs @rf.db/app-db))
+            ":epochs must be removed after reset")
+        (is (nil? (get-in @rf.db/app-db [:traces :all]))
+            ":traces/:all must be cleared after reset (dissoc-in)")
+        (finally (reset! rf.db/app-db snapshot))))))
+
+(deftest replay-event-empty-match-info-does-not-throw
+  ;; Guard against a NPE-style regression in replay-epochs when the
+  ;; selected epoch's :match-info is empty (no event-run trace yet —
+  ;; happens at cold-start while the parser is still mid-stream). The
+  ;; threading (-> nil metam/matched-event) and subsequent get-in calls
+  ;; must all tolerate the missing trace; otherwise a probe-style poll
+  ;; that lands on a half-built epoch crashes the whole router.
+  (testing "[replay-event] with an empty :match-info must not throw"
+    (let [rf-snapshot       @rf.db/app-db
+          userland-snapshot @userland.re-frame.db/app-db]
+      (try
+        (reset! rf.db/app-db
+                {:epochs   {:match-ids         [:only]
+                            :selected-epoch-id :only
+                            :matches-by-id     {:only {:match-info []}}}
+                 :settings {:app-db-follows-events? false}})
+        ;; If dispatch-sync throws, the assertion below is never reached
+        ;; and the test fails. If it returns cleanly, we record the
+        ;; positive observation.
+        (rf/dispatch-sync [(keyword public/replay-event)])
+        (is true "replay-event with empty :match-info returned without throwing")
+        (finally
+          (reset! rf.db/app-db rf-snapshot)
+          (reset! userland.re-frame.db/app-db userland-snapshot))))))
+
 (deftest replay-event-resets-userland-app-db-to-before
   (testing "[replay-event] resets userland app-db to the focused epoch's :app-db-before, ignoring whatever state was current — confirms the idempotent time-travel semantic the docstring promises"
     (let [rf-snapshot       @rf.db/app-db

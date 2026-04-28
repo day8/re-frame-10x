@@ -1,10 +1,12 @@
 (ns day8.re-frame-10x.public-test
   (:require
+   [clojure.set :as set]
    [clojure.string :as str]
    [clojure.test :refer [deftest is]]
    [clojure.walk :as walk]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db :as rf.db]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core      :as rf]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db        :as rf.db]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.registrar :as rf.registrar]
    [day8.re-frame-10x.public :as public]))
 
 (def ^:private stub-match
@@ -64,13 +66,47 @@
   ;; keywords for the inlined router's handler-lookup.
   (is (string? public/load-epoch))
   (is (string? public/most-recent-epoch))
+  (is (string? public/previous-epoch))
+  (is (string? public/next-epoch))
   (is (string? public/reset-event))
   (is (string? public/replay-event))
-  (is (= 4 (count #{public/load-epoch
+  ;; Include the navigation identifiers in the distinctness check so a
+  ;; future identifier-collision regression on the navigation pair is
+  ;; caught alongside the others.
+  (is (= 6 (count #{public/load-epoch
                     public/most-recent-epoch
+                    public/previous-epoch
+                    public/next-epoch
                     public/reset-event
                     public/replay-event}))
-      "the four mutation event identifiers must be distinct"))
+      "the six mutation event identifiers must be distinct"))
+
+(deftest capabilities-forward-compat-contract
+  ;; The capabilities docstring (public.cljs:120-147) promises consumers
+  ;; should treat unknown keywords as "not supported". Lock the contract:
+  ;; (1) the returned set must be a subset of what the docstring lists
+  ;;     so a future change can't ship an undocumented capability
+  ;;     without updating the docstring;
+  ;; (2) (contains? caps unknown-kw) must be false for any keyword the
+  ;;     docstring doesn't enumerate, so consumer code that branches on
+  ;;     unknown features gets a clean "not supported" read.
+  (let [caps         (public/capabilities)
+        documented   #{:public/v1
+                       :epochs/read
+                       :epochs/navigate
+                       :traces/read
+                       :settings/app-db-follows-events
+                       :events/navigate
+                       :events/reset
+                       :events/replay
+                       :events/dispatch!}
+        undocumented (set/difference caps documented)]
+    (is (empty? undocumented)
+        (str "capabilities returns undocumented keywords: " (pr-str undocumented)))
+    (is (false? (contains? caps :events/unknown-future-action))
+        "unknown-capability lookup must be contains?-false")
+    (is (false? (contains? caps :something/totally-made-up))
+        "the docstring promises consumers can treat unknown keywords as 'not supported'")))
 
 (deftest match-to-public-epoch-shape
   (with-redefs [rf.db/app-db (atom stub-db)]
@@ -160,6 +196,47 @@
       (public/dispatch! v)
       (is (identical? v @captured)
           "a CLJS vector with a keyword head must be passed through unchanged"))))
+
+(deftest dispatch-bang-end-to-end-load-epoch
+  ;; The dispatch-bang-coerces-* tests above only verify what was
+  ;; passed to rf/dispatch — they don't observe the resulting state
+  ;; mutation. A regression where public.cljs's rf alias was re-pointed
+  ;; at userland re-frame.core would silently drop every mutation
+  ;; (10x events register against the inlined router; userland's
+  ;; dispatch never reaches them) yet still pass the existing
+  ;; capture-style assertions.
+  ;;
+  ;; Close the loop end-to-end: drive a real load-epoch via
+  ;; (public/dispatch! [public/load-epoch :c]) — the same shape a
+  ;; consumer would use — and assert the *inlined* router's
+  ;; :selected-epoch-id moves all the way through forwarder + captured
+  ;; inner ::nav.events/load. The bridge dispatch is forced sync, while
+  ;; the forwarder's :dispatch effect is captured and flushed after the
+  ;; public handler returns; this avoids re-frame's nested dispatch-sync
+  ;; guard. Both hooks target inlined-rf state, so an alias regression
+  ;; that re-pointed public.cljs at userland would bypass them and the
+  ;; assertion below would catch the regression: userland has no
+  ;; ::load-epoch handler, so no inner event would be captured.
+  (let [restore!   (rf/make-restore-fn)
+        dispatched (atom nil)]
+    (try
+      (reset! rf.db/app-db
+              {:epochs   {:match-ids         [:a :b :c]
+                          :selected-epoch-id :a
+                          :matches-by-id     (zipmap [:a :b :c] (repeat nil))}
+               :settings {:app-db-follows-events? false}})
+      (swap! rf.registrar/kind->id->handler assoc-in [:fx :dispatch] #(reset! dispatched %))
+      (with-redefs [rf/dispatch rf/dispatch-sync]
+        (public/dispatch! [public/load-epoch :c]))
+      (let [inner-event @dispatched]
+        (is (= [:day8.re-frame-10x.navigation.epochs.events/load :c] inner-event)
+            "dispatch! must drive the public load-epoch forwarder on the inlined router")
+        (rf/dispatch-sync inner-event))
+      (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id]))
+          "dispatch! → public/load-epoch → ::nav.events/load must move :selected-epoch-id from :a to :c on the inlined router")
+      (finally
+        (rf/purge-event-queue)
+        (restore!)))))
 
 (deftest dispatch-bang-coerces-string-head-to-keyword
   ;; Event identifiers are exported as fully-qualified strings, so a
