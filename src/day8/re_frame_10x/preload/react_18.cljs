@@ -10,9 +10,9 @@
   (:require
    [day8.re-frame-10x                                                :as re-frame-10x]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core     :as rf]
+   [day8.re-frame-10x.public]
    [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.dom.client :as rdc]
-   [day8.re-frame-10x.events                                         :as events]
-   [day8.re-frame-10x.public])
+   [day8.re-frame-10x.events                                         :as events])
   (:require-macros [day8.re-frame-10x.components.re-com :refer [inline-resource]]))
 
 (re-frame-10x/patch!)
