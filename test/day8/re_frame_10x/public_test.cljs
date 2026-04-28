@@ -75,7 +75,7 @@
 (deftest match-to-public-epoch-shape
   (with-redefs [rf.db/app-db (atom stub-db)]
     (let [[ep] (public/epochs)]
-      (is (= #{:id :match-info :sub-state-raw :timings} (set (keys ep))))
+      (is (every? #(contains? ep %) [:id :match-info :sub-state-raw :timings]))
       (is (= 7 (:id ep)))
       (is (= [{:id 7 :event [:user/save 42]}] (:match-info ep)))
       (is (= {:before {} :after {}} (:sub-state-raw ep)))
@@ -86,6 +86,28 @@
     (is (= 7 (public/latest-epoch-id)))
     (is (= 7 (public/selected-epoch-id)))
     (is (true? (public/app-db-follows-events?)))))
+
+(deftest match-to-public-epoch-edge-cases
+  (let [to-public #'public/match->public-epoch]
+    (is (nil? (to-public nil)))
+    (is (= {:id nil
+            :match-info []
+            :sub-state-raw {}
+            :timings {}}
+           (to-public {:match-info []
+                       :sub-state {}
+                       :timing {}})))
+    (is (= {:id nil
+            :match-info nil
+            :sub-state-raw {}
+            :timings {}}
+           (to-public {:sub-state {}
+                       :timing {}})))
+    (let [ep (to-public {:match-info [{:id :first} {:id :second}]
+                         :sub-state {}
+                         :timing {}})]
+      (is (= :first (:id ep)))
+      (is (= [{:id :first} {:id :second}] (:match-info ep))))))
 
 (deftest latest-epoch-id-returns-newest
   ;; 10x stores epochs oldest-first; latest-epoch-id must return the tail
@@ -109,6 +131,13 @@
     (is (nil? (public/epoch-by-id 1)))
     (is (= [] (public/all-traces)))
     (is (false? (public/app-db-follows-events?)))))
+
+(deftest read-api-partial-init
+  (with-redefs [rf.db/app-db (atom {:epochs {:matches []}})]
+    (is (= [] (public/epochs))))
+  (with-redefs [rf.db/app-db (atom {:epochs {:match-ids [1 2 3]}})]
+    (is (nil? (public/epoch-by-id 1)))
+    (is (= 3 (public/epoch-count)))))
 
 (deftest dispatch-bang-coerces-js-array
   ;; Pure-JS callers reach dispatch! via goog.global as
