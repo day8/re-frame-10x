@@ -1,6 +1,16 @@
 (ns ^:experimental day8.re-frame-10x.public
-  "Stable public surface for downstream tooling — re-frame-pair,
+  "Experimental public surface for downstream tooling — re-frame-pair,
    custom devtools, performance dashboards.
+
+   STABILITY
+
+   Marked `^:experimental` on the ns and on every public defn per
+   companion-re-frame-10x.md §A2 (line 227): the marker stays until a
+   *released* re-frame-pair JAR consumes this surface, at which point
+   the markers can be removed and the opener flipped to 'Stable'. The
+   local re-frame-pair migration wires this up under `:local/root`
+   (rf1-jum) but no released JAR ships against it yet, so the spec's
+   experimental-gate is not met.
 
    Resolves the rf1-jum companion-bead's five open questions:
 
@@ -84,8 +94,10 @@
    NAMESPACE DISCIPLINE (for contributors)
 
    Every top-level form in this namespace is part of the public
-   contract — new entries must carry `^:export` and be covered by
-   public_test.cljs's surface-presence and version-slug-leak checks.
+   contract — new entries must carry `^:export ^:experimental` and be
+   covered by public_test.cljs's surface-presence and
+   version-slug-leak checks. The `^:experimental` markers come off in
+   one sweep when the spec's gate is met (see STABILITY above).
 
    Side-effecting handler registrations live in
    `day8.re-frame-10x.public.events`, required below so registrations
@@ -114,14 +126,14 @@
 ;; Versioning + feature detection
 ;; ---------------------------------------------------------------------------
 
-(def ^:export api-version
+(def ^:export ^:experimental api-version
   "Integer that bumps with each public-surface contract revision,
    including new stable event identifiers downstream tools may gate on.
    Consumers can branch on it via `(capabilities)` or read it directly
    via `goog.global.day8.re_frame_10x.public.api_version`."
   2)
 
-(defn ^:export ^boolean loaded?
+(defn ^:export ^:experimental ^boolean loaded?
   "True when this namespace is loaded — i.e. when the public surface
    is available in the runtime. Stable feature-detection hook for
    downstream tooling. The presence of the var IS the contract;
@@ -133,7 +145,7 @@
   []
   true)
 
-(defn ^:export version
+(defn ^:export ^:experimental version
   "Returns `{:api <int>}` describing the public-surface version the
    currently-loaded 10x build implements. Bumps with public contract
    revisions, including new stable event identifiers and read API
@@ -143,7 +155,7 @@
   []
   {:api api-version})
 
-(defn ^:export capabilities
+(defn ^:export ^:experimental capabilities
   "Set of feature keywords this build supports. Reserved for
    future growth — today returns the baseline set. Consumers
    should treat unknown keywords as 'not supported'.
@@ -194,7 +206,7 @@
      :sub-state-raw (:sub-state match)
      :timings       (:timing match)}))
 
-(def ^:export epochs
+(def ^:export ^:experimental epochs
   "Vec of every retained epoch in 10x's ring buffer, in the order
    10x stored them (oldest first; `last` is newest). Each element is
    a public-epoch record (see `match->public-epoch`).
@@ -213,7 +225,7 @@
             (vreset! cache [matches public-epochs])
             public-epochs))))))
 
-(defn ^:export epoch-count
+(defn ^:export ^:experimental epoch-count
   "Number of retained epochs. Cheap — reads the `:match-ids` vec
    length without rebuilding the full coerced epoch maps. Suitable
    for poll-cadence callers (e.g. re-frame-pair's
@@ -221,14 +233,14 @@
   []
   (count (some-> rf.db/app-db deref :epochs :match-ids)))
 
-(defn ^:export latest-epoch-id
+(defn ^:export ^:experimental latest-epoch-id
   "Id of the newest (most-recent) match in the buffer, or nil if
    empty. Cheap — reads `:match-ids`' last element. 10x stores
    epochs oldest-first, so the newest dispatch is at the tail."
   []
   (some-> rf.db/app-db deref :epochs :match-ids tools.coll/last-in-vec))
 
-(defn ^:export selected-epoch-id
+(defn ^:export ^:experimental selected-epoch-id
   "Id of the epoch the 10x UI is currently focused on, or nil if
    the user is on the live tail. Different from `latest-epoch-id`:
    when the user navigates back through history, `selected-epoch-id`
@@ -236,7 +248,7 @@
   []
   (some-> rf.db/app-db deref :epochs :selected-epoch-id))
 
-(defn ^:export epoch-by-id
+(defn ^:export ^:experimental epoch-by-id
   "Public-epoch record for the given match id, or nil if unknown
    (id never existed, or aged out of the buffer)."
   [id]
@@ -247,7 +259,7 @@
 ;; Read API — traces (the underlying re-frame.trace stream)
 ;; ---------------------------------------------------------------------------
 
-(defn ^:export all-traces
+(defn ^:export ^:experimental all-traces
   "The full retained trace stream — every `:event :sub/run :sub/create
    :render :raf` etc. trace, in order. Vec; empty when 10x hasn't
    initialised. Consumers that want to slice differently than 10x's
@@ -260,7 +272,7 @@
 ;; Read API — settings
 ;; ---------------------------------------------------------------------------
 
-(defn ^:export ^boolean app-db-follows-events?
+(defn ^:export ^:experimental ^boolean app-db-follows-events?
   "True iff 10x is currently configured to reset the user's app-db
    to the focused epoch's `:app-db-after` snapshot when navigation
    events fire (the default). When false, navigation events update
@@ -275,7 +287,7 @@
 ;; Mutation API — event identifiers + dispatch! bridge
 ;; ---------------------------------------------------------------------------
 
-(def ^:export load-epoch
+(def ^:export ^:experimental load-epoch
   "Public event identifier. Dispatch via `(dispatch! [load-epoch <id>])`
    to make 10x focus on the epoch with the given match id. When
    `app-db-follows-events?` is true (the default), the user's app-db
@@ -286,7 +298,7 @@
    either read this var or build the same literal."
   "day8.re-frame-10x.public/load-epoch")
 
-(def ^:export most-recent-epoch
+(def ^:export ^:experimental most-recent-epoch
   "Public event identifier. Dispatch via `(dispatch! [most-recent-epoch])`
    to make 10x focus on the newest match (the 'live tail'). Useful
    after a programmatic load-epoch to return control to the user.
@@ -304,7 +316,7 @@
    `\"day8.re-frame-10x.public/most-recent-epoch\"`."
   "day8.re-frame-10x.public/most-recent-epoch")
 
-(def ^:export previous-epoch
+(def ^:export ^:experimental previous-epoch
   "Public event identifier. Dispatch via `(dispatch! [previous-epoch])`
    to step the 10x UI cursor one match backwards from the currently
    focused epoch. No-op when already at the oldest retained match.
@@ -317,7 +329,7 @@
    `\"day8.re-frame-10x.public/previous-epoch\"`."
   "day8.re-frame-10x.public/previous-epoch")
 
-(def ^:export next-epoch
+(def ^:export ^:experimental next-epoch
   "Public event identifier. Dispatch via `(dispatch! [next-epoch])` to
    step the 10x UI cursor one match forwards from the currently
    focused epoch. No-op when already at the newest retained match.
@@ -329,7 +341,7 @@
    `\"day8.re-frame-10x.public/next-epoch\"`."
   "day8.re-frame-10x.public/next-epoch")
 
-(def ^:export reset-epochs
+(def ^:export ^:experimental reset-epochs
   "Public event identifier. Dispatch via `(dispatch! [reset-epochs])` to
    clear 10x's epoch buffer and reset re-frame.trace's id counter.
    Equivalent to clicking the 'reset' button in 10x's UI.
@@ -338,7 +350,7 @@
    `\"day8.re-frame-10x.public/reset-epochs\"`."
   "day8.re-frame-10x.public/reset-epochs")
 
-(def ^:export replay-epoch
+(def ^:export ^:experimental replay-epoch
   "Public event identifier. Dispatch via `(dispatch! [replay-epoch])` to
    replay the focused epoch's event against the app-db state captured
    BEFORE that event originally fired (the epoch's `:app-db-before`).
@@ -352,7 +364,7 @@
    `\"day8.re-frame-10x.public/replay-epoch\"`."
   "day8.re-frame-10x.public/replay-epoch")
 
-(def ^:export ^:const reset-app-db-event
+(def ^:export ^:experimental ^:const reset-app-db-event
   "Public event identifier. Dispatch via
    `(dispatch! [reset-app-db-event <id>])` to reset the user's app-db
    to the `:app-db-after` snapshot for the epoch with the given match
@@ -367,7 +379,7 @@
    `\"day8.re-frame-10x.public/reset-app-db\"`."
   "day8.re-frame-10x.public/reset-app-db")
 
-(defn ^:export dispatch!
+(defn ^:export ^:experimental dispatch!
   "Mutation-API bridge: routes `event-vec` (e.g.
    `[load-epoch 42]`) through 10x's *inlined* re-frame router.
    Necessary because 10x events register against the inlined
