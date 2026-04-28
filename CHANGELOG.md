@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [Unreleased]
+
+#### Added
+
+- `day8.re-frame-10x.public` — stable public surface for downstream tooling (see README section). Includes `(loaded?)`, `(version)`, `(capabilities)`, `(api-version)`, `(epochs)`, `(epoch-count)`, `(latest-epoch-id)`, `(selected-epoch-id)`, `(epoch-by-id)`, `(all-traces)`, `(app-db-follows-events?)`, event keyword constants (`load-epoch`, `most-recent-epoch`, `previous-epoch`, `next-epoch`, `reset-event`, `replay-event`), and a `(dispatch!)` bridge into the inlined re-frame router.
+- ClojureScript test target via shadow-cljs (`npx shadow-cljs compile test`); now gated in CI alongside the existing `lein test` JVM gate. See DEVELOPERS.md.
+
 ## 1.11.0 (2025-12-08)
 
 #### Added
