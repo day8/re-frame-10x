@@ -125,8 +125,10 @@
    (let [new-id (if-not selected-epoch-id
                   (tools.coll/last-in-vec match-ids)
                   (->> match-ids (drop-while (complement #{selected-epoch-id})) (take 2) last))]
-     {:db       (assoc db :selected-epoch-id new-id)
-      :dispatch [::reset-current-epoch-app-db new-id]})))
+     (if (= selected-epoch-id new-id)
+       {:db db}
+       {:db       (assoc db :selected-epoch-id new-id)
+        :dispatch [::reset-current-epoch-app-db new-id]}))))
 
 (rf/reg-event-fx
  ::most-recent

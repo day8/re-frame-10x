@@ -123,6 +123,34 @@
           (rf/purge-event-queue)
           (reset! rf.db/app-db snapshot))))))
 
+(deftest next-epoch-event-at-newest-does-not-reset-userland-app-db
+  (testing "[next-epoch] at the newest retained epoch is a true no-op"
+    (let [rf-snapshot       @rf.db/app-db
+          userland-snapshot @userland.re-frame.db/app-db
+          current-state     {:counter 99 :marker :current}
+          newest-state      {:counter 2  :marker :newest}
+          newest-trace      {:op-type :event
+                             :tags    {:app-db-after newest-state
+                                       :event        [::newest-event]}}]
+      (try
+        (reset! rf.db/app-db
+                {:epochs   {:match-ids         [:oldest :newest]
+                            :selected-epoch-id :newest
+                            :matches-by-id     {:oldest {:match-info []}
+                                                :newest {:match-info [newest-trace]}}}
+                 :settings {:app-db-follows-events? true}})
+        (reset! userland.re-frame.db/app-db current-state)
+        (with-redefs [rf/dispatch rf/dispatch-sync]
+          (public/dispatch! [public/next-epoch]))
+        (is (= :newest (get-in @rf.db/app-db [:epochs :selected-epoch-id]))
+            "10x cursor remains at the newest retained epoch")
+        (is (= current-state @userland.re-frame.db/app-db)
+            "next-epoch at newest must not reset userland app-db")
+        (finally
+          (rf/purge-event-queue)
+          (reset! rf.db/app-db rf-snapshot)
+          (reset! userland.re-frame.db/app-db userland-snapshot))))))
+
 (deftest load-epoch-event-loads-target
   (testing "[load-epoch <id>] from :a lands the cursor on :c"
     (let [snapshot @rf.db/app-db]
