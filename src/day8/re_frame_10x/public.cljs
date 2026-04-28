@@ -416,12 +416,12 @@
    durable LHS, internal kws are the volatile RHS. A future internal
    rename touches only this map — the public string consts above stay
    put."
-  {:day8.re-frame-10x.public/load-epoch        :day8.re-frame-10x.navigation.epochs.events/load
-   :day8.re-frame-10x.public/most-recent-epoch :day8.re-frame-10x.navigation.epochs.events/most-recent
-   :day8.re-frame-10x.public/next-epoch        :day8.re-frame-10x.navigation.epochs.events/next
-   :day8.re-frame-10x.public/reset-epochs      :day8.re-frame-10x.navigation.epochs.events/reset
-   :day8.re-frame-10x.public/replay-epoch      :day8.re-frame-10x.navigation.epochs.events/replay
-   :day8.re-frame-10x.public/reset-app-db      :day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db})
+  {(keyword load-epoch)        :day8.re-frame-10x.navigation.epochs.events/load
+   (keyword most-recent-epoch) :day8.re-frame-10x.navigation.epochs.events/most-recent
+   (keyword next-epoch)        :day8.re-frame-10x.navigation.epochs.events/next
+   (keyword reset-epochs)      :day8.re-frame-10x.navigation.epochs.events/reset
+   (keyword replay-epoch)      :day8.re-frame-10x.navigation.epochs.events/replay
+   (keyword reset-app-db-event) :day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db})
 
 (defn ^:export ^:experimental dispatch!
   "Mutation-API bridge: routes `event-vec` (e.g.
