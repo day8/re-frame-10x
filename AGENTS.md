@@ -82,3 +82,29 @@ bd close <id>         # Complete work
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
 <!-- END BEADS INTEGRATION -->
+
+## Conventions for agent contributors
+
+> Note: this section overrides the bead-default "Session Completion" /
+> "PUSH TO REMOTE is MANDATORY" workflow inside the BEADS INTEGRATION
+> block above. The default is wrong for this repository.
+
+- **Local-only commits.** Do NOT `git push`. Do NOT `git tag`. Do NOT
+  open or push to upstream PRs. Do NOT `bd dolt push`. Each commit
+  should be cleanly self-describing and reference the bead id in the
+  message when it closes bead-tracked work. The operator publishes when
+  ready.
+- **No bead-ID prefixes in code comments.** Don't write
+  `;; rf1-XXX item N — ...` or similar. Comments should explain the
+  WHY only — the commit message carries the bead-id linkage.
+- **Verify APIs and paths before relying on them.** Cross-repo
+  references in bead descriptions can drift; `grep` first.
+- **Tests before close.** `lein test` for the JVM-side suite,
+  `npx shadow-cljs compile test` for the cljs-side suite (after
+  `npm install`). Both gate CI.
+- **`bb` and `npx` are on PATH; `lein` IS installed for this rig**
+  (re-frame-10x's mranderson workflow needs lein) — but other rigs
+  may not have it; check before depending on lein cross-rig.
+- **Cross-rig coordination via mayor.** If a bead's work touches
+  multiple rigs, refuse the bead (release the claim) and message
+  mayor with the split needed.

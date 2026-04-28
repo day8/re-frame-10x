@@ -1,8 +1,8 @@
 (ns day8.re-frame-10x.navigation.views
   (:require
    [goog.object :as gobj]
-   [re-frame.db :as db]
-   [re-frame.trace]
+   [re-frame.db :as userland.re-frame.db]
+   [re-frame.trace :as userland.re-frame.trace]
    [reagent.impl.batching :as batching]
    [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.core :as r]
    [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.dom :as rdom]
@@ -172,7 +172,7 @@
        [:h1
         {:class (warning-style ambiance)}
         "Host window has closed. Reopen external window to continue tracing."])
-     (when-not (re-frame.trace/is-trace-enabled?)
+     (when-not (userland.re-frame.trace/is-trace-enabled?)
        [:h1
         {:class (warning-style ambiance)}
         "Tracing is not enabled. Please set "
@@ -216,14 +216,14 @@
      :children [(case selected-tab
                   :event    [event.views/panel]
                   :fx       [fx.views/panel]
-                  :app-db   [app-db.views/panel db/app-db]
+                  :app-db   [app-db.views/panel userland.re-frame.db/app-db]
                   :subs     [subs.views/panel]
                   :flow     [flow.views/panel]
                   :timing   [timing.views/panel]
                   :traces   [traces.views/panel]
                   :debug    [debug.views/render]
                   :settings [settings.views/render]
-                  [app-db.views/panel db/app-db])]]))
+                  [app-db.views/panel userland.re-frame.db/app-db])]]))
 
 (defn show-history-button
   []

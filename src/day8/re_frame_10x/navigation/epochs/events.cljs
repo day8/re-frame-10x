@@ -2,7 +2,7 @@
   (:require
    [re-frame.core :as userland.re-frame]
    [re-frame.db :as userland.re-frame.db]
-   [re-frame.trace]
+   [re-frame.trace :as userland.re-frame.trace]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.fx.debounce                                :as debounce]
    [day8.re-frame-10x.fx.scroll                                  :as scroll]
@@ -125,8 +125,10 @@
    (let [new-id (if-not selected-epoch-id
                   (tools.coll/last-in-vec match-ids)
                   (->> match-ids (drop-while (complement #{selected-epoch-id})) (take 2) last))]
-     {:db       (assoc db :selected-epoch-id new-id)
-      :dispatch [::reset-current-epoch-app-db new-id]})))
+     (if (= selected-epoch-id new-id)
+       {:db db}
+       {:db       (assoc db :selected-epoch-id new-id)
+        :dispatch [::reset-current-epoch-app-db new-id]}))))
 
 (rf/reg-event-fx
  ::most-recent
@@ -151,9 +153,12 @@
                              (metam/matched-event))
         app-db-before    (metam/app-db-before event-trace)
         event            (get-in event-trace [:tags :event])]
-    (reset! userland.re-frame.db/app-db app-db-before)
-    ;; Wait for quiescence
-    (assoc epochs :replay event)))
+    (if (and (some? app-db-before) event)
+      (do
+        (reset! userland.re-frame.db/app-db app-db-before)
+        ;; Wait for quiescence.
+        (assoc epochs :replay event))
+      epochs)))
 
 (rf/reg-event-db
  ::replay
@@ -173,7 +178,7 @@
 (rf/reg-event-db
  ::reset
  (fn [db]
-   (re-frame.trace/reset-tracing!)
+   (userland.re-frame.trace/reset-tracing!)
    (-> db
        (dissoc :epochs)
        (tools.coll/dissoc-in [:traces :all]))))

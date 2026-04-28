@@ -6,8 +6,10 @@ re-frame-10x without compiling against it.
 
 The contract this document describes lives in
 [`day8.re-frame-10x.public`](../src/day8/re_frame_10x/public.cljs). That
-namespace is the stable surface; everything else under `day8.re-frame-10x.*`
-is internal and may change between releases.
+namespace is the intended tooling entry point, but its contract is still
+marked `^:experimental` until a released downstream consumer ships against
+it. Everything else under `day8.re-frame-10x.*` is internal and may change
+between releases.
 
 ## Why probe lazily
 
@@ -75,24 +77,23 @@ builds but break in `:none`. Always walk the un-suffixed path.
 
 ## Version branching
 
-The public namespace exports an `api-version` integer (currently `1`) and a
-`(version)` fn that returns `{:api <int>}`. The integer bumps on
-backwards-incompatible changes — to read-API shape or to event-keyword
-semantics. Consumers that want to support multiple 10x versions side-by-side
-branch on this.
+The public namespace exports an `api-version` integer (currently `2`) and a
+`(version)` fn that returns `{:api <int>}`. The integer bumps on public
+contract revisions, including new public event identifiers and changes to
+read-API shape or event-identifier semantics. Consumers that want to support
+multiple 10x versions side-by-side branch on this.
 
 ```clojure
 (defn ten-x-api-version
   "Integer api-version of the loaded 10x build, or nil if 10x missing."
   []
   (when-let [pub (ten-x-public)]
-    (some-> ((aget pub "version")) (aget "api"))))
+    (some-> ((aget pub "version")) (get :api))))
 ```
 
 Treat any value `>= 1` as "supports the v1 contract"; treat `nil` as "fall
-back to legacy probing". A future `api-version` of `2` will stay
-backwards-compatible at the v1 surface unless explicitly noted in the
-release that bumps it.
+back to legacy probing". API version `2` stays backwards-compatible at the
+v1 surface and adds the low-level `reset-app-db-event` primitive.
 
 ## Capabilities
 
@@ -101,15 +102,18 @@ build supports. Today the set is:
 
 ```clojure
 #{:public/v1
+  :public/v2
   :epochs/read                       ;; (epochs), (epoch-count), (latest-epoch-id),
                                      ;; (selected-epoch-id), (epoch-by-id)
   :epochs/navigate                   ;; load-epoch / most-recent-epoch / previous-epoch /
-                                     ;; next-epoch event keywords (synonym of :events/navigate)
+                                     ;; next-epoch event identifiers (synonym of :events/navigate)
+  :epochs/reset-app-db               ;; reset app-db to one epoch without moving the 10x cursor
   :traces/read                       ;; (all-traces)
   :settings/app-db-follows-events    ;; (app-db-follows-events?)
-  :events/navigate                   ;; explicit flag for the four navigation event keywords
-  :events/reset                      ;; reset-event keyword
-  :events/replay                     ;; replay-event keyword
+  :events/navigate                   ;; explicit flag for the four navigation event identifiers
+  :events/reset                      ;; reset-epochs identifier
+  :events/replay                     ;; replay-epoch identifier
+  :events/reset-app-db               ;; reset-app-db-event identifier
   :events/dispatch!}                 ;; dispatch! bridge fn
 ```
 
@@ -120,16 +124,19 @@ predates `:events/navigate` and is retained as a synonym for compatibility.
 
 ## Read API at a glance
 
-All functions take no arguments unless noted; all return seq-able CLJS
-values when called from CLJS-land, and JS arrays / objects when called via
-`goog.global`.
+All functions take no arguments unless noted. The exported fns return CLJS
+values even when reached through `goog.global`: `version` returns a CLJS
+map, `capabilities` a CLJS set, and `epochs` / `all-traces` CLJS vectors.
+CLJS consumers can use normal Clojure operations after probing the JS path;
+plain JS consumers need CLJS interop for read results. The mutation bridge
+is the exception: `dispatch!` accepts a plain JS array as its event vector.
 
 | Fn                       | Returns                                          |
 | ------------------------ | ------------------------------------------------ |
 | `(epochs)`               | Vec of every retained epoch, oldest-first.       |
 | `(epoch-count)`          | Integer; cheap (reads `:match-ids` length).      |
 | `(latest-epoch-id)`      | Id of newest match, or nil.                      |
-| `(selected-epoch-id)`    | Id of UI-focused epoch, or nil if on live tail.  |
+| `(selected-epoch-id)`    | Id of UI-focused epoch, or nil before selection. |
 | `(epoch-by-id id)`       | Single public-epoch record, or nil.              |
 | `(all-traces)`           | Full retained trace stream as a vec.             |
 | `(app-db-follows-events?)` | Boolean for the eponymous setting.             |
@@ -138,6 +145,11 @@ A public-epoch record carries `{:id :match-info :sub-state-raw :timings}`.
 Public keys (`:sub-state-raw`, `:timings`) intentionally differ from
 internal ones (`:sub-state`, `:timing`) so the public shape can evolve
 independently.
+
+On the live tail, `selected-epoch-id` normally equals `latest-epoch-id`.
+Consumers that need to know whether 10x is following the newest retained
+epoch should compare those two values rather than treating `nil` as the
+only live-tail signal.
 
 ## Mutation API
 
@@ -152,33 +164,49 @@ The pattern is:
 ```clojure
 (let [pub      (ten-x-public)
       dispatch (aget pub "dispatch_BANG_")
-      load-kw  (aget pub "load_epoch")]
-  (dispatch #js [load-kw target-id]))
+      load-id  (aget pub "load_epoch")]
+  (dispatch #js [load-id target-id]))
 ```
 
 `dispatch!` accepts either a CLJS vector or a plain JS array (it coerces
-internally), so pure-JS callers via the JS console also work:
+internally) and keywordises a string head before forwarding to the inlined
+router, so pure-JS callers via the JS console can read the exported
+identifier var directly...
 
 ```js
-day8.re_frame_10x.public.dispatch_BANG_(['load-epoch', 42]);
+day8.re_frame_10x.public.dispatch_BANG_(
+  [day8.re_frame_10x.public.load_epoch, 42]);
 ```
 
-The exported event keyword constants are the durable contract:
+...or build the same fully-qualified string literal from scratch:
 
-| Constant           | Effect when dispatched                                           |
-| ------------------ | ---------------------------------------------------------------- |
-| `load-epoch`       | Focus 10x on the given match id; takes one arg.                  |
-| `most-recent-epoch`| Focus on the live tail (newest match).                           |
-| `previous-epoch`   | Step the cursor one match backwards. No-op at oldest.            |
-| `next-epoch`       | Step the cursor one match forwards. Jumps to live tail if unset. |
-| `reset-event`      | Clear the epoch buffer; reset trace id counter.                  |
-| `replay-event`     | Re-fire the focused epoch's event from its `:app-db-before`.     |
+```js
+day8.re_frame_10x.public.dispatch_BANG_(
+  ['day8.re-frame-10x.public/load-epoch', 42]);
+```
+
+The exported event identifier constants are the durable contract — each
+holds a fully-qualified string that `dispatch!` keywordises internally:
+
+| Constant           | Value                                              | Effect when dispatched                                           |
+| ------------------ | -------------------------------------------------- | ---------------------------------------------------------------- |
+| `load-epoch`       | `"day8.re-frame-10x.public/load-epoch"`            | Focus 10x on the given match id; takes one arg.                  |
+| `most-recent-epoch`| `"day8.re-frame-10x.public/most-recent-epoch"`     | Focus on the live tail (newest match).                           |
+| `previous-epoch`   | `"day8.re-frame-10x.public/previous-epoch"`        | Step the cursor one match backwards. No-op at oldest.            |
+| `next-epoch`       | `"day8.re-frame-10x.public/next-epoch"`            | Step the cursor one match forwards. Jumps to live tail if unset. |
+| `reset-epochs`     | `"day8.re-frame-10x.public/reset-epochs"`          | Clear the epoch buffer; reset trace id counter.                  |
+| `replay-epoch`     | `"day8.re-frame-10x.public/replay-epoch"`          | Re-fire the focused epoch's event from its `:app-db-before`.     |
+| `reset-app-db-event` | `"day8.re-frame-10x.public/reset-app-db"`        | Reset userland app-db to one epoch's `:app-db-after`; takes one arg and does not move the 10x cursor. |
 
 When `(app-db-follows-events?)` is true (the default), the four navigation
 events also reset the user's app-db to the focused epoch's `:app-db-after`
 snapshot. When it is false, navigation events update only 10x's UI cursor.
 Tools that drive 10x programmatically should branch on this flag if their
 callers care about userland mutation.
+
+`reset-app-db-event` uses the same `app-db-follows-events?` guard, but it is
+not a navigation event: it resets userland app-db for the supplied epoch id
+without changing 10x's selected epoch.
 
 ## Worked example: feature-detect + legacy fallback
 

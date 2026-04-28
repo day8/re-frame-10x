@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [Unreleased]
+
+#### Added
+
+- `day8.re-frame-10x.public` — experimental public surface and intended entry point for downstream tooling (see README section), marked `^:experimental` until the first external consumer ships against it. Includes `(loaded?)`, `(version)`, `(capabilities)`, `api-version`, `(epochs)`, `(epoch-count)`, `(latest-epoch-id)`, `(selected-epoch-id)`, `(epoch-by-id)`, `(all-traces)`, `(app-db-follows-events?)`, event identifier constants (`load-epoch`, `most-recent-epoch`, `previous-epoch`, `next-epoch`, `reset-epochs`, `replay-epoch`, `reset-app-db-event`), and a `(dispatch!)` bridge into the inlined re-frame router. Event identifiers are JS-constructable fully-qualified strings — pure-JS callers reading `goog.global.day8.re_frame_10x.public.<name>` get a value they can pass straight back through `dispatch!` without needing `cljs.core.keyword`. `dispatch!` keywordises the head of the event vector before forwarding so it matches the inlined router's handler-lookup keys.
+- Public API version 2 adds `reset-app-db-event`, a low-level time-travel primitive that resets userland app-db to a chosen epoch's `:app-db-after` without moving 10x's selected epoch cursor.
+- ClojureScript test target via shadow-cljs (`npx shadow-cljs compile test`); now gated in CI alongside the existing `lein test` JVM gate. See DEVELOPERS.md.
+
 ## 1.11.0 (2025-12-08)
 
 #### Added

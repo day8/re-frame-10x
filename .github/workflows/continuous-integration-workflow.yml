@@ -15,7 +15,9 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
+    env:
+      MAVEN_OPTS: -Daether.connector.basic.threads=1
     container:
       # Source: https://github.com/day8/dockerfiles-for-dev-ci-images
       image: ghcr.io/day8/chrome-56:2 
@@ -27,13 +29,22 @@ jobs:
         with:
           # All of the Git history is required for day8/lein-git-inject to determine the version string.
           fetch-depth: 0
+      - name: Setup Java
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
+        with:
+          distribution: temurin
+          java-version: "21"
       - name: Maven cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          path: /root/.m2/repository
+          path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('project.clj', '.github/workflows/**') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+      - name: Prepare Maven repository
+        run: |
+          mkdir -p "$HOME/.m2/repository/thheller/shadow-cljs/3.4.5"
+          chmod -R ugo+rwX "$HOME/.m2"
       - name: npm cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:

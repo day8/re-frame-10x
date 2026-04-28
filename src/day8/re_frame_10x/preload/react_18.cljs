@@ -10,6 +10,9 @@
   (:require
    [day8.re-frame-10x                                                :as re-frame-10x]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core     :as rf]
+   ;; Keep the public namespace loaded from every preload entry point so
+   ;; standard preload-only consumers can probe
+   ;; goog.global.day8.re_frame_10x.public.*. See preload_loads_public_test.clj.
    [day8.re-frame-10x.public]
    [day8.re-frame-10x.inlined-deps.reagent.v1v2v0.reagent.dom.client :as rdc]
    [day8.re-frame-10x.events                                         :as events])
