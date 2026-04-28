@@ -22,6 +22,22 @@
    :traces   {:all [{:op-type :event :id 1}]}
    :settings {:app-db-follows-events? true}})
 
+(def ^:private forbidden-version-slug-substrings
+  ["v1v3v0" "inlined-deps" "inlined_deps"])
+
+(defn- version-slug-leaks [value]
+  (let [leaked (atom [])]
+    (walk/postwalk
+     (fn [x]
+       (when (or (string? x) (keyword? x) (symbol? x))
+         (let [s (if (string? x) x (str x))]
+           (doseq [bad forbidden-version-slug-substrings]
+             (when (str/includes? s bad)
+               (swap! leaked conj {:value x :substring bad})))))
+       x)
+     value)
+    @leaked))
+
 (deftest feature-detection-contract
   (is (some? (public/loaded?)))
   (is (= {:api 2} (public/version)))
@@ -290,6 +306,13 @@
       (is (= [:day8.re-frame-10x.public/load-epoch 42] @captured)
           "the head string must be keywordised so it matches the registered handler key"))))
 
+(deftest no-version-slug-leak-canary
+  (let [leaked (version-slug-leaks {:k :day8.re-frame-10x.inlined-deps.foo/bar
+                                    :v "v1v3v0/something"
+                                    :s 'inlined_deps.x/y})]
+    (is (= 3 (count leaked))
+        "canary: walker must flag every forbidden substring")))
+
 (deftest no-version-slug-leak
   (with-redefs [rf.db/app-db (atom stub-db)]
     (let [returns   [(public/loaded?)
@@ -311,18 +334,7 @@
                      public/reset-epochs
                      public/reset-app-db-event
                      public/replay-epoch]
-          forbidden ["v1v3v0" "inlined-deps" "inlined_deps"]
-          leaked    (atom [])]
-      (doseq [r returns]
-        (walk/postwalk
-         (fn [x]
-           (when (or (string? x) (keyword? x) (symbol? x))
-             (let [s (if (string? x) x (str x))]
-               (doseq [bad forbidden]
-                 (when (str/includes? s bad)
-                   (swap! leaked conj {:value x :substring bad})))))
-           x)
-         r))
-      (is (empty? @leaked)
+          leaked    (into [] (mapcat version-slug-leaks) returns)]
+      (is (empty? leaked)
           (str "Public API leaks inlined-rf version-slug content: "
-               (pr-str @leaked))))))
+               (pr-str leaked))))))
