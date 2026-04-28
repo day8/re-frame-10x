@@ -34,6 +34,36 @@
         (is (= :a (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
         (finally (reset! rf.db/app-db snapshot))))))
 
+(deftest previous-epoch-event-resets-userland-app-db-to-after-when-following-events
+  (testing "[previous-epoch] resets userland app-db to the previous epoch's :app-db-after when app-db follows events"
+    (let [rf-snapshot       @rf.db/app-db
+          userland-snapshot @userland.re-frame.db/app-db
+          previous-state    {:counter 1  :marker :previous}
+          current-state     {:counter 99 :marker :diverged}
+          previous-trace    {:op-type :event
+                             :tags    {:app-db-after previous-state
+                                       :event        [::previous-event]}}]
+      (try
+        (rf/purge-event-queue)
+        (reset! rf.db/app-db
+                {:epochs   {:match-ids         [:previous :current]
+                            :selected-epoch-id :current
+                            :matches-by-id     {:previous {:match-info [previous-trace]}
+                                                :current  {:match-info []}}}
+                 :settings {:app-db-follows-events? true}})
+        (reset! userland.re-frame.db/app-db current-state)
+        (rf/dispatch-sync [public/previous-epoch])
+        ;; Match the synchronous flushing pattern above: the public forwarder
+        ;; enqueues the internal event, and that event enqueues the reset.
+        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/previous])
+        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db :previous])
+        (is (= previous-state @userland.re-frame.db/app-db)
+            "userland app-db must follow the newly focused epoch's :app-db-after")
+        (finally
+          (rf/purge-event-queue)
+          (reset! rf.db/app-db rf-snapshot)
+          (reset! userland.re-frame.db/app-db userland-snapshot))))))
+
 (deftest previous-epoch-fx-honours-no-op-at-oldest
   ;; Why test the pure helper instead of dispatch-syncing public/previous-epoch:
   ;; the internal ::nav.events/previous clobbers :selected-epoch-id to nil at
