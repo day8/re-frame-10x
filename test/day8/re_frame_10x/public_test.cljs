@@ -314,6 +314,19 @@
         "canary: walker must flag every forbidden substring")))
 
 (deftest no-version-slug-leak
+  ;; Load-bearing leak-detection invariant for the public surface
+  ;; (see public.cljs:53-57): every public read-fn return value must be
+  ;; free of inlined-rf version-slug content. The forbidden vec covers
+  ;; both kebab ("inlined-deps") and snake ("inlined_deps") forms because
+  ;; cljs munging flips between them at runtime — a symbol prints kebab,
+  ;; but the same identifier reaches JS as snake_case, and either form
+  ;; reaching a consumer counts as a leak.
+  ;;
+  ;; Failing this test means re-frame-pair's planned deletion of its
+  ;; inlined-rf-known-version-paths fallback (rf1-jum) is at risk. Do
+  ;; NOT add an exclusion or trim the forbidden vec to make a new public
+  ;; defn pass — fix the leak in the public defn instead. If the test
+  ;; needs structural changes, consult the test author first.
   (with-redefs [rf.db/app-db (atom stub-db)]
     (let [returns   [(public/loaded?)
                      (public/version)
