@@ -4,6 +4,7 @@
    [re-frame.db                                                  :as userland.re-frame.db]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db   :as rf.db]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.router :as router]
    [day8.re-frame-10x.public                                     :as public]
    [day8.re-frame-10x.public.events                              :as public.events]))
 
@@ -34,22 +35,20 @@
                       :matches-by-id     (zipmap match-ids (repeat nil))}
            :settings {:app-db-follows-events? false}}))
 
+(defn- drain-public-forwarder! []
+  ;; public/previous-epoch is intentionally a public forwarder that emits
+  ;; :dispatch, so synchronous tests must pump the queued public event, the
+  ;; forwarded internal event, and its reset-app-db follow-up.
+  (dotimes [_ 3]
+    (router/-fsm-trigger router/event-queue :run-queue nil)))
+
 (deftest previous-epoch-event-steps-cursor-back
   (testing "[previous-epoch] from :b lands the cursor on :a"
     (let [snapshot @rf.db/app-db]
       (try
         (prime-app-db! [:a :b :c] :b)
-        ;; previous-epoch is the one public mutation event still routed
-        ;; through a public.events forwarder (its no-op cond logic
-        ;; can't fold into the public->internal map). Driving via
-        ;; dispatch! exercises the forwarder under sync; its :dispatch
-        ;; fx queues for the next tick, so we fire
-        ;; ::nav.events/previous directly to drive the cursor. The
-        ;; forwarder's fx outputs themselves are unit-tested in
-        ;; previous-epoch-fx-honours-no-op-at-oldest below.
-        (with-redefs [rf/dispatch rf/dispatch-sync]
-          (public/dispatch! [public/previous-epoch]))
-        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/previous])
+        (public/dispatch! [public/previous-epoch])
+        (drain-public-forwarder!)
         (is (= :a (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
         (finally
           (rf/purge-event-queue)
@@ -73,13 +72,8 @@
                                                 :current  {:match-info []}}}
                  :settings {:app-db-follows-events? true}})
         (reset! userland.re-frame.db/app-db current-state)
-        (with-redefs [rf/dispatch rf/dispatch-sync]
-          (public/dispatch! [public/previous-epoch]))
-        ;; Under dispatch-sync, the forwarder's :dispatch fx and the
-        ;; cascaded ::reset-current-epoch-app-db it would produce don't
-        ;; drain, so fire both directly to drive the reset.
-        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/previous])
-        (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db :previous])
+        (public/dispatch! [public/previous-epoch])
+        (drain-public-forwarder!)
         (is (= previous-state @userland.re-frame.db/app-db)
             "userland app-db must follow the newly focused epoch's :app-db-after")
         (finally
