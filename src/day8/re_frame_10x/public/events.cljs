@@ -9,17 +9,17 @@
    around the live-tail and oldest-match cases is load-bearing. The
    gating lives here rather than inside ::nav.events/previous because
    the internal handler clobbers :selected-epoch-id to nil in those
-   edge cases (rf1-p1v tracks moving the gating into the internal
-   handler once the clobber is fixed).
+   edge cases. If the internal handler eventually owns those guards,
+   this public forwarder can collapse into the translation map.
 
    Required from `day8.re-frame-10x.public` so the registration fires
    at namespace-load time. Consumers MUST NOT reach into this
-   namespace — the public contract is the keyword event identifiers
-   exposed as strings from `day8.re-frame-10x.public`, dispatched via
-   `public/dispatch!`. The single handler-key keyword here is the
-   keyword form of the public previous-epoch string identifier; drift
-   between the two is gated end-to-end by tests in public_test.cljs
-   and public_navigation_test.cljs."
+   namespace — the public contract is the string event identifiers
+   exposed from `day8.re-frame-10x.public`, dispatched via
+   `public/dispatch!`. The single handler key here is the keyword
+   form of the public previous-epoch string identifier; drift between
+   the two is gated end-to-end by tests in public_test.cljs and
+   public_navigation_test.cljs."
   (:require
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.navigation.epochs.events                   :as nav.events]))

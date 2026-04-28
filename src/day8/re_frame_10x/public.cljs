@@ -5,7 +5,7 @@
    STABILITY
 
    Marked `^:experimental` on the ns and on every public defn per
-   companion-re-frame-10x.md §A2 (line 227): the marker stays until a
+   companion-re-frame-10x.md §A2: the marker stays until a
    *released* re-frame-pair JAR consumes this surface, at which point
    the markers can be removed and the opener flipped to 'Stable'. The
    local re-frame-pair migration wires this up under `:local/root`,
@@ -409,8 +409,8 @@
    of the exported strings) to the internal inlined-rf event keywords
    they fan out to. `dispatch!` consults this on every call; entries
    not in the map (e.g. `::previous-epoch`, whose load-bearing cond
-   logic lives in a public.events forwarder) pass through unchanged
-   so the registered forwarder can still pick them up.
+   logic lives in a public.events forwarder) still resolve after
+   string heads are coerced to keyword form.
 
    This is the contract boundary: public string identifiers are the
    durable LHS, internal kws are the volatile RHS. A future internal
@@ -446,10 +446,10 @@
    Translates public mutation kws to their internal counterparts via
    `public->internal` so the public surface and the internal handlers
    need not share names — the public strings are durable, the internal
-   kws can rename freely. Heads not in the map pass through unchanged
-   so direct dispatches (e.g. the `::previous-epoch` forwarder, or
-   ad-hoc internal kws routed through this bridge by tooling) still
-   resolve."
+   kws can rename freely. Unmapped string heads are keywordised before
+   dispatch, while unmapped keyword heads pass through as-is so direct
+   dispatches (e.g. the `::previous-epoch` forwarder, or ad-hoc
+   internal kws routed through this bridge by tooling) still resolve."
   [event-vec]
   (let [v          (if (vector? event-vec) event-vec (vec (js->clj event-vec)))
         h          (first v)

@@ -52,7 +52,7 @@
     (is (contains? caps :settings/app-db-follows-events))
     ;; The mutation-API flags exposed under the :events/... namespace
     ;; let consumers branch on whether reset / replay / dispatch! /
-    ;; navigation event keywords are wired up. Without them, a future
+    ;; navigation event identifiers are wired up. Without them, a future
     ;; read-only inspect mode (mutation API stripped for security)
     ;; would be undetectable, and consumers that want to test for the
     ;; bridge fn would have to fall back to (boolean public/dispatch!),
@@ -102,8 +102,8 @@
       "the seven mutation event identifiers must be distinct"))
 
 (deftest capabilities-forward-compat-contract
-  ;; The capabilities docstring (public.cljs:120-147) promises consumers
-  ;; should treat unknown keywords as "not supported". Lock the contract:
+  ;; The capabilities docstring promises consumers should treat unknown
+  ;; keywords as "not supported". Lock the contract:
   ;; (1) the returned set must be a subset of what the docstring lists
   ;;     so a future change can't ship an undocumented capability
   ;;     without updating the docstring;
@@ -291,7 +291,7 @@
   ;; registered under. Without keywordising, the dispatch silently
   ;; no-ops; without translating, it hits a non-existent
   ;; `:public/load-epoch` handler (no public-side forwarder is
-  ;; registered for the map-routed events post-rf1-4zb).
+  ;; registered for map-routed events).
   (let [captured (atom nil)]
     (with-redefs [rf/dispatch (fn [event-v] (reset! captured event-v))]
       (public/dispatch! [public/load-epoch 42])
@@ -307,18 +307,18 @@
 
 (deftest no-version-slug-leak
   ;; Load-bearing leak-detection invariant for the public surface
-  ;; (see public.cljs:53-57): every public read-fn return value must be
+  ;; compatibility contract: every public read-fn return value must be
   ;; free of inlined-rf version-slug content. The forbidden vec covers
   ;; both kebab ("inlined-deps") and snake ("inlined_deps") forms because
   ;; cljs munging flips between them at runtime — a symbol prints kebab,
   ;; but the same identifier reaches JS as snake_case, and either form
   ;; reaching a consumer counts as a leak.
   ;;
-  ;; Failing this test means re-frame-pair's planned deletion of its
-  ;; inlined-rf-known-version-paths fallback (rf1-jum) is at risk. Do
-  ;; NOT add an exclusion or trim the forbidden vec to make a new public
-  ;; defn pass — fix the leak in the public defn instead. If the test
-  ;; needs structural changes, consult the test author first.
+  ;; Failing this test means downstream tools cannot safely delete
+  ;; version-slug fallback probes. Do NOT add an exclusion or trim the
+  ;; forbidden vec to make a new public defn pass — fix the leak in the
+  ;; public defn instead. If the test needs structural changes, consult
+  ;; the test author first.
   (with-redefs [rf.db/app-db (atom stub-db)]
     (let [returns   [(public/loaded?)
                      (public/version)
