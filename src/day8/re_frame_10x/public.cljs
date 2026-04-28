@@ -59,7 +59,21 @@
    consumer that doesn't compile against re-frame-10x can probe
    the surface lazily — see `day8.re_frame_10x.public.loaded_QMARK_`
    as the durable feature-detection hook (analogous to
-   re-frame-debux's `runtime-api?`)."
+   re-frame-debux's `runtime-api?`).
+
+   IMPLEMENTATION NOTE on the goog.global path: `public` is a JS
+   reserved word, so the Closure :advanced compiler emits the
+   per-var `goog.exportSymbol` calls under
+   `day8.re_frame_10x.public$.<name>` — note the trailing `$` on the
+   ns segment. Consumers that walk the documented un-suffixed path
+   (`public.<name>`) would otherwise see undefined in :advanced
+   builds while :none builds would work, masking the regression in
+   dev. The bottom-of-namespace mirror block aliases the suffixed
+   path back to the un-suffixed one on `goog.global` at namespace
+   load time, so the documented contract above is the path consumers
+   actually read in both :none and :advanced builds. The
+   :public-advanced shadow-cljs build + the public-advanced-probe
+   in test/ gate this in CI."
   (:require
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db   :as rf.db]
@@ -329,3 +343,27 @@
    which JS arrays fail."
   [event-vec]
   (rf/dispatch (if (vector? event-vec) event-vec (vec (js->clj event-vec)))))
+
+;; ---------------------------------------------------------------------------
+;; goog.global path mirror — see ns docstring "IMPLEMENTATION NOTE".
+;; ---------------------------------------------------------------------------
+
+;; Top-level side effect: after every ^:export above has emitted a
+;; goog.exportSymbol("day8.re_frame_10x.public$.<name>", ...) call (the
+;; Closure compiler suffixes `public` with `$` because it is a JS
+;; reserved word), mirror the resulting `public$` object back onto
+;; `public` on the same parent so the documented un-suffixed path
+;; consumers walk (`goog.global.day8.re_frame_10x.public.<name>`)
+;; resolves in :advanced builds. Without this, every consumer that
+;; relies on the public surface from a JS-globals lookup gets
+;; undefined post-:advanced and silently falls back to brittle
+;; inlined-rf-version walking — defeating the rf1-jum premise.
+;;
+;; Guarded on `js/goog.global` existence so this is a no-op in any
+;; environment that doesn't have the Closure global object set up
+;; (e.g. CLJS REPLs that load namespaces through different shims).
+(when-let [g (and (exists? js/goog) (.-global js/goog))]
+  (let [rf10x   (some-> g (aget "day8") (aget "re_frame_10x"))
+        suffixed (some-> rf10x (aget "public$"))]
+    (when (and rf10x suffixed)
+      (aset rf10x "public" suffixed))))

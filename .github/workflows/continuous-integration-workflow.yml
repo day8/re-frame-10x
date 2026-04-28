@@ -60,6 +60,10 @@ jobs:
         run: |
           npm install
           npx shadow-cljs compile test
+      - name: Probe :advanced ^:export contract on public.cljs
+        run: |
+          npx shadow-cljs release public-advanced
+          node out/public-advanced.js
       - name: Compile Sample Project
         run: |
           npm install

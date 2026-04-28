@@ -22,4 +22,17 @@
   {:target    :node-test
    :output-to "out/node-tests.js"
    :ns-regexp "-test$"
-   :autorun   true}}}
+   :autorun   true}
+
+  ;; :advanced-mode build of the public surface plus a tiny probe that
+  ;; asserts every ^:export var in public.cljs resolves on goog.global
+  ;; after Closure mangling. Source-side ^:export presence is gated by
+  ;; the JVM test public_export_metadata_test.clj; this build gates
+  ;; the emit side, which :node-test (always :none) can never exercise.
+  ;; Run via `npx shadow-cljs compile public-advanced` then
+  ;; `node out/public-advanced.js`. CI wires both in series.
+  :public-advanced
+  {:target           :node-script
+   :main             day8.re-frame-10x.public-advanced-probe/-main
+   :output-to        "out/public-advanced.js"
+   :compiler-options {:optimizations :advanced}}}}
