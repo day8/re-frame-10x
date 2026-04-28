@@ -170,7 +170,7 @@
      :sub-state-raw (:sub-state match)
      :timings       (:timing match)}))
 
-(defn ^:export epochs
+(def ^:export epochs
   "Vec of every retained epoch in 10x's ring buffer, in the order
    10x stored them (oldest first; `last` is newest). Each element is
    a public-epoch record (see `match->public-epoch`).
@@ -178,9 +178,16 @@
    Returns `[]` when 10x's app-db hasn't initialised yet — this lets
    consumers no-op gracefully on cold starts instead of having to
    probe `loaded?` ahead of every call."
-  []
-  (mapv match->public-epoch
-        (some-> rf.db/app-db deref :epochs :matches)))
+  (let [uncached-matches (js-obj)
+        cache            (volatile! [uncached-matches []])]
+    (fn []
+      (let [matches                       (some-> rf.db/app-db deref :epochs :matches)
+            [cached-matches cached-epochs] @cache]
+        (if (identical? matches cached-matches)
+          cached-epochs
+          (let [public-epochs (mapv match->public-epoch matches)]
+            (vreset! cache [matches public-epochs])
+            public-epochs))))))
 
 (defn ^:export epoch-count
   "Number of retained epochs. Cheap — reads the `:match-ids` vec

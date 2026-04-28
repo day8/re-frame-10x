@@ -131,6 +131,22 @@
     (is (= 7 (public/selected-epoch-id)))
     (is (true? (public/app-db-follows-events?)))))
 
+(deftest epochs-caches-public-vec-by-matches-identity
+  (let [matches       [stub-match]
+        next-match    (assoc stub-match :match-info [{:id 8 :event [:user/delete 8]}])
+        next-matches  (conj matches next-match)
+        app-db        (atom {:epochs {:matches matches}})]
+    (with-redefs [rf.db/app-db app-db]
+      (let [first-read  (public/epochs)
+            second-read (public/epochs)]
+        (is (identical? first-read second-read)
+            "repeat polls should reuse the public epoch vec while :matches identity is unchanged")
+        (swap! app-db assoc-in [:epochs :matches] next-matches)
+        (let [third-read (public/epochs)]
+          (is (not (identical? first-read third-read))
+              "replacing :matches must invalidate the cached public epoch vec")
+          (is (= [7 8] (mapv :id third-read))))))))
+
 (deftest match-to-public-epoch-edge-cases
   (let [to-public #'public/match->public-epoch]
     (is (nil? (to-public nil)))
