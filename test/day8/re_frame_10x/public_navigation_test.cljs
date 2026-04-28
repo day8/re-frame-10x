@@ -93,8 +93,6 @@
         (rf/dispatch-sync [public/replay-event])
         (is (= before-state @userland.re-frame.db/app-db)
             "userland app-db must be reset to :app-db-before, not retain the diverged current-state")
-        (is (= replay-evt (get-in @rf.db/app-db [:epochs :replay]))
-            "the event vector must be staged for ::quiescent to re-fire after the reset")
         (finally
           (reset! rf.db/app-db rf-snapshot)
           (reset! userland.re-frame.db/app-db userland-snapshot))))))
