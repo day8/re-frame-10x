@@ -75,11 +75,11 @@ builds but break in `:none`. Always walk the un-suffixed path.
 
 ## Version branching
 
-The public namespace exports an `api-version` integer (currently `1`) and a
-`(version)` fn that returns `{:api <int>}`. The integer bumps on
-backwards-incompatible changes — to read-API shape or to event-identifier
-semantics. Consumers that want to support multiple 10x versions side-by-side
-branch on this.
+The public namespace exports an `api-version` integer (currently `2`) and a
+`(version)` fn that returns `{:api <int>}`. The integer bumps on public
+contract revisions, including new stable event identifiers and changes to
+read-API shape or event-identifier semantics. Consumers that want to support
+multiple 10x versions side-by-side branch on this.
 
 ```clojure
 (defn ten-x-api-version
@@ -90,9 +90,8 @@ branch on this.
 ```
 
 Treat any value `>= 1` as "supports the v1 contract"; treat `nil` as "fall
-back to legacy probing". A future `api-version` of `2` will stay
-backwards-compatible at the v1 surface unless explicitly noted in the
-release that bumps it.
+back to legacy probing". API version `2` stays backwards-compatible at the
+v1 surface and adds the low-level `reset-app-db-event` primitive.
 
 ## Capabilities
 
@@ -101,15 +100,18 @@ build supports. Today the set is:
 
 ```clojure
 #{:public/v1
+  :public/v2
   :epochs/read                       ;; (epochs), (epoch-count), (latest-epoch-id),
                                      ;; (selected-epoch-id), (epoch-by-id)
   :epochs/navigate                   ;; load-epoch / most-recent-epoch / previous-epoch /
                                      ;; next-epoch event identifiers (synonym of :events/navigate)
+  :epochs/reset-app-db               ;; reset app-db to one epoch without moving the 10x cursor
   :traces/read                       ;; (all-traces)
   :settings/app-db-follows-events    ;; (app-db-follows-events?)
   :events/navigate                   ;; explicit flag for the four navigation event identifiers
   :events/reset                      ;; reset-epochs identifier
   :events/replay                     ;; replay-epoch identifier
+  :events/reset-app-db               ;; reset-app-db-event identifier
   :events/dispatch!}                 ;; dispatch! bridge fn
 ```
 
@@ -184,12 +186,17 @@ holds a fully-qualified string that `dispatch!` keywordises internally:
 | `next-epoch`       | `"day8.re-frame-10x.public/next-epoch"`            | Step the cursor one match forwards. Jumps to live tail if unset. |
 | `reset-epochs`     | `"day8.re-frame-10x.public/reset-epochs"`          | Clear the epoch buffer; reset trace id counter.                  |
 | `replay-epoch`     | `"day8.re-frame-10x.public/replay-epoch"`          | Re-fire the focused epoch's event from its `:app-db-before`.     |
+| `reset-app-db-event` | `"day8.re-frame-10x.public/reset-app-db"`        | Reset userland app-db to one epoch's `:app-db-after`; takes one arg and does not move the 10x cursor. |
 
 When `(app-db-follows-events?)` is true (the default), the four navigation
 events also reset the user's app-db to the focused epoch's `:app-db-after`
 snapshot. When it is false, navigation events update only 10x's UI cursor.
 Tools that drive 10x programmatically should branch on this flag if their
 callers care about userland mutation.
+
+`reset-app-db-event` uses the same `app-db-follows-events?` guard, but it is
+not a navigation event: it resets userland app-db for the supplied epoch id
+without changing 10x's selected epoch.
 
 ## Worked example: feature-detect + legacy fallback
 

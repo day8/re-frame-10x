@@ -1,10 +1,11 @@
 (ns day8.re-frame-10x.public-navigation-test
   (:require
    [clojure.test :refer [deftest is testing]]
-   [re-frame.db                                                  :as userland.re-frame.db]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
-   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db   :as rf.db]
-   [day8.re-frame-10x.public                                     :as public]))
+   [re-frame.db                                                            :as userland.re-frame.db]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core           :as rf]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db             :as rf.db]
+   [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.registrar      :as rf.registrar]
+   [day8.re-frame-10x.public                                               :as public]))
 
 (deftest previous-epoch-identifier-is-stable
   (testing "previous-epoch resolves to the public namespaced string identifier"
@@ -21,6 +22,10 @@
 (deftest replay-epoch-identifier-is-stable
   (testing "replay-epoch resolves to the public namespaced string identifier"
     (is (= "day8.re-frame-10x.public/replay-epoch" public/replay-epoch))))
+
+(deftest reset-app-db-event-identifier-is-stable
+  (testing "reset-app-db-event resolves to the public namespaced string identifier"
+    (is (= "day8.re-frame-10x.public/reset-app-db" public/reset-app-db-event))))
 
 (defn- prime-app-db! [match-ids selected-epoch-id]
   (reset! rf.db/app-db
@@ -124,6 +129,42 @@
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/load :c])
         (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
         (finally (reset! rf.db/app-db snapshot))))))
+
+(deftest reset-app-db-event-resets-userland-app-db-without-moving-cursor
+  (testing "[reset-app-db-event <id>] resets app-db to a target epoch without moving 10x's cursor"
+    (let [rf-snapshot       @rf.db/app-db
+          userland-snapshot @userland.re-frame.db/app-db
+          restore!          (rf/make-restore-fn)
+          captured-dispatch (atom nil)
+          target-state      {:counter 1 :marker :target}
+          current-state     {:counter 99 :marker :current}
+          target-trace      {:op-type :event
+                             :tags    {:app-db-after target-state
+                                       :event        [::target-event]}}]
+      (try
+        (rf/purge-event-queue)
+        (reset! rf.db/app-db
+                {:epochs   {:match-ids         [:target :current]
+                            :selected-epoch-id :current
+                            :matches-by-id     {:target  {:match-info [target-trace]}
+                                                :current {:match-info []}}}
+                 :settings {:app-db-follows-events? true}})
+        (reset! userland.re-frame.db/app-db current-state)
+        (swap! rf.registrar/kind->id->handler assoc-in [:fx :dispatch] #(reset! captured-dispatch %))
+        (rf/dispatch-sync [(keyword public/reset-app-db-event) :target])
+        (is (= [:day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db :target]
+               @captured-dispatch)
+            "public reset-app-db-event must dispatch the internal app-db reset primitive")
+        (rf/dispatch-sync @captured-dispatch)
+        (is (= target-state @userland.re-frame.db/app-db)
+            "userland app-db must reset to the target epoch's :app-db-after")
+        (is (= :current (get-in @rf.db/app-db [:epochs :selected-epoch-id]))
+            "reset-app-db-event must not move 10x's selected epoch cursor")
+        (finally
+          (rf/purge-event-queue)
+          (restore!)
+          (reset! rf.db/app-db rf-snapshot)
+          (reset! userland.re-frame.db/app-db userland-snapshot))))))
 
 (deftest most-recent-epoch-event-jumps-to-tail
   (testing "[most-recent-epoch] from :a jumps to the tail :c"

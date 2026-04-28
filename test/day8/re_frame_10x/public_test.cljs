@@ -24,13 +24,15 @@
 
 (deftest feature-detection-contract
   (is (some? (public/loaded?)))
-  (is (= {:api 1} (public/version)))
-  (is (= 1 public/api-version))
+  (is (= {:api 2} (public/version)))
+  (is (= 2 public/api-version))
   (let [caps (public/capabilities)]
     (is (set? caps))
     (is (contains? caps :public/v1))
+    (is (contains? caps :public/v2))
     (is (contains? caps :epochs/read))
     (is (contains? caps :epochs/navigate))
+    (is (contains? caps :epochs/reset-app-db))
     (is (contains? caps :traces/read))
     (is (contains? caps :settings/app-db-follows-events))
     ;; The mutation-API flags exposed under the :events/... namespace
@@ -44,6 +46,7 @@
     (is (contains? caps :events/navigate))
     (is (contains? caps :events/reset))
     (is (contains? caps :events/replay))
+    (is (contains? caps :events/reset-app-db))
     (is (contains? caps :events/dispatch!))))
 
 (deftest public-surface-presence
@@ -70,16 +73,18 @@
   (is (string? public/next-epoch))
   (is (string? public/reset-epochs))
   (is (string? public/replay-epoch))
+  (is (string? public/reset-app-db-event))
   ;; Include the navigation identifiers in the distinctness check so a
   ;; future identifier-collision regression on the navigation pair is
   ;; caught alongside the others.
-  (is (= 6 (count #{public/load-epoch
+  (is (= 7 (count #{public/load-epoch
                     public/most-recent-epoch
                     public/previous-epoch
                     public/next-epoch
                     public/reset-epochs
+                    public/reset-app-db-event
                     public/replay-epoch}))
-      "the six mutation event identifiers must be distinct"))
+      "the seven mutation event identifiers must be distinct"))
 
 (deftest capabilities-forward-compat-contract
   ;; The capabilities docstring (public.cljs:120-147) promises consumers
@@ -92,13 +97,16 @@
   ;;     unknown features gets a clean "not supported" read.
   (let [caps         (public/capabilities)
         documented   #{:public/v1
+                       :public/v2
                        :epochs/read
                        :epochs/navigate
+                       :epochs/reset-app-db
                        :traces/read
                        :settings/app-db-follows-events
                        :events/navigate
                        :events/reset
                        :events/replay
+                       :events/reset-app-db
                        :events/dispatch!}
         undocumented (set/difference caps documented)]
     (is (empty? undocumented)
@@ -238,6 +246,20 @@
         (rf/purge-event-queue)
         (restore!)))))
 
+(deftest dispatch-bang-end-to-end-reset-app-db-event
+  (let [restore!   (rf/make-restore-fn)
+        dispatched (atom nil)]
+    (try
+      (swap! rf.registrar/kind->id->handler assoc-in [:fx :dispatch] #(reset! dispatched %))
+      (with-redefs [rf/dispatch rf/dispatch-sync]
+        (public/dispatch! [public/reset-app-db-event :epoch-42]))
+      (is (= [:day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db :epoch-42]
+             @dispatched)
+          "dispatch! must drive reset-app-db-event through the public forwarder to the internal reset primitive")
+      (finally
+        (rf/purge-event-queue)
+        (restore!)))))
+
 (deftest dispatch-bang-coerces-string-head-to-keyword
   ;; Event identifiers are exported as fully-qualified strings, so a
   ;; CLJS caller using `(public/dispatch! [public/load-epoch 42])` and
@@ -271,6 +293,7 @@
                      public/previous-epoch
                      public/next-epoch
                      public/reset-epochs
+                     public/reset-app-db-event
                      public/replay-epoch]
           forbidden ["v1v3v0" "inlined-deps" "inlined_deps"]
           leaked    (atom [])]

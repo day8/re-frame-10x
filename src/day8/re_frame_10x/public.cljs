@@ -11,7 +11,8 @@
    - Q2 (mutation API shape): event-id API. The mutation surface
      is exposed as fully-qualified string identifiers (see
      `load-epoch`, `most-recent-epoch`, `previous-epoch`,
-     `next-epoch`, `reset-epochs`, `replay-epoch` below) plus a
+     `next-epoch`, `reset-epochs`, `replay-epoch`,
+     `reset-app-db-event` below) plus a
      `dispatch!` fn that routes through 10x's *inlined* re-frame
      router. Rationale: 10x events are registered against the
      inlined `day8.re-frame-10x.inlined-deps.re-frame.v1v3v0`
@@ -90,11 +91,11 @@
 ;; ---------------------------------------------------------------------------
 
 (def ^:export api-version
-  "Integer that bumps with each backwards-incompatible change to the
-   shape of the read API or the meaning of an event identifier.
+  "Integer that bumps with each public-surface contract revision,
+   including new stable event identifiers downstream tools may gate on.
    Consumers can branch on it via `(capabilities)` or read it directly
    via `goog.global.day8.re_frame_10x.public.api_version`."
-  1)
+  2)
 
 (defn ^:export ^boolean loaded?
   "True when this namespace is loaded — i.e. when the public surface
@@ -110,8 +111,9 @@
 
 (defn ^:export version
   "Returns `{:api <int>}` describing the public-surface version the
-   currently-loaded 10x build implements. Bumps with backwards-
-   incompatible changes to read-API shape or event-identifier semantics.
+   currently-loaded 10x build implements. Bumps with public contract
+   revisions, including new stable event identifiers and read API
+   shape or event-identifier semantic changes.
    Consumers branch on this when they want to support multiple 10x
    versions side-by-side."
   []
@@ -123,11 +125,13 @@
    should treat unknown keywords as 'not supported'.
 
    Read API flags use a `:resource/action` shape — `:epochs/read`,
-   `:traces/read`, `:settings/app-db-follows-events`. The
+   `:epochs/reset-app-db`, `:traces/read`,
+   `:settings/app-db-follows-events`. The
    `:events/...` family flags the mutation API: `:events/navigate`,
-   `:events/reset`, `:events/replay` mark the corresponding event
-   identifier constants, and `:events/dispatch!` marks the bridge
-   fn that routes event vectors into 10x's inlined re-frame router.
+   `:events/reset`, `:events/replay`, `:events/reset-app-db` mark
+   the corresponding event identifier constants, and
+   `:events/dispatch!` marks the bridge fn that routes event
+   vectors into 10x's inlined re-frame router.
 
    `:epochs/navigate` and `:events/navigate` are synonyms — the
    former predates the `:events/...` family and is retained for
@@ -137,13 +141,16 @@
    semantic family."
   []
   #{:public/v1
+    :public/v2
     :epochs/read
     :epochs/navigate
+    :epochs/reset-app-db
     :traces/read
     :settings/app-db-follows-events
     :events/navigate
     :events/reset
     :events/replay
+    :events/reset-app-db
     :events/dispatch!})
 
 ;; ---------------------------------------------------------------------------
@@ -304,6 +311,21 @@
    `\"day8.re-frame-10x.public/replay-epoch\"`."
   "day8.re-frame-10x.public/replay-epoch")
 
+(def ^:export ^:const reset-app-db-event
+  "Public event identifier. Dispatch via
+   `(dispatch! [reset-app-db-event <id>])` to reset the user's app-db
+   to the `:app-db-after` snapshot for the epoch with the given match
+   id, without moving 10x's selected epoch cursor. No-op when
+   `app-db-follows-events?` is false.
+
+   Lower-level than `load-epoch`: `load-epoch` moves the 10x cursor
+   and then resets the user's app-db when following is enabled; this
+   event is only the app-db-reset half.
+
+   Value is the fully-qualified string
+   `\"day8.re-frame-10x.public/reset-app-db\"`."
+  "day8.re-frame-10x.public/reset-app-db")
+
 (rf/reg-event-fx
  ::load-epoch
  [rf/trim-v]
@@ -352,6 +374,12 @@
  [(rf/path [:epochs])]
  (fn [epochs _]
    (nav.events/replay-epochs epochs)))
+
+(rf/reg-event-fx
+ ::reset-app-db
+ [rf/trim-v]
+ (fn [_ [id]]
+   {:dispatch [::nav.events/reset-current-epoch-app-db id]}))
 
 (defn ^:export dispatch!
   "Mutation-API bridge: routes `event-vec` (e.g.
