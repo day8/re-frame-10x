@@ -43,9 +43,13 @@
         ;; handler-lookup keys are keywords, so coerce when bypassing
         ;; dispatch! (which would normally do this for us).
         (rf/dispatch-sync [(keyword public/previous-epoch)])
-        ;; The public forwarder's :dispatch fx enqueues the internal event
-        ;; asynchronously; dispatch-sync of the forwarder alone won't run it,
-        ;; so flush by firing the internal event synchronously too.
+        ;; NOTE: this does not exercise the forwarder→internal :dispatch edge.
+        ;; dispatch-sync runs the forwarder synchronously but its :dispatch fx
+        ;; queues the internal event for the next tick, so we fire
+        ;; ::nav.events/previous directly to drive the cursor. The forwarder
+        ;; edge itself is covered by
+        ;; reset-app-db-event-resets-userland-app-db-without-moving-cursor,
+        ;; which intercepts the :fx :dispatch handler.
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/previous])
         (is (= :a (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
         (finally (reset! rf.db/app-db snapshot))))))
@@ -69,8 +73,12 @@
                  :settings {:app-db-follows-events? true}})
         (reset! userland.re-frame.db/app-db current-state)
         (rf/dispatch-sync [(keyword public/previous-epoch)])
-        ;; Match the synchronous flushing pattern above: the public forwarder
-        ;; enqueues the internal event, and that event enqueues the reset.
+        ;; NOTE: this does not exercise the forwarder→internal :dispatch edge.
+        ;; dispatch-sync runs the forwarder but neither its :dispatch fx nor
+        ;; the cascaded ::reset-current-epoch-app-db it would produce drain
+        ;; under dispatch-sync, so we fire both directly to drive the reset.
+        ;; The forwarder edge is covered by
+        ;; reset-app-db-event-resets-userland-app-db-without-moving-cursor.
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/previous])
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/reset-current-epoch-app-db :previous])
         (is (= previous-state @userland.re-frame.db/app-db)
@@ -124,8 +132,10 @@
       (try
         (prime-app-db! [:a :b :c] :a)
         (rf/dispatch-sync [(keyword public/load-epoch) :c])
-        ;; Forwarder's :dispatch fx queues the internal nav event async
-        ;; (same flush pattern as previous-epoch-event-steps-cursor-back).
+        ;; NOTE: this does not exercise the forwarder→internal :dispatch edge
+        ;; (same gap as previous-epoch-event-steps-cursor-back); the forwarder
+        ;; edge is covered by
+        ;; reset-app-db-event-resets-userland-app-db-without-moving-cursor.
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/load :c])
         (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
         (finally (reset! rf.db/app-db snapshot))))))

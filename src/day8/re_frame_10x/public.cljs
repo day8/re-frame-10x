@@ -81,6 +81,12 @@
    :public-advanced shadow-cljs build + the public-advanced-probe
    in test/ gate this in CI."
   (:require
+   ;; The two inlined-rf requires below are intentional, not cleanup
+   ;; targets: 10x's events register against the inlined re-frame
+   ;; (see Q2 in the ns docstring), so this ns must route through it
+   ;; even though the docstring promises the version slug never leaks
+   ;; into the public surface. Replacing them with the user's
+   ;; re-frame.core would silently break every mutation event.
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db   :as rf.db]
    [day8.re-frame-10x.navigation.epochs.events                   :as nav.events]
@@ -266,6 +272,15 @@
   "Public event identifier. Dispatch via `(dispatch! [most-recent-epoch])`
    to make 10x focus on the newest match (the 'live tail'). Useful
    after a programmatic load-epoch to return control to the user.
+
+   When `app-db-follows-events?` is true, this is the canonical way
+   to re-sync userland to the live tail after a programmatic
+   load-epoch overwrote the user's app-db with a historical
+   `:app-db-after` snapshot — it moves the cursor to the newest
+   match and resets the user's app-db to that match's
+   `:app-db-after`. No other public mutation event combines those
+   two steps; without it, userland app-db keeps evolving from the
+   historical starting point load-epoch left it in.
 
    Value is the fully-qualified string
    `\"day8.re-frame-10x.public/most-recent-epoch\"`."
