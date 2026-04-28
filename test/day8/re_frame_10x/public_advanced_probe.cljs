@@ -16,8 +16,8 @@
    or a build-config change that strips the exportSymbol calls.
 
    The expected-export list comes from the public-export-names macro,
-   which regex-scans the live public.cljs source — so adding a new
-   ^:export var grows the probe automatically.
+   which reads the live public.cljs source, so adding a new ^:export
+   var grows the probe automatically.
 
    Lives under test/ rather than src/ so it stays out of the
    library jar — only ships into the throwaway out/ build."
@@ -40,8 +40,8 @@
   (when (empty? expected-exports)
     (fail! (str "FAIL: public-export-names macro returned no expected exports."
                 " The macro reads src/day8/re_frame_10x/public.cljs;"
-                " either the file moved or its top-level def-form layout"
-                " no longer matches the scanner. Check"
+                " either the file moved or its top-level public defs"
+                " no longer parse as expected. Check"
                 " day8.re-frame-10x.public-advanced-probe-macros.")))
   (let [ns-obj (some-> js/goog.global
                        (aget "day8")
