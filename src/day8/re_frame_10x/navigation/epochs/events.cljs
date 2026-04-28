@@ -2,7 +2,7 @@
   (:require
    [re-frame.core :as userland.re-frame]
    [re-frame.db :as userland.re-frame.db]
-   [re-frame.trace]
+   [re-frame.trace :as userland.re-frame.trace]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.fx.debounce                                :as debounce]
    [day8.re-frame-10x.fx.scroll                                  :as scroll]
@@ -173,7 +173,7 @@
 (rf/reg-event-db
  ::reset
  (fn [db]
-   (re-frame.trace/reset-tracing!)
+   (userland.re-frame.trace/reset-tracing!)
    (-> db
        (dissoc :epochs)
        (tools.coll/dissoc-in [:traces :all]))))

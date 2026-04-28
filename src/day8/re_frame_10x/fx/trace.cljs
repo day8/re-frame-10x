@@ -1,12 +1,12 @@
 (ns day8.re-frame-10x.fx.trace
   (:require
-   [re-frame.trace]
+   [re-frame.trace :as userland.re-frame.trace]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.navigation.epochs.events                   :as epochs.events]))
 
 (defn enable!
   [{:keys [key]}]
-  (re-frame.trace/register-trace-cb key
+  (userland.re-frame.trace/register-trace-cb key
                                     #(rf/dispatch [::epochs.events/receive-new-traces %])))
 
 (rf/reg-fx
@@ -15,7 +15,7 @@
 
 (defn disable!
   [{:keys [key]}]
-  (re-frame.trace/remove-trace-cb key))
+  (userland.re-frame.trace/remove-trace-cb key))
 
 (rf/reg-fx
  ::disable

@@ -1,8 +1,8 @@
 (ns day8.re-frame-10x.panels.app-db.events
   (:require
-   [re-frame.db]
-   [re-frame.interop]
-   [re-frame.core]
+   [re-frame.db                                                  :as userland.re-frame.db]
+   [re-frame.interop                                             :as userland.re-frame.interop]
+   [re-frame.core                                                :as userland.re-frame]
    [clojure.string                                               :as string]
    [zprint.core                                                  :as zp]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
@@ -129,7 +129,7 @@
  ::reagent-id
  [(rf/path [:app-db :reagent-id])]
  (fn [_ _]
-   (re-frame.interop/reagent-id re-frame.db/app-db)))
+   (userland.re-frame.interop/reagent-id userland.re-frame.db/app-db)))
 
 (rf/reg-event-db
  ::set-sort-form?
@@ -178,7 +178,7 @@
  (fn [db [_ id]]
    (get-in db [:app-db :paths id :editor-key])))
 
-(re-frame.core/reg-event-db
+(userland.re-frame/reg-event-db
  ::edit
  (fn [db [_ path s]]
    (let [new-data (reader.edn/read-string-maybe s)]
