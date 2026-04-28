@@ -57,16 +57,20 @@
   (is (fn? public/app-db-follows-events?))
   (is (fn? public/dispatch!)))
 
-(deftest mutation-event-kw-constants
-  (is (keyword? public/load-epoch))
-  (is (keyword? public/most-recent-epoch))
-  (is (keyword? public/reset-event))
-  (is (keyword? public/replay-event))
+(deftest mutation-event-id-constants
+  ;; Event identifiers are fully-qualified strings rather than CLJS
+  ;; keywords so a pure-JS caller probing via `goog.global` gets back
+  ;; a JS-constructable value. dispatch! coerces strings back to
+  ;; keywords for the inlined router's handler-lookup.
+  (is (string? public/load-epoch))
+  (is (string? public/most-recent-epoch))
+  (is (string? public/reset-event))
+  (is (string? public/replay-event))
   (is (= 4 (count #{public/load-epoch
                     public/most-recent-epoch
                     public/reset-event
                     public/replay-event}))
-      "the four mutation event keywords must be distinct"))
+      "the four mutation event identifiers must be distinct"))
 
 (deftest match-to-public-epoch-shape
   (with-redefs [rf.db/app-db (atom stub-db)]
@@ -117,16 +121,30 @@
       (public/dispatch! #js ["my-event" 42])
       (is (vector? @captured)
           "dispatch! must convert a JS Array to a CLJS vector before forwarding")
-      (is (= ["my-event" 42] @captured)
-          "the coerced vector must preserve element order and values")))
-  ;; CLJS-vector callers (cross-build CLJS consumers, REPL use) must
-  ;; still pass through — no re-allocation when input is already a vector.
+      (is (= [:my-event 42] @captured)
+          "the coerced vector must preserve element order and values, with the head string keywordised for handler-lookup")))
+  ;; CLJS-vector callers with a keyword head must pass through —
+  ;; no re-allocation when input is already a fully-typed vector.
   (let [captured (atom nil)
         v        [::foo 1 2]]
     (with-redefs [rf/dispatch (fn [event-v] (reset! captured event-v))]
       (public/dispatch! v)
       (is (identical? v @captured)
-          "a CLJS vector argument must be passed through unchanged"))))
+          "a CLJS vector with a keyword head must be passed through unchanged"))))
+
+(deftest dispatch-bang-coerces-string-head-to-keyword
+  ;; Event identifiers are exported as fully-qualified strings, so a
+  ;; CLJS caller using `(public/dispatch! [public/load-epoch 42])` and
+  ;; a pure-JS caller using
+  ;; `dispatch_BANG_(["day8.re-frame-10x.public/load-epoch", 42])` both
+  ;; arrive here with a string head. The inlined router's handler-lookup
+  ;; keys are keywords, so dispatch! must keywordise the head before
+  ;; forwarding. Without this, the dispatch silently no-ops.
+  (let [captured (atom nil)]
+    (with-redefs [rf/dispatch (fn [event-v] (reset! captured event-v))]
+      (public/dispatch! [public/load-epoch 42])
+      (is (= [:day8.re-frame-10x.public/load-epoch 42] @captured)
+          "the head string must be keywordised so it matches the registered handler key"))))
 
 (deftest no-version-slug-leak
   (with-redefs [rf.db/app-db (atom stub-db)]

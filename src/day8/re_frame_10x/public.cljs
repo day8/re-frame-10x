@@ -8,17 +8,22 @@
      placeholder; chosen for consistency with the doc shorthand
      used in re-frame-pair's `companion-re-frame-10x.md` proposal.
 
-   - Q2 (mutation API shape): event-keyword API. The mutation
-     surface is exposed as keyword constants (see `load-epoch`,
-     `most-recent-epoch`, `previous-epoch`, `next-epoch`,
-     `reset!-event`, `replay-event` below) plus a `dispatch!`
-     fn that routes through 10x's *inlined*
-     re-frame router. Rationale: 10x events are registered against
-     the inlined `day8.re-frame-10x.inlined-deps.re-frame.v1v3v0`
+   - Q2 (mutation API shape): event-id API. The mutation surface
+     is exposed as fully-qualified string identifiers (see
+     `load-epoch`, `most-recent-epoch`, `previous-epoch`,
+     `next-epoch`, `reset-event`, `replay-event` below) plus a
+     `dispatch!` fn that routes through 10x's *inlined* re-frame
+     router. Rationale: 10x events are registered against the
+     inlined `day8.re-frame-10x.inlined-deps.re-frame.v1v3v0`
      re-frame core, NOT the user's re-frame; a consumer's plain
-     `(re-frame.core/dispatch ...)` would never hit them. `dispatch!`
-     is the bridge. Keyword constants are the durable contract — the
-     internal event names (`:day8.re-frame-10x.navigation.epochs.events/load`
+     `(re-frame.core/dispatch ...)` would never hit them.
+     `dispatch!` is the bridge — it coerces a string head into the
+     keyword the inlined router needs. Strings (not keywords) so a
+     pure-JS caller probing `goog.global.day8.re_frame_10x.public.load_epoch`
+     gets a JS-constructable value back; CLJS callers see exactly
+     the same string and pass it through `dispatch!` the same way.
+     The string identifiers are the durable contract — the internal
+     event names (`:day8.re-frame-10x.navigation.epochs.events/load`
      etc.) are not part of the public API and may change.
 
    - Q3 (fields to expose): each public-epoch record carries
@@ -86,9 +91,9 @@
 
 (def ^:export api-version
   "Integer that bumps with each backwards-incompatible change to the
-   shape of the read API or the meaning of an event keyword. Consumers
-   can branch on it via `(capabilities)` or read it directly via
-   `goog.global.day8.re_frame_10x.public.api_version`."
+   shape of the read API or the meaning of an event identifier.
+   Consumers can branch on it via `(capabilities)` or read it directly
+   via `goog.global.day8.re_frame_10x.public.api_version`."
   1)
 
 (defn ^:export ^boolean loaded?
@@ -106,7 +111,7 @@
 (defn ^:export version
   "Returns `{:api <int>}` describing the public-surface version the
    currently-loaded 10x build implements. Bumps with backwards-
-   incompatible changes to read-API shape or event-kw semantics.
+   incompatible changes to read-API shape or event-identifier semantics.
    Consumers branch on this when they want to support multiple 10x
    versions side-by-side."
   []
@@ -121,8 +126,8 @@
    `:traces/read`, `:settings/app-db-follows-events`. The
    `:events/...` family flags the mutation API: `:events/navigate`,
    `:events/reset`, `:events/replay` mark the corresponding event
-   keyword constants, and `:events/dispatch!` marks the bridge fn
-   that routes event vectors into 10x's inlined re-frame router.
+   identifier constants, and `:events/dispatch!` marks the bridge
+   fn that routes event vectors into 10x's inlined re-frame router.
 
    `:epochs/navigate` and `:events/navigate` are synonyms — the
    former predates the `:events/...` family and is retained for
@@ -229,56 +234,75 @@
   (boolean (some-> rf.db/app-db deref :settings :app-db-follows-events?)))
 
 ;; ---------------------------------------------------------------------------
-;; Mutation API — event keywords + dispatch! bridge
+;; Mutation API — event identifiers + dispatch! bridge
 ;; ---------------------------------------------------------------------------
 
 (def ^:export load-epoch
-  "Public event keyword. Dispatch via `(dispatch! [load-epoch <id>])`
+  "Public event identifier. Dispatch via `(dispatch! [load-epoch <id>])`
    to make 10x focus on the epoch with the given match id. When
    `app-db-follows-events?` is true (the default), the user's app-db
-   resets to that epoch's `:app-db-after`."
-  ::load-epoch)
+   resets to that epoch's `:app-db-after`.
+
+   Value is the fully-qualified string `\"day8.re-frame-10x.public/load-epoch\"`
+   — JS-constructable, so pure-JS callers via `goog.global` can
+   either read this var or build the same literal."
+  "day8.re-frame-10x.public/load-epoch")
 
 (def ^:export most-recent-epoch
-  "Public event keyword. Dispatch via `(dispatch! [most-recent-epoch])`
+  "Public event identifier. Dispatch via `(dispatch! [most-recent-epoch])`
    to make 10x focus on the newest match (the 'live tail'). Useful
-   after a programmatic load-epoch to return control to the user."
-  ::most-recent-epoch)
+   after a programmatic load-epoch to return control to the user.
+
+   Value is the fully-qualified string
+   `\"day8.re-frame-10x.public/most-recent-epoch\"`."
+  "day8.re-frame-10x.public/most-recent-epoch")
 
 (def ^:export previous-epoch
-  "Public event keyword. Dispatch via `(dispatch! [previous-epoch])`
+  "Public event identifier. Dispatch via `(dispatch! [previous-epoch])`
    to step the 10x UI cursor one match backwards from the currently
    focused epoch. No-op when already at the oldest retained match.
    When no epoch is focused (the 'live tail'), steps to the
    second-newest retained match; no-op if fewer than two matches
    are retained. When `app-db-follows-events?` is true, the user's
-   app-db resets to the new epoch's `:app-db-after`."
-  ::previous-epoch)
+   app-db resets to the new epoch's `:app-db-after`.
+
+   Value is the fully-qualified string
+   `\"day8.re-frame-10x.public/previous-epoch\"`."
+  "day8.re-frame-10x.public/previous-epoch")
 
 (def ^:export next-epoch
-  "Public event keyword. Dispatch via `(dispatch! [next-epoch])` to
+  "Public event identifier. Dispatch via `(dispatch! [next-epoch])` to
    step the 10x UI cursor one match forwards from the currently
    focused epoch. When no epoch is focused, jumps to the live tail.
    When `app-db-follows-events?` is true, the user's app-db resets
-   to the new epoch's `:app-db-after`."
-  ::next-epoch)
+   to the new epoch's `:app-db-after`.
+
+   Value is the fully-qualified string
+   `\"day8.re-frame-10x.public/next-epoch\"`."
+  "day8.re-frame-10x.public/next-epoch")
 
 (def ^:export reset-event
-  "Public event keyword. Dispatch via `(dispatch! [reset-event])` to
+  "Public event identifier. Dispatch via `(dispatch! [reset-event])` to
    clear 10x's epoch buffer and reset re-frame.trace's id counter.
-   Equivalent to clicking the 'reset' button in 10x's UI."
-  ::reset)
+   Equivalent to clicking the 'reset' button in 10x's UI.
+
+   Value is the fully-qualified string
+   `\"day8.re-frame-10x.public/reset\"`."
+  "day8.re-frame-10x.public/reset")
 
 (def ^:export replay-event
-  "Public event keyword. Dispatch via `(dispatch! [replay-event])` to
+  "Public event identifier. Dispatch via `(dispatch! [replay-event])` to
    replay the focused epoch's event against the app-db state captured
    BEFORE that event originally fired (the epoch's `:app-db-before`).
    Equivalent to time-travelling to the epoch and re-firing — the
    resulting userland app-db is the post-event state of that epoch,
    regardless of any subsequent dispatches. Idempotent: repeated
    replays of the same epoch produce the same post-event state.
-   Equivalent to clicking 10x's 'replay' button."
-  ::replay)
+   Equivalent to clicking 10x's 'replay' button.
+
+   Value is the fully-qualified string
+   `\"day8.re-frame-10x.public/replay\"`."
+  "day8.re-frame-10x.public/replay")
 
 (rf/reg-event-fx
  ::load-epoch
@@ -335,16 +359,23 @@
    Necessary because 10x events register against the inlined
    `day8.re-frame-10x.inlined-deps.re-frame.v1v3v0` re-frame core
    — a consumer's plain `(re-frame.core/dispatch ...)` would never
-   reach them. Use the keyword constants exported from this
-   namespace as the first element of `event-vec`; the keywords are
+   reach them. Use the string identifiers exported from this
+   namespace as the first element of `event-vec`; the strings are
    the durable contract.
 
    Coerces JS-array arguments to CLJS vectors, so pure-JS callers
    via `goog.global.day8.re_frame_10x.public.dispatch_BANG_(['evt', arg])`
    work — the inlined router validates events with `(vector? ...)`,
-   which JS arrays fail."
+   which JS arrays fail.
+
+   Coerces a string head to a keyword before forwarding, since
+   re-frame's handler-lookup keys are keywords. Pure-JS callers
+   that don't have access to `cljs.core.keyword` can therefore pass
+   the exported string identifiers directly."
   [event-vec]
-  (rf/dispatch (if (vector? event-vec) event-vec (vec (js->clj event-vec)))))
+  (let [v (if (vector? event-vec) event-vec (vec (js->clj event-vec)))
+        h (first v)]
+    (rf/dispatch (if (string? h) (assoc v 0 (keyword h)) v))))
 
 ;; ---------------------------------------------------------------------------
 ;; goog.global path mirror — see ns docstring "IMPLEMENTATION NOTE".

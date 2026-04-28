@@ -77,7 +77,7 @@ builds but break in `:none`. Always walk the un-suffixed path.
 
 The public namespace exports an `api-version` integer (currently `1`) and a
 `(version)` fn that returns `{:api <int>}`. The integer bumps on
-backwards-incompatible changes — to read-API shape or to event-keyword
+backwards-incompatible changes — to read-API shape or to event-identifier
 semantics. Consumers that want to support multiple 10x versions side-by-side
 branch on this.
 
@@ -104,12 +104,12 @@ build supports. Today the set is:
   :epochs/read                       ;; (epochs), (epoch-count), (latest-epoch-id),
                                      ;; (selected-epoch-id), (epoch-by-id)
   :epochs/navigate                   ;; load-epoch / most-recent-epoch / previous-epoch /
-                                     ;; next-epoch event keywords (synonym of :events/navigate)
+                                     ;; next-epoch event identifiers (synonym of :events/navigate)
   :traces/read                       ;; (all-traces)
   :settings/app-db-follows-events    ;; (app-db-follows-events?)
-  :events/navigate                   ;; explicit flag for the four navigation event keywords
-  :events/reset                      ;; reset-event keyword
-  :events/replay                     ;; replay-event keyword
+  :events/navigate                   ;; explicit flag for the four navigation event identifiers
+  :events/reset                      ;; reset-event identifier
+  :events/replay                     ;; replay-event identifier
   :events/dispatch!}                 ;; dispatch! bridge fn
 ```
 
@@ -152,27 +152,38 @@ The pattern is:
 ```clojure
 (let [pub      (ten-x-public)
       dispatch (aget pub "dispatch_BANG_")
-      load-kw  (aget pub "load_epoch")]
-  (dispatch #js [load-kw target-id]))
+      load-id  (aget pub "load_epoch")]
+  (dispatch #js [load-id target-id]))
 ```
 
 `dispatch!` accepts either a CLJS vector or a plain JS array (it coerces
-internally), so pure-JS callers via the JS console also work:
+internally) and keywordises a string head before forwarding to the inlined
+router, so pure-JS callers via the JS console can read the exported
+identifier var directly...
 
 ```js
-day8.re_frame_10x.public.dispatch_BANG_(['load-epoch', 42]);
+day8.re_frame_10x.public.dispatch_BANG_(
+  [day8.re_frame_10x.public.load_epoch, 42]);
 ```
 
-The exported event keyword constants are the durable contract:
+...or build the same fully-qualified string literal from scratch:
 
-| Constant           | Effect when dispatched                                           |
-| ------------------ | ---------------------------------------------------------------- |
-| `load-epoch`       | Focus 10x on the given match id; takes one arg.                  |
-| `most-recent-epoch`| Focus on the live tail (newest match).                           |
-| `previous-epoch`   | Step the cursor one match backwards. No-op at oldest.            |
-| `next-epoch`       | Step the cursor one match forwards. Jumps to live tail if unset. |
-| `reset-event`      | Clear the epoch buffer; reset trace id counter.                  |
-| `replay-event`     | Re-fire the focused epoch's event from its `:app-db-before`.     |
+```js
+day8.re_frame_10x.public.dispatch_BANG_(
+  ['day8.re-frame-10x.public/load-epoch', 42]);
+```
+
+The exported event identifier constants are the durable contract — each
+holds a fully-qualified string that `dispatch!` keywordises internally:
+
+| Constant           | Value                                              | Effect when dispatched                                           |
+| ------------------ | -------------------------------------------------- | ---------------------------------------------------------------- |
+| `load-epoch`       | `"day8.re-frame-10x.public/load-epoch"`            | Focus 10x on the given match id; takes one arg.                  |
+| `most-recent-epoch`| `"day8.re-frame-10x.public/most-recent-epoch"`     | Focus on the live tail (newest match).                           |
+| `previous-epoch`   | `"day8.re-frame-10x.public/previous-epoch"`        | Step the cursor one match backwards. No-op at oldest.            |
+| `next-epoch`       | `"day8.re-frame-10x.public/next-epoch"`            | Step the cursor one match forwards. Jumps to live tail if unset. |
+| `reset-event`      | `"day8.re-frame-10x.public/reset"`                 | Clear the epoch buffer; reset trace id counter.                  |
+| `replay-event`     | `"day8.re-frame-10x.public/replay"`                | Re-fire the focused epoch's event from its `:app-db-before`.     |
 
 When `(app-db-follows-events?)` is true (the default), the four navigation
 events also reset the user's app-db to the focused epoch's `:app-db-after`
