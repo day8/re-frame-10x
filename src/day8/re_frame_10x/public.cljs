@@ -8,9 +8,9 @@
    companion-re-frame-10x.md §A2 (line 227): the marker stays until a
    *released* re-frame-pair JAR consumes this surface, at which point
    the markers can be removed and the opener flipped to 'Stable'. The
-   local re-frame-pair migration wires this up under `:local/root`
-   (rf1-jum) but no released JAR ships against it yet, so the spec's
-   experimental-gate is not met.
+   local re-frame-pair migration wires this up under `:local/root`,
+   but no released JAR ships against it yet, so the spec's
+   experimental gate is not met.
 
    VERSIONING + FEATURE DETECTION
 
@@ -472,7 +472,8 @@
 ;; resolves in :advanced builds. Without this, every consumer that
 ;; relies on the public surface from a JS-globals lookup gets
 ;; undefined post-:advanced and silently falls back to brittle
-;; inlined-rf-version walking — defeating the rf1-jum premise.
+;; inlined-rf-version walking — defeating the purpose of this
+;; public namespace.
 ;;
 ;; Guarded on `js/goog.global` existence so this is a no-op in any
 ;; environment that doesn't have the Closure global object set up
