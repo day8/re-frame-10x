@@ -6,8 +6,10 @@ re-frame-10x without compiling against it.
 
 The contract this document describes lives in
 [`day8.re-frame-10x.public`](../src/day8/re_frame_10x/public.cljs). That
-namespace is the stable surface; everything else under `day8.re-frame-10x.*`
-is internal and may change between releases.
+namespace is the intended tooling entry point, but its contract is still
+marked `^:experimental` until a released downstream consumer ships against
+it. Everything else under `day8.re-frame-10x.*` is internal and may change
+between releases.
 
 ## Why probe lazily
 
@@ -77,7 +79,7 @@ builds but break in `:none`. Always walk the un-suffixed path.
 
 The public namespace exports an `api-version` integer (currently `2`) and a
 `(version)` fn that returns `{:api <int>}`. The integer bumps on public
-contract revisions, including new stable event identifiers and changes to
+contract revisions, including new public event identifiers and changes to
 read-API shape or event-identifier semantics. Consumers that want to support
 multiple 10x versions side-by-side branch on this.
 

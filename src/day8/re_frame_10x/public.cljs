@@ -17,7 +17,7 @@
    `loaded?` is the durable presence hook — its body returns `true`,
    so consumers branch on the var existing, not on its return value.
    `(version)` returns `{:api <int>}`, where the integer bumps on
-   every public-surface contract revision (new stable event
+   every public-surface contract revision (new public event
    identifiers, read-API shape or semantic changes).
    `(capabilities)` returns the feature-keyword set this build
    supports; consumers branching across builds should treat unknown
@@ -151,7 +151,7 @@
 
 (def ^:export ^:experimental api-version
   "Integer that bumps with each public-surface contract revision,
-   including new stable event identifiers downstream tools may gate on.
+   including new public event identifiers downstream tools may gate on.
    Consumers can branch on it via `(capabilities)` or read it directly
    via `goog.global.day8.re_frame_10x.public.api_version`."
   2)
@@ -171,7 +171,7 @@
 (defn ^:export ^:experimental version
   "Returns `{:api <int>}` describing the public-surface version the
    currently-loaded 10x build implements. Bumps with public contract
-   revisions, including new stable event identifiers and read API
+   revisions, including new public event identifiers and read API
    shape or event-identifier semantic changes.
    Consumers branch on this when they want to support multiple 10x
    versions side-by-side."

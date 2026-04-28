@@ -306,12 +306,12 @@ You can also control the panel programmatically:
 ### Public API for tooling
 
 Downstream tooling should integrate through `day8.re-frame-10x.public`.
-This namespace is loaded by the 10x preloads and is the stable entry point for
-tools that need to inspect or drive 10x without depending on internal
-navigation namespaces or the inlined re-frame version path. The namespace is
+This namespace is loaded by the 10x preloads and is the intended entry point
+for tools that need to inspect or drive 10x without depending on internal
+navigation namespaces or the inlined re-frame version path. Its contract is
 marked `^:experimental` until the first external consumer ships against it;
-the namespace name, feature probes, version contract, and capabilities set are
-the supported way to branch as the surface evolves.
+feature probes, version data, and the capabilities set are the supported way
+to branch as the surface evolves.
 
 Feature-detect the surface before using it:
 
@@ -338,7 +338,7 @@ if (api && api.loaded_QMARK_()) {
 ```
 
 `api-version` is an integer contract revision. It bumps when the public
-contract changes, including new stable event identifiers, read API shape
+contract changes, including new public event identifiers, read API shape
 changes, or event-identifier semantic changes. `(version)` returns the same
 contract as a map so callers can support several 10x releases side by side.
 `(capabilities)` is the preferred feature gate for optional behavior; unknown
