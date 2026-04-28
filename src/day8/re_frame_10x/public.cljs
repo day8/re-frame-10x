@@ -12,61 +12,81 @@
    (rf1-jum) but no released JAR ships against it yet, so the spec's
    experimental-gate is not met.
 
-   Resolves the rf1-jum companion-bead's five open questions:
+   VERSIONING + FEATURE DETECTION
 
-   - Q1 (namespace name): `day8.re-frame-10x.public`. The bead's
-     placeholder; chosen for consistency with the doc shorthand
-     used in re-frame-pair's `companion-re-frame-10x.md` proposal.
+   `loaded?` is the durable presence hook — its body returns `true`,
+   so consumers branch on the var existing, not on its return value.
+   `(version)` returns `{:api <int>}`, where the integer bumps on
+   every public-surface contract revision (new stable event
+   identifiers, read-API shape or semantic changes).
+   `(capabilities)` returns the feature-keyword set this build
+   supports; consumers branching across builds should treat unknown
+   keywords as 'not supported'.
 
-   - Q2 (mutation API shape): event-id API. The mutation surface
-     is exposed as fully-qualified string identifiers (see
-     `load-epoch`, `most-recent-epoch`, `previous-epoch`,
-     `next-epoch`, `reset-epochs`, `replay-epoch`,
-     `reset-app-db-event` below) plus a
-     `dispatch!` fn that routes through 10x's *inlined* re-frame
-     router. Rationale: 10x events are registered against the
-     inlined `day8.re-frame-10x.inlined-deps.re-frame.v1v3v0`
-     re-frame core, NOT the user's re-frame; a consumer's plain
-     `(re-frame.core/dispatch ...)` would never hit them.
-     `dispatch!` is the bridge — it coerces a string head into the
-     keyword the inlined router needs. Strings (not keywords) so a
-     pure-JS caller probing `goog.global.day8.re_frame_10x.public.load_epoch`
-     gets a JS-constructable value back; CLJS callers see exactly
-     the same string and pass it through `dispatch!` the same way.
-     The string identifiers are the durable contract — the internal
-     event names (`:day8.re-frame-10x.navigation.epochs.events/load`
-     etc.) are not part of the public API and may change.
+   READ API — EPOCHS
 
-   - Q3 (fields to expose): each public-epoch record carries
-     `:sub-state-raw` and `:timings` alongside the existing
-     `:match-info` per the doc recommendation. Naming intentionally
-     differs from 10x's internal `:sub-state` / `:timing` so the
-     public shape can evolve independently of the internal one.
+   Each public-epoch record carries `:id`, `:match-info`,
+   `:sub-state-raw`, and `:timings`. `:sub-state-raw` / `:timings`
+   intentionally differ from 10x's internal `:sub-state` / `:timing`
+   so the public shape can evolve independently of the internal
+   one. `epochs` is a vec ordered oldest-first (newest dispatch at
+   the tail), and returns `[]` before 10x's app-db initialises —
+   consumers can no-op on cold start without probing `loaded?` ahead
+   of every call.
 
-   - Q4 (lifecycle hooks): deferred. Will surface here as a thin
-     forwarder once re-frame's A4 (`register-epoch-cb`, tracked as
-     rf-ybv) lands. No `on-epoch-start` / `on-epoch-complete` in
-     this iteration — the bead recommends not duplicating an API
-     that should belong to re-frame core.
+   READ API — TRACES
 
-   - Q5 (settings exposure): yes, `app-db-follows-events?` is
-     part of the public API. Navigation events behave differently
-     when it's false (epoch loads don't reset the user's app-db),
-     and downstream tools that drive 10x programmatically need to
-     branch on it.
+   `all-traces` exposes the full underlying re-frame.trace stream
+   in order. Consumers that want to slice differently than 10x's
+   epoch buffer (by op-type, time range, custom group key) read
+   this directly.
+
+   READ API — SETTINGS
+
+   `app-db-follows-events?` reports whether 10x is currently
+   configured to reset the user's app-db to the focused epoch's
+   `:app-db-after` snapshot when navigation events fire (the
+   default). Downstream tools driving 10x programmatically branch
+   on it because navigation events only mutate userland when it is
+   true.
+
+   MUTATION API
+
+   The mutation surface is a set of fully-qualified-string event
+   identifiers (`load-epoch`, `most-recent-epoch`, `previous-epoch`,
+   `next-epoch`, `reset-epochs`, `replay-epoch`,
+   `reset-app-db-event`) plus a `dispatch!` bridge fn. Strings (not
+   keywords) so a pure-JS caller probing
+   `goog.global.day8.re_frame_10x.public.load_epoch` gets a
+   JS-constructable value back; CLJS callers see exactly the same
+   string and pass it through `dispatch!` the same way. The string
+   identifiers are the durable contract — the internal event names
+   (`:day8.re-frame-10x.navigation.epochs.events/load` etc.) are
+   not part of the public API and may change.
+
+   `dispatch!` is the bridge: 10x's events register against the
+   inlined `day8.re-frame-10x.inlined-deps.re-frame.v1v3v0`
+   re-frame core, NOT the user's re-frame, so a consumer's plain
+   `(re-frame.core/dispatch ...)` would never reach them.
+   `dispatch!` coerces a string head into the keyword the inlined
+   router needs and routes through that core.
 
    COMPATIBILITY
 
    - Strictly additive. Internal pipelines and the 10x UI continue
      to use internal namespaces; nothing here changes existing
      behaviour.
-   - Public ns leaks NO inlined-rf version slug (`v1v3v0` etc.).
-     Once consumers migrate to this surface, they can delete any
-     hard-coded version-path fallback (the rf1-jum bead specifically
-     calls out re-frame-pair's `inlined-rf-known-version-paths`
-     vec as the target deletion).
+   - The public surface leaks NO inlined-rf version slug (`v1v3v0`
+     etc.). Once consumers migrate to this surface, they can
+     delete any hard-coded version-path fallback (re-frame-pair's
+     `inlined-rf-known-version-paths` vec is the target deletion).
+   - Every public top-level form carries `^:export ^:experimental`
+     and is gated by public_test.cljs's surface-presence and
+     version-slug-leak checks. The `^:experimental` markers come
+     off in one sweep when the spec's gate is met (see STABILITY).
    - `(version)` and `(capabilities)` exist for consumer
-     branch-on-availability.
+     branch-on-availability; both bump together with every public-
+     surface contract revision.
 
    USAGE FROM A SHADOW-CLJS CONSUMER
 
@@ -93,14 +113,14 @@
 
    NAMESPACE DISCIPLINE (for contributors)
 
-   Every public top-level form in this namespace is part of the public
-   contract — new entries must carry `^:export ^:experimental` and be
-   covered by public_test.cljs's surface-presence and
-   version-slug-leak checks. The `^:experimental` markers come off in
-   one sweep when the spec's gate is met (see STABILITY above).
-   `^:private` defs (e.g. `public->internal`) are exempt from the
-   `^:export` contract — they're not on the goog.global path and
-   public_export_metadata_test.clj filters them out by metadata.
+   Every public top-level form here is part of the contract called
+   out under COMPATIBILITY above. New entries must carry
+   `^:export ^:experimental` and pick up coverage in
+   public_test.cljs's surface-presence and version-slug-leak
+   checks. `^:private` defs (e.g. `public->internal`) are exempt
+   from the `^:export` contract — they're not on the goog.global
+   path and public_export_metadata_test.clj filters them out by
+   metadata.
 
    Side-effecting handler registrations live in
    `day8.re-frame-10x.public.events`, required below so registrations
@@ -114,10 +134,10 @@
   (:require
    ;; The two inlined-rf requires below are intentional, not cleanup
    ;; targets: 10x's events register against the inlined re-frame
-   ;; (see Q2 in the ns docstring), so this ns must route through it
-   ;; even though the docstring promises the version slug never leaks
-   ;; into the public surface. Replacing them with the user's
-   ;; re-frame.core would silently break every mutation event.
+   ;; (see MUTATION API in the ns docstring), so this ns must route
+   ;; through it even though the docstring promises the version slug
+   ;; never leaks into the public surface. Replacing them with the
+   ;; user's re-frame.core would silently break every mutation event.
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.core :as rf]
    [day8.re-frame-10x.inlined-deps.re-frame.v1v3v0.re-frame.db   :as rf.db]
    ;; Side-effect-only require: registers the public mutation-API
