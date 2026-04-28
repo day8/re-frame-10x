@@ -86,7 +86,7 @@ multiple 10x versions side-by-side branch on this.
   "Integer api-version of the loaded 10x build, or nil if 10x missing."
   []
   (when-let [pub (ten-x-public)]
-    (some-> ((aget pub "version")) (aget "api"))))
+    (some-> ((aget pub "version")) (get :api))))
 ```
 
 Treat any value `>= 1` as "supports the v1 contract"; treat `nil` as "fall
@@ -122,9 +122,12 @@ predates `:events/navigate` and is retained as a synonym for compatibility.
 
 ## Read API at a glance
 
-All functions take no arguments unless noted; all return seq-able CLJS
-values when called from CLJS-land, and JS arrays / objects when called via
-`goog.global`.
+All functions take no arguments unless noted. The exported fns return CLJS
+values even when reached through `goog.global`: `version` returns a CLJS
+map, `capabilities` a CLJS set, and `epochs` / `all-traces` CLJS vectors.
+CLJS consumers can use normal Clojure operations after probing the JS path;
+plain JS consumers need CLJS interop for read results. The mutation bridge
+is the exception: `dispatch!` accepts a plain JS array as its event vector.
 
 | Fn                       | Returns                                          |
 | ------------------------ | ------------------------------------------------ |
