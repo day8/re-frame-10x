@@ -11,7 +11,7 @@
    - Q2 (mutation API shape): event-id API. The mutation surface
      is exposed as fully-qualified string identifiers (see
      `load-epoch`, `most-recent-epoch`, `previous-epoch`,
-     `next-epoch`, `reset-event`, `replay-event` below) plus a
+     `next-epoch`, `reset-epochs`, `replay-epoch` below) plus a
      `dispatch!` fn that routes through 10x's *inlined* re-frame
      router. Rationale: 10x events are registered against the
      inlined `day8.re-frame-10x.inlined-deps.re-frame.v1v3v0`
@@ -281,17 +281,17 @@
    `\"day8.re-frame-10x.public/next-epoch\"`."
   "day8.re-frame-10x.public/next-epoch")
 
-(def ^:export reset-event
-  "Public event identifier. Dispatch via `(dispatch! [reset-event])` to
+(def ^:export reset-epochs
+  "Public event identifier. Dispatch via `(dispatch! [reset-epochs])` to
    clear 10x's epoch buffer and reset re-frame.trace's id counter.
    Equivalent to clicking the 'reset' button in 10x's UI.
 
    Value is the fully-qualified string
-   `\"day8.re-frame-10x.public/reset\"`."
-  "day8.re-frame-10x.public/reset")
+   `\"day8.re-frame-10x.public/reset-epochs\"`."
+  "day8.re-frame-10x.public/reset-epochs")
 
-(def ^:export replay-event
-  "Public event identifier. Dispatch via `(dispatch! [replay-event])` to
+(def ^:export replay-epoch
+  "Public event identifier. Dispatch via `(dispatch! [replay-epoch])` to
    replay the focused epoch's event against the app-db state captured
    BEFORE that event originally fired (the epoch's `:app-db-before`).
    Equivalent to time-travelling to the epoch and re-firing — the
@@ -301,8 +301,8 @@
    Equivalent to clicking 10x's 'replay' button.
 
    Value is the fully-qualified string
-   `\"day8.re-frame-10x.public/replay\"`."
-  "day8.re-frame-10x.public/replay")
+   `\"day8.re-frame-10x.public/replay-epoch\"`."
+  "day8.re-frame-10x.public/replay-epoch")
 
 (rf/reg-event-fx
  ::load-epoch
@@ -343,12 +343,12 @@
    {:dispatch [::nav.events/next]}))
 
 (rf/reg-event-fx
- ::reset
+ ::reset-epochs
  (fn [_ _]
    {:dispatch [::nav.events/reset]}))
 
 (rf/reg-event-db
- ::replay
+ ::replay-epoch
  [(rf/path [:epochs])]
  (fn [epochs _]
    (nav.events/replay-epochs epochs)))

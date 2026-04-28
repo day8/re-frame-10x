@@ -14,6 +14,14 @@
   (testing "next-epoch resolves to the public namespaced string identifier"
     (is (= "day8.re-frame-10x.public/next-epoch" public/next-epoch))))
 
+(deftest reset-epochs-identifier-is-stable
+  (testing "reset-epochs resolves to the public namespaced string identifier"
+    (is (= "day8.re-frame-10x.public/reset-epochs" public/reset-epochs))))
+
+(deftest replay-epoch-identifier-is-stable
+  (testing "replay-epoch resolves to the public namespaced string identifier"
+    (is (= "day8.re-frame-10x.public/replay-epoch" public/replay-epoch))))
+
 (defn- prime-app-db! [match-ids selected-epoch-id]
   (reset! rf.db/app-db
           {:epochs   {:match-ids         match-ids
@@ -127,8 +135,8 @@
         (is (= :c (get-in @rf.db/app-db [:epochs :selected-epoch-id])))
         (finally (reset! rf.db/app-db snapshot))))))
 
-(deftest reset-event-clears-epochs-and-traces
-  (testing "[reset-event] clears :epochs and :traces/:all"
+(deftest reset-epochs-clears-epochs-and-traces
+  (testing "[reset-epochs] clears :epochs and :traces/:all"
     (let [snapshot @rf.db/app-db]
       (try
         (reset! rf.db/app-db
@@ -136,7 +144,7 @@
                           :selected-epoch-id :a
                           :matches-by-id     {:a {:match-info []}}}
                  :traces {:all [{:op-type :event :id 1}]}})
-        (rf/dispatch-sync [(keyword public/reset-event)])
+        (rf/dispatch-sync [(keyword public/reset-epochs)])
         (rf/dispatch-sync [:day8.re-frame-10x.navigation.epochs.events/reset])
         (is (nil? (:epochs @rf.db/app-db))
             ":epochs must be removed after reset")
@@ -144,14 +152,14 @@
             ":traces/:all must be cleared after reset (dissoc-in)")
         (finally (reset! rf.db/app-db snapshot))))))
 
-(deftest replay-event-empty-match-info-does-not-throw
+(deftest replay-epoch-empty-match-info-does-not-throw
   ;; Guard against a NPE-style regression in replay-epochs when the
   ;; selected epoch's :match-info is empty (no event-run trace yet —
   ;; happens at cold-start while the parser is still mid-stream). The
   ;; threading (-> nil metam/matched-event) and subsequent get-in calls
   ;; must all tolerate the missing trace; otherwise a probe-style poll
   ;; that lands on a half-built epoch crashes the whole router.
-  (testing "[replay-event] with an empty :match-info must not throw"
+  (testing "[replay-epoch] with an empty :match-info must not throw"
     (let [rf-snapshot       @rf.db/app-db
           userland-snapshot @userland.re-frame.db/app-db]
       (try
@@ -163,14 +171,14 @@
         ;; If dispatch-sync throws, the assertion below is never reached
         ;; and the test fails. If it returns cleanly, we record the
         ;; positive observation.
-        (rf/dispatch-sync [(keyword public/replay-event)])
-        (is true "replay-event with empty :match-info returned without throwing")
+        (rf/dispatch-sync [(keyword public/replay-epoch)])
+        (is true "replay-epoch with empty :match-info returned without throwing")
         (finally
           (reset! rf.db/app-db rf-snapshot)
           (reset! userland.re-frame.db/app-db userland-snapshot))))))
 
-(deftest replay-event-resets-userland-app-db-to-before
-  (testing "[replay-event] resets userland app-db to the focused epoch's :app-db-before, ignoring whatever state was current — confirms the idempotent time-travel semantic the docstring promises"
+(deftest replay-epoch-resets-userland-app-db-to-before
+  (testing "[replay-epoch] resets userland app-db to the focused epoch's :app-db-before, ignoring whatever state was current — confirms the idempotent time-travel semantic the docstring promises"
     (let [rf-snapshot       @rf.db/app-db
           userland-snapshot @userland.re-frame.db/app-db
           before-state      {:counter 0  :marker :before}
@@ -187,7 +195,7 @@
                             :matches-by-id     {42 {:match-info [stub-event-trace]}}}
                  :settings {:app-db-follows-events? false}})
         (reset! userland.re-frame.db/app-db current-state)
-        (rf/dispatch-sync [(keyword public/replay-event)])
+        (rf/dispatch-sync [(keyword public/replay-epoch)])
         (is (= before-state @userland.re-frame.db/app-db)
             "userland app-db must be reset to :app-db-before, not retain the diverged current-state")
         (finally

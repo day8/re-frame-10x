@@ -68,8 +68,8 @@
   (is (string? public/most-recent-epoch))
   (is (string? public/previous-epoch))
   (is (string? public/next-epoch))
-  (is (string? public/reset-event))
-  (is (string? public/replay-event))
+  (is (string? public/reset-epochs))
+  (is (string? public/replay-epoch))
   ;; Include the navigation identifiers in the distinctness check so a
   ;; future identifier-collision regression on the navigation pair is
   ;; caught alongside the others.
@@ -77,8 +77,8 @@
                     public/most-recent-epoch
                     public/previous-epoch
                     public/next-epoch
-                    public/reset-event
-                    public/replay-event}))
+                    public/reset-epochs
+                    public/replay-epoch}))
       "the six mutation event identifiers must be distinct"))
 
 (deftest capabilities-forward-compat-contract
@@ -270,8 +270,8 @@
                      public/most-recent-epoch
                      public/previous-epoch
                      public/next-epoch
-                     public/reset-event
-                     public/replay-event]
+                     public/reset-epochs
+                     public/replay-epoch]
           forbidden ["v1v3v0" "inlined-deps" "inlined_deps"]
           leaked    (atom [])]
       (doseq [r returns]

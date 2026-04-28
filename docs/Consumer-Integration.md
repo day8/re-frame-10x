@@ -108,8 +108,8 @@ build supports. Today the set is:
   :traces/read                       ;; (all-traces)
   :settings/app-db-follows-events    ;; (app-db-follows-events?)
   :events/navigate                   ;; explicit flag for the four navigation event identifiers
-  :events/reset                      ;; reset-event identifier
-  :events/replay                     ;; replay-event identifier
+  :events/reset                      ;; reset-epochs identifier
+  :events/replay                     ;; replay-epoch identifier
   :events/dispatch!}                 ;; dispatch! bridge fn
 ```
 
@@ -182,8 +182,8 @@ holds a fully-qualified string that `dispatch!` keywordises internally:
 | `most-recent-epoch`| `"day8.re-frame-10x.public/most-recent-epoch"`     | Focus on the live tail (newest match).                           |
 | `previous-epoch`   | `"day8.re-frame-10x.public/previous-epoch"`        | Step the cursor one match backwards. No-op at oldest.            |
 | `next-epoch`       | `"day8.re-frame-10x.public/next-epoch"`            | Step the cursor one match forwards. Jumps to live tail if unset. |
-| `reset-event`      | `"day8.re-frame-10x.public/reset"`                 | Clear the epoch buffer; reset trace id counter.                  |
-| `replay-event`     | `"day8.re-frame-10x.public/replay"`                | Re-fire the focused epoch's event from its `:app-db-before`.     |
+| `reset-epochs`     | `"day8.re-frame-10x.public/reset-epochs"`          | Clear the epoch buffer; reset trace id counter.                  |
+| `replay-epoch`     | `"day8.re-frame-10x.public/replay-epoch"`          | Re-fire the focused epoch's event from its `:app-db-before`.     |
 
 When `(app-db-follows-events?)` is true (the default), the four navigation
 events also reset the user's app-db to the focused epoch's `:app-db-after`
