@@ -22,12 +22,15 @@ jobs:
         with:
           node-version: '20'
       - name: Setup Clojure tools
-        # lein for `lein test` and `lein release`; bb for parity with
-        # other day8 workflows where bb tasks are common.
+        # lein for `lein test` / `lein release`; cli for shadow-cljs's
+        # `:deps true` mode in the sample project (it shells out to
+        # `clojure` for classpath resolution); bb for parity with other
+        # day8 workflows.
         uses: DeLaGuardo/setup-clojure@02f5a82b79a547523e664fe8a7a32ea14884d7b2 # 13.6.0
         with:
           lein: 'latest'
-          bb: 'latest'
+          cli:  'latest'
+          bb:   'latest'
       - name: Maven cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
