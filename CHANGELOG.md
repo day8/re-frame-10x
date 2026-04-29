@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+Nothing yet.
+
+## 1.12.0 (2026-04-29)
+
 #### Added
 
 - `day8.re-frame-10x.public` — experimental public surface and intended entry point for downstream tooling (see README section), marked `^:experimental` until the first external consumer ships against it. Includes `(loaded?)`, `(version)`, `(capabilities)`, `api-version`, `(epochs)`, `(epoch-count)`, `(latest-epoch-id)`, `(selected-epoch-id)`, `(epoch-by-id)`, `(all-traces)`, `(app-db-follows-events?)`, event identifier constants (`load-epoch`, `most-recent-epoch`, `previous-epoch`, `next-epoch`, `reset-epochs`, `replay-epoch`, `reset-app-db-event`), and a `(dispatch!)` bridge into the inlined re-frame router. Event identifiers are JS-constructable fully-qualified strings — pure-JS callers reading `goog.global.day8.re_frame_10x.public.<name>` get a value they can pass straight back through `dispatch!` without needing `cljs.core.keyword`. `dispatch!` keywordises the head of the event vector before forwarding so it matches the inlined router's handler-lookup keys.
