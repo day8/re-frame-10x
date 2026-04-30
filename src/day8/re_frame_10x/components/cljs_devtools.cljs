@@ -67,18 +67,27 @@
 (def custom-config
   (merge initial-config (base-config) #_bright-ambiance-config))
 
+(def wide-body-style
+  (style body-style-base
+         {:display    :block
+          :min-width  "min(640px, calc(100vw - 80px))"
+          :max-width  "calc(100vw - 80px)"
+          :overflow-x :auto}))
+
+(defn render-config
+  [{:keys [render-paths? wide-body?]}]
+  (cond-> custom-config
+    render-paths? (assoc :render-path-annotations true)
+    wide-body?    (assoc :body-style wide-body-style)))
+
 (defn header [value config & [{:keys [render-paths?]}]]
   (with-cljs-devtools-prefs
-    (if render-paths?
-      (merge custom-config {:render-path-annotations       true})
-      custom-config)
+    (render-config {:render-paths? render-paths?})
     (devtools.formatters.core/header-api-call value config)))
 
-(defn body [value config & [{:keys [render-paths?]}]]
+(defn body [value config & [opts]]
   (with-cljs-devtools-prefs
-    (if render-paths?
-      (merge custom-config {:render-path-annotations       true})
-      custom-config)
+    (render-config opts)
     (devtools.formatters.core/body-api-call value config)))
 
 (defn has-body [value config]
@@ -117,9 +126,9 @@
   [:svg :path
    {:fill (if (= ambiance :bright) styles/nord0 styles/nord5)}])
 
-(defn data-structure [_ path]
+(defn data-structure [_ path opts]
   (let [expanded? (rf/subscribe [::app-db.subs/node-expanded? path])]
-    (fn [jsonml path]
+    (fn [jsonml path opts]
       [:span
        {:class (jsonml-style)}
        [:span {:class    (toggle-style :bright)
@@ -134,13 +143,17 @@
          (jsonml->hiccup
           (body
            (get-object jsonml)
-           (get-config jsonml))
-          (conj path :body))
+           (get-config jsonml)
+           opts)
+          (conj path :body)
+          opts)
          (jsonml->hiccup
           (header
            (get-object jsonml)
-           (get-config jsonml))
-          (conj path :header)))])))
+           (get-config jsonml)
+           opts)
+          (conj path :header)
+          opts))])))
 
 (defn data-structure-with-path-annotations [_ _ _ _]
   (let [render-paths? (rf/subscribe [::app-db.subs/data-path-annotations?])]
@@ -203,32 +216,34 @@ clojure.string/trim
   JSONML is pretty much Hiccup over JSON. Chrome's implementation of this can
   be found at https://cs.chromium.org/chromium/src/third_party/WebKit/Source/devtools/front_end/object_ui/CustomPreviewComponent.js
   "
-  [jsonml path]
-  (cond
-    (number? jsonml)      jsonml
-    (uuid-string? jsonml) (case @(rf/subscribe [::settings.subs/display-uuids-as])
-                            :last-4-chars (str "#uuid " (.substring jsonml
-                                                                    (- (count jsonml) 5)
-                                                                    (- (count jsonml) 1)))
-                            :identicons   [uuid->hiccup jsonml]
-                            jsonml)
-    (string? jsonml)      jsonml ;; Handle non-UUID strings
-    :else
-    (let [[tag-name attributes & children] jsonml
-          tagnames                         #{"div" "span" "ol" "li" "table" "tr" "td"}]
-      (cond
-        (contains? tagnames tag-name) (into
-                                       [(keyword tag-name) {:style (-> (js->clj attributes)
-                                                                       (get "style")
-                                                                       (string->css))}]
-                                       (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
-                                       children)
-
-        (= tag-name "object")     [data-structure jsonml path]
-        (= tag-name "annotation") (into [:span {}]
-                                        (map-indexed (fn [i child] (jsonml->hiccup child (conj path i))))
+  ([jsonml path]
+   (jsonml->hiccup jsonml path nil))
+  ([jsonml path opts]
+   (cond
+     (number? jsonml)      jsonml
+     (uuid-string? jsonml) (case @(rf/subscribe [::settings.subs/display-uuids-as])
+                             :last-4-chars (str "#uuid " (.substring jsonml
+                                                                     (- (count jsonml) 5)
+                                                                     (- (count jsonml) 1)))
+                             :identicons   [uuid->hiccup jsonml]
+                             jsonml)
+     (string? jsonml)      jsonml ;; Handle non-UUID strings
+     :else
+     (let [[tag-name attributes & children] jsonml
+           tagnames                         #{"div" "span" "ol" "li" "table" "tr" "td"}]
+       (cond
+         (contains? tagnames tag-name) (into
+                                        [(keyword tag-name) {:style (-> (js->clj attributes)
+                                                                        (get "style")
+                                                                        (string->css))}]
+                                        (map-indexed (fn [i child] (jsonml->hiccup child (conj path i) opts)))
                                         children)
-        :else                     jsonml))))
+
+         (= tag-name "object")     [data-structure jsonml path opts]
+         (= tag-name "annotation") (into [:span {}]
+                                         (map-indexed (fn [i child] (jsonml->hiccup child (conj path i) opts)))
+                                         children)
+         :else                     jsonml)))))
 
 (defn jsonml->hiccup-with-path-annotations
   "JSONML is the format used by Chrome's Custom Object Formatters.
@@ -320,7 +335,7 @@ clojure.string/trim
    (prn-str data)])
 
 (defn simple-render
-  [data path & [{:keys [class sort?]}]]
+  [data path & [{:keys [class sort?] :as opts}]]
   (let [ns->alias             @(rf/subscribe [::settings.subs/ns->alias])
         alias?                (and (seq ns->alias)
                                    @(rf/subscribe [::settings.subs/alias-namespaces?]))
@@ -333,7 +348,7 @@ clojure.string/trim
      :child
      (if (prn-str-render? data)
        (prn-str-render data)
-       (jsonml->hiccup (header data nil) (conj path 0)))]))
+       (jsonml->hiccup (header data nil opts) (conj path 0) opts))]))
 
 (defn simple-render-with-path-annotations
   [{:keys [data path path-id sort?] :as opts}]

@@ -59,7 +59,7 @@
            :class      (epoch-data-style ambiance)
            :min-height styles/gs-19s
            :size       "1"
-           :child      [cljs-devtools/simple-render event [id]]]]]))))
+           :child      [cljs-devtools/simple-render event [id] {:wide-body? true}]]]]))))
 
 (defclass epochs-style
   [ambiance]
